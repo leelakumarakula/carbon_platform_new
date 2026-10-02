@@ -1,0 +1,95 @@
+"""Permission catalog and system roles (spec section 4).
+
+This module is the single source of truth for permissions and for the baseline
+permissions of the 19 system roles. `python -m app.seed.reference` syncs it to the
+database. Each later phase adds its module's permissions here and grants them to roles.
+Custom (non-system) roles are managed by Platform Admins through the API.
+"""
+from dataclasses import dataclass
+
+
+@dataclass(frozen=True)
+class PermissionDef:
+    code: str
+    module: str
+    name: str
+    description: str
+
+
+class P:
+    """Permission codes (use these constants in route dependencies, never raw strings)."""
+    USERS_READ = "users.read"
+    USERS_MANAGE = "users.manage"
+    USERS_ASSIGN_ROLES = "users.assign_roles"
+    ROLES_READ = "roles.read"
+    ROLES_MANAGE = "roles.manage"
+    ORGANIZATIONS_READ = "organizations.read"
+    ORGANIZATIONS_MANAGE = "organizations.manage"
+    ORGANIZATIONS_MANAGE_MEMBERS = "organizations.manage_members"
+    AUDIT_READ = "audit.read"
+    SECURITY_READ = "security.read"
+    SECURITY_MANAGE = "security.manage"
+
+
+PERMISSIONS: tuple[PermissionDef, ...] = (
+    PermissionDef(P.USERS_READ, "admin", "View users", "List and view user accounts."),
+    PermissionDef(P.USERS_MANAGE, "admin", "Manage users", "Create users, edit profiles, change status, reset passwords."),
+    PermissionDef(P.USERS_ASSIGN_ROLES, "admin", "Assign roles", "Grant and revoke roles. Cannot grant more than the assigner holds."),
+    PermissionDef(P.ROLES_READ, "admin", "View roles", "View roles and their permissions."),
+    PermissionDef(P.ROLES_MANAGE, "admin", "Manage roles", "Create custom roles and edit their permissions."),
+    PermissionDef(P.ORGANIZATIONS_READ, "admin", "View organizations", "List and view organizations and members."),
+    PermissionDef(P.ORGANIZATIONS_MANAGE, "admin", "Manage organizations", "Create and edit organizations, change status."),
+    PermissionDef(P.ORGANIZATIONS_MANAGE_MEMBERS, "admin", "Manage members", "Add and remove organization members."),
+    PermissionDef(P.AUDIT_READ, "audit", "View audit logs", "Read the append-only audit trail and workflow events."),
+    PermissionDef(P.SECURITY_READ, "security", "View security events", "Read security events, login audit and sessions."),
+    PermissionDef(P.SECURITY_MANAGE, "security", "Manage security", "Revoke sessions, unlock accounts, manage access policies."),
+)
+
+ALL_PERMISSION_CODES = frozenset(p.code for p in PERMISSIONS)
+
+
+@dataclass(frozen=True)
+class RoleDef:
+    code: str
+    name: str
+    scope: str  # PLATFORM | ORGANIZATION
+    description: str
+    permissions: frozenset[str]
+
+
+def _r(code: str, name: str, scope: str, description: str, *perms: str) -> RoleDef:
+    return RoleDef(code, name, scope, description, frozenset(perms))
+
+
+PLATFORM, ORG = "PLATFORM", "ORGANIZATION"
+
+SYSTEM_ROLES: tuple[RoleDef, ...] = (
+    _r("FARMER", "Farmer", ORG, "Maintains profile, KYC, farms and history; views participation, sampling, credits and payouts."),
+    _r("FIELD_AGENT", "Field Collector / Field Agent", ORG, "Performs assigned field visits, sampling, evidence capture and chain of custody."),
+    _r("FIELD_SUPERVISOR", "Field Supervisor", ORG, "Assigns collectors and sampling points; reviews field submissions."),
+    _r("PROJECT_MANAGER", "Project Manager / Project Developer", ORG, "Creates projects, selects standard/activity/methodology, manages MRV, VVB and registry workflows."),
+    _r("METHODOLOGY_SPECIALIST", "Methodology Specialist", PLATFORM, "Manages versioned, approval-controlled methodology configuration."),
+    _r("GIS_SPECIALIST", "GIS / Remote Sensing Specialist", ORG, "Reviews polygons, overlaps, strata, sampling points and satellite observations."),
+    _r("MRV_MANAGER", "MRV Manager", ORG, "Manages MRV plans, monitoring periods and approves monitoring datasets."),
+    _r("LAB_TECHNICIAN", "Lab Technician", ORG, "Receives samples, enters results and uploads lab reports."),
+    _r("LAB_MANAGER", "Lab Manager / Lab QA", ORG, "Approves or rejects lab results and requests retests."),
+    _r("CALCULATION_ANALYST", "Carbon Calculation Analyst", ORG, "Runs approved calculation engines; cannot type a final credit quantity."),
+    _r("QA_OFFICER", "Data Quality / QA Officer", ORG, "Reviews anomalies and duplicates; approves or rejects datasets."),
+    _r("VVB_REVIEWER", "VVB / ACVA Reviewer", ORG, "External verifier: reviews assigned projects, raises findings, submits decisions."),
+    _r("REGISTRY_MANAGER", "Registry Manager", ORG, "Manages registry submissions, issuance tracking and serial reconciliation."),
+    _r("CREDIT_MANAGER", "Credit Manager", ORG, "Manages issued-credit inventory, reservations, transfers and retirements."),
+    _r("BUYER", "Buyer", ORG, "Browses eligible issued credits, orders, pays, requests transfer/retirement."),
+    _r("FINANCE_MANAGER", "Finance / Payout Manager", ORG, "Reconciles payments, calculates farmer share per agreement, approves payouts."),
+    _r("PLATFORM_ADMIN", "Platform Admin", PLATFORM, "Manages users, roles, organizations, master data and configuration; views audit logs.",
+       P.USERS_READ, P.USERS_MANAGE, P.USERS_ASSIGN_ROLES, P.ROLES_READ, P.ROLES_MANAGE,
+       P.ORGANIZATIONS_READ, P.ORGANIZATIONS_MANAGE, P.ORGANIZATIONS_MANAGE_MEMBERS, P.AUDIT_READ, P.SECURITY_READ),
+    _r("SECURITY_ADMIN", "Security Admin", PLATFORM,
+       "Manages access policies, MFA, integration secrets, security events and access reviews.",
+       P.USERS_READ, P.ROLES_READ, P.ORGANIZATIONS_READ, P.AUDIT_READ, P.SECURITY_READ, P.SECURITY_MANAGE),
+    _r("SUPPORT", "Support / Operations", PLATFORM, "Assists farmers and field agents; limited read access.",
+       P.USERS_READ, P.ORGANIZATIONS_READ),
+)
+
+SYSTEM_ROLE_CODES = frozenset(r.code for r in SYSTEM_ROLES)
+
+assert all(p in ALL_PERMISSION_CODES for r in SYSTEM_ROLES for p in r.permissions), "unknown permission in role"

@@ -1,0 +1,66 @@
+@use '@angular/material' as mat;
+
+html {
+  height: 100%;
+  @include mat.theme((
+    color: (
+      primary: mat.$green-palette,
+      tertiary: mat.$azure-palette,
+    ),
+    typography: Roboto,
+    density: -1,
+  ));
+}
+
+body {
+  color-scheme: light;
+  background-color: var(--mat-sys-surface-container-lowest);
+  color: var(--mat-sys-on-surface);
+  font: var(--mat-sys-body-medium);
+  margin: 0;
+  height: 100%;
+}
+
+a { color: var(--mat-sys-primary); }
+code { font-family: ui-monospace, Consolas, monospace; font-size: 12px; background: var(--mat-sys-surface-container); padding: 1px 5px; border-radius: 4px; }
+
+/* ---------- auth screens ---------- */
+.auth-screen { min-height: 100vh; display: grid; place-items: center; padding: 16px;
+  background: linear-gradient(160deg, #e8f5e9 0%, #f4f8f4 55%, #e3f2fd 100%); }
+.auth-card { width: min(420px, 100%); }
+.auth-card h1 { font: var(--mat-sys-headline-small); margin: 8px 0 16px; }
+.auth-card .brand { display: flex; align-items: center; gap: 8px; color: #2e7d32; font: var(--mat-sys-title-medium); padding-top: 16px; }
+
+/* ---------- common layout utilities ---------- */
+.full { width: 100%; }
+.muted { color: var(--mat-sys-on-surface-variant); }
+.small { font-size: 12px; }
+.notice { padding: 10px 12px; border-radius: 8px; background: #fff4d6; color: #6b4a00; }
+.form-error { color: #b71c1c; margin: 4px 0 12px; }
+.row-actions { display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+.section { margin-bottom: 16px; }
+.stack { display: flex; flex-direction: column; }
+.filters { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 16px; }
+.filters mat-form-field { min-width: 200px; }
+.form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 4px 16px; }
+.span-all { grid-column: 1 / -1; }
+.detail-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.detail-grid .span-2 { grid-column: 1 / -1; }
+@media (max-width: 900px) { .detail-grid { grid-template-columns: 1fr; } }
+.table-wrap { overflow-x: auto; border: 1px solid var(--mat-sys-outline-variant); border-radius: 8px; background: var(--mat-sys-surface); }
+.table-wrap table { width: 100%; }
+tr.clickable { cursor: pointer; }
+tr.clickable:hover { background: var(--mat-sys-surface-container-low); }
+.kv { display: grid; grid-template-columns: max-content 1fr; gap: 8px 20px; margin: 0 0 12px; }
+.kv dt { color: var(--mat-sys-on-surface-variant); }
+.kv dd { margin: 0; }
+.grant-row { display: flex; gap: 12px; align-items: center; margin-bottom: 8px; flex-wrap: wrap; }
+.centered { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 64px 16px; gap: 8px; }
+.centered .big { font-size: 48px; width: 48px; height: 48px; color: var(--mat-sys-on-surface-variant); }
+
+/* Material cards: breathing room between header and first form field */
+.mat-mdc-card-header + .mat-mdc-card-content { padding-top: 12px; }
+
+/* ---------- snack bars ---------- */
+.snack-success { --mat-snack-bar-container-color: #1b5e20; }
+.snack-error { --mat-snack-bar-container-color: #8e1b1b; }

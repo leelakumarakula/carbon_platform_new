@@ -1,0 +1,41 @@
+[project]
+name = "carbon-platform-backend"
+version = "0.1.0"
+requires-python = ">=3.10"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-p no:cacheprovider"
+filterwarnings = ["ignore::DeprecationWarning:starlette.*"]
+
+[tool.ruff]
+line-length = 130
+target-version = "py310"
+extend-exclude = ["alembic/versions"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "S", "C4", "SIM", "RUF"]
+ignore = [
+  "B008",    # FastAPI Depends() in defaults is idiomatic
+  "S101",    # assert is used for internal invariants and tests
+  "RUF001", "RUF002", "RUF003",  # non-ASCII punctuation in docs/strings is intentional
+  "UP007",   # keep X | None style decisions to the formatter
+  "SIM108",
+  "UP038",   # deprecated rule; tuple form is clearer in isinstance
+]
+
+[tool.ruff.lint.isort]
+known-third-party = ["alembic"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S105", "S106", "S608", "E501"]
+"manage.py" = ["S608"]
+"app/security/permissions.py" = ["E501"]  # catalog descriptions
+
+[tool.mypy]
+python_version = "3.10"
+plugins = []
+ignore_missing_imports = true
+check_untyped_defs = true
+warn_unused_ignores = false
+exclude = ["alembic/versions", "tests"]

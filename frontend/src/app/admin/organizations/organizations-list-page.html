@@ -1,0 +1,114 @@
+<app-page-header title="Organizations" subtitle="Project developers, farmer groups, laboratories, VVBs, registries and buyers.">
+  @if (canCreate && !showCreate()) {
+    <button mat-flat-button type="button" (click)="showCreate.set(true)"><mat-icon>add_business</mat-icon> New organization</button>
+  }
+</app-page-header>
+
+@if (showCreate()) {
+  <mat-card appearance="outlined" class="section">
+    <mat-card-header><mat-card-title>New organization</mat-card-title></mat-card-header>
+    <mat-card-content>
+      <form [formGroup]="createForm" (ngSubmit)="create()" class="form-grid" novalidate>
+        <mat-form-field appearance="outline">
+          <mat-label>Code</mat-label>
+          <input matInput formControlName="code" placeholder="DEV-NORTH" />
+          <mat-hint>Unique, stored in upper case.</mat-hint>
+          @if (createForm.controls.code.hasError('server')) { <mat-error>{{ createForm.controls.code.getError('server') }}</mat-error> }
+          @else if (createForm.controls.code.invalid) { <mat-error>2–40 letters, digits, - or _; start with a letter.</mat-error> }
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Name</mat-label>
+          <input matInput formControlName="name" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Type</mat-label>
+          <mat-select formControlName="org_type">
+            @for (t of types; track t.value) { <mat-option [value]="t.value">{{ t.label }}</mat-option> }
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Country (ISO code)</mat-label>
+          <input matInput formControlName="country" placeholder="IN" maxlength="2" />
+          @if (createForm.controls.country.invalid) { <mat-error>Two letters, e.g. IN.</mat-error> }
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Registration number</mat-label>
+          <input matInput formControlName="registration_number" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Contact email</mat-label>
+          <input matInput type="email" formControlName="contact_email" />
+          @if (createForm.controls.contact_email.invalid) { <mat-error>Enter a valid email.</mat-error> }
+        </mat-form-field>
+        @if (createError(); as e) { <p class="form-error span-all" role="alert">{{ e }}</p> }
+        <div class="row-actions span-all">
+          <button mat-button type="button" (click)="showCreate.set(false)">Cancel</button>
+          <button mat-flat-button type="submit" [disabled]="saving()">Create</button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+}
+
+<form class="filters" [formGroup]="filters">
+  <mat-form-field appearance="outline" subscriptSizing="dynamic">
+    <mat-label>Search code or name</mat-label>
+    <input matInput formControlName="search" />
+    <mat-icon matSuffix>search</mat-icon>
+  </mat-form-field>
+  <mat-form-field appearance="outline" subscriptSizing="dynamic">
+    <mat-label>Type</mat-label>
+    <mat-select formControlName="org_type">
+      <mat-option [value]="null">Any</mat-option>
+      @for (t of types; track t.value) { <mat-option [value]="t.value">{{ t.label }}</mat-option> }
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field appearance="outline" subscriptSizing="dynamic">
+    <mat-label>Status</mat-label>
+    <mat-select formControlName="status">
+      <mat-option [value]="null">Any</mat-option>
+      <mat-option value="ACTIVE">Active</mat-option>
+      <mat-option value="SUSPENDED">Suspended</mat-option>
+      <mat-option value="ARCHIVED">Archived</mat-option>
+    </mat-select>
+  </mat-form-field>
+</form>
+
+<app-state-view [loading]="list.loading()" [error]="list.error()" [empty]="!list.loading() && !list.error() && list.total() === 0"
+                emptyText="No organizations match these filters." (retry)="list.load()" />
+
+<div class="table-wrap" [hidden]="list.total() === 0">
+  <table mat-table [dataSource]="list.items()" matSort (matSortChange)="list.onSort($event)" matSortActive="name" matSortDirection="asc">
+    <ng-container matColumnDef="code">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Code</th>
+      <td mat-cell *matCellDef="let o"><a [routerLink]="['/admin/organizations', o.id]">{{ o.code }}</a></td>
+    </ng-container>
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+      <td mat-cell *matCellDef="let o">{{ o.name }}</td>
+    </ng-container>
+    <ng-container matColumnDef="org_type">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Type</th>
+      <td mat-cell *matCellDef="let o">{{ typeLabel(o.org_type) }}</td>
+    </ng-container>
+    <ng-container matColumnDef="country">
+      <th mat-header-cell *matHeaderCellDef>Country</th>
+      <td mat-cell *matCellDef="let o">{{ o.country ?? '—' }}</td>
+    </ng-container>
+    <ng-container matColumnDef="members">
+      <th mat-header-cell *matHeaderCellDef>Members</th>
+      <td mat-cell *matCellDef="let o">{{ o.member_count }}</td>
+    </ng-container>
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+      <td mat-cell *matCellDef="let o">
+        <app-status-badge [status]="o.status" />
+        @if (o.environment === 'DEMO') { <app-status-badge status="DEMO" /> }
+      </td>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="columns"></tr>
+    <tr mat-row *matRowDef="let row; columns: columns" class="clickable" (click)="open(row)"></tr>
+  </table>
+  <mat-paginator [length]="list.total()" [pageIndex]="list.page() - 1" [pageSize]="list.pageSize()"
+                 [pageSizeOptions]="[10, 25, 50, 100]" (page)="list.onPage($event)" showFirstLastButtons />
+</div>

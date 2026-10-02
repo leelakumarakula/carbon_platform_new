@@ -1,0 +1,70 @@
+<app-page-header [title]="'Welcome, ' + (auth.user()?.full_name ?? '')"
+                 subtitle="Agricultural carbon platform — farmer onboarding to credit retirement and payout." />
+
+@if (kpis().length) {
+  <section class="kpis" aria-label="Key figures">
+    @for (k of kpis(); track k.label) {
+      <a class="kpi" [routerLink]="k.link">
+        <mat-icon>{{ k.icon }}</mat-icon>
+        <div>
+          <div class="value">{{ k.value ?? '—' }}</div>
+          <div class="label">{{ k.label }}</div>
+        </div>
+      </a>
+    }
+  </section>
+}
+
+<section class="grid">
+  <mat-card appearance="outlined">
+    <mat-card-header><mat-card-title>Your access</mat-card-title></mat-card-header>
+    <mat-card-content>
+      @if (auth.user()?.roles?.length) {
+        <ul class="grants">
+          @for (g of auth.user()!.roles; track g.id) {
+            <li>
+              <span>{{ g.role_name }}</span>
+              <span class="muted">{{ g.organization_name ?? 'Platform-wide' }}</span>
+            </li>
+          }
+        </ul>
+      } @else {
+        <p class="muted">You have no roles yet. A Platform Admin can grant them.</p>
+      }
+    </mat-card-content>
+  </mat-card>
+
+  @if (shortcuts().length) {
+    <mat-card appearance="outlined">
+      <mat-card-header><mat-card-title>Go to</mat-card-title></mat-card-header>
+      <mat-card-content>
+        <div class="links">
+          @for (s of shortcuts(); track s.route) {
+            <a [routerLink]="s.route"><mat-icon inline>{{ s.icon }}</mat-icon>{{ s.label }}</a>
+          }
+        </div>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  @if (recent(); as items) {
+    <mat-card appearance="outlined">
+      <mat-card-header><mat-card-title>Recent activity</mat-card-title></mat-card-header>
+      <mat-card-content>
+        @if (items.length) {
+          <ul class="activity">
+            @for (a of items; track a.id) {
+              <li>
+                <app-status-badge [status]="a.action" [text]="a.action" />
+                <div><small>{{ a.user_email ?? 'system' }} · {{ a.occurred_at | date: 'medium' }}</small></div>
+              </li>
+            }
+          </ul>
+          <a routerLink="/admin/audit">Open the audit log</a>
+        } @else {
+          <p class="muted">No activity yet.</p>
+        }
+      </mat-card-content>
+    </mat-card>
+  }
+</section>

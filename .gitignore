@@ -1,0 +1,31 @@
+# secrets
+.env
+*.env
+!.env.example
+
+# python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# node / angular
+node_modules/
+frontend/dist/
+frontend/.angular/
+coverage/
+
+# local storage
+storage/local-dev/*
+!storage/local-dev/.gitkeep
+
+# editors / os
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+e2e/screenshots/
