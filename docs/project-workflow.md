@@ -97,6 +97,28 @@ in any state except CLOSED. Anything else is refused with `PROJECT_NOT_EDITABLE`
 - **GIS review.** A GIS reviewer (`farms.review` in the project's organization) marks the current version ACCEPTED
   or ISSUES.
 
+## Decisions recorded at the start of Phase 4
+
+- **P1/P2 (workflow order, return/re-open/close):** kept as implemented; no concrete issue requires a change.
+- **P3 (partner-organization farms):** kept as is — only the project organization's own farms. The rule lives in one
+  policy function (`project_farm_service.farm_organization_allowed`, setting `PROJECT_FARM_ORG_POLICY =
+  SAME_ORGANIZATION`), so a partner policy can be added once the business rules (partnership, consent, carbon
+  rights across organizations) are decided. **OPEN DECISION REQUIRED** before enabling it.
+- **P8 (eligibility approver):** QA Officer (`projects.review`), unchanged.
+- **Project access:** organization-scoped RBAC, unchanged; not broadened.
+
+Phase 4 extends the project state machine (see [methodology-engine.md](methodology-engine.md)):
+
+```
+ACTIVITY_SELECTED ─(evaluate candidates)─▶ METHODOLOGY_REVIEW ─(confirm = lock)─▶ METHODOLOGY_CONFIRMED
+                                              │  ▲                                   │
+                                (re-open) ◀───┘  └──────────(explicit unlock)────────┘
+```
+
+METHODOLOGY_REVIEW can also be re-opened to DATA_COLLECTION, which resets `methodology_status` to NOT_SELECTED;
+evaluations are kept. Both methodology states can be closed. MRV_PLANNED and later states remain unreachable until
+their phases.
+
 ## Assumptions (to confirm)
 
 | # | Assumption |
@@ -113,6 +135,6 @@ in any state except CLOSED. Anything else is refused with `PROJECT_NOT_EDITABLE`
 
 ## Not in Phase 3
 
-Methodology catalog, candidates, applicability and confirmation (Phase 4); MRV, sampling, laboratory, calculation,
+Methodology selection arrived in Phase 4. MRV, sampling, laboratory, calculation,
 VVB, registry, credits, marketplace and payouts (later phases). Project-level access scoping by team membership is
 not enforced yet: access is organization-scoped.

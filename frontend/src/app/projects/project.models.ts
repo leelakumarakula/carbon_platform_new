@@ -28,6 +28,7 @@ export interface ProjectSummary {
   standard_name: string | null;
   activity_name: string | null;
   methodology_status: string;
+  methodology_label?: string | null;
   farm_count: number;
   area_hectares: string | null;
   environment: 'LIVE' | 'DEMO';
@@ -320,7 +321,9 @@ export function projectAction(from: ProjectStatus, to: ProjectStatus): ProjectAc
     confirm: 'You confirm the farms, boundary and carbon-rights references were reviewed. You cannot approve a project you submitted.' };
   if (to === 'DATA_COLLECTION' && from === 'ELIGIBILITY_REVIEW') return { label: 'Return for correction', endpoint: 'return', danger: true };
   if (to === 'DATA_COLLECTION') return { label: 'Re-open for correction', endpoint: 'reopen', danger: true,
-    confirm: 'Eligibility will have to be reviewed again.' };
+    confirm: 'Eligibility (and the methodology selection) will have to be reviewed again.' };
+  if (to === 'METHODOLOGY_REVIEW') return { label: 'Methodology review', endpoint: 'methodology' };
+  if (to === 'METHODOLOGY_CONFIRMED') return { label: 'Confirm methodology', endpoint: 'methodology' };
   if (to === 'ACTIVITY_SELECTED') return { label: 'Confirm activity', endpoint: 'confirm-activity' };
   return { label: 'Close project', endpoint: 'close', danger: true, confirm: 'Closing is final in this phase.' };
 }

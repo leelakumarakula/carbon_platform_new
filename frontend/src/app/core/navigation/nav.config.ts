@@ -33,6 +33,7 @@ export const NAVIGATION: readonly NavSection[] = [
     title: 'Projects',
     items: [
       { label: 'Projects', icon: 'workspaces', route: '/projects', permissions: [P.PROJECTS_READ] },
+      { label: 'Methodologies', icon: 'menu_book', route: '/methodologies', permissions: [P.METHODOLOGIES_READ] },
       { label: 'Standards & activities', icon: 'library_books', route: '/admin/catalog', permissions: [P.STANDARDS_MANAGE] },
     ],
   },

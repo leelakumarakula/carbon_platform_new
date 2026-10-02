@@ -20,6 +20,7 @@ import { StatusBadge } from '../shared/status-badge';
 import { ProjectBoundaryPanel } from './panels/project-boundary-panel';
 import { ProjectFarmsPanel } from './panels/project-farms-panel';
 import { ProjectHistoryPanel } from './panels/project-history-panel';
+import { ProjectMethodologyPanel } from './panels/project-methodology-panel';
 import { ProjectPeriodsPanel } from './panels/project-periods-panel';
 import { ProjectRightsPanel } from './panels/project-rights-panel';
 import { ProjectStandardPanel } from './panels/project-standard-panel';
@@ -27,13 +28,15 @@ import { ProjectTeamPanel } from './panels/project-team-panel';
 import { BoundaryView, PROJECT_DOC_CATEGORIES, Project, ProjectStatus, projectAction, projectBadge } from './project.models';
 import { ProjectsApi } from './projects.api';
 
-const TABS = ['overview', 'farms', 'team', 'boundary', 'standard', 'periods', 'rights', 'documents', 'history'];
+const TABS = ['overview', 'farms', 'team', 'boundary', 'standard', 'methodology', 'periods', 'rights', 'documents', 'history'];
+/** Entered and left through the Methodology tab (evaluate / confirm / unlock), not the header buttons. */
+const TAB_ONLY: ProjectStatus[] = ['METHODOLOGY_REVIEW', 'METHODOLOGY_CONFIRMED'];
 
 @Component({
   selector: 'app-project-detail-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [DatePipe, MatTabsModule, MatButtonModule, PageHeader, StateView, StatusBadge, ReadinessPanel, DocumentsPanel, GeoMap,
-    ProjectFarmsPanel, ProjectTeamPanel, ProjectBoundaryPanel, ProjectStandardPanel, ProjectPeriodsPanel, ProjectRightsPanel, ProjectHistoryPanel],
+    ProjectFarmsPanel, ProjectTeamPanel, ProjectBoundaryPanel, ProjectStandardPanel, ProjectPeriodsPanel, ProjectRightsPanel, ProjectHistoryPanel, ProjectMethodologyPanel],
   template: `
     <app-state-view [loading]="loading()" [error]="error()" (retry)="load()" />
     @if (project(); as p) {
@@ -61,6 +64,7 @@ const TABS = ['overview', 'farms', 'team', 'boundary', 'standard', 'periods', 'r
                   <dt>Project area</dt><dd>{{ area(p.area_hectares) }} <span class="muted small">({{ p.farm_count }} farm(s), SQL Server)</span></dd>
                   <dt>Standard / route</dt><dd>{{ p.standard_name ?? '—' }}</dd>
                   <dt>Activity</dt><dd>{{ p.activity_name ?? '—' }}</dd>
+                  <dt>Methodology</dt><dd>{{ label(p.methodology_status) }}{{ p.methodology_label ? ' · ' + p.methodology_label : '' }}</dd>
                   <dt>Team</dt><dd>{{ p.counts['participants'] }} · carbon-rights records {{ p.counts['carbon_rights'] }} · documents {{ p.counts['documents'] }}</dd>
                   <dt>Submitted</dt><dd>{{ p.submitted_at ? (p.submitted_at | date: 'medium') : '—' }}</dd>
                   <dt>Eligibility review</dt><dd>{{ p.eligibility_reviewed_at ? (p.eligibility_reviewed_at | date: 'medium') : '—' }}</dd>
@@ -68,7 +72,7 @@ const TABS = ['overview', 'farms', 'team', 'boundary', 'standard', 'periods', 'r
                   @if (p.description) { <dt>Description</dt><dd>{{ p.description }}</dd> }
                 </dl>
                 <app-readiness-panel [readiness]="p.readiness" />
-                <p class="muted small">Nothing is calculated, verified or issued at this stage. Methodology selection and MRV come later.</p>
+                <p class="muted small">Nothing is calculated, verified or issued at this stage.</p>
               </div>
             </div>
           </ng-template>
@@ -84,6 +88,9 @@ const TABS = ['overview', 'farms', 'team', 'boundary', 'standard', 'periods', 'r
         </mat-tab>
         <mat-tab label="Standard & activity">
           <ng-template matTabContent><app-project-standard-panel [project]="p" (changed)="setProject($event)" /></ng-template>
+        </mat-tab>
+        <mat-tab label="Methodology">
+          <ng-template matTabContent><app-project-methodology-panel [project]="p" (changed)="load()" /></ng-template>
         </mat-tab>
         <mat-tab label="Crediting & baseline">
           <ng-template matTabContent><app-project-periods-panel [project]="p" (changed)="load()" /></ng-template>
@@ -133,7 +140,7 @@ export class ProjectDetailPage implements OnInit {
   protected readonly actions = computed(() => {
     const p = this.project();
     if (!p) return [];
-    return p.allowed_transitions.map((target) => ({ target, ...projectAction(p.status, target) }));
+    return p.allowed_transitions.filter((t) => !TAB_ONLY.includes(t)).map((target) => ({ target, ...projectAction(p.status, target) }));
   });
   protected readonly layers = computed<MapLayer[]>(() => {
     const v = this.boundary();

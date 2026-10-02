@@ -116,6 +116,25 @@ All project endpoints are organization-scoped; out-of-scope projects return 404.
 Project responses include `allowed_transitions` (already filtered by the caller's permissions), `readiness`
 checklists, `can_manage` / `can_review` / `can_review_boundary` and `is_editable`.
 
+## Endpoints (Phase 4)
+
+| Method | Path | Permission |
+|---|---|---|
+| GET/POST | `/methodologies` (`environment`, `standard_id`) | methodologies.read / methodologies.manage |
+| GET/PATCH | `/methodologies/{id}` | methodologies.read / methodologies.manage |
+| POST | `/methodologies/{id}/versions` (`based_on_version_id` copies rules) | methodologies.manage |
+| GET | `/methodologies/{id}/history` | methodologies.read |
+| POST | `/methodologies/{id}/documents` (multipart; `version_id`, `as_source`) | methodologies.manage |
+| GET/PATCH | `/methodologies/versions/{vid}` | methodologies.read / methodologies.manage (DRAFT only) |
+| POST/DELETE | `/methodologies/versions/{vid}/rules/{applicability\|monitoring\|calculation\|general}[/{rule_id}]` | methodologies.manage (DRAFT only) |
+| POST | `/methodologies/versions/{vid}/submit` · `/retire` · `/withdraw` | methodologies.manage |
+| POST | `/methodologies/versions/{vid}/approve` (`supersedes_version_id`) · `/return` | methodologies.approve (not the submitter) |
+| GET | `/projects/{id}/methodology` | projects.read |
+| POST | `/projects/{id}/methodology/candidates` (`declared_facts`) | projects.manage or methodologies.review_project |
+| GET | `/projects/{id}/methodology/evaluations` | projects.read |
+| POST | `/projects/{id}/methodology/reviews` | methodologies.review_project |
+| POST | `/projects/{id}/methodology/confirm` · `/unlock` | projects.manage (confirm: not the recommender) |
+
 ## Notable error codes
 
 `INVALID_CREDENTIALS`, `TOKEN_EXPIRED`, `SESSION_REVOKED`, `REFRESH_REUSED`, `ACCOUNT_INACTIVE`,
@@ -133,3 +152,7 @@ Phase 3: `PROJECT_NOT_EDITABLE`, `FARM_NOT_VERIFIED`, `FARMER_NOT_ACTIVE`, `FARM
 `FARM_ALREADY_IN_PROJECT`, `CONFLICTS_REQUIRE_ACKNOWLEDGEMENT` (details list the conflicts), `ROLE_NOT_HELD`,
 `PARTICIPANT_EXISTS`, `STANDARD_REQUIRED`, `ACTIVITY_NOT_IN_STANDARD`, `STANDARD_INACTIVE`, `CREDITING_PERIOD_OVERLAP`,
 `REASON_REQUIRED`, `AGREEMENT_NOT_SIGNED`, `SHARE_EXCEEDS_100`, `BOUNDARY_STALE`, `NO_PROJECT_BOUNDARY`, `SEPARATION_OF_DUTIES`.
+
+Phase 4: `VERSION_NOT_EDITABLE`, `VERSION_EXISTS`, `INVALID_RULE`, `RULE_EXISTS`, `INVALID_BASE_VERSION`, `INVALID_SUPERSEDE`,
+`DECLARED_FACT_CONFLICT`, `CANDIDATE_NOT_FOUND`, `CANDIDATE_NOT_ELIGIBLE`, `EVIDENCE_NOT_ACKNOWLEDGED`, `SPECIALIST_REVIEW_REQUIRED`,
+`EVALUATION_OUTDATED`, `VERSION_NOT_APPROVED`, `CREDITING_PERIOD_NOT_COMPLIANT`, `NOT_LOCKED`.

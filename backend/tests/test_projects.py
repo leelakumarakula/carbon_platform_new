@@ -360,7 +360,7 @@ def test_workflow_transitions_status_history_and_audit(client: TestClient, db: S
     assert r.status_code == 200 and r.json()["status"] == "STANDARD_SELECTED" and r.json()["eligibility_reviewed_by"] == str(t.qa.user.id)
     r = client.post(f"{PR}/{pid}/confirm-activity", headers=t.pm.headers, json={"reason": "activity confirmed"})
     assert r.json()["status"] == "ACTIVITY_SELECTED" and r.json()["methodology_status"] == "NOT_SELECTED"
-    assert r.json()["allowed_transitions"] == ["CLOSED", "DATA_COLLECTION"]  # no Phase 4+ transitions yet
+    assert r.json()["allowed_transitions"] == ["CLOSED", "DATA_COLLECTION", "METHODOLOGY_REVIEW"]  # Phase 4 adds methodology review
     r = client.post(f"{PR}/{pid}/reopen", headers=t.pm.headers, json={"reason": "add another farm"})
     assert r.json()["status"] == "DATA_COLLECTION" and r.json()["eligibility_reviewed_by"] is None
     hist = client.get(f"{PR}/{pid}/status-history", headers=t.agent.headers).json()
@@ -405,8 +405,9 @@ def test_no_transitions_into_later_phase_states() -> None:
             if n not in reachable:
                 reachable.add(n)
                 frontier.append(n)
-    assert reachable == {"DRAFT", "DATA_COLLECTION", "ELIGIBILITY_REVIEW", "STANDARD_SELECTED", "ACTIVITY_SELECTED", "CLOSED"}
-    assert not reachable & {"METHODOLOGY_REVIEW", "CALCULATED", "VERIFIED", "ISSUED", "ACTIVE"}
+    assert reachable == {"DRAFT", "DATA_COLLECTION", "ELIGIBILITY_REVIEW", "STANDARD_SELECTED", "ACTIVITY_SELECTED", "CLOSED",
+                         "METHODOLOGY_REVIEW", "METHODOLOGY_CONFIRMED"}  # Phase 4 boundary
+    assert not reachable & {"MRV_PLANNED", "CALCULATED", "VERIFIED", "ISSUED", "ACTIVE"}
 
 
 def test_status_history_is_append_only() -> None:

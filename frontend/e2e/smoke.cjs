@@ -1,9 +1,11 @@
 // UI smoke test against a running stack seeded with DEMO data.
 //   BASE_URL=http://localhost:4200 CHROME_PATH=... SHOTS_DIR=... npm run e2e:smoke
+// The run signs in ~15 times within a minute; start the API under test with LOGIN_RATE_LIMIT_PER_MINUTE=100
+// (the production default of 10/min per IP would correctly block it).
 // Uses an installed Chrome/Edge (no browser download). DEMO password is read from backend/.env.
 const fs = require('fs');
 const path = require('path');
-const { chromium } = require('playwright-core');
+const { chromium, request } = require('playwright-core');
 
 const BASE = process.env.BASE_URL || 'http://localhost:4200';
 const OUT = process.env.SHOTS_DIR || path.join(__dirname, 'screenshots');
@@ -18,6 +20,8 @@ let navItems = [];
 const phase2 = { pmPolygon: 0, overlapFlag: false, drawnArea: '', farmerFarms: 0 };
 const phase3 = { demoProjects: 0, created: '', areaText: '', boundaryShapes: 0, status: '', historyOk: false, audit: [], farmerProjects: 0,
   buyerBlocked: false, tiles: false };
+const phase4 = { catalog: false, approvedReadOnly: false, demoLock: '', candidates: 0, recommended: false, locked: '', audit: [] };
+const REQUIRED_AUDIT_P4 = ['PROJECT_METHODOLOGY_CANDIDATES_EVALUATED', 'PROJECT_METHODOLOGY_REVIEWED', 'PROJECT_METHODOLOGY_CONFIRMED'];
 const REQUIRED_AUDIT = ['PROJECT_CREATED', 'PROJECT_STATUS_CHANGED', 'PROJECT_FARM_ADDED', 'PROJECT_CARBON_RIGHT_CREATED',
   'PROJECT_PARTICIPANT_ADDED', 'PROJECT_STANDARD_SELECTED', 'PROJECT_ACTIVITY_SELECTED', 'PROJECT_CREDITING_PERIOD_CREATED',
   'PROJECT_BASELINE_UPDATED', 'PROJECT_SUBMITTED'];
@@ -223,12 +227,78 @@ const REQUIRED_AUDIT = ['PROJECT_CREATED', 'PROJECT_STATUS_CHANGED', 'PROJECT_FA
   phase3.historyOk = await P.getByText('E2E: all project data recorded').isVisible();
   await shot(P, '24-project-history');
   // audit events (read through the API as the platform admin)
-  const login = await pp.ctx.request.post(`${BASE}/api/v1/auth/login`, { data: { email: 'admin@demo.carbon.example', password: DEMO_PW } });
-  const token = (await login.json()).access_token;
-  const audit = await pp.ctx.request.get(`${BASE}/api/v1/admin/audit-logs?entity_type=project&entity_id=${projectId}&page_size=100`,
-    { headers: { Authorization: `Bearer ${token}` } });
-  phase3.audit = [...new Set((await audit.json()).items.map((r) => r.action))].sort();
+  const api = await request.newContext(); // independent of any browser context
+  const tokens = {};
+  const tokenFor = async (who) => (tokens[who] ??= (await (await api.post(`${BASE}/api/v1/auth/login`,
+    { data: { email: `${who}@demo.carbon.example`, password: DEMO_PW } })).json()).access_token);
+  const as = async (who) => ({ Authorization: `Bearer ${await tokenFor(who)}` });
+  const auditActions = async () => [...new Set((await (await api.get(
+    `${BASE}/api/v1/admin/audit-logs?entity_type=project&entity_id=${projectId}&page_size=100`, { headers: await as('admin') })).json())
+    .items.map((r) => r.action))].sort();
+  phase3.audit = await auditActions();
+
+  // ---- Phase 4: take the E2E project through eligibility (GIS + QA via API), then methodology selection in the UI
+  const gisH = await as('gis');
+  const qaH = await as('qa');
+  const pmH = await as('pm');
+  await api.post(`${BASE}/api/v1/projects/${projectId}/boundary/review`, { headers: gisH, data: { decision: 'ACCEPTED', notes: 'E2E boundary ok' } });
+  for (const cr of await (await api.get(`${BASE}/api/v1/projects/${projectId}/carbon-rights`, { headers: qaH })).json()) {
+    await api.post(`${BASE}/api/v1/projects/${projectId}/carbon-rights/${cr.id}/review`, { headers: qaH, data: { status: 'VERIFIED', notes: 'E2E seen' } });
+  }
+  const appr = await api.post(`${BASE}/api/v1/projects/${projectId}/approve-eligibility`, { headers: qaH, data: { reason: 'E2E eligible' } });
+  const conf = await api.post(`${BASE}/api/v1/projects/${projectId}/confirm-activity`, { headers: pmH, data: { reason: 'E2E activity' } });
+  if (!appr.ok() || !conf.ok()) throw new Error(`eligibility setup failed: ${appr.status()} ${conf.status()}`);
+  await P.goto(`${BASE}/projects/${projectId}?tab=methodology`);
+  await P.getByText('Declared facts').waitFor();
+  await P.getByLabel('Fact key').fill('additionality_assessment');
+  await P.getByLabel('Value', { exact: true }).fill('COMPLETED');
+  await P.getByRole('button', { name: 'Add fact' }).click();
+  await P.getByRole('button', { name: 'Evaluate candidates' }).click();
+  await P.locator('mat-expansion-panel').first().waitFor();
+  phase4.candidates = await P.locator('mat-expansion-panel').count();
+  await P.locator('mat-expansion-panel-header').first().click();
+  await P.getByText('Evidence required:').first().waitFor();
+  await shot(P, '30-methodology-candidates');
   await pp.ctx.close();
+  // methodology specialist recommends the first candidate (the engine never decides)
+  const ms = await session('methodology@demo.carbon.example');
+  await ms.page.getByRole('button', { name: 'Sign in' }).click();
+  await ms.page.getByText('Welcome,').waitFor();
+  await ms.page.goto(`${BASE}/methodologies`);
+  await ms.page.getByText('DEMO-ALM-SOC').first().waitFor();
+  phase4.catalog = true;
+  await shot(ms.page, '31-methodologies');
+  await ms.page.locator('tr', { hasText: 'Approved' }).first().getByRole('link', { name: 'Open' }).click();
+  await ms.page.getByText('Rule revisions').waitFor();
+  phase4.approvedReadOnly = await ms.page.getByText('cannot be edited').isVisible();
+  await shot(ms.page, '32-methodology-version');
+  await ms.page.goto(`${BASE}/projects/${projectId}?tab=methodology`);
+  await ms.page.locator('mat-expansion-panel-header').first().click();
+  await ms.page.getByRole('button', { name: 'Recommend', exact: true }).first().click();
+  await confirmReason(ms.page, 'Recommend', 'E2E: candidate fits the project data; additionality document requested');
+  await ms.page.getByText(/Recommended by/).first().waitFor();
+  phase4.recommended = true;
+  await ms.ctx.close();
+  // project manager confirms → methodology + version locked
+  const pm2 = await session('pm@demo.carbon.example');
+  await pm2.page.getByRole('button', { name: 'Sign in' }).click();
+  await pm2.page.getByText('Welcome,').waitFor();
+  await pm2.page.goto(`${BASE}/projects/${projectId}?tab=methodology`);
+  await pm2.page.locator('mat-expansion-panel-header').first().click();
+  await pm2.page.getByRole('button', { name: /Confirm & lock/ }).first().click();
+  await confirmReason(pm2.page, 'Confirm & lock', 'E2E: confirmed with the methodology specialist');
+  await pm2.page.locator('.locked').waitFor();
+  phase4.locked = (await pm2.page.locator('.locked strong').innerText()).trim();
+  await shot(pm2.page, '33-methodology-locked');
+  // the seeded DEMO project B is locked too
+  await pm2.page.goto(`${BASE}/projects`);
+  await pm2.page.getByText('Niphad residue retention programme (DEMO)').first().click();
+  await pm2.page.getByRole('tab', { name: 'Methodology' }).click();
+  await pm2.page.locator('.locked').waitFor();
+  phase4.demoLock = (await pm2.page.locator('.locked strong').innerText()).trim();
+  phase4.audit = await auditActions();
+  await pm2.ctx.close();
+  await api.dispose();
 
   // ---- Phase 3: buyer has no project access
   const b = await session('buyer@demo.carbon.example');
@@ -261,6 +331,7 @@ const REQUIRED_AUDIT = ['PROJECT_CREATED', 'PROJECT_STATUS_CHANGED', 'PROJECT_FA
   await f.ctx.close();
   console.log('phase 2:', JSON.stringify(phase2));
   console.log('phase 3:', JSON.stringify(phase3));
+  console.log('phase 4:', JSON.stringify(phase4));
 
   await browser.close();
   // One 401 per session is expected: the silent session-restore attempt before sign-in.
@@ -272,7 +343,11 @@ const REQUIRED_AUDIT = ['PROJECT_CREATED', 'PROJECT_STATUS_CHANGED', 'PROJECT_FA
   const p3ok = phase3.demoProjects >= 2 && /ha/.test(phase3.areaText) && phase3.boundaryShapes >= 2 && phase3.status === 'ELIGIBILITY_REVIEW'
     && phase3.historyOk && !missingAudit.length && phase3.farmerProjects >= 1 && phase3.buyerBlocked && phase3.tiles;
   // farmer nav: Dashboard, My farmer profile, My farms, My projects
-  if (!stillIn || real.length || navItems.length !== 4 || !p2ok || !p3ok) process.exitCode = 1;
+  const missingP4 = REQUIRED_AUDIT_P4.filter((a) => !phase4.audit.includes(a));
+  if (missingP4.length) console.log('missing phase 4 audit events:', missingP4);
+  const p4ok = phase4.catalog && phase4.approvedReadOnly && phase4.candidates >= 2 && phase4.recommended && /version/.test(phase4.locked)
+    && /DEMO-CCTS-SOIL/.test(phase4.demoLock) && !missingP4.length;
+  if (!stillIn || real.length || navItems.length !== 4 || !p2ok || !p3ok || !p4ok) process.exitCode = 1;
 })().catch(async (e) => {
   console.error('DRIVER FAILED:', e.message);
   if (lastPage) {

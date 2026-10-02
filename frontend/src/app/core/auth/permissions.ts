@@ -26,6 +26,10 @@ export const P = {
   PROJECTS_MANAGE: 'projects.manage',
   PROJECTS_REVIEW: 'projects.review',
   STANDARDS_MANAGE: 'standards.manage',
+  METHODOLOGIES_READ: 'methodologies.read',
+  METHODOLOGIES_MANAGE: 'methodologies.manage',
+  METHODOLOGIES_APPROVE: 'methodologies.approve',
+  METHODOLOGIES_REVIEW_PROJECT: 'methodologies.review_project',
 } as const;
 
 export type PermissionCode = (typeof P)[keyof typeof P];

@@ -197,3 +197,23 @@ def test_demo_projects_seed(db: Session) -> None:
     rights = db.scalars(select(ProjectCarbonRight).where(ProjectCarbonRight.project_id.in_([p.id for p in projects]))).all()
     assert len(rights) == 6 and all(r.agreement_id for r in rights)
     assert {s.environment for s in db.scalars(select(Standard).where(Standard.code.like("DEMO-%"))).all()} == {"DEMO"}
+
+
+def test_demo_methodologies_seed(db: Session) -> None:
+    from app.models import Methodology, MethodologyVersion, Project, ProjectMethodology
+    from app.seed.demo_farms import seed_demo_farms
+    from app.seed.demo_methodologies import seed_demo_methodologies
+    from app.seed.demo_projects import seed_demo_projects
+    seed_demo(db, "Demo-Password-123")
+    seed_demo_farms(db)
+    seed_demo_projects(db)
+    assert seed_demo_methodologies(db) == {"methodologies": 2, "locked_projects": 1}
+    assert seed_demo_methodologies(db) == {"methodologies": 0, "locked_projects": 0}  # idempotent
+    ms = db.scalars(select(Methodology).where(Methodology.code.like("DEMO-%"))).all()
+    assert {m.environment for m in ms} == {"DEMO"}
+    versions = db.scalars(select(MethodologyVersion).where(MethodologyVersion.methodology_id.in_([m.id for m in ms]))).all()
+    assert sorted(v.status for v in versions) == ["APPROVED", "APPROVED", "APPROVED", "DRAFT"]
+    assert all(v.is_demo_illustrative and v.calculation_readiness == "NOT_PRODUCTION_READY" for v in versions)
+    locked = db.scalars(select(ProjectMethodology).where(ProjectMethodology.status == "LOCKED")).all()
+    b = db.get(Project, locked[0].project_id)
+    assert b is not None and b.status == "METHODOLOGY_CONFIRMED" and b.methodology_status == "CONFIRMED"

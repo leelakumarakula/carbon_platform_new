@@ -78,6 +78,19 @@ export const routes: Routes = [
         ],
       },
       {
+        path: 'methodologies',
+        canActivate: [permissionGuard],
+        data: { permissions: [P.METHODOLOGIES_READ] },
+        children: [
+          { path: '', title: 'Methodologies', loadComponent: () => import('./methodologies/methodologies-page').then((m) => m.MethodologiesPage) },
+          {
+            path: 'versions/:id',
+            title: 'Methodology version',
+            loadComponent: () => import('./methodologies/methodology-version-page').then((m) => m.MethodologyVersionPage),
+          },
+        ],
+      },
+      {
         path: 'me/projects',
         title: 'My project participation',
         canActivate: [permissionGuard],

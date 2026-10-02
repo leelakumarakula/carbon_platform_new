@@ -5,8 +5,8 @@
 | 1 | Foundation: Angular, FastAPI, SQL Server, SQLAlchemy, Alembic, auth, RBAC, organizations, audit, dev setup | **Done** |
 | 2 | Farmer & farm (KYC, polygons, history, evidence) | **Done** |
 | 3 | Project | **Done** |
-| 4 | Methodology | Next (awaiting approval) |
-| 5 | MRV / GIS | — |
+| 4 | Standard / activity / methodology | **Done** |
+| 5 | MRV / GIS / sampling | Next (awaiting approval) |
 | 6 | Sample / lab | — |
 | 7 | Calculation | — |
 | 8 | VVB / ACVA | — |
@@ -192,6 +192,68 @@ Verification (exit gate, 2 Oct 2026)
   - map tiles load from server configuration;
   - no console errors.
 
+## Phase 4 — delivered
+
+**Standard → activity → methodology → version, with candidate rules, specialist review and a locked version.**
+Details are in [methodology-engine.md](methodology-engine.md).
+
+Backend
+- Migration `0005`:
+  - 13 tables: `methodologies`, `methodology_activities`, `methodology_versions`, the applicability, monitoring,
+    calculation and general rule tables, `methodology_documents`, `methodology_change_history`,
+    `methodology_evaluations`, `methodology_evaluation_results`, `project_methodology_reviews`,
+    `project_methodologies`.
+  - Three append-only triggers.
+  - New project columns and checks.
+- Versioning: DRAFT → IN_REVIEW → APPROVED → SUPERSEDED / RETIRED, or WITHDRAWN.
+  - The approver must not be the submitter.
+  - Rules are editable only in DRAFT; a change means a new version, optionally copied, with rule-set revision
+    counters.
+  - Several versions can be approved at once, with effective dates.
+- Deterministic rules engine (`rules/methodology_engine.py`, engine 1.0.0):
+  - 15 operators;
+  - outcomes APPLICABLE / NOT_APPLICABLE / NEEDS_INFORMATION / EVIDENCE_REQUIRED, with an explanation per rule;
+  - facts derived from project data, plus labelled DECLARED facts that cannot override them.
+- Project selection:
+  - evaluate (append-only, facts snapshot);
+  - specialist recommendation;
+  - confirmation by the project developer (separation of duties, latest evaluation only, eligible outcomes only,
+    approved version, configured crediting-period rules);
+  - LOCK of methodology + version + rule revisions;
+  - explicit audited unlock.
+- Project workflow: ACTIVITY_SELECTED → METHODOLOGY_REVIEW → METHODOLOGY_CONFIRMED (with unlock and re-open).
+  MRV_PLANNED and later states remain unreachable.
+- Decision P3 is held in one policy function (`PROJECT_FARM_ORG_POLICY = SAME_ORGANIZATION`).
+- DEMO: 2 illustrative methodologies (versions 1.0, 2.0, a 2.1 draft, and 1.0), a second demo methodology
+  specialist (approver), and the Niphad project locked to DEMO-CCTS-SOIL 1.0.
+
+Frontend
+- Methodologies catalog page (methodologies, versions, new draft version, add methodology).
+- Version page: metadata, rules by kind with add/remove in DRAFT, submit/approve/return/retire/withdraw, change history.
+- Project "Methodology" tab:
+  - declared facts;
+  - evaluate candidates;
+  - per-rule explanation table and the facts used;
+  - specialist recommend / not recommend;
+  - confirm & lock;
+  - lock card with a newer-version notice;
+  - unlock.
+
+Verification (exit gate, 2 Oct 2026)
+- Backend: **207 pytest tests passed**:
+  - Phases 1–3 and the decisions: 168;
+  - Phase 4: 39 (28 engine unit, 10 methodology API, 1 DEMO seed).
+
+  ruff clean. mypy clean (107 files). `alembic check`: no drift. Migration 0005 tested up/down/up.
+- Frontend: **54 Vitest tests passed** (9 files). Production build OK (initial bundle 735 kB, 172 kB transferred).
+- E2E passed (Phases 1–4).
+  - The E2E project was taken through eligibility.
+  - The PM declared a fact and evaluated candidates (2 candidates).
+  - The specialist opened the catalog (an approved version is read-only) and recommended a candidate.
+  - The PM confirmed and locked DEMO-ALM-SOC 1.0.
+  - The DEMO project shows its DEMO-CCTS-SOIL 1.0 lock.
+  - All methodology audit events were present and there were no console errors.
+
 ## Known limitations and open items
 
 - The rate limiter is in-memory (single API process). Redis is required before scaling out (Phase 12).
@@ -212,4 +274,9 @@ Verification (exit gate, 2 Oct 2026)
   - Cross-organization overlapping project boundaries are flagged, not adjudicated.
   - Each E2E run creates a DEMO-environment project in the development database.
   - The project assumptions P1–P9 in project-workflow.md need confirmation.
+- Phase 4:
+  - No real methodology (VM0042, CCTS, …) is configured. Its rules must be entered from the authoritative source
+    by a specialist and approved by a second person.
+  - Calculation readiness is NOT_PRODUCTION_READY everywhere.
+  - Assumptions M1–M5 in methodology-engine.md need confirmation.
 - The browser logs one expected 401 at start-up: the silent session-restore attempt when nobody is signed in.

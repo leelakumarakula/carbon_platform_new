@@ -59,7 +59,8 @@ FARMER_DOC_CATEGORIES = {c.value for c in DocumentCategory} - {DocumentCategory.
                                                                   DocumentCategory.GEOSPATIAL_FILE.value,
                                                                   DocumentCategory.PROJECT_DESIGN.value,
                                                                   DocumentCategory.CARBON_RIGHTS.value,
-                                                                  DocumentCategory.BASELINE_DATA.value}
+                                                                  DocumentCategory.BASELINE_DATA.value,
+                                                                  DocumentCategory.METHODOLOGY_DOCUMENT.value}
 
 
 def _not_found() -> NotFound:

@@ -60,7 +60,7 @@ BANK_ACCOUNT_MACHINE = StateMachine.build(
 )
 
 # Spec section 8 lists the full project lifecycle (20 states, all allowed by the DB CHECK constraint). Phase 3
-# implements only the early transitions; each later phase adds its own (METHODOLOGY_REVIEW in Phase 4, ...).
+# implemented the early transitions, Phase 4 adds METHODOLOGY_REVIEW / METHODOLOGY_CONFIRMED; later phases add theirs.
 # Assumptions (docs/project-workflow.md): ELIGIBILITY_REVIEW -> DATA_COLLECTION (returned), STANDARD_SELECTED /
 # ACTIVITY_SELECTED -> DATA_COLLECTION (re-opened for correction) and early states -> CLOSED (abandoned).
 PROJECT_MACHINE = StateMachine.build(
@@ -70,13 +70,23 @@ PROJECT_MACHINE = StateMachine.build(
         "DATA_COLLECTION": {"ELIGIBILITY_REVIEW", "CLOSED"},
         "ELIGIBILITY_REVIEW": {"STANDARD_SELECTED", "DATA_COLLECTION"},
         "STANDARD_SELECTED": {"ACTIVITY_SELECTED", "DATA_COLLECTION", "CLOSED"},
-        "ACTIVITY_SELECTED": {"DATA_COLLECTION", "CLOSED"},
+        "ACTIVITY_SELECTED": {"METHODOLOGY_REVIEW", "DATA_COLLECTION", "CLOSED"},
+        # Phase 4: candidate evaluation + specialist review, then confirm = lock methodology + version.
+        "METHODOLOGY_REVIEW": {"METHODOLOGY_CONFIRMED", "DATA_COLLECTION", "CLOSED"},
+        # Unlocking is explicit and audited (never silent); MRV_PLANNED is added in Phase 5.
+        "METHODOLOGY_CONFIRMED": {"METHODOLOGY_REVIEW", "CLOSED"},
     },
     terminal={"CLOSED"},
 )
 
 CARBON_RIGHT_MACHINE = StateMachine.build(
     "project_carbon_right", initial="ACTIVE", transitions={"ACTIVE": {"ENDED", "VOID"}}, terminal={"ENDED", "VOID"},
+)
+
+METHODOLOGY_VERSION_MACHINE = StateMachine.build(
+    "methodology_version", initial="DRAFT",
+    transitions={"DRAFT": {"IN_REVIEW", "WITHDRAWN"}, "IN_REVIEW": {"APPROVED", "DRAFT"}, "APPROVED": {"SUPERSEDED", "RETIRED"}},
+    terminal={"SUPERSEDED", "RETIRED", "WITHDRAWN"},
 )
 
 OVERLAP_MACHINE = StateMachine.build(

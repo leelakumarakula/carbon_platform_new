@@ -10,6 +10,7 @@ from app.api.v1 import (
     farmers,
     farms,
     health,
+    methodologies,
     notifications,
     organizations,
     projects,
@@ -18,6 +19,7 @@ from app.api.v1 import (
 )
 
 api_router = APIRouter()
-for module in (health, auth, client_config, users, roles, organizations, audit, consents, farmers, farms, catalog, projects, documents,
+for module in (health, auth, client_config, users, roles, organizations, audit, consents, farmers, farms, catalog, projects,
+               methodologies, documents,
                notifications):
     api_router.include_router(module.router)

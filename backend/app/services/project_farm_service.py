@@ -82,10 +82,19 @@ def conflicts_for(db: Session, principal: Principal, farm: Farm, project: Projec
     return out
 
 
+def farm_organization_allowed(project: Project, farm: Farm) -> bool:
+    """Decision P3: which organizations' farms may join. Only SAME_ORGANIZATION is supported today; a partner-
+    organization policy (field partners / farmer groups) plugs in here once the business rules are decided."""
+    policy = get_settings().PROJECT_FARM_ORG_POLICY
+    if policy != "SAME_ORGANIZATION":
+        raise ValidationFailed(f"Project farm policy {policy} is not supported.", error_code="UNSUPPORTED_POLICY")
+    return farm.organization_id == project.organization_id
+
+
 def _eligibility_reasons(db: Session, farm: Farm, project: Project) -> list[str]:
     reasons = []
     farmer = db.get(Farmer, farm.farmer_id)
-    if farm.organization_id != project.organization_id:
+    if not farm_organization_allowed(project, farm):
         reasons.append("The farm belongs to another organization.")
     if farm.environment != project.environment:
         reasons.append("Demo and live records cannot be mixed.")
@@ -126,7 +135,7 @@ def add_farm(db: Session, ctx: RequestContext, principal: Principal, project_id:
     farm = farm_repo.get(db, data.farm_id)
     if farm is None or not farm_service.can_see(db, principal, farm):
         raise NotFound("Farm not found.", error_code="FARM_NOT_FOUND")
-    if farm.organization_id != p.organization_id:
+    if not farm_organization_allowed(p, farm):
         raise ValidationFailed("Only farms of the project's organization can join this project.", error_code="FARM_NOT_IN_PROJECT_ORGANIZATION")
     if farm.environment != p.environment:
         raise Conflict("Demo and live records cannot be mixed.", error_code="ENVIRONMENT_MISMATCH")

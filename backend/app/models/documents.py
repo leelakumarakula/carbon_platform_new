@@ -27,6 +27,7 @@ class DocumentCategory(str, Enum):
     PROJECT_DESIGN = "PROJECT_DESIGN"        # Phase 3: project description / design documents
     CARBON_RIGHTS = "CARBON_RIGHTS"          # Phase 3: carbon-rights evidence (agreements, assignments)
     BASELINE_DATA = "BASELINE_DATA"          # Phase 3: baseline-period data sources
+    METHODOLOGY_DOCUMENT = "METHODOLOGY_DOCUMENT"  # Phase 4: authoritative methodology source documents
     OTHER = "OTHER"
 
 

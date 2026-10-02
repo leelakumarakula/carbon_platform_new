@@ -70,7 +70,9 @@ PROJECT_FIELDS = ("project_code", "name", "description", "project_type", "organi
                   "environment")
 # Which permission each target status needs (the endpoint enforces the same).
 TRANSITION_PERMISSION = {"DATA_COLLECTION": P.PROJECTS_MANAGE, "ELIGIBILITY_REVIEW": P.PROJECTS_MANAGE,
-                         "STANDARD_SELECTED": P.PROJECTS_REVIEW, "ACTIVITY_SELECTED": P.PROJECTS_MANAGE, "CLOSED": P.PROJECTS_MANAGE}
+                         "STANDARD_SELECTED": P.PROJECTS_REVIEW, "ACTIVITY_SELECTED": P.PROJECTS_MANAGE, "CLOSED": P.PROJECTS_MANAGE,
+                         # Phase 4: entered through the methodology endpoints (evaluate / confirm / unlock)
+                         "METHODOLOGY_REVIEW": P.PROJECTS_MANAGE, "METHODOLOGY_CONFIRMED": P.PROJECTS_MANAGE}
 
 
 def _not_found() -> NotFound:
@@ -432,6 +434,17 @@ def readiness(db: Session, p: Project) -> list[TransitionReadiness]:
                               done=facts["open_overlaps"] == 0),
                 ChecklistItem(key="standard", label="A standard / crediting route is selected", done=p.standard_id is not None),
             ]
+        elif target == "METHODOLOGY_REVIEW" and p.status == "ACTIVITY_SELECTED":
+            items = [ChecklistItem(key="standard_activity", label="Standard and activity selected",
+                                   done=bool(p.standard_id and p.activity_id))]
+        elif target == "METHODOLOGY_CONFIRMED":
+            from app.services import project_methodology_service as pms
+            latest = pms.latest_evaluation(db, p.id)
+            res = pms.results(db, latest.id) if latest else []
+            recommended = [rv for rv in pms.reviews(db, [r.id for r in res]) if rv.recommendation == "RECOMMENDED"]
+            items = [ChecklistItem(key="evaluation", label="Methodology candidates evaluated", done=latest is not None),
+                     ChecklistItem(key="specialist_review", label="A candidate recommended by a methodology specialist",
+                                   done=bool(recommended))]
         elif target == "ACTIVITY_SELECTED":
             items = [ChecklistItem(key="activity", label="An activity offered under the selected standard is selected",
                                    done=bool(p.activity_id and p.standard_id and catalog_service.is_linked(db, p.standard_id, p.activity_id)))]
@@ -458,6 +471,11 @@ def _transition(db: Session, ctx: RequestContext, p: Project, target: str, audit
     record_transition(db, ctx, PROJECT_MACHINE, p.id, p.status, target, audit_action, reason, p.organization_id)
     _history(db, ctx, p, p.status, target, history_action, reason)
     p.status = target
+
+
+def transition_to(db: Session, ctx: RequestContext, p: Project, target: str, audit_action: str, history_action: str, reason: str) -> None:
+    """Public entry for other project modules (methodology): same checks, audit and status history."""
+    _transition(db, ctx, p, target, audit_action, history_action, reason)
 
 
 def _team(db: Session, p: Project, *roles: str) -> list[uuid.UUID]:
@@ -521,9 +539,10 @@ def confirm_activity(db: Session, ctx: RequestContext, principal: Principal, pro
 
 def reopen(db: Session, ctx: RequestContext, principal: Principal, project_id: uuid.UUID, reason: str) -> Project:
     p = get_project(db, principal, project_id, P.PROJECTS_MANAGE)
-    require_status(p, ("STANDARD_SELECTED", "ACTIVITY_SELECTED"), "Re-opening the project")
+    require_status(p, ("STANDARD_SELECTED", "ACTIVITY_SELECTED", "METHODOLOGY_REVIEW"), "Re-opening the project")
     _transition(db, ctx, p, "DATA_COLLECTION", "PROJECT_STATUS_CHANGED", "REOPENED_FOR_CORRECTION", reason)
     p.eligibility_reviewed_at = p.eligibility_reviewed_by = None  # eligibility must be reviewed again
+    p.methodology_status = "NOT_SELECTED"  # candidates must be evaluated again (earlier evaluations stay as history)
     db.commit()
     return repo.get(db, p.id)  # type: ignore[return-value]
 

@@ -74,8 +74,8 @@ class Project(UUIDPrimaryKey, Timestamped, Base):
         CheckConstraint(in_check("status", ProjectStatus), name="status"),
         CheckConstraint(in_check("project_type", PROJECT_TYPES), name="project_type"),
         CheckConstraint(in_check("environment", Environment), name="environment"),
-        # Phase 4 widens this when methodology selection exists; Phase 3 never selects a methodology.
-        CheckConstraint(in_check("methodology_status", ["NOT_SELECTED"]), name="methodology_status"),
+        # NOT_SELECTED → UNDER_REVIEW (candidates being evaluated) → CONFIRMED (methodology + version locked).
+        CheckConstraint(in_check("methodology_status", ["NOT_SELECTED", "UNDER_REVIEW", "CONFIRMED"]), name="methodology_status"),
     )
     project_code: Mapped[str] = mapped_column(Unicode(30), unique=True)
     name: Mapped[str] = mapped_column(Unicode(200))
@@ -88,7 +88,9 @@ class Project(UUIDPrimaryKey, Timestamped, Base):
     status: Mapped[str] = mapped_column(Unicode(25), default=ProjectStatus.DRAFT.value, index=True)
     standard_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("standards.id"))     # current selection (history in project_standards)
     activity_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("activities.id"))    # current selection (history in project_activities)
-    methodology_status: Mapped[str] = mapped_column(Unicode(20), default="NOT_SELECTED")  # placeholder for Phase 4
+    methodology_status: Mapped[str] = mapped_column(Unicode(20), default="NOT_SELECTED")
+    methodology_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("methodologies.id"))           # locked (Phase 4)
+    methodology_version_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("methodology_versions.id"))
     current_boundary_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("project_boundaries.id", use_alter=True))
     submitted_at: Mapped[datetime | None]
     submitted_by: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id"))

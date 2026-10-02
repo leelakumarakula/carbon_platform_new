@@ -79,6 +79,10 @@ class Settings(BaseSettings):
     MAP_TILE_MAX_ZOOM: int = 19
     MAP_TILE_SUBDOMAINS: str = ""
 
+    # Which farms may join a project (decision P3, kept as implemented in Phase 3). Only SAME_ORGANIZATION is
+    # supported; a partner-organization policy needs a business decision (partnership model, consent, rights).
+    PROJECT_FARM_ORG_POLICY: str = "SAME_ORGANIZATION"
+
     # Later-phase integrations (configured now so .env.example is complete)
     REDIS_URL: str | None = None
     OBJECT_STORAGE_ENDPOINT: str | None = None

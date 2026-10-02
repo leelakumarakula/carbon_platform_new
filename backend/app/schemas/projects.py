@@ -125,6 +125,7 @@ class ProjectSummary(BaseModel):
     standard_name: str | None
     activity_name: str | None
     methodology_status: str
+    methodology_label: str | None = None   # locked methodology code + version (Phase 4)
     farm_count: int
     area_hectares: Decimal | None
     environment: str

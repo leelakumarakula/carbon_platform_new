@@ -28,11 +28,23 @@ from app.services import project_farm_service as pfs
 from app.services import project_service as svc
 
 
+def _methodology_labels(db: Session, version_ids: set[uuid.UUID]) -> dict[uuid.UUID, str]:
+    from app.models import Methodology, MethodologyVersion
+    out = {}
+    for vid in version_ids:
+        v = db.get(MethodologyVersion, vid)
+        m = db.get(Methodology, v.methodology_id) if v else None
+        if v and m:
+            out[vid] = f"{m.code} v{v.version_label}"
+    return out
+
+
 def project_summaries(db: Session, projects: list[Project]) -> list[ProjectSummary]:
     counts = repo.farm_counts(db, [p.id for p in projects])
     orgs = {o.id: o.name for o in (db.get(Organization, oid) for oid in {p.organization_id for p in projects}) if o}
     stds = repo.standards_by_id(db, {p.standard_id for p in projects if p.standard_id})
     acts = repo.activities_by_id(db, {p.activity_id for p in projects if p.activity_id})
+    labels = _methodology_labels(db, {p.methodology_version_id for p in projects if p.methodology_version_id})
     out = []
     for p in projects:
         b = db.get(ProjectBoundary, p.current_boundary_id) if p.current_boundary_id else None
@@ -41,6 +53,7 @@ def project_summaries(db: Session, projects: list[Project]) -> list[ProjectSumma
             organization_name=orgs.get(p.organization_id), country=p.country, region=p.region, status=p.status, start_date=p.start_date,
             standard_name=stds[p.standard_id].name if p.standard_id in stds else None,
             activity_name=acts[p.activity_id].name if p.activity_id in acts else None, methodology_status=p.methodology_status,
+            methodology_label=labels.get(p.methodology_version_id) if p.methodology_version_id else None,
             farm_count=counts.get(p.id, 0), area_hectares=b.area_hectares if b else None, environment=p.environment,
             created_at=p.created_at))
     return out

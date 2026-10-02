@@ -19,6 +19,7 @@
 | Personal data | KYC ID numbers: only a keyed HMAC fingerprint and the last 4 digits are stored. Bank account numbers: Fernet-encrypted (`DATA_ENCRYPTION_KEY`), only the last 4 digits returned. KYC and bank-proof documents are RESTRICTED |
 | Record access | organization scope **or** self-service via `farmers.self` + a linked login; out-of-scope records 404; cross-org overlap details hidden |
 | Projects | organization-scoped access (404 outside scope); project roles never grant permissions (the user must hold the role); eligibility approver ≠ submitter; carbon-rights reviewer ≠ recorder; buyers and farmers have no project-wide view (farmers: own participation only); other organizations' overlapping projects shown without identity |
+| Methodologies | versions approved by a second person; approved versions immutable (new version to change); rules engine only proposes; confirmation needs a specialist recommendation by someone else; locked methodology changes only via audited unlock; evaluations, results and change history append-only |
 | Separation of duties | KYC submitter ≠ verifier, bank account adder ≠ verifier, farm submitter ≠ verifier, evidence capturer ≠ reviewer |
 | Audit | append-only tables enforced by DB triggers; secrets never logged (`SENSITIVE_FIELDS`) |
 | Secrets | environment / `.env` (never committed); production guard requires secure cookies and distinct keys. Rotating `DATA_ENCRYPTION_KEY` needs a re-encryption job (not built yet). Losing it makes stored bank numbers unrecoverable, so keep it in the secret store with a backup |

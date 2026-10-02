@@ -30,7 +30,7 @@ models; no module reaches into another's tables except through its service.
 | `security/` | Permission catalog + system roles, password policy, tokens, `Principal` |
 | `audit/` | Audit/workflow/security-event writers, API access-log writer |
 | `api/` | `deps.py` (principal, `require()`, context, paging) and versioned routers |
-| `rules/` | Pure functions: geometry parsing (GeoJSON/KML to WKT), file-type sniffing |
+| `rules/` | Pure functions: geometry parsing (GeoJSON/KML to WKT), file-type sniffing, the deterministic methodology applicability engine |
 | `integrations/` | Adapters: `ObjectStorage` (local; S3 pending), `MalwareScanner` (signature; real AV pending) |
 | `seed/` | Reference data sync, bootstrap admin, DEMO data (accounts, farmers, farms) |
 
@@ -45,7 +45,7 @@ transaction.
 | `core/` | `ApiService`, `ApiError`, auth service/guards/interceptors, permissions, navigation registry, notifications |
 | `shared/` | Status badge, page header, state view, reason dialog, form helpers, `PagedList` |
 | `layout/` | Shell: side navigation filtered by permissions, user menu, DEMO indicator |
-| `auth/`, `dashboard/`, `admin/`, `farmer/`, `farms/`, `projects/` | Feature pages; each feature has its own models and API service |
+| `auth/`, `dashboard/`, `admin/`, `farmer/`, `farms/`, `projects/`, `methodologies/` | Feature pages; each feature has its own models and API service |
 
 `shared/geo-map.ts` wraps Leaflet. The browser only draws and previews shapes; validation and area are
 always computed by SQL Server.
@@ -71,4 +71,7 @@ on the server. The client only mirrors them (state machines, password policy) fo
   (participation, carbon rights, derived boundary). The project boundary is a SQL Server `UnionAggregate` of the
   participating farms' current boundaries, versioned like farm boundaries. Status history is a dedicated
   append-only table in addition to `workflow_events`.
+- **Methodologies**: catalog/versioning in `methodology_service`; project selection in `project_methodology_service`, which
+  builds facts from project data and runs `rules/methodology_engine.py` (pure, deterministic, versioned engine). The
+  engine output is stored as an append-only evaluation; people review, confirm and lock.
 - **Time**: stored as naive UTC `datetime2`, emitted as ISO-8601 with `Z`.

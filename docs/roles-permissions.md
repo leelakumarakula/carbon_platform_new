@@ -53,6 +53,18 @@ revokes every role they hold in it.
 GIS review of a project boundary uses the existing `farms.review`. Farmers see only their own participation
 (`GET /projects/my-participation`, via `farmers.self`). Buyers have no project access.
 
+## Phase 4 permissions
+
+| Code | Meaning |
+|---|---|
+| methodologies.read | view methodologies, versions, rules, documents, change history |
+| methodologies.manage | create methodologies and draft versions, edit draft rules, submit, retire, withdraw |
+| methodologies.approve | approve or return submitted versions (never one you submitted) |
+| methodologies.review_project | run candidate evaluation for any project and record the specialist recommendation |
+
+Methodology **confirmation and unlock** use `projects.manage` (project developer). The person who recommended a
+candidate cannot confirm it. Labs, finance and buyers cannot change methodologies (tested).
+
 ## Permission-grant matrix (decision D4, approved)
 
 Granting a role needs `users.assign_roles` in the scope of the grant, plus every *privileged* permission the role
@@ -93,19 +105,20 @@ farm but cannot *clear* it (`CROSS_ORG_OVERLAP`). Only the **Platform GIS Specia
 
 | Code | Scope | Permissions (Phases 1–3) |
 |---|---|---|
-| PLATFORM_ADMIN | platform | all users/roles/organizations permissions, audit.read, security.read, consents.configure, farmers.read, farms.read, projects.read, standards.manage |
+| PLATFORM_ADMIN | platform | all users/roles/organizations permissions, audit.read, security.read, consents.configure, farmers.read, farms.read, projects.read, standards.manage, methodologies.read |
 | PLATFORM_GIS_SPECIALIST | platform | farmers.read, farms.read, farms.review_cross_org, projects.read (decision D5; not one of the 19 spec roles) |
 | SECURITY_ADMIN | platform | users.read, roles.read, organizations.read, audit.read, security.read, security.manage |
-| SUPPORT | platform | users.read, organizations.read, farmers.read, farms.read, projects.read |
-| METHODOLOGY_SPECIALIST | platform | projects.read, standards.manage (methodology permissions in Phase 4) |
+| SUPPORT | platform | users.read, organizations.read, farmers.read, farms.read, projects.read, methodologies.read |
+| METHODOLOGY_SPECIALIST | platform | projects.read, standards.manage, methodologies.read/manage/approve/review_project |
 | FARMER | organization | farmers.self |
 | FIELD_AGENT, FIELD_SUPERVISOR | organization | farmers.read, farmers.manage, farms.read, farms.manage, projects.read |
-| PROJECT_MANAGER | organization | the above + farmers.kyc_verify, farmers.bank_manage, projects.manage |
+| PROJECT_MANAGER | organization | the above + farmers.kyc_verify, farmers.bank_manage, projects.manage, methodologies.read |
 | GIS_SPECIALIST | organization | farmers.read, farms.read, farms.review, projects.read |
-| MRV_MANAGER | organization | farmers.read, farms.read, projects.read |
-| QA_OFFICER | organization | farmers.read, farmers.kyc_verify, farms.read, projects.read, projects.review |
+| MRV_MANAGER | organization | farmers.read, farms.read, projects.read, methodologies.read |
+| QA_OFFICER | organization | farmers.read, farmers.kyc_verify, farms.read, projects.read, projects.review, methodologies.read |
 | FINANCE_MANAGER | organization | farmers.read, farmers.bank_manage, farmers.bank_verify, projects.read |
-| LAB_TECHNICIAN, LAB_MANAGER, CALCULATION_ANALYST, VVB_REVIEWER, REGISTRY_MANAGER, CREDIT_MANAGER, BUYER | organization | added in their module's phase (BUYER never gets farmer or project-private data) |
+| CALCULATION_ANALYST | organization | methodologies.read (calculation permissions in Phase 7) |
+| LAB_TECHNICIAN, LAB_MANAGER, VVB_REVIEWER, REGISTRY_MANAGER, CREDIT_MANAGER, BUYER | organization | added in their module's phase (BUYER never gets farmer or project-private data) |
 
 Platform Admin deliberately lacks `security.manage`, so it cannot grant Security Admin or unlock accounts.
 That is separation of duties.

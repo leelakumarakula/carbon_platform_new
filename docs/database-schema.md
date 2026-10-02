@@ -84,12 +84,32 @@ Shared services added in Phase 2:
 | `project_boundaries` | `geography` union of farm boundaries, versioned CURRENT/SUPERSEDED (filtered unique), union area, sum of farm areas, internal overlap, farm boundary IDs used (JSON), validity, other-project overlaps (JSON), GIS review. **Spatial index** `six_project_boundaries_boundary` |
 | `project_status_history` | **append-only (trigger)**: from/to status, action, reason, user, time, request ID |
 
+## Phase 4 tables (§7.5 methodologies, §9 selection)
+
+| Table | Notes |
+|---|---|
+| `methodologies` | `code` unique; one `standard_id`; owner; source URL; ACTIVE/INACTIVE; `environment` |
+| `methodology_activities` | PK (methodology, activity): activities covered (each must be offered under the standard) |
+| `methodology_versions` | unique (methodology, version number) and (methodology, label); DRAFT/IN_REVIEW/APPROVED/SUPERSEDED/RETIRED/WITHDRAWN; effective dates (CHECK); source name/URL/document; rule-set revision counters; `calculation_readiness` NOT_PRODUCTION_READY/PRODUCTION_READY; `is_demo_illustrative`; based-on / superseded-by self references; submitted/approved stamps |
+| `methodology_applicability_rules` | per version, unique rule code; category, fact key, operator (CHECK lists), `expected_value` JSON (`{"value": …}`, ISJSON), on_fail, evidence requirement, mandatory |
+| `methodology_monitoring_rules` | parameter, unit, frequency, method, evidence |
+| `methodology_calculation_rules` | step CHECK, equation reference, parameter names, `implementation_status` NOT_IMPLEMENTED/NOT_PRODUCTION_READY/VERIFIED (documentation only) |
+| `methodology_rules` | rule type CHECK (crediting period, baseline, additionality, leakage, uncertainty, sampling, permanence, general), `parameters` JSON |
+| `methodology_documents` | link to `documents` (category METHODOLOGY_DOCUMENT), optional version |
+| `methodology_change_history` | **append-only (trigger)** |
+| `methodology_evaluations` | **append-only (trigger)**: project, standard, activity, engine version, facts JSON snapshot, evaluator, request ID |
+| `methodology_evaluation_results` | **append-only (trigger)**: one row per candidate version; outcome CHECK; rule results JSON; rules revision |
+| `project_methodology_reviews` | specialist recommendation per candidate result |
+| `project_methodologies` | LOCKED/UNLOCKED (filtered unique: one LOCKED per project); version, evaluation result, review, rule revisions, confirmation and unlock stamps |
+| `projects` (changed) | `methodology_id`, `methodology_version_id`; `methodology_status` CHECK widened to NOT_SELECTED/UNDER_REVIEW/CONFIRMED |
+
 ## Migrations
 
 `backend/alembic/versions/20261002_0001_phase1_identity_access_audit.py` and
 `20261002_0002_phase2_farmer_farm.py` (tables, sequences, spatial index, `document_versions` trigger),
 `20261002_0003_phase2_decisions_consent_definitions.py` (D3, with data backfill) and `20261002_0004_phase3_projects.py`
-(project tables, `seq_project_code`, project spatial index, `project_status_history` trigger, document categories). Spatial
+(project tables, `seq_project_code`, project spatial index, `project_status_history` trigger, document categories) and
+`20261002_0005_phase4_methodologies.py` (methodology tables, three append-only triggers, project columns and checks). Spatial
 indexes (`six_*`) are hand-written SQL and excluded from autogenerate by `include_object` in `alembic/env.py`. Generate new revisions with
 `alembic revision --autogenerate`, review them, and add raw SQL (triggers, spatial indexes) by hand.
 `alembic check` must report no drift before a phase is closed.
