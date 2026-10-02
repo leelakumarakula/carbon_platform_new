@@ -48,6 +48,24 @@ export interface Measurement {
   required: boolean;
   source: 'METHODOLOGY' | 'PROJECT_CONFIGURED';
   monitoring_rule_id: string | null;
+  /** Provenance declared by the methodology rule (decision V2-A); null for project-configured measurements. */
+  measurement_source: 'FIELD' | 'FIELD_ACTIVITY' | 'LABORATORY' | 'UNCLASSIFIED' | null;
+  /** Decision V2-B: user-created measurements are SUPPLEMENTARY_OBSERVATION — never lab results or authoritative calculation inputs. */
+  data_role: DataRole;
+  authoritative: boolean;
+}
+
+export type DataRole = 'METHODOLOGY_PARAMETER' | 'LABORATORY_PARAMETER' | 'UNCLASSIFIED_PARAMETER' | 'SUPPLEMENTARY_OBSERVATION';
+
+export function dataRoleLabel(role: DataRole | undefined): string {
+  return ({ METHODOLOGY_PARAMETER: 'Methodology (authoritative)', LABORATORY_PARAMETER: 'Laboratory — approved lab result only',
+    UNCLASSIFIED_PARAMETER: 'Methodology — source not classified', SUPPLEMENTARY_OBSERVATION: 'Supplementary (not authoritative)' } as const)[
+    role ?? 'SUPPLEMENTARY_OBSERVATION'];
+}
+
+/** LABORATORY values come only from approved lab results; UNCLASSIFIED ones must be classified first (server refuses both). */
+export function capturableInMrv(m: Measurement): boolean {
+  return m.measurement_source !== 'LABORATORY' && m.measurement_source !== 'UNCLASSIFIED';
 }
 
 export interface Plan {
@@ -307,6 +325,8 @@ export interface MonitoringRecord {
   notes: string | null;
   change_reason: string | null;
   recorded_at: string;
+  data_role: DataRole;
+  authoritative: boolean;
 }
 
 export interface Evidence {

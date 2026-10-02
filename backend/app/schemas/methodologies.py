@@ -91,6 +91,8 @@ class ApplicabilityRuleIn(_RuleBase):
 
 class MonitoringRuleIn(_RuleBase):
     parameter: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=120)]
+    # explicit provenance (decision V2-A); required — the platform never infers it. UNCLASSIFIED is not accepted for new rules.
+    measurement_source: Literal["FIELD", "FIELD_ACTIVITY", "LABORATORY"]
     unit: Annotated[str, StringConstraints(strip_whitespace=True, max_length=40)] | None = None
     frequency: Annotated[str, StringConstraints(strip_whitespace=True, max_length=120)] | None = None
     method: Annotated[str, StringConstraints(strip_whitespace=True, max_length=1000)] | None = None

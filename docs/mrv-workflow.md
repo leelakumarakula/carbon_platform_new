@@ -123,12 +123,16 @@ Validation:
 | The unit must match the measurement. | `UNIT_MISMATCH` |
 | The value must fit the type and the allowed values. | `INVALID_VALUE` |
 | The same value must not be recorded twice. | `DUPLICATE_RECORD` |
+| The methodology rule must not declare the parameter LABORATORY (decision V2). | `LABORATORY_RESULT_REQUIRED` |
+| The methodology rule must declare a measurement source (FIELD / FIELD_ACTIVITY / LABORATORY). | `MEASUREMENT_SOURCE_UNCLASSIFIED` |
 
 Corrections (`/monitoring-records/{record_id}/amend`) create a new version with a reason. The old version is kept
 as SUPERSEDED.
 
-Sample-based methodology parameters (e.g. soil organic carbon) come from **sample analysis in Phase 6**. They are
-not entered as monitoring data, and QA lists them as `sample_analysis_pending` (WARN).
+Parameters the methodology rule declares `LABORATORY` (e.g. soil organic carbon, bulk density, when the methodology says
+so) are authoritative only as **approved Phase 6 laboratory results** (decisions V2, V2-A). They cannot be entered as
+monitoring data: create and amend refuse them with `LABORATORY_RESULT_REQUIRED`. QA lists them as `sample_analysis_pending`
+(WARN). Rules without a declared source are refused with `MEASUREMENT_SOURCE_UNCLASSIFIED` and reported as CONFIGURATION_REQUIRED.
 
 ## Evidence
 
@@ -262,14 +266,83 @@ versions and field records keep their rules (migration 0007 backfilled pre-exist
   - No production exception exists. If the business later approves one, it must require an authorized role, explicit
     acknowledgement, a reason, an audit event, the timestamp and the user, and must be recorded as an exception, not as a
     normal approval.
+- **V2 — Sample-based parameters are authoritative only as approved laboratory results (platform architecture decision,
+  locked 3 Oct 2026).**
+
+  > Sample-based parameters such as SOC are authoritative only when they originate from an approved Phase 6 laboratory
+  > result. Phase 5 must only capture and maintain sample/field traceability information. Phase 5 must never directly
+  > enter, invent, calculate, or treat SOC, bulk density, or other laboratory analytical values as authoritative results.
+
+  Authoritative flow:
+
+  ```
+  Field Collection → Physical Sample → Sample Registration / Chain of Custody → Laboratory Analysis → Lab Result
+    → Laboratory QA → APPROVED LAB RESULT → available as an authoritative input for later calculation
+  ```
+
+  Carbon calculation is outside Phase 6 and belongs to the later calculation phase.
+
+  How Phase 5 enforces it:
+  - **Classification (decision V2-A).** Measurement provenance is explicitly defined by the methodology monitoring rule. The platform does not infer laboratory provenance from units, names, numeric types or sampling frequency. Each methodology monitoring rule declares `measurement_source`
+    (FIELD / FIELD_ACTIVITY / LABORATORY); see [methodology-engine.md](methodology-engine.md). `mrv_service.measurement_source()`
+    reads it from the rule behind a methodology-sourced plan measurement and `is_laboratory_parameter()` is true only for
+    `LABORATORY`. Project-configured measurements carry no methodology provenance. The same functions drive entry, QA and
+    the API (`measurement_source` on plan measurements), so they cannot disagree.
+  - **No entry.** `POST /mrv/monitoring-records` and `POST /mrv/monitoring-records/{record_id}/amend` refuse these
+    measurements for every role with `LABORATORY_RESULT_REQUIRED` (422, `details.analysis_status = AWAITING_ANALYSIS`).
+    Nothing is stored, so no such value can reach a dataset snapshot.
+  - **Traceability only.** Phase 5 keeps the field side of the chain: sampling point, design version (seed), field
+    collection record (`FIELD-…`, GPS, depth, sample quantity, checklist, collector, timestamps), photos and evidence
+    checksums. Submitted / accepted collections show `analysis_status = AWAITING_ANALYSIS` when the plan has LABORATORY
+    parameters.
+  - **QA.** `sample_analysis_pending` (WARN, "Awaiting laboratory analysis") lists the LABORATORY parameters with
+    AWAITING_ANALYSIS. It never fails a dataset and never fills in a value. UNCLASSIFIED parameters appear under the
+    `configuration` WARN.
+  - Custom user-defined measurements are settled by V2-B and field-kit measurements by V2-C (below).
+  - **Not decided here** (belongs to the authoritative methodology and/or the Phase 6 laboratory design): SOC test
+    method, soil depth, bulk-density procedure, laboratory acceptance limits, replicates, accreditation, retest rules.
+- **V2-B — User-created/custom measurements are supplementary (locked 3 Oct 2026).**
+
+  > User-created/custom measurements are supplementary observations and are not authoritative laboratory results or authoritative calculation inputs. Authoritative analytical parameters originate from methodology-defined monitoring rules and their declared measurement provenance.
+
+  - **Origin, not naming.** A plan measurement's origin is the existing `mrv_plan_measurements.source` column:
+    `METHODOLOGY` (copied from a methodology monitoring rule, with its declared `measurement_source`) or
+    `PROJECT_CONFIGURED` (created by a user through the plan or `POST /mrv/plans/{id}/measurements`). Users cannot set
+    `source`, `monitoring_rule_id` or `measurement_source` on a custom measurement (extra fields are ignored), and a custom
+    code cannot reuse a methodology parameter's code in the same plan (`MEASUREMENT_EXISTS`). Names, units, types, levels and
+    keywords such as "SOC" play no part.
+  - **Role** (`mrv_service.data_role()`), exposed as `data_role` + `authoritative` on plan measurements and monitoring records:
+
+    | Origin / declared provenance | `data_role` | `authoritative` | Phase 5 |
+    |---|---|---|---|
+    | Methodology, FIELD or FIELD_ACTIVITY | `METHODOLOGY_PARAMETER` | true | captured as monitoring data |
+    | Methodology, LABORATORY | `LABORATORY_PARAMETER` | false | no value (`LABORATORY_RESULT_REQUIRED`); approved Phase 6 lab result only |
+    | Methodology, UNCLASSIFIED | `UNCLASSIFIED_PARAMETER` | false | not capturable (`MEASUREMENT_SOURCE_UNCLASSIFIED`) |
+    | User-created (`PROJECT_CONFIGURED`) | `SUPPLEMENTARY_OBSERVATION` | false | captured, explicitly non-authoritative |
+
+  - **Custom values are kept** (option b): useful supplementary field observations can still be recorded, but a custom
+    "SOC %" value is never the project's SOC laboratory result. The methodology LABORATORY parameter still shows
+    AWAITING_ANALYSIS in QA and in the dataset, whatever custom values exist.
+  - **Dataset lineage.** Each snapshot record carries `measurement_code`, `origin`, `measurement_source`, `data_role` and
+    `authoritative`; the snapshot's `data_roles` block counts authoritative methodology records and supplementary
+    observations and lists the LABORATORY parameters awaiting analysis. A later calculation may use only authoritative
+    methodology records and approved laboratory results; supplementary observations never become calculation inputs.
+    Snapshots frozen before V2-B lack these fields; their records still resolve to the measurement's immutable `source`.
+  - No schema change: the origin was already stored.
+- **V2-C — Field-kit measurements (locked 3 Oct 2026).** A measurement is FIELD or LABORATORY strictly according to the
+  explicit `measurement_source` declared by the methodology monitoring rule. Field-kit measurements are **not** automatically
+  laboratory measurements: a methodology that declares `pH` with `measurement_source = FIELD` has it recorded through the
+  Phase 5 MRV workflow; one that declares `pH` with `measurement_source = LABORATORY` has the value refused in Phase 5
+  (`LABORATORY_RESULT_REQUIRED`) and supplied only by the future Phase 6 laboratory workflow. The same applies to SOC, bulk
+  density, nutrients or any other parameter. The platform does not infer provenance from the parameter name, unit,
+  numeric/text type, measurement level, keywords, or whether a parameter is commonly associated with laboratory testing, and
+  there is no parameter-specific (e.g. pH) logic.
 - **Soil carbon.** SOC values are never entered or invented in Phase 5. They come from the Phase 6 laboratory workflow;
   until then accepted samples show `analysis_status = AWAITING_ANALYSIS` and QA warns "Awaiting laboratory analysis".
 - **DEMO data** stays as seeded: no laboratory results, SOC values, calculations or credits; Niphad remains marked DEMO.
 
 ## Assumptions needing confirmation (OPEN DECISION REQUIRED)
 
-- **V2** — Sample-based methodology parameters (unit-bearing monitoring rules at sampling-point level) are treated as
-  Phase 6 analysis outputs, not field entries.
 - **V3** — QA approval of the dataset (`mrv.approve`) is held by the QA officer only. The MRV manager reviews but does
   not approve.
 - **V4** — A correction after approval re-opens the period. The approved dataset stays APPROVED until a new version is

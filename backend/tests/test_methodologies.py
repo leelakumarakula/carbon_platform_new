@@ -1,6 +1,8 @@
 """Phase 4 — standard → activity → methodology → version: catalog, versioning with separation of duties, candidate
 evaluation (applicable / not applicable / missing data / evidence required), specialist review, confirmation and lock,
 version selection and history, permissions and audit."""
+import uuid
+
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import select, text
@@ -80,7 +82,11 @@ def test_version_lifecycle_separation_of_duties_and_history(client: TestClient, 
     for rule in ALM_RULES[:2]:
         assert client.post(f"{M}/versions/{vid}/rules/applicability", headers=author.headers, json=rule).status_code == 201
     mon = {"rule_code": "M1", "title": "Soil organic carbon stock", "parameter": "SOC stock", "unit": "t C/ha", "frequency": "per verification"}
-    assert client.post(f"{M}/versions/{vid}/rules/monitoring", headers=author.headers, json=mon).status_code == 201
+    # decision V2-A: the provenance must be declared explicitly — never inferred, never defaulted, UNCLASSIFIED not accepted
+    for bad in (mon, {**mon, "measurement_source": "UNCLASSIFIED"}, {**mon, "measurement_source": "SATELLITE"}):
+        assert client.post(f"{M}/versions/{vid}/rules/monitoring", headers=author.headers, json=bad).status_code == 422
+    r = client.post(f"{M}/versions/{vid}/rules/monitoring", headers=author.headers, json={**mon, "measurement_source": "LABORATORY"})
+    assert r.status_code == 201 and r.json()["data"]["measurement_source"] == "LABORATORY"
     calc = {"rule_code": "C1", "title": "Removals by SOC change", "step": "REMOVALS", "equation_reference": "Source eq. reference only"}
     c = client.post(f"{M}/versions/{vid}/rules/calculation", headers=author.headers, json=calc).json()
     assert c["data"]["implementation_status"] == "NOT_IMPLEMENTED"  # documentation only; no executable formula
@@ -303,3 +309,45 @@ def test_reopen_from_methodology_review_resets_selection(client: TestClient, db:
     r = client.post(f"{PR}/{p['id']}/reopen", headers=t.pm.headers, json={"reason": "add another farm"})
     assert r.json()["status"] == "DATA_COLLECTION" and r.json()["methodology_status"] == "NOT_SELECTED"
     assert len(client.get(f"{PR}/{p['id']}/methodology/evaluations", headers=t.pm.headers).json()) == 1  # history kept
+
+
+def test_monitoring_rule_measurement_source_is_explicit_and_versioned(client: TestClient, db: Session) -> None:
+    """Decision V2-A: FIELD / FIELD_ACTIVITY / LABORATORY are stored as declared (independent of unit or name), copied into new
+    versions, and a version holding an UNCLASSIFIED (pre-existing) rule cannot be submitted."""
+    from app.models import MethodologyMonitoringRule
+    cat = catalog(db)
+    author, _ = specialists(db, client)
+    m = methodology(client, author, str(cat["s1"].id), [str(cat["a1"].id)], f"TPROV-{cat['s1'].code[-6:]}")
+    vid = client.post(f"{M}/{m['id']}/versions", headers=author.headers,
+                      json={"version_label": "1.0", "effective_from": "2020-01-01", "source_name": "TEST source"}).json()["id"]
+    for rule in ALM_RULES[:1]:
+        client.post(f"{M}/versions/{vid}/rules/applicability", headers=author.headers, json=rule)
+    declared = {  # the unit and the name deliberately do not match the provenance
+        "LAB1": {"parameter": "Parameter X", "unit": None, "measurement_source": "LABORATORY"},
+        "ACT1": {"parameter": "Organic carbon added in compost", "unit": "t C/ha", "measurement_source": "FIELD_ACTIVITY"},
+        "FLD1": {"parameter": "Plant height", "unit": "cm", "measurement_source": "FIELD"},
+    }
+    for code, d in declared.items():
+        r = client.post(f"{M}/versions/{vid}/rules/monitoring", headers=author.headers, json={"rule_code": code, "title": code, **d})
+        assert r.status_code == 201 and r.json()["data"]["measurement_source"] == d["measurement_source"]
+    copy = client.post(f"{M}/{m['id']}/versions", headers=author.headers,
+                       json={"version_label": "2.0", "effective_from": "2021-01-01", "source_name": "TEST source", "based_on_version_id": vid}).json()
+    got = {r["rule_code"]: r["data"]["measurement_source"] for r in client.get(f"{M}/versions/{copy['id']}", headers=author.headers).json()["rules"]
+           if r["kind"] == "monitoring"}
+    assert got == {k: d["measurement_source"] for k, d in declared.items()}   # the classification travels with the version
+    # a pre-existing UNCLASSIFIED rule (only possible from the 0008 backfill) blocks submission until it is classified
+    db.add(MethodologyMonitoringRule(methodology_version_id=uuid.UUID(vid), rule_code="OLD1", title="Legacy rule", parameter="Legacy",
+                                     measurement_source="UNCLASSIFIED"))
+    db.flush()
+    r = client.post(f"{M}/versions/{vid}/submit", headers=author.headers, json={"reason": "ready"})
+    assert r.status_code == 409 and any("OLD1" in x for x in r.json()["details"]["missing"])
+    # ... and a version already IN_REVIEW when a rule became UNCLASSIFIED (0008 backfill) cannot be approved either
+    from app.models import MethodologyVersion
+    vrow = db.get(MethodologyVersion, uuid.UUID(vid))
+    assert vrow is not None
+    vrow.status, vrow.submitted_by = "IN_REVIEW", author.user.id
+    db.flush()
+    _, approver = specialists(db, client)
+    r = client.post(f"{M}/versions/{vid}/approve", headers=approver.headers, json={"reason": "approve anyway"})
+    assert r.status_code == 409 and r.json()["error_code"] == "MEASUREMENT_SOURCE_UNCLASSIFIED" and r.json()["details"]["rules"] == ["OLD1"]
+    assert db.get(MethodologyVersion, uuid.UUID(vid)).status == "IN_REVIEW"  # type: ignore[union-attr]

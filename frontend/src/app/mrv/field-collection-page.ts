@@ -52,7 +52,7 @@ function localInput(iso: string | null): string {
       <p class="small muted rules" data-testid="field-rules">
         Checklist {{ c.checklist_version }} · GPS tolerance {{ c.gps_tolerance_m }} m ({{ src(c.field_rules?.gps_tolerance_source) }}) ·
         at least {{ c.min_photos }} photo(s) ({{ src(c.field_rules?.min_photos_source) }}).
-        @if (c.analysis_status === 'AWAITING_ANALYSIS') { Soil organic carbon: awaiting laboratory analysis — no value is entered in the field. }
+        @if (c.analysis_status === 'AWAITING_ANALYSIS') { Parameters the methodology declares LABORATORY: awaiting laboratory analysis — no value is entered in the field. }
       </p>
       <form [formGroup]="form" class="stack">
         <div class="row">

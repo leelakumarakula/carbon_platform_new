@@ -26,6 +26,8 @@ CREDIT → REGISTRY → VERIFICATION → CALCULATION RUN → METHODOLOGY VERSION
 | Field collection → point, collector, GPS, evidence | `field_collection_records` (versioned, `supersedes_id`) → `mrv_evidence` (`document_id`, SHA-256) | 5 |
 | Monitoring record → measurement → plan | `monitoring_records` (versioned) | 5 |
 | MRV dataset → everything above | `mrv_datasets.snapshot` (frozen JSON of plan, period, design versions, strata, points, accepted collections, records, evidence checksums) + `snapshot_sha256`, re-verified on approval; `mrv_qa_reviews` | 5 |
+| Field collection → (later) physical sample → lab result | Decision V2: sample-based parameters (SOC, bulk density, …) are authoritative only as an APPROVED laboratory result. Phase 5 stores no analytical value; the field collection record is the anchor the Phase 6 sample will reference | 5 → 6 |
+| Monitoring record → authority | Decision V2-B: each snapshot record carries `origin` (METHODOLOGY / PROJECT_CONFIGURED), `measurement_source`, `data_role` and `authoritative`. User-created/custom measurements are supplementary observations and are not authoritative laboratory results or authoritative calculation inputs. Authoritative analytical parameters originate from methodology-defined monitoring rules and their declared measurement provenance. A calculation may only use authoritative methodology records and approved laboratory results | 5 |
 | Samples, lab, calculation, verification, registry, credits | — | 6–9 |
 
 Reverse lineage, from a farm up to its projects, works through `project_farms` (`GET /projects/my-participation` for the

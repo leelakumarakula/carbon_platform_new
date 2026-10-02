@@ -92,7 +92,7 @@ Shared services added in Phase 2:
 | `methodology_activities` | PK (methodology, activity): activities covered (each must be offered under the standard) |
 | `methodology_versions` | unique (methodology, version number) and (methodology, label); DRAFT/IN_REVIEW/APPROVED/SUPERSEDED/RETIRED/WITHDRAWN; effective dates (CHECK); source name/URL/document; rule-set revision counters; `calculation_readiness` NOT_PRODUCTION_READY/PRODUCTION_READY; `is_demo_illustrative`; based-on / superseded-by self references; submitted/approved stamps |
 | `methodology_applicability_rules` | per version, unique rule code; category, fact key, operator (CHECK lists), `expected_value` JSON (`{"value": …}`, ISJSON), on_fail, evidence requirement, mandatory |
-| `methodology_monitoring_rules` | parameter, unit, frequency, method, evidence |
+| `methodology_monitoring_rules` | parameter, unit, frequency, method, evidence; `measurement_source` NOT NULL, CHECK FIELD / FIELD_ACTIVITY / LABORATORY / UNCLASSIFIED (0008, decision V2-A) |
 | `methodology_calculation_rules` | step CHECK, equation reference, parameter names, `implementation_status` NOT_IMPLEMENTED/NOT_PRODUCTION_READY/VERIFIED (documentation only) |
 | `methodology_rules` | rule type CHECK (crediting period, baseline, additionality, leakage, uncertainty, sampling, permanence, general), `parameters` JSON |
 | `methodology_documents` | link to `documents` (category METHODOLOGY_DOCUMENT), optional version |
@@ -136,7 +136,9 @@ Shared services added in Phase 2:
 `20261002_0005_phase4_methodologies.py` (methodology tables, three append-only triggers, project columns and checks) and
 `20261002_0006_phase5_mrv_sampling.py` (17 MRV/sampling tables, three spatial indexes, the SP- and FIELD- sequences) and
 `20261003_0007_phase5_field_rules_governance.py` (decisions S1/S2: `field_rules` JSON on design versions and field records,
-`checklist_version` and `gps_tolerance_m` on field records; existing rows backfilled with the defaults in force then). Spatial
+`checklist_version` and `gps_tolerance_m` on field records; existing rows backfilled with the defaults in force then) and
+`20261003_0008_methodology_measurement_source.py` (decision V2-A: `methodology_monitoring_rules.measurement_source`; DEMO rule DM1 →
+LABORATORY, other existing rows → UNCLASSIFIED; one methodology change-history entry per backfilled row). Spatial
 indexes (`six_*`) are hand-written SQL and excluded from autogenerate by `include_object` in `alembic/env.py`. Generate new revisions with
 `alembic revision --autogenerate`, review them, and add raw SQL (triggers, spatial indexes) by hand.
 `alembic check` must report no drift before a phase is closed.

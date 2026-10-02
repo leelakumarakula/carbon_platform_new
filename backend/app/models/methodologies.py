@@ -145,11 +145,22 @@ class MethodologyApplicabilityRule(UUIDPrimaryKey, _VersionRule, Base):
     mandatory: Mapped[bool] = mapped_column(Boolean, default=True)
 
 
+# Measurement provenance (decision V2-A) — declared explicitly by the methodology monitoring rule, never inferred from units,
+# names, numeric types or sampling frequency. LABORATORY values are authoritative only as approved Phase 6 lab results;
+# FIELD / FIELD_ACTIVITY values are captured through the Phase 5 MRV workflow. UNCLASSIFIED exists only for rules created
+# before the field existed that could not be classified safely; new rules must declare one of the three real values.
+MEASUREMENT_SOURCES = ["FIELD", "FIELD_ACTIVITY", "LABORATORY", "UNCLASSIFIED"]
+
+
 class MethodologyMonitoringRule(UUIDPrimaryKey, _VersionRule, Base):
-    """Monitoring requirement (parameter, frequency, method). Used to configure MRV in Phase 5."""
+    """Monitoring requirement (parameter, frequency, method, measurement provenance). Used to configure MRV in Phase 5."""
     __tablename__ = "methodology_monitoring_rules"
-    __table_args__ = (UniqueConstraint("methodology_version_id", "rule_code"),)
+    __table_args__ = (
+        UniqueConstraint("methodology_version_id", "rule_code"),
+        CheckConstraint(in_check("measurement_source", MEASUREMENT_SOURCES), name="measurement_source"),
+    )
     parameter: Mapped[str] = mapped_column(Unicode(120))
+    measurement_source: Mapped[str] = mapped_column(Unicode(20))
     unit: Mapped[str | None] = mapped_column(Unicode(40))
     frequency: Mapped[str | None] = mapped_column(Unicode(120))
     method: Mapped[str | None] = mapped_column(Unicode(1000))

@@ -87,6 +87,12 @@ class MeasurementOut(BaseModel):
     required: bool
     source: str
     monitoring_rule_id: uuid.UUID | None
+    # decision V2-A: provenance declared by the methodology monitoring rule (FIELD / FIELD_ACTIVITY / LABORATORY / UNCLASSIFIED);
+    # None for project-configured measurements
+    measurement_source: str | None = None
+    # decision V2-B: METHODOLOGY_PARAMETER / LABORATORY_PARAMETER / UNCLASSIFIED_PARAMETER / SUPPLEMENTARY_OBSERVATION (user-created)
+    data_role: str = "SUPPLEMENTARY_OBSERVATION"
+    authoritative: bool = False
 
 
 class PlanOut(BaseModel):
@@ -487,6 +493,9 @@ class MonitoringRecordOut(BaseModel):
     change_reason: str | None
     recorded_by: uuid.UUID | None
     recorded_at: UtcDatetime
+    # decision V2-B: supplementary (user-created) values are never authoritative lab results or calculation inputs
+    data_role: str = "SUPPLEMENTARY_OBSERVATION"
+    authoritative: bool = False
 
 
 class EvidenceOut(BaseModel):

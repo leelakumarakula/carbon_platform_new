@@ -16,7 +16,7 @@ import { askReason } from '../../shared/reason-dialog';
 import { runAction } from '../../shared/run-action';
 import { StatusBadge } from '../../shared/status-badge';
 import { MrvApi } from '../mrv.api';
-import { Measurement, MonitoringRecord, Period, Plan, mrvBadge, parseMeasurementValue } from '../mrv.models';
+import { Measurement, MonitoringRecord, Period, Plan, capturableInMrv, dataRoleLabel, mrvBadge, parseMeasurementValue } from '../mrv.models';
 
 /** Monitoring data entry against the approved plan's configurable measurement definitions. Corrections create new versions. */
 @Component({
@@ -53,21 +53,21 @@ import { Measurement, MonitoringRecord, Period, Plan, mrvBadge, parseMeasurement
             <mat-select formControlName="source">@for (x of sources; track x) { <mat-option [value]="x">{{ label(x) }}</mat-option> }</mat-select></mat-form-field>
           <div><button mat-flat-button type="submit" [disabled]="busy() || form.invalid">Record value</button></div>
         </form>
-        <p class="muted small">Sample-based methodology parameters (for example soil organic carbon) come from sample analysis in a later phase; they are not entered here.</p>
+        <p class="muted small">Parameters the methodology declares LABORATORY come only from approved laboratory results and are not entered here; FIELD and FIELD_ACTIVITY parameters (including field-kit measurements the methodology declares FIELD) are.</p>
       }
       <mat-checkbox [checked]="history()" (change)="history.set($event.checked)">Show superseded versions</mat-checkbox>
       <div class="table-wrap"><table class="table">
-        <thead><tr><th>Measurement</th><th>Farm / point</th><th>Value</th><th>Observed</th><th>Phase</th><th>Source</th><th>Version</th><th>Status</th><th></th></tr></thead>
+        <thead><tr><th>Measurement</th><th>Farm / point</th><th>Value</th><th>Observed</th><th>Phase</th><th>Source</th><th>Role</th><th>Version</th><th>Status</th><th></th></tr></thead>
         <tbody>
           @for (r of records(); track r.id) {
             <tr>
               <td>{{ r.measurement_code }} · {{ r.measurement_name }}</td><td>{{ farmCode(r.farm_id) }}</td>
-              <td>{{ show(r.value) }} {{ r.unit ?? '' }}</td><td>{{ r.observed_on }}</td><td>{{ label(r.measurement_phase) }}</td><td>{{ label(r.source) }}</td>
+              <td>{{ show(r.value) }} {{ r.unit ?? '' }}</td><td>{{ r.observed_on }}</td><td>{{ label(r.measurement_phase) }}</td><td>{{ label(r.source) }}</td><td [class.muted]="!r.authoritative">{{ roleLabel(r.data_role) }}</td>
               <td>v{{ r.version }}{{ r.change_reason ? ' · ' + r.change_reason : '' }}</td>
               <td><app-status-badge [status]="badge(r.status)" [text]="label(r.status)" /></td>
               <td>@if (canRecord && r.is_current && editable()) { <button mat-button type="button" (click)="amend(r)">Correct</button> }</td>
             </tr>
-          } @empty { <tr><td colspan="9" class="muted">No monitoring records.</td></tr> }
+          } @empty { <tr><td colspan="10" class="muted">No monitoring records.</td></tr> }
         </tbody>
       </table></div>
     </div>
@@ -83,6 +83,7 @@ export class MrvRecordsPanel {
   protected readonly canRecord = this.auth.has(P.MRV_COLLECT) || this.auth.has(P.MRV_MANAGE);
   protected readonly label = label;
   protected readonly badge = mrvBadge;
+  protected readonly roleLabel = dataRoleLabel;
   protected readonly phases = ['MONITORING', 'PROJECT', 'BASELINE'];
   protected readonly sources = ['FIELD_OBSERVATION', 'FARMER_CLAIM', 'DOCUMENT', 'INSTRUMENT', 'OTHER'];
   protected readonly busy = signal(false);
@@ -90,7 +91,7 @@ export class MrvRecordsPanel {
   protected readonly plan = signal<Plan | null>(null);
   protected readonly records = signal<MonitoringRecord[]>([]);
   protected readonly editable = computed(() => ['ACTIVE', 'DATA_COLLECTION'].includes(this.period()?.status ?? ''));
-  protected readonly farmMeasurements = computed(() => (this.plan()?.measurements ?? []).filter((m) => m.level === 'FARM' || m.level === 'PROJECT'));
+  protected readonly farmMeasurements = computed(() => (this.plan()?.measurements ?? []).filter((m) => (m.level === 'FARM' || m.level === 'PROJECT') && capturableInMrv(m)));
   protected readonly form = new FormGroup({
     measurement_id: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
     farm_id: new FormControl('', { nonNullable: true }),

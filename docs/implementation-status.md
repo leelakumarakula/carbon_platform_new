@@ -326,9 +326,18 @@ Verification (exit gate, 3 Oct 2026)
   - Assumptions M1–M5 in methodology-engine.md need confirmation.
 - Phase 5:
   - Offline field capture and sync are not built; the field screens need a connection.
-  - Sample-based methodology parameters (e.g. SOC) are left for Phase 6 analysis; QA reports them as pending.
+  - Decision V2 (locked 3 Oct 2026, after the Phase 5 commit): sample-based parameters (SOC, bulk density, …) are
+    authoritative only as approved Phase 6 laboratory results. Phase 5 refuses them as monitoring data
+    (`LABORATORY_RESULT_REQUIRED`) and keeps only field/sample traceability; QA reports them as AWAITING_ANALYSIS.
+  - Decision V2-A (uncommitted at the time of writing): measurement provenance is declared explicitly on each methodology
+    monitoring rule (`measurement_source` FIELD / FIELD_ACTIVITY / LABORATORY; migration 0008) and the V2 guard reads it —
+    never the unit, name, type or level.
+  - Decision V2-B (uncommitted at the time of writing): user-created measurements are SUPPLEMENTARY_OBSERVATION — kept, marked
+    non-authoritative in the API and in dataset snapshots, never a laboratory result or calculation input. No schema change.
+  - Decision V2-C (uncommitted at the time of writing): field-kit measurements are FIELD or LABORATORY exactly as the
+    methodology rule declares `measurement_source`; no name/unit/type/level inference and no parameter-specific logic.
   - Decisions V1, S1, S2 were applied after review (production block of gap approval; GPS / duplicate / checklist / photo values
     are versioned, configurable PLATFORM DEFAULTS frozen per design version and field record — migration 0007). Assumptions
-    V2–V4 and S3–S4 still need confirmation. No production exception to V1 exists.
+    V3–V4 and S3–S4 still need confirmation. No production exception to V1 exists.
   - Each E2E run adds an MRV plan, period, points and dataset to its DEMO-environment project in the development database.
 - The browser logs one expected 401 at start-up: the silent session-restore attempt when nobody is signed in.

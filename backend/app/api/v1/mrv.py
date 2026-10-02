@@ -131,7 +131,7 @@ def update_plan(plan_id: uuid.UUID, body: PlanUpdate, principal: Manager, db: DB
 
 @router.post("/plans/{plan_id}/measurements", response_model=MeasurementOut, status_code=status.HTTP_201_CREATED)
 def add_measurement(plan_id: uuid.UUID, body: MeasurementIn, principal: Manager, db: DB, ctx: Ctx) -> MeasurementOut:
-    return mm.measurement_out(msvc.add_measurement(db, ctx, principal, plan_id, body))
+    return mm.measurement_out(db, msvc.add_measurement(db, ctx, principal, plan_id, body))
 
 
 def _plan_action(db: DB, principal: Principal, plan: MrvPlan) -> PlanOut:

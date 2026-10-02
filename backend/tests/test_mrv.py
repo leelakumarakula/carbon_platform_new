@@ -131,7 +131,7 @@ def test_periods_and_monitoring_records(client: TestClient, db: Session, c: MrvC
     assert [(x["version"], x["status"]) for x in hist] == [(1, "SUPERSEDED"), (2, "RECORDED")]  # never overwritten
     soc = next(m for m in plan["measurements"] if m["code"] == "SOC")
     r = client.post(f"{MRV}/monitoring-records", headers=c.collector.headers, json={**rec, "measurement_id": soc["id"], "value": "abc"})
-    assert r.json()["error_code"] in ("LEVEL_REQUIRED", "INVALID_VALUE")
+    assert r.json()["error_code"] == "LABORATORY_RESULT_REQUIRED"  # decision V2: SOC is never entered as MRV data
 
 
 # ---------------------------------------------------------------- full flow, QA, approval, immutability, lineage

@@ -28,7 +28,8 @@ class MrvCtx:
 
 
 def locked_project(db: Session, client: TestClient, lon: float, lat: float, id_number: str, n_farms: int = 2,
-                   sampling: dict[str, Any] | None = None, monitoring: bool = True) -> MrvCtx:
+                   sampling: dict[str, Any] | None = None, monitoring: bool = True,
+                   monitoring_rules: list[dict[str, Any]] | None = None) -> MrvCtx:
     t = team(db, client)
     cat = catalog(db)
     author, approver = specialists(db, client)
@@ -39,9 +40,9 @@ def locked_project(db: Session, client: TestClient, lon: float, lat: float, id_n
     for rule in ALM_RULES:
         assert client.post(f"{M}/versions/{vid}/rules/applicability", headers=author.headers, json=rule).status_code == 201
     if monitoring:
-        client.post(f"{M}/versions/{vid}/rules/monitoring", headers=author.headers,
-                    json={"rule_code": "SOC", "title": "Soil organic carbon", "parameter": "Soil organic carbon stock", "unit": "t C/ha",
-                          "frequency": "each monitoring period"})
+        for rule in monitoring_rules or [{"rule_code": "SOC", "title": "Soil organic carbon", "parameter": "Soil organic carbon stock",
+                                          "unit": "t C/ha", "frequency": "each monitoring period", "measurement_source": "LABORATORY"}]:
+            assert client.post(f"{M}/versions/{vid}/rules/monitoring", headers=author.headers, json=rule).status_code == 201
     if sampling is not None:
         client.post(f"{M}/versions/{vid}/rules/general", headers=author.headers,
                     json={"rule_code": "SMP", "title": "Sampling (TEST values)", "rule_type": "SAMPLING", "parameters": sampling})

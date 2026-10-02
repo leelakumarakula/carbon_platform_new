@@ -20,7 +20,9 @@ import { runAction } from '../shared/run-action';
 import { StateView } from '../shared/state-view';
 import { StatusBadge } from '../shared/status-badge';
 import { MethodologiesApi } from './methodologies.api';
-import { CALC_STEPS, Change, GENERAL_RULE_TYPES, OPERATORS, RULE_CATEGORIES, Rule, RuleKind, VersionDetail, show, versionBadge } from './methodology.models';
+import {
+  CALC_STEPS, Change, GENERAL_RULE_TYPES, MEASUREMENT_SOURCES, OPERATORS, RULE_CATEGORIES, Rule, RuleKind, VersionDetail, show, versionBadge,
+} from './methodology.models';
 
 /** One methodology version: metadata, rules (editable only while DRAFT), approval workflow and change history. */
 @Component({
@@ -93,6 +95,12 @@ import { CALC_STEPS, Change, GENERAL_RULE_TYPES, OPERATORS, RULE_CATEGORIES, Rul
                     <mat-form-field subscriptSizing="dynamic"><mat-label>Parameter</mat-label><input matInput formControlName="parameter" /></mat-form-field>
                     <mat-form-field subscriptSizing="dynamic"><mat-label>Unit</mat-label><input matInput formControlName="unit" /></mat-form-field>
                     <mat-form-field subscriptSizing="dynamic"><mat-label>Frequency</mat-label><input matInput formControlName="frequency" /></mat-form-field>
+                    <mat-form-field subscriptSizing="dynamic"><mat-label>Measurement source</mat-label>
+                      <mat-select formControlName="measurement_source" data-testid="measurement-source">
+                        @for (s of measurementSources; track s) { <mat-option [value]="s">{{ label(s) }}</mat-option> }
+                      </mat-select>
+                      <mat-hint>Declared by the methodology — never inferred from the unit or name. LABORATORY values come only from approved lab results.</mat-hint>
+                    </mat-form-field>
                   } @else if (k === 'calculation') {
                     <mat-form-field subscriptSizing="dynamic"><mat-label>Step</mat-label>
                       <mat-select formControlName="step">@for (s of steps; track s) { <mat-option [value]="s">{{ label(s) }}</mat-option> }</mat-select></mat-form-field>
@@ -140,6 +148,7 @@ export class MethodologyVersionPage implements OnInit {
   protected readonly operators = OPERATORS;
   protected readonly steps = CALC_STEPS;
   protected readonly generalTypes = GENERAL_RULE_TYPES;
+  protected readonly measurementSources = MEASUREMENT_SOURCES;
   protected readonly v = signal<VersionDetail | null>(null);
   protected readonly changes = signal<Change[]>([]);
   protected readonly loading = signal(true);
@@ -167,6 +176,7 @@ export class MethodologyVersionPage implements OnInit {
     parameter: new FormControl('', { nonNullable: true }),
     unit: new FormControl('', { nonNullable: true }),
     frequency: new FormControl('', { nonNullable: true }),
+    measurement_source: new FormControl('', { nonNullable: true }),
     step: new FormControl('NET', { nonNullable: true }),
     equation_reference: new FormControl('', { nonNullable: true }),
     rule_type: new FormControl('GENERAL', { nonNullable: true }),
@@ -202,7 +212,8 @@ export class MethodologyVersionPage implements OnInit {
     const d = r.data;
     if (r.kind === 'applicability') return `${d['fact_key']} ${d['operator']} ${show(d['expected_value'])} → else ${d['on_fail']}`
       + (d['evidence_requirement'] ? ` · evidence: ${d['evidence_requirement']}` : '');
-    if (r.kind === 'monitoring') return `${d['parameter']}${d['unit'] ? ' (' + d['unit'] + ')' : ''}${d['frequency'] ? ' · ' + d['frequency'] : ''}`;
+    if (r.kind === 'monitoring') return `${d['parameter']}${d['unit'] ? ' (' + d['unit'] + ')' : ''}${d['frequency'] ? ' · ' + d['frequency'] : ''}`
+      + ` · source: ${d['measurement_source'] ?? 'UNCLASSIFIED'}`;
     if (r.kind === 'calculation') return `${d['step']} · ${d['equation_reference'] ?? 'no reference'} · ${d['implementation_status']}`;
     return `${d['rule_type']} ${d['parameters'] ? JSON.stringify(d['parameters']) : ''}`;
   }
@@ -221,7 +232,13 @@ export class MethodologyVersionPage implements OnInit {
     try {
       if (kind === 'applicability') Object.assign(body, { category: f.category, fact_key: f.fact_key, operator: f.operator, on_fail: f.on_fail,
         expected_value: f.expected.trim() ? JSON.parse(f.expected) : null, evidence_requirement: blank(f.evidence) });
-      if (kind === 'monitoring') Object.assign(body, { parameter: f.parameter, unit: blank(f.unit), frequency: blank(f.frequency) });
+      if (kind === 'monitoring') {
+        if (!f.measurement_source) {
+          this.ruleError.set('Choose the measurement source (FIELD, FIELD_ACTIVITY or LABORATORY). It is never inferred.');
+          return;
+        }
+        Object.assign(body, { parameter: f.parameter, unit: blank(f.unit), frequency: blank(f.frequency), measurement_source: f.measurement_source });
+      }
       if (kind === 'calculation') Object.assign(body, { step: f.step, equation_reference: blank(f.equation_reference) });
       if (kind === 'general') Object.assign(body, { rule_type: f.rule_type, parameters: f.parameters.trim() ? JSON.parse(f.parameters) : null });
     } catch {

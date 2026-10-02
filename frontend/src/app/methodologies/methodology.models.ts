@@ -207,3 +207,6 @@ export function show(v: unknown): string {
   if (Array.isArray(v)) return v.length ? v.join(', ') : '(none)';
   return String(v);
 }
+
+/** Measurement provenance of a monitoring rule (decision V2-A) — declared explicitly, never inferred. */
+export const MEASUREMENT_SOURCES = ['FIELD', 'FIELD_ACTIVITY', 'LABORATORY'] as const;

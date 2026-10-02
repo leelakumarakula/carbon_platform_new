@@ -57,6 +57,7 @@ def _build(db: Session, code: str, name: str, standard_code: str, activity_codes
                 methodology_service.add_rule(db, a_ctx, author, v.id, "applicability", ApplicabilityRuleIn(**r))
             methodology_service.add_rule(db, a_ctx, author, v.id, "monitoring", MonitoringRuleIn(
                 rule_code="DM1", title="Soil sampling per stratum (DEMO)", parameter="Soil organic carbon", unit="% / t C ha-1",
+                measurement_source="LABORATORY",  # DEMO definition: SOC is analysed on the soil samples (decision V2-A)
                 frequency="each verification (DEMO)", method="Configured in the MRV plan (Phase 5)"))
             methodology_service.add_rule(db, a_ctx, author, v.id, "calculation", CalculationRuleIn(
                 rule_code="DC1", title="Net removals (placeholder; no equation)", step="NET",

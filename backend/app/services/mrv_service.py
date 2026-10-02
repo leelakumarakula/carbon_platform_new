@@ -28,6 +28,7 @@ from app.core.errors import Conflict, NotFound, PermissionDenied, ValidationFail
 from app.models import (
     AuditLog,
     FieldCollectionRecord,
+    MethodologyMonitoringRule,
     MonitoringPeriod,
     MonitoringRecord,
     MrvDataset,
@@ -132,8 +133,12 @@ def create_plan(db: Session, ctx: RequestContext, principal: Principal, data: Pl
     db.add(plan)
     db.flush()
     for r in req.monitoring:  # methodology monitoring rules become measurement definitions (not invented)
+        # LABORATORY parameters are measured on the samples, so they attach to sampling points (decision V2-A: from the declared
+        # provenance, not from the unit); other parameters keep the Phase 5 level mapping
+        lab = r["measurement_source"] == "LABORATORY"
         db.add(MrvPlanMeasurement(mrv_plan_id=plan.id, code=r["rule_code"][:40], name=(r["parameter"] or r["title"])[:200], category="OTHER",
-                                  value_type="NUMBER" if r["unit"] else "TEXT", unit=r["unit"], level="SAMPLING_POINT" if r["unit"] else "FARM",
+                                  value_type="NUMBER" if r["unit"] else "TEXT", unit=r["unit"],
+                                  level="SAMPLING_POINT" if (lab or r["unit"]) else "FARM",
                                   frequency=r["frequency"], required=True, source="METHODOLOGY", monitoring_rule_id=uuid.UUID(r["rule_id"])))
     db.flush()
     for m in data.measurements:
@@ -351,6 +356,60 @@ def record_value(r: MonitoringRecord) -> Any:
     return None
 
 
+def measurement_source(db: Session, m: MrvPlanMeasurement) -> str | None:
+    """Declared provenance (decision V2-A) of a methodology-sourced measurement, read from its methodology monitoring rule:
+    FIELD, FIELD_ACTIVITY, LABORATORY or UNCLASSIFIED. None for project-configured measurements. Never inferred from the
+    unit, name, numeric type or level of the measurement."""
+    if m.source != "METHODOLOGY":
+        return None
+    rule = db.get(MethodologyMonitoringRule, m.monitoring_rule_id) if m.monitoring_rule_id else None
+    return rule.measurement_source if rule is not None else "UNCLASSIFIED"
+
+
+# Decision V2-B — the role a measurement's values play. Only the origin (METHODOLOGY vs PROJECT_CONFIGURED) and the
+# methodology rule's declared provenance decide it; never the code, name, unit, type or level a user gave a measurement.
+METHODOLOGY_PARAMETER = "METHODOLOGY_PARAMETER"            # methodology-defined FIELD / FIELD_ACTIVITY: authoritative MRV data
+LABORATORY_PARAMETER = "LABORATORY_PARAMETER"              # methodology-defined LABORATORY: no Phase 5 value; approved lab result only
+UNCLASSIFIED_PARAMETER = "UNCLASSIFIED_PARAMETER"          # methodology-defined without provenance: not capturable
+SUPPLEMENTARY_OBSERVATION = "SUPPLEMENTARY_OBSERVATION"    # user-created: never a lab result, never an authoritative calculation input
+
+
+def data_role(db: Session, m: MrvPlanMeasurement) -> str:
+    """User-created/custom measurements are supplementary observations and are not authoritative laboratory results or
+    authoritative calculation inputs. Authoritative analytical parameters originate from methodology-defined monitoring rules
+    and their declared measurement provenance (decisions V2, V2-A, V2-B)."""
+    src = measurement_source(db, m)
+    if src is None:
+        return SUPPLEMENTARY_OBSERVATION
+    return {"LABORATORY": LABORATORY_PARAMETER, "UNCLASSIFIED": UNCLASSIFIED_PARAMETER}.get(src, METHODOLOGY_PARAMETER)
+
+
+def is_authoritative(db: Session, m: MrvPlanMeasurement) -> bool:
+    """Whether values recorded for this measurement in Phase 5 are authoritative MRV data (methodology FIELD / FIELD_ACTIVITY only)."""
+    return data_role(db, m) == METHODOLOGY_PARAMETER
+
+
+def is_laboratory_parameter(db: Session, m: MrvPlanMeasurement) -> bool:
+    """Decision V2: a parameter the methodology declares LABORATORY (whatever its name — SOC, pH, bulk density, …; the same
+    parameter declared FIELD is captured in Phase 5, decision V2-C) is authoritative only as an APPROVED Phase 6 laboratory
+    result; Phase 5 records only the field collection and its traceability, never the value."""
+    return measurement_source(db, m) == "LABORATORY"
+
+
+def _refuse_sample_analysis_value(db: Session, m: MrvPlanMeasurement) -> None:
+    src = measurement_source(db, m)
+    if src == "LABORATORY":
+        raise ValidationFailed(f"{m.code} ({m.name}) is declared a LABORATORY parameter by the methodology. Its value is authoritative only as "
+                               "an approved laboratory result (decision V2) and cannot be entered as MRV monitoring data. Record the field "
+                               "collection instead; the value stays AWAITING_ANALYSIS.", error_code="LABORATORY_RESULT_REQUIRED",
+                               details={"measurement": m.code, "measurement_source": src, "analysis_status": "AWAITING_ANALYSIS"})
+    if src == "UNCLASSIFIED":
+        raise ValidationFailed(f"{m.code} ({m.name}) has no declared measurement source in the methodology version (CONFIGURATION_REQUIRED). "
+                               "A methodology specialist must classify it as FIELD, FIELD_ACTIVITY or LABORATORY in a new version before "
+                               "values can be captured.", error_code="MEASUREMENT_SOURCE_UNCLASSIFIED",
+                               details={"measurement": m.code, "measurement_source": src})
+
+
 def add_monitoring_record(db: Session, ctx: RequestContext, principal: Principal, data: MonitoringRecordIn) -> MonitoringRecord:
     mp, p = get_period(db, principal, data.monitoring_period_id, P.MRV_COLLECT, P.MRV_MANAGE)
     if mp.status not in EDITABLE_PERIOD:
@@ -359,6 +418,7 @@ def add_monitoring_record(db: Session, ctx: RequestContext, principal: Principal
     m = db.get(MrvPlanMeasurement, data.measurement_id)
     if m is None or m.mrv_plan_id != mp.mrv_plan_id:
         raise ValidationFailed("This measurement is not part of the period's MRV plan.", error_code="MEASUREMENT_NOT_IN_PLAN")
+    _refuse_sample_analysis_value(db, m)
     target = {"FARM": data.farm_id, "STRATUM": data.stratum_id, "SAMPLING_POINT": data.sampling_point_id, "PROJECT": p.id}[m.level]
     if target is None:
         raise ValidationFailed(f"{m.code} is recorded per {m.level.lower().replace('_', ' ')}.", error_code="LEVEL_REQUIRED")
@@ -380,7 +440,8 @@ def add_monitoring_record(db: Session, ctx: RequestContext, principal: Principal
                          notes=data.notes, recorded_by=principal.user_id, **values)
     db.add(r)
     db.flush()
-    _audit(db, ctx, p, "MONITORING_RECORD_ADDED", {"monitoring_record_id": r.id, "measurement": m.code, "phase": r.measurement_phase,
+    _audit(db, ctx, p, "MONITORING_RECORD_ADDED", {"monitoring_record_id": r.id, "measurement": m.code, "data_role": data_role(db, m),
+                                                  "authoritative": is_authoritative(db, m), "phase": r.measurement_phase,
                                                   "value": record_value(r), "unit": r.unit, "observed_on": r.observed_on})
     db.commit()
     return r
@@ -416,6 +477,7 @@ def amend_monitoring_record(db: Session, ctx: RequestContext, principal: Princip
                        error_code="PERIOD_NOT_OPEN")
     m = db.get(MrvPlanMeasurement, cur.measurement_id)
     assert m is not None
+    _refuse_sample_analysis_value(db, m)
     values = _typed_value(m, data.value) if data.value is not None else {k: getattr(cur, k) for k in ("value_number", "value_text", "value_date",
                                                                                                       "value_bool")}
     cur.is_current, cur.status = False, "SUPERSEDED"
@@ -568,6 +630,8 @@ def build_snapshot(db: Session, ds: MrvDataset) -> dict[str, Any]:
     evid = evidence_for(db, ds.project_id, mp.id)
     strata_ids = sorted({str(x.stratum_id) for x in pts})
     strata = {str(s.id): s for s in (db.get(ProjectStratum, uuid.UUID(i)) for i in strata_ids) if s}
+    plan_ms = measurements(db, plan.id)
+    roles = {m.id: data_role(db, m) for m in plan_ms}
     return {
         "dataset": {"id": str(ds.id), "code": ds.dataset_code, "version": ds.version},
         "project_id": str(ds.project_id), "methodology_version_id": str(ds.methodology_version_id),
@@ -580,9 +644,26 @@ def build_snapshot(db: Session, ds: MrvDataset) -> dict[str, Any]:
                              "lat": str(x.latitude), "lon": str(x.longitude)} for x in pts],
         "field_collections": [{"id": str(c.id), "code": c.collection_code, "version": c.version, "point_id": str(c.sampling_point_id)}
                               for c in cols],
-        "monitoring_records": [{"id": str(r.id), "record_id": str(r.record_id), "version": r.version} for r in recs if r.status == "RECORDED"],
+        # V2-B: every record carries its origin and role, so a later calculation can tell methodology-defined authoritative data
+        # from user-created supplementary observations (which never become laboratory results or calculation inputs)
+        "monitoring_records": [_snapshot_record(db, r, roles) for r in recs if r.status == "RECORDED"],
+        "data_roles": {
+            "authoritative_methodology_records": sum(1 for r in recs if r.status == "RECORDED" and roles[r.measurement_id] == METHODOLOGY_PARAMETER),
+            "supplementary_observations": sum(1 for r in recs if r.status == "RECORDED" and roles[r.measurement_id] == SUPPLEMENTARY_OBSERVATION),
+            "laboratory_parameters_awaiting_analysis": sorted(m.code for m in plan_ms if roles[m.id] == LABORATORY_PARAMETER),
+            "note": "Only authoritative methodology records (and, later, approved laboratory results) may feed a calculation; "
+                    "supplementary observations never do.",
+        },
         "evidence": [{"id": str(e.id), "type": e.evidence_type, "checksum_sha256": e.checksum_sha256} for e in evid if e.status != "REJECTED"],
     }
+
+
+def _snapshot_record(db: Session, r: MonitoringRecord, roles: dict[uuid.UUID, str]) -> dict[str, Any]:
+    m = db.get(MrvPlanMeasurement, r.measurement_id)
+    role = roles.get(r.measurement_id) or (data_role(db, m) if m else SUPPLEMENTARY_OBSERVATION)
+    return {"id": str(r.id), "record_id": str(r.record_id), "version": r.version, "measurement_code": m.code if m else None,
+            "origin": m.source if m else None, "measurement_source": measurement_source(db, m) if m else None,
+            "data_role": role, "authoritative": role == METHODOLOGY_PARAMETER}
 
 
 def _hash(snapshot: dict[str, Any]) -> str:
@@ -760,21 +841,24 @@ def qa_checks(db: Session, ds: MrvDataset) -> list[QaCheck]:
     farms = [pf.farm_id for pf in db.scalars(select(ProjectFarm).where(ProjectFarm.project_id == p.id, ProjectFarm.status == "ACTIVE")).all()]
     missing: list[str] = []
     analysis: list[str] = []
+    unclassified: list[str] = []
     for m in measurements(db, plan.id):
         have = [r for r in recs if r.measurement_id == m.id]
-        if m.level == "FARM":
+        src = measurement_source(db, m)
+        if src == "LABORATORY":
+            # decision V2: authoritative only as an approved Phase 6 laboratory result — reported, never filled in here
+            analysis.append(f"{m.code} ({m.name}): AWAITING_ANALYSIS for {len(collected_points)} collected sample(s) — no value is entered")
+        elif src == "UNCLASSIFIED":
+            unclassified.append(f"CONFIGURATION_REQUIRED: measurement source of {m.code} not declared by the methodology version")
+        elif m.level == "FARM":
             missing += [f"{m.code} missing for a farm ({f})" for f in farms if not any(r.farm_id == f for r in have)] if m.required else []
         elif m.level == "PROJECT" and m.required and not have:
             missing.append(f"{m.code} missing for the project")
-        elif m.level == "SAMPLING_POINT" and m.required and m.source == "METHODOLOGY":
-            # methodology parameters measured on the collected samples come from sample analysis (a later phase) —
-            # reported, never filled in here
-            analysis.append(f"{m.code} ({m.name}): AWAITING_ANALYSIS for {len(collected_points)} collected sample(s) — no value is entered")
         elif m.level == "SAMPLING_POINT" and m.required:
             missing += [f"{m.code} missing for {x.point_code}" for x in pts
                         if x.id in collected_points and not any(r.sampling_point_id == x.id for r in have)]
     add("missing_records", "Required measurements are recorded", missing)
-    add("sample_analysis_pending", "Awaiting laboratory analysis (sample-based methodology parameters, Phase 6)", analysis, warn=True)
+    add("sample_analysis_pending", "Awaiting laboratory analysis (LABORATORY methodology parameters, Phase 6)", analysis, warn=True)
     dup_cols = [str(pid) for pid in collected_points if len([c for c in cols if c.sampling_point_id == pid]) > 1]
     keys = [(r.measurement_id, r.farm_id, r.stratum_id, r.sampling_point_id, r.observed_on, r.measurement_phase) for r in recs]
     add("duplicate_records", "No duplicate field or monitoring records",
@@ -795,7 +879,7 @@ def qa_checks(db: Session, ds: MrvDataset) -> list[QaCheck]:
     add("inconsistent_data", "Collected depths match the planned depth", inconsistent, warn=True)
     gaps = json.loads(ds.configuration_gaps or "[]")
     add("configuration", "Methodology MRV requirements fully configured (else CONFIGURATION_REQUIRED)",
-        [f"CONFIGURATION_REQUIRED: {g}" for g in gaps], warn=True)
+        [f"CONFIGURATION_REQUIRED: {g}" for g in gaps] + unclassified, warn=True)
     return out
 
 

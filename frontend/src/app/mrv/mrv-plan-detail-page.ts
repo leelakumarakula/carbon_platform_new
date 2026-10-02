@@ -12,7 +12,7 @@ import { runAction } from '../shared/run-action';
 import { StateView } from '../shared/state-view';
 import { StatusBadge } from '../shared/status-badge';
 import { MrvApi } from './mrv.api';
-import { Plan, mrvBadge } from './mrv.models';
+import { Plan, dataRoleLabel, mrvBadge } from './mrv.models';
 
 /** MRV plan detail: submit (manager), approve / return (QA, never the submitter). An approved plan is never edited. */
 @Component({
@@ -59,10 +59,10 @@ import { Plan, mrvBadge } from './mrv.models';
         <div>
           <h3>Measurements ({{ p.measurements.length }})</h3>
           <div class="table-wrap"><table class="table">
-            <thead><tr><th>Code</th><th>Name</th><th>Type</th><th>Level</th><th>Source</th></tr></thead>
+            <thead><tr><th>Code</th><th>Name</th><th>Type</th><th>Level</th><th>Role</th></tr></thead>
             <tbody>@for (m of p.measurements; track m.id) {
               <tr><td>{{ m.code }}</td><td>{{ m.name }}{{ m.unit ? ' (' + m.unit + ')' : '' }}{{ m.required ? '' : ' · optional' }}</td>
-                <td>{{ label(m.value_type) }}{{ m.allowed_values ? ': ' + m.allowed_values.join(' / ') : '' }}</td><td>{{ label(m.level) }}</td><td>{{ label(m.source) }}</td></tr>
+                <td>{{ label(m.value_type) }}{{ m.allowed_values ? ': ' + m.allowed_values.join(' / ') : '' }}</td><td>{{ label(m.level) }}</td><td>{{ roleLabel(m.data_role) }}</td></tr>
             }</tbody>
           </table></div>
         </div>
@@ -78,6 +78,7 @@ export class MrvPlanDetailPage implements OnInit {
   private readonly notify = inject(NotifyService);
   protected readonly label = label;
   protected readonly badge = mrvBadge;
+  protected readonly roleLabel = dataRoleLabel;
   protected readonly plan = signal<Plan | null>(null);
   protected readonly loading = signal(true);
   protected readonly error = signal<ApiError | null>(null);

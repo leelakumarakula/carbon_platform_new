@@ -309,6 +309,9 @@ def submit_version(db: Session, ctx: RequestContext, principal: Principal, versi
         missing.append("the authoritative source (name, URL or document)")
     if v.effective_from is None:
         missing.append("an effective date")
+    unclassified = [r.rule_code for r in rules(db, v.id)["monitoring"] if r.measurement_source == "UNCLASSIFIED"]
+    if unclassified:
+        missing.append("a measurement source (FIELD / FIELD_ACTIVITY / LABORATORY) for monitoring rule(s) " + ", ".join(unclassified))
     if missing:
         raise Conflict("Cannot submit yet: " + "; ".join(missing) + ".", error_code="REQUIREMENTS_NOT_MET", details={"missing": missing})
     _transition(db, ctx, m, v, "IN_REVIEW", "METHODOLOGY_VERSION_SUBMITTED", reason)
@@ -328,6 +331,12 @@ def approve_version(db: Session, ctx: RequestContext, principal: Principal, vers
         old = db.get(MethodologyVersion, supersedes_version_id)
         if old is None or old.methodology_id != m.id or old.status != "APPROVED" or old.id == v.id:
             raise ValidationFailed("Only another approved version of this methodology can be superseded.", error_code="INVALID_SUPERSEDE")
+    # decision V2-A: also enforced here for versions that were already IN_REVIEW when migration 0008 marked a rule UNCLASSIFIED
+    unclassified = [r.rule_code for r in rules(db, v.id)["monitoring"] if r.measurement_source == "UNCLASSIFIED"]
+    if unclassified:
+        raise Conflict("Cannot approve: monitoring rule(s) " + ", ".join(unclassified) + " declare no measurement source (FIELD / "
+                       "FIELD_ACTIVITY / LABORATORY). Return the version so a specialist can classify them.",
+                       error_code="MEASUREMENT_SOURCE_UNCLASSIFIED", details={"rules": unclassified})
     _transition(db, ctx, m, v, "APPROVED", "METHODOLOGY_VERSION_APPROVED", reason)
     v.approved_by, v.approved_at = principal.user_id, utcnow()
     if old is not None:

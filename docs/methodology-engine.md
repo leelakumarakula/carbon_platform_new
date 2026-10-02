@@ -21,7 +21,7 @@ records a recommendation, and the project developer confirms it, which locks the
 | `methodologies` | code (e.g. VM0042), name, **one standard**, activities covered (`methodology_activities`, each must be offered under the standard), owner, source URL, `environment` |
 | `methodology_versions` | version label as published, internal number, status, effective dates, source (name / URL / document), **rule-set revision counters** (`rules_version`, `monitoring_rules_version`, `calculation_rules_version`), `calculation_readiness` (always starts NOT_PRODUCTION_READY), `based_on_version_id`, submitted/approved/superseded stamps |
 | `methodology_applicability_rules` | deterministic `fact_key OPERATOR expected_value`, category, `on_fail`, evidence requirement, mandatory flag, source reference |
-| `methodology_monitoring_rules` | parameter, unit, frequency, method, evidence; used to configure MRV in Phase 5 |
+| `methodology_monitoring_rules` | parameter, unit, frequency, method, evidence, **`measurement_source`** (FIELD / FIELD_ACTIVITY / LABORATORY, required — decision V2-A); used to configure MRV in Phase 5 |
 | `methodology_calculation_rules` | step (baseline, project, emissions, removals, leakage, uncertainty, adjustment, net), **equation reference in the source**, parameter names; `implementation_status` NOT_IMPLEMENTED. These rows document; they never execute |
 | `methodology_rules` | other requirements: crediting period, baseline, additionality, leakage, uncertainty, sampling, permanence. JSON `parameters` apply only when configured, e.g. `{"min_years": 20}` |
 | `methodology_documents` | source documents (category METHODOLOGY_DOCUMENT) in the document store |
@@ -126,6 +126,32 @@ Audit events:
   history.
 - Catalog: `METHODOLOGY_CREATED/UPDATED`, `METHODOLOGY_VERSION_CREATED/UPDATED/SUBMITTED/APPROVED/RETURNED/SUPERSEDED/RETIRED/WITHDRAWN`,
   `METHODOLOGY_RULE_ADDED/REMOVED`, `METHODOLOGY_DOCUMENT_ADDED`.
+
+## Measurement provenance of monitoring rules (decision V2-A)
+
+Measurement provenance is explicitly defined by the methodology monitoring rule. The platform does not infer laboratory provenance from units, names, numeric types or sampling frequency.
+
+| `measurement_source` | Meaning | Phase 5 MRV |
+|---|---|---|
+| `LABORATORY` | Analysed in a laboratory on a collected sample (e.g. SOC, bulk density, when the methodology says so) | Value entry refused (`LABORATORY_RESULT_REQUIRED`); authoritative only as an APPROVED Phase 6 lab result. Attached to sampling points |
+| `FIELD` | Measured or observed in the field | Captured as monitoring data |
+| `FIELD_ACTIVITY` | Activity / management data (inputs, operations) | Captured as monitoring data |
+| `UNCLASSIFIED` | Only for rules that existed before the field (migration 0008) and could not be classified safely | Not capturable (`MEASUREMENT_SOURCE_UNCLASSIFIED`); a CONFIGURATION_REQUIRED gap for MRV plans |
+
+- **Field-kit measurements (decision V2-C)** are not automatically laboratory measurements: the same parameter (pH, SOC,
+  bulk density, nutrients, …) is FIELD or LABORATORY exactly as the methodology rule declares. There is no parameter-specific
+  logic.
+- The value is **required** when a monitoring rule is created (API and the version page); there is no default and
+  `UNCLASSIFIED` is not accepted for new rules.
+- A version that still contains an `UNCLASSIFIED` monitoring rule cannot be submitted or approved (`MEASUREMENT_SOURCE_UNCLASSIFIED`;
+  the approval check also covers versions that were already IN_REVIEW when migration 0008 ran). Approved versions are
+  immutable, so an unclassified rule is classified by creating a new version (copied rules keep their classification).
+- Migration 0008 backfilled existing rows deterministically: the DEMO soil-sampling rule `DM1` of `DEMO-ALM-SOC` and
+  `DEMO-CCTS-SOIL` → `LABORATORY` (known DEMO semantics); every other existing row → `UNCLASSIFIED`. Each backfilled row has
+  a `METHODOLOGY_RULE_SOURCE_BACKFILLED` entry in the methodology change history. Rule-set revision counters were not
+  changed.
+- Not defined by the platform: test methods, depths, procedures, acceptance limits, replicates, accreditation or retest
+  rules — those belong to the authoritative methodology and the Phase 6 laboratory design.
 
 ## Methodology safety (spec §48)
 

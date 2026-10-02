@@ -8,7 +8,7 @@ import { NAVIGATION, visibleNavigation } from '../core/navigation/nav.config';
 import { FieldDashboardPage } from './field-dashboard-page';
 import { MrvDashboardPage } from './mrv-dashboard-page';
 import { MrvDatasetPage } from './mrv-dataset-page';
-import { FieldCollection, Measurement, QaView, SamplingPoint, collectionMissing, mrvBadge, parseMeasurementValue } from './mrv.models';
+import { FieldCollection, Measurement, QaView, SamplingPoint, capturableInMrv, collectionMissing, dataRoleLabel, mrvBadge, parseMeasurementValue } from './mrv.models';
 
 function point(over: Partial<SamplingPoint> = {}): SamplingPoint {
   return { id: 'pt1', point_code: 'SP-2026-000001', project_id: 'p1', monitoring_period_id: 'mp1', design_version_id: 'dv1', stratum_id: 's1',
@@ -56,6 +56,21 @@ describe('MRV helpers', () => {
     expect(collectionMissing(collection({ min_photos: 2, evidence_count: 1 }), 1)).toEqual(['1 more field photo(s) (2 required)']);
     const custom = collection({ required_checklist: ['soil_moisture_noted'], checklist: {}, checklist_items: [{ key: 'soil_moisture_noted', label: 'Soil moisture noted' }] });
     expect(collectionMissing(custom, 1)).toEqual(['checklist (Soil moisture noted)']);
+  });
+
+  it('offers only FIELD / FIELD_ACTIVITY / project measurements for MRV entry (decision V2-A, never from the unit)', () => {
+    const m = (measurement_source: Measurement['measurement_source'], unit: string | null) => ({ measurement_source, unit } as Measurement);
+    expect(capturableInMrv(m('LABORATORY', null))).toBe(false);
+    expect(capturableInMrv(m('UNCLASSIFIED', 'kg/ha'))).toBe(false);
+    expect(capturableInMrv(m('FIELD_ACTIVITY', 't C/ha'))).toBe(true);
+    expect(capturableInMrv(m('FIELD', 'cm'))).toBe(true);
+    expect(capturableInMrv(m(null, null))).toBe(true);
+  });
+
+  it('labels user-created measurements as supplementary, never authoritative (decision V2-B)', () => {
+    expect(dataRoleLabel('SUPPLEMENTARY_OBSERVATION')).toBe('Supplementary (not authoritative)');
+    expect(dataRoleLabel('LABORATORY_PARAMETER')).toContain('approved lab result only');
+    expect(dataRoleLabel('METHODOLOGY_PARAMETER')).toBe('Methodology (authoritative)');
   });
 
   it('parses typed measurement values', () => {

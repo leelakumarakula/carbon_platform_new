@@ -65,10 +65,12 @@ def _project_code(db: Session, project_id: uuid.UUID) -> str:
     return p.project_code if p else ""
 
 
-def measurement_out(m: MrvPlanMeasurement) -> MeasurementOut:
+def measurement_out(db: Session, m: MrvPlanMeasurement) -> MeasurementOut:
     return MeasurementOut(id=m.id, code=m.code, name=m.name, category=m.category, value_type=m.value_type, unit=m.unit,
                           allowed_values=json.loads(m.allowed_values) if m.allowed_values else None, level=m.level, frequency=m.frequency,
-                          required=m.required, source=m.source, monitoring_rule_id=m.monitoring_rule_id)
+                          required=m.required, source=m.source, monitoring_rule_id=m.monitoring_rule_id,
+                          measurement_source=msvc.measurement_source(db, m), data_role=msvc.data_role(db, m),
+                          authoritative=msvc.is_authoritative(db, m))
 
 
 def plan_out(db: Session, principal: Principal, plan: MrvPlan, p: Project) -> PlanOut:
@@ -82,7 +84,7 @@ def plan_out(db: Session, principal: Principal, plan: MrvPlan, p: Project) -> Pl
                    configuration_status=plan.configuration_status, configuration_gaps=json.loads(plan.configuration_gaps or "[]"), notes=plan.notes,
                    supersedes_id=plan.supersedes_id, created_by=plan.created_by, created_at=plan.created_at, submitted_by=plan.submitted_by,
                    submitted_at=plan.submitted_at, approved_by=plan.approved_by, approved_at=plan.approved_at, status_reason=plan.status_reason,
-                   measurements=[measurement_out(m) for m in msvc.measurements(db, plan.id)],
+                   measurements=[measurement_out(db, m) for m in msvc.measurements(db, plan.id)],
                    can_edit=plan.status == "DRAFT" and principal.can_in_org(P.MRV_MANAGE, org),
                    can_submit=plan.status == "DRAFT" and principal.can_in_org(P.MRV_MANAGE, org),
                    can_approve=plan.status == "SUBMITTED" and principal.can_in_org(P.MRV_APPROVE, org) and plan.submitted_by != principal.user_id
@@ -175,6 +177,11 @@ def relocation_out(r: SamplingPointRelocation) -> RelocationOut:
     return RelocationOut.model_validate(r, from_attributes=True)
 
 
+def _has_laboratory_parameters(db: Session, fc: FieldCollectionRecord) -> bool:
+    mp = db.get(MonitoringPeriod, fc.monitoring_period_id)
+    return mp is not None and any(msvc.is_laboratory_parameter(db, m) for m in msvc.measurements(db, mp.mrv_plan_id))
+
+
 def collection_out(db: Session, principal: Principal, fc: FieldCollectionRecord) -> CollectionOut:
     sp = db.get(SamplingPoint, fc.sampling_point_id)
     p = db.get(Project, fc.project_id)
@@ -185,7 +192,7 @@ def collection_out(db: Session, principal: Principal, fc: FieldCollectionRecord)
         **base, "checklist": ssvc.checklist_of(fc) or None, "required_checklist": field_rules.checklist_keys(fr),
         "checklist_version": fr["checklist_version"], "checklist_items": fr["checklist_items"], "gps_tolerance_m": fr["gps_tolerance_m"],
         "min_photos": fr["min_photos"], "field_rules": fr,
-        "analysis_status": "AWAITING_ANALYSIS" if fc.status in ("SUBMITTED", "ACCEPTED") else None,
+        "analysis_status": "AWAITING_ANALYSIS" if fc.status in ("SUBMITTED", "ACCEPTED") and _has_laboratory_parameters(db, fc) else None,
         "point_code": sp.point_code if sp else None, "collector_name": names.get(fc.collector_id),
         "planned_depth_top_cm": sp.planned_depth_top_cm if sp else None, "planned_depth_bottom_cm": sp.planned_depth_bottom_cm if sp else None,
         "evidence_count": ssvc.evidence_count(db, fc.id),
@@ -202,7 +209,9 @@ def record_out(db: Session, r: MonitoringRecord) -> MonitoringRecordOut:
                                farm_id=r.farm_id, stratum_id=r.stratum_id, sampling_point_id=r.sampling_point_id,
                                field_collection_id=r.field_collection_id, measurement_phase=r.measurement_phase, value=msvc.record_value(r),
                                unit=r.unit, observed_on=r.observed_on, source=r.source, status=r.status, notes=r.notes,
-                               change_reason=r.change_reason, recorded_by=r.recorded_by, recorded_at=r.recorded_at)
+                               change_reason=r.change_reason, recorded_by=r.recorded_by, recorded_at=r.recorded_at,
+                               data_role=msvc.data_role(db, m) if m else msvc.SUPPLEMENTARY_OBSERVATION,
+                               authoritative=bool(m) and msvc.is_authoritative(db, m))  # type: ignore[arg-type]
 
 
 def evidence_out(e: MrvEvidence) -> EvidenceOut:

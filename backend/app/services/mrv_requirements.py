@@ -65,7 +65,7 @@ def requirements(db: Session, v: MethodologyVersion) -> Requirements:
     for r in rs["monitoring"]:
         req.monitoring.append({"rule_id": str(r.id), "rule_code": r.rule_code, "title": r.title, "parameter": r.parameter, "unit": r.unit,
                                "frequency": r.frequency, "method": r.method, "evidence_requirement": r.evidence_requirement,
-                               "source_reference": r.source_reference})
+                               "source_reference": r.source_reference, "measurement_source": r.measurement_source})
     for r in rs["general"]:
         params = json.loads(r.parameters) if r.parameters else {}
         if r.rule_type == "SAMPLING":
@@ -76,6 +76,9 @@ def requirements(db: Session, v: MethodologyVersion) -> Requirements:
             req.other_rules.append({"rule_code": r.rule_code, "rule_type": r.rule_type, "title": r.title, "parameters": params})
     if not req.monitoring:
         req.gaps.append("Monitoring parameters (no monitoring rules in the methodology version)")
+    for m in req.monitoring:
+        if m["measurement_source"] == "UNCLASSIFIED":
+            req.gaps.append(f"Measurement source of monitoring rule {m['rule_code']} (FIELD / FIELD_ACTIVITY / LABORATORY not declared)")
     for key in ("quantification_approach", "depth_top_cm", "depth_bottom_cm", "min_samples_per_stratum", "statistical_design"):
         if key not in req.sampling:
             req.gaps.append(SAMPLING_KEYS[key])
