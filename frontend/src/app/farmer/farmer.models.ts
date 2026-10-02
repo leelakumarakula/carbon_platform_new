@@ -53,11 +53,18 @@ export interface Contact {
 export interface Consent {
   id: string;
   consent_type: string;
+  consent_definition_id: string | null;
+  /** Consent definition version this grant refers to (decision D3). */
+  version: number | null;
+  required_for_activation: boolean;
+  is_current_version: boolean;
+  granted: boolean;
+  granted_at: string | null;
   consent_text_version: string;
   language: string | null;
   capture_method: string;
   document_id: string | null;
-  status: 'GRANTED' | 'WITHDRAWN';
+  status: 'GRANTED' | 'WITHDRAWN' | 'SUPERSEDED';
   captured_at: string;
   withdrawn_at: string | null;
   withdrawal_reason: string | null;
@@ -167,7 +174,6 @@ export interface FarmerInput {
 
 export const KYC_ID_TYPES = ['NATIONAL_ID', 'VOTER_ID', 'TAX_ID', 'PASSPORT', 'DRIVING_LICENSE', 'OTHER'] as const;
 export const CONSENT_METHODS = ['PAPER_SIGNED', 'DIGITAL_SIGNATURE', 'VERBAL_RECORDED', 'OTP', 'ONLINE_CHECKBOX'] as const;
-export const CONSENT_TYPES = ['DATA_PROCESSING', 'DATA_SHARING_PROJECT', 'PHOTO_AND_MEDIA', 'COMMUNICATIONS'] as const;
 export const FARMER_DOC_CATEGORIES = ['KYC_ID', 'CONSENT_FORM', 'AGREEMENT', 'BANK_PROOF', 'LAND_TITLE', 'LEASE_AGREEMENT',
   'LAND_RECORD', 'INPUT_RECORD', 'OTHER'] as const;
 

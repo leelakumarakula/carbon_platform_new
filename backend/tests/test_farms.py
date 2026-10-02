@@ -247,3 +247,38 @@ def test_inactivate_obsoletes_overlaps(client: TestClient, ctx: dict) -> None:
     r = client.post(f"{FA}/{b['farm']['id']}/inactivate", headers=ctx["agent"].headers, json={"reason": "duplicate entry"})
     assert r.status_code == 200 and r.json()["status"] == "INACTIVE"
     assert client.get(f"{FA}/{a['farm']['id']}", headers=ctx["agent"].headers).json()["open_overlaps"] == 0
+
+
+def test_platform_gis_specialist_clears_cross_org_overlap(client: TestClient, db: Session, ctx: dict, admin: Actor) -> None:
+    """Decision D5: only a platform-wide GIS reviewer clears overlaps between organizations; org GIS users cannot."""
+    a = ready_farm(client, ctx, square(75.5, 17.5))
+    other = dev_org(db)
+    o_agent = staff(db, client, other, "FIELD_AGENT")
+    o_qa = staff(db, client, other, "QA_OFFICER")
+    o_farmer = kyc_verified_farmer(client, o_agent, o_qa, other, id_number="888877776666", full_name="Second Developer Farmer")
+    b = create_farm(client, o_agent.headers, o_farmer["id"])
+    set_boundary(client, o_agent.headers, b["id"], square(75.5005, 17.5))
+    # The org-scoped GIS specialist of A sees the flag but is told it cannot clear it.
+    ov = client.get(f"{FA}/{a['farm']['id']}/overlaps", headers=ctx["gis"].headers).json()[0]
+    assert ov["can_clear"] is False and ov["can_confirm"] is True
+    r = client.post(f"{FA}/{a['farm']['id']}/overlaps/{ov['id']}/resolve", headers=ctx["gis"].headers,
+                    json={"resolution": "CLEARED", "notes": "looks fine"})
+    assert r.status_code == 403 and r.json()["error_code"] == "CROSS_ORG_OVERLAP"
+    # A Platform Admin can grant the platform GIS role (operational role, D4) ...
+    pgis_user = make_user(db, orgs=[])
+    g = client.post(f"/api/v1/admin/users/{pgis_user.id}/roles", headers=admin.headers, json={"role_code": "PLATFORM_GIS_SPECIALIST"})
+    assert g.status_code == 201, g.text
+    pgis = Actor(pgis_user, login(client, pgis_user))
+    # ... but not scoped to one organization (platform role).
+    scoped = client.post(f"/api/v1/admin/users/{pgis_user.id}/roles", headers=admin.headers,
+                         json={"role_code": "PLATFORM_GIS_SPECIALIST", "organization_id": str(ctx["org"].id)})
+    assert scoped.status_code == 422 and scoped.json()["error_code"] == "ROLE_SCOPE_MISMATCH"
+    seen = client.get(f"{FA}/{a['farm']['id']}/overlaps", headers=pgis.headers).json()[0]
+    assert seen["can_clear"] is True and seen["other_farm_visible"] is True  # platform reviewer sees both sides
+    done = client.post(f"{FA}/{a['farm']['id']}/overlaps/{ov['id']}/resolve", headers=pgis.headers,
+                       json={"resolution": "CLEARED", "notes": "adjacent plots; digitising offset confirmed in the field"})
+    assert done.status_code == 200 and done.json()["status"] == "CLEARED"
+    # Platform GIS cannot verify farms or touch same-organization workflow (no farms.review).
+    assert client.post(f"{FA}/{a['farm']['id']}/start-review", headers=pgis.headers, json={"reason": "x review"}).status_code == 403
+    rows = db.scalars(select(AuditLog).where(AuditLog.action == "FARM_CROSS_ORG_OVERLAP_RESOLVED")).all()
+    assert {r.organization_id for r in rows} >= {ctx["org"].id, other.id}  # both organizations' trails record the decision

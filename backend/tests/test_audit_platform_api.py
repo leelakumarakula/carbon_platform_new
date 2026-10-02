@@ -131,7 +131,7 @@ def test_openapi_lists_versioned_routes(client: TestClient) -> None:
 
 # ---------- seeds ----------
 def test_reference_sync_is_idempotent(db: Session) -> None:
-    assert sync_reference(db) == {"permissions_added": 0, "roles_added": 0, "role_permission_changes": 0}
+    assert sync_reference(db) == {"permissions_added": 0, "roles_added": 0, "role_permission_changes": 0, "consent_definitions_added": 0}
     assert db.scalars(select(Organization).where(Organization.code == "PLATFORM")).one().org_type == "PLATFORM"
 
 

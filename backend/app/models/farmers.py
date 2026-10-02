@@ -3,7 +3,7 @@ import uuid
 from datetime import date, datetime
 from enum import Enum
 
-from sqlalchemy import Boolean, CheckConstraint, Date, ForeignKey, Index, Unicode, UnicodeText, text
+from sqlalchemy import Boolean, CheckConstraint, Date, ForeignKey, Index, Integer, Unicode, UnicodeText, UniqueConstraint, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base, Environment, Timestamped, UUIDPrimaryKey, in_check, utcnow
@@ -91,16 +91,39 @@ class FarmerContact(UUIDPrimaryKey, Base):
     farmer: Mapped[Farmer] = relationship(back_populates="contacts")
 
 
+class ConsentDefinition(UUIDPrimaryKey, Base):
+    """Versioned consent configuration (decision D3). Publishing a new version of a type retires the previous
+    one; definitions are never edited after publication. `required_for_activation` drives farmer activation."""
+    __tablename__ = "consent_definitions"
+    __table_args__ = (
+        UniqueConstraint("consent_type", "version"),
+        CheckConstraint(in_check("status", ["ACTIVE", "RETIRED"]), name="status"),
+        Index("uq_consent_definitions_active", "consent_type", unique=True, mssql_where=text("status = 'ACTIVE'")),
+    )
+    consent_type: Mapped[str] = mapped_column(Unicode(40))
+    version: Mapped[int] = mapped_column(Integer)
+    title: Mapped[str] = mapped_column(Unicode(200))
+    description: Mapped[str | None] = mapped_column(Unicode(2000))
+    text_version: Mapped[str | None] = mapped_column(Unicode(40))  # identifier of the consent wording shown to farmers
+    required_for_activation: Mapped[bool] = mapped_column(Boolean, default=False, server_default=text("0"))
+    status: Mapped[str] = mapped_column(Unicode(10), default="ACTIVE")
+    created_by: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id"))
+    created_at: Mapped[datetime] = mapped_column(default=utcnow, server_default=text("SYSUTCDATETIME()"))
+    retired_at: Mapped[datetime | None]
+    retired_by: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id"))
+
+
 class FarmerConsent(UUIDPrimaryKey, Base):
-    """A consent grant. Never edited except to record withdrawal; granting again creates a new row."""
+    """A consent grant. Never edited except to record withdrawal/supersession; granting again creates a new row."""
     __tablename__ = "farmer_consents"
     __table_args__ = (
-        CheckConstraint(in_check("status", ["GRANTED", "WITHDRAWN"]), name="status"),
+        CheckConstraint(in_check("status", ["GRANTED", "WITHDRAWN", "SUPERSEDED"]), name="status"),
         CheckConstraint(in_check("capture_method", ["PAPER_SIGNED", "DIGITAL_SIGNATURE", "VERBAL_RECORDED", "OTP", "ONLINE_CHECKBOX"]),
                         name="capture_method"),
     )
     farmer_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("farmers.id"), index=True)
     consent_type: Mapped[str] = mapped_column(Unicode(40))
+    consent_definition_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("consent_definitions.id"), index=True)
     consent_text_version: Mapped[str] = mapped_column(Unicode(40))
     language: Mapped[str | None] = mapped_column(Unicode(10))
     capture_method: Mapped[str] = mapped_column(Unicode(20))
@@ -113,6 +136,7 @@ class FarmerConsent(UUIDPrimaryKey, Base):
     withdrawal_reason: Mapped[str | None] = mapped_column(Unicode(1000))
 
     farmer: Mapped[Farmer] = relationship(back_populates="consents")
+    definition: Mapped[ConsentDefinition | None] = relationship(lazy="joined")
 
 
 class AgreementStatus(str, Enum):

@@ -99,6 +99,9 @@ export interface Overlap {
   resolved_at: string | null;
   resolution_notes: string | null;
   other_geojson: GeoGeometry | null;
+  /** Server-computed: may this user confirm / clear this flag (cross-org clearing is platform-only). */
+  can_confirm: boolean;
+  can_clear: boolean;
 }
 
 export interface Ownership {

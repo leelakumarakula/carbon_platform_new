@@ -38,12 +38,30 @@ revokes every role they hold in it.
 | farmers.self | farmer self-service: own profile, KYC submission, consents, bank accounts, farms — nothing else |
 | farms.read / farms.manage | view farms · create, boundary, ownership, history, evidence, submit / withdraw / reopen |
 | farms.review | GIS review: start review, verify or reject, resolve overlaps, review ownership, history and evidence |
+| farms.review_cross_org | clear or confirm overlaps between farms of different organizations (platform-wide only) |
+| consents.configure | publish versioned consent definitions; choose which are required for activation (privileged) |
 
-**Escalation-guard change (Phase 2).** In Phase 1 the guard blocked granting *any* permission the grantor
-lacked, so a Platform Admin could not grant business roles such as Field Agent (they don't hold
-`farms.manage`). The guard now applies to the privileged administrative permissions above. Business
-permissions can be granted by anyone holding `users.assign_roles` in that scope. *Needs confirmation (open
-decision D4).*
+## Permission-grant matrix (decision D4, approved)
+
+Granting a role needs `users.assign_roles` in the scope of the grant, plus every *privileged* permission the role
+carries (`PRIVILEGED_CODES`: `users.*`, `roles.*`, `organizations.*`, `audit.*`, `security.*`, `consents.*`).
+Operational (business) permissions are delegated through `users.assign_roles`.
+
+| Grantor | Operational org roles (Field Agent, Field Supervisor, GIS Specialist, MRV Manager, QA Officer, Project Manager, Finance Manager) | Platform operational roles (Support, Platform GIS Specialist, Methodology Specialist) | Platform Admin | Security Admin | Own roles |
+|---|---|---|---|---|---|
+| Platform Admin (platform-wide `users.assign_roles`) | ✅ any organization | ✅ | ✅ | ❌ lacks `security.manage` | ❌ |
+| Org-scoped user admin (custom role with `users.assign_roles` in org X) | ✅ in org X only | ❌ needs a platform-wide grant | ❌ | ❌ | ❌ |
+| Any role without `users.assign_roles` (Project Manager, Field Agent, GIS, QA, Farmer, Buyer, …) | ❌ | ❌ | ❌ | ❌ | ❌ |
+
+Always enforced:
+- nobody changes their own roles or status (`SELF_ROLE_CHANGE`);
+- a role (system or custom) with a privileged permission the grantor lacks is refused (`ROLE_ESCALATION_BLOCKED`);
+  the same check applies when creating or editing custom roles;
+- platform roles cannot be scoped to an organization, and organization roles need membership (`ROLE_SCOPE_MISMATCH`,
+  `USER_NOT_MEMBER`);
+- the last active Platform Admin cannot be suspended or lose the role (`LAST_PLATFORM_ADMIN`).
+
+Tests: `backend/tests/test_privilege_escalation.py` (matrix), `test_admin_users_api.py`, `test_multitenancy_api.py`.
 
 **Record access** = organization-scoped permission **or** self-service: a user holding `farmers.self` and linked
 to the farmer (`farmers.user_id`) can act on that farmer and their farms with read / manage / bank_manage
@@ -53,14 +71,18 @@ rights only. They cannot verify, review, suspend themselves, create agreements o
 farmers.manage, farmers.kyc_verify, farmers.bank_manage or farmers.bank_verify. Others with farmers.read get
 `RESTRICTED_DOCUMENT`. Identity numbers and bank account numbers are never returned, only the last 4 digits.
 
-Cross-organization overlap flags hide the other farm's details and can be cleared only by a platform-level
-farms.review holder.
+**Cross-organization overlaps (decision D5).** Flags between farms of different organizations hide the other farm's
+details from organization-scoped users. An organization-scoped GIS Specialist may *confirm* the conflict on its own
+farm but cannot *clear* it (`CROSS_ORG_OVERLAP`). Only the **Platform GIS Specialist** role (platform-wide
+`farms.review_cross_org`) can clear it; it sees both farms and the decision is audited as
+`FARM_CROSS_ORG_OVERLAP_RESOLVED` in both organizations' trails. The role cannot verify farms (no `farms.review`).
 
 ## System roles (spec §4)
 
 | Code | Scope | Phase 1 permissions |
 |---|---|---|
-| PLATFORM_ADMIN | platform | all users/roles/organizations permissions, audit.read, security.read, farmers.read, farms.read |
+| PLATFORM_ADMIN | platform | all users/roles/organizations permissions, audit.read, security.read, consents.configure, farmers.read, farms.read |
+| PLATFORM_GIS_SPECIALIST | platform | farmers.read, farms.read, farms.review_cross_org (decision D5; not one of the 19 spec roles) |
 | SECURITY_ADMIN | platform | users.read, roles.read, organizations.read, audit.read, security.read, security.manage |
 | SUPPORT | platform | users.read, organizations.read, farmers.read, farms.read |
 | METHODOLOGY_SPECIALIST | platform | (Phase 4) |

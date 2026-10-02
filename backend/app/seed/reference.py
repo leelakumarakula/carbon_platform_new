@@ -51,6 +51,9 @@ def sync_reference(db: Session) -> dict[str, int]:
             r.permissions.remove(current[code])
             stats["role_permission_changes"] += 1
 
+    from app.services import consent_service
+    stats["consent_definitions_added"] = int(consent_service.ensure_baseline(db))
+
     if db.scalars(select(Organization).where(Organization.code == PLATFORM_ORG_CODE)).first() is None:
         db.add(Organization(code=PLATFORM_ORG_CODE, name="Carbon Platform Operator", org_type=OrganizationType.PLATFORM.value))
     db.flush()

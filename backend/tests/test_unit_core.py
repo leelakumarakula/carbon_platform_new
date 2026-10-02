@@ -97,7 +97,7 @@ def test_refresh_token_only_hash_stored() -> None:
 
 # ---------- permissions / principal ----------
 def test_catalog_consistency() -> None:
-    assert len(SYSTEM_ROLES) == 19
+    assert len(SYSTEM_ROLES) == 20  # 19 spec roles + PLATFORM_GIS_SPECIALIST (decision D5)
     assert {r.code for r in SYSTEM_ROLES} >= {"FARMER", "VVB_REVIEWER", "BUYER", "PLATFORM_ADMIN", "SECURITY_ADMIN"}
     for r in SYSTEM_ROLES:
         assert r.permissions <= ALL_PERMISSION_CODES

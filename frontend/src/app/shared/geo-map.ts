@@ -5,21 +5,16 @@ import {
   ElementRef,
   OnDestroy,
   effect,
+  inject,
   input,
   output,
   viewChild,
 } from '@angular/core';
 import * as L from 'leaflet';
 
+import { ClientConfigService, MapConfig } from '../core/api/client-config.service';
 import type { GeoGeometry } from '../farms/farm.models';
 import type { LonLat } from './geo';
-
-/**
- * Basemap tiles. OpenStreetMap's public tile server is fine for development and light use (attribution
- * required, no heavy/bulk use). Configure a commercial or self-hosted tile service for production.
- */
-export const TILE_URL = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
-const ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 
 export interface MapLayer {
   geojson: GeoGeometry;
@@ -52,6 +47,7 @@ export class GeoMap implements AfterViewInit, OnDestroy {
   readonly mapClick = output<{ lat: number; lon: number }>();
 
   private readonly host = viewChild.required<ElementRef<HTMLDivElement>>('host');
+  private readonly clientConfig = inject(ClientConfigService);
   private map?: L.Map;
   private readonly group = L.featureGroup();
   private readonly drawGroup = L.featureGroup();
@@ -68,7 +64,8 @@ export class GeoMap implements AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     this.map = L.map(this.host().nativeElement, { zoomControl: true, attributionControl: true }).setView(this.center(), 13);
-    L.tileLayer(TILE_URL, { maxZoom: 19, attribution: ATTRIBUTION }).addTo(this.map);
+    // Basemap tiles come from server configuration (decision D6); the map works without them (shapes still draw).
+    this.clientConfig.config().subscribe((c) => this.addTiles(c.map));
     this.group.addTo(this.map);
     this.drawGroup.addTo(this.map);
     this.map.on('click', (e: L.LeafletMouseEvent) => this.mapClick.emit({ lat: e.latlng.lat, lon: e.latlng.lng }));
@@ -85,6 +82,13 @@ export class GeoMap implements AfterViewInit, OnDestroy {
       this.map.remove();
       this.map = undefined;
     }
+  }
+
+  private addTiles(cfg: MapConfig): void {
+    if (!this.map) return;
+    const opts: L.TileLayerOptions = { maxZoom: cfg.max_zoom, attribution: cfg.attribution };
+    if (cfg.subdomains.length) opts.subdomains = cfg.subdomains;
+    L.tileLayer(cfg.tile_url, opts).addTo(this.map);
   }
 
   private render(layers: MapLayer[], points: MapPoint[]): void {

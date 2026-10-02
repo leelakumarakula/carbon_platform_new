@@ -1,7 +1,9 @@
 """ORM → response mapping for farmers and farms (masking happens here, never in the client)."""
+import uuid
+
 from sqlalchemy.orm import Session
 
-from app.models import Farm, FarmBoundary, Farmer, FarmEvidence, FarmOverlapCheck, FarmOwnership
+from app.models import Farm, FarmBoundary, Farmer, FarmerConsent, FarmEvidence, FarmOverlapCheck, FarmOwnership
 from app.repositories import farmers as farmer_repo
 from app.repositories import farms as farm_repo
 from app.schemas.documents import document_out
@@ -16,7 +18,7 @@ from app.schemas.farmers import (
 )
 from app.schemas.farms import BoundaryOut, EvidenceOut, FarmOut, FarmSummary, OverlapOut, OwnershipOut
 from app.security.principal import Principal
-from app.services import document_service, farm_history_service, farm_service, farmer_service
+from app.services import consent_service, document_service, farm_history_service, farm_service, farmer_service
 from app.services.workflows import FARM_MACHINE, FARMER_MACHINE
 
 
@@ -33,7 +35,16 @@ def farmer_summaries(db: Session, farmers: list[Farmer]) -> list[FarmerSummary]:
                           farm_count=counts.get(f.id, 0), created_at=f.created_at) for f in farmers]
 
 
+def consent_out(c: FarmerConsent, active: dict[str, uuid.UUID]) -> ConsentOut:
+    d = c.definition
+    return ConsentOut.model_validate({**{k: getattr(c, k) for k in ConsentOut.model_fields if hasattr(c, k)},
+                                      "version": d.version if d else None, "required_for_activation": bool(d and d.required_for_activation),
+                                      "is_current_version": bool(c.consent_definition_id) and active.get(c.consent_type) == c.consent_definition_id,
+                                      "granted": c.status == "GRANTED", "granted_at": c.captured_at})
+
+
 def farmer_out(db: Session, principal: Principal, f: Farmer) -> FarmerOut:
+    active = {d.consent_type: d.id for d in consent_service.list_definitions(db)}
     base = farmer_summaries(db, [f])[0]
     cap = farmer_service.capabilities(principal, f)
     transitions = sorted(t for t in FARMER_MACHINE.allowed_from(f.status) if t not in ("KYC_PENDING", "KYC_VERIFIED")
@@ -46,7 +57,7 @@ def farmer_out(db: Session, principal: Principal, f: Farmer) -> FarmerOut:
                    possible_duplicate=f.kyc_possible_duplicate, submitted_at=f.kyc_submitted_at, submitted_by=f.kyc_submitted_by,
                    verified_at=f.kyc_verified_at, verified_by=f.kyc_verified_by, notes=f.kyc_notes),
         contacts=[ContactOut.model_validate(c, from_attributes=True) for c in f.contacts],
-        consents=[ConsentOut.model_validate(c, from_attributes=True) for c in f.consents],
+        consents=[consent_out(c, active) for c in f.consents],
         agreements=[AgreementOut.model_validate(a, from_attributes=True) for a in f.agreements],
         bank_accounts=[BankAccountOut(id=b.id, account_holder_name=b.account_holder_name, bank_name=b.bank_name,
                                       branch_name=b.branch_name, routing_code=b.routing_code,
@@ -54,7 +65,7 @@ def farmer_out(db: Session, principal: Principal, f: Farmer) -> FarmerOut:
                                       proof_document_id=b.proof_document_id, verified_at=b.verified_at, review_notes=b.review_notes,
                                       created_at=b.created_at) for b in f.bank_accounts],
         documents=[document_out(d) for d in document_service.list_for(db, "farmer", f.id)],
-        allowed_transitions=transitions, readiness=[r for r in farmer_service.readiness(f) if r.target in transitions],
+        allowed_transitions=transitions, readiness=[r for r in farmer_service.readiness(db, f) if r.target in transitions],
         can_manage=cap.can_manage, can_verify_kyc=cap.can_verify_kyc, can_manage_bank=cap.can_manage_bank,
         can_verify_bank=cap.can_verify_bank, is_self=cap.is_self,
     )
@@ -120,6 +131,7 @@ def overlap_out(db: Session, principal: Principal, farm: Farm, c: FarmOverlapChe
     other = farm_repo.get(db, other_id)
     visible = bool(other and farm_service.can_see(db, principal, other))
     ob = db.get(FarmBoundary, other_boundary_id) if visible else None
+    perms = farm_service.overlap_permissions(db, principal, farm, c) if c.status == "OPEN" else (False, False)
     return OverlapOut(id=c.id, farm_id=farm.id, boundary_id=c.boundary_id if mine else c.other_boundary_id,
                       other_farm_id=other_id if visible else None, other_farm_code=other.farm_code if visible and other else None,
                       other_farm_visible=visible, relation=c.relation if mine else {"CONTAINS": "WITHIN", "WITHIN": "CONTAINS"}.get(
@@ -128,4 +140,5 @@ def overlap_out(db: Session, principal: Principal, farm: Farm, c: FarmOverlapChe
                       overlap_pct_of_other=c.overlap_pct_of_other if mine else c.overlap_pct_of_farm, same_farmer=c.same_farmer,
                       same_organization=c.same_organization, status=c.status, detected_at=c.detected_at, resolved_by=c.resolved_by,
                       resolved_at=c.resolved_at, resolution_notes=c.resolution_notes,
-                      other_geojson=farm_service.boundary_out_geojson(ob) if ob else None)
+                      other_geojson=farm_service.boundary_out_geojson(ob) if ob else None,
+                      can_confirm=perms[0], can_clear=perms[1])

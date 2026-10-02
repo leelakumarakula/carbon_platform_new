@@ -188,22 +188,47 @@ def boundary_out_geojson(b: FarmBoundary) -> dict[str, Any]:
     return wkt_to_geojson(b.boundary)
 
 
-def resolve_overlap(db: Session, ctx: RequestContext, principal: Principal, farm_id: uuid.UUID, check_id: uuid.UUID,
-                    resolution: str, notes: str) -> FarmOverlapCheck:
-    farm = get_farm(db, principal, farm_id, P.FARMS_READ)
-    principal.require_in_org(P.FARMS_REVIEW, farm.organization_id)
-    chk = db.get(FarmOverlapCheck, check_id)
-    if chk is None or farm.id not in (chk.farm_id, chk.other_farm_id):
-        raise NotFound("Overlap check not found.", error_code="OVERLAP_NOT_FOUND")
+def overlap_permissions(db: Session, principal: Principal, farm: Farm, chk: FarmOverlapCheck) -> tuple[bool, bool]:
+    """(can_confirm, can_clear) for this caller (decision D5).
+
+    Same-organization overlaps: reviewers holding farms.review in that organization.
+    Cross-organization overlaps: only a platform-wide farms.review_cross_org holder (Platform GIS Specialist) may
+    CLEAR them; an organization-scoped GIS reviewer may only confirm a conflict on its own farm.
+    """
     other_id = chk.other_farm_id if chk.farm_id == farm.id else chk.farm_id
     other = repo.get(db, other_id)
     cross_org = bool(other and other.organization_id != farm.organization_id)
-    # A cross-organization overlap affects another developer's farm: only platform-level reviewers may clear it.
-    if cross_org and resolution == "CLEARED" and not principal.has_platform(P.FARMS_REVIEW):
-        raise PermissionDenied("Overlaps with another organization's farm can only be cleared by a platform-level reviewer.",
-                               error_code="CROSS_ORG_OVERLAP")
-    record_transition(db, ctx, OVERLAP_MACHINE, chk.id, chk.status, resolution, "FARM_OVERLAP_RESOLVED", notes, farm.organization_id)
+    platform_cross = principal.has_platform(P.FARMS_REVIEW_CROSS_ORG)
+    org_reviewer = principal.can_in_org(P.FARMS_REVIEW, farm.organization_id)
+    if not cross_org:
+        return org_reviewer, org_reviewer
+    return org_reviewer or platform_cross, platform_cross
+
+
+def resolve_overlap(db: Session, ctx: RequestContext, principal: Principal, farm_id: uuid.UUID, check_id: uuid.UUID,
+                    resolution: str, notes: str) -> FarmOverlapCheck:
+    farm = get_farm(db, principal, farm_id, P.FARMS_READ)
+    chk = db.get(FarmOverlapCheck, check_id)
+    if chk is None or farm.id not in (chk.farm_id, chk.other_farm_id):
+        raise NotFound("Overlap check not found.", error_code="OVERLAP_NOT_FOUND")
+    cross_org = not chk.same_organization
+    can_confirm, can_clear = overlap_permissions(db, principal, farm, chk)
+    if resolution == "CLEARED" and not can_clear:
+        if cross_org:
+            raise PermissionDenied("Overlaps with another organization's farm can only be cleared by a Platform GIS Specialist.",
+                                   error_code="CROSS_ORG_OVERLAP")
+        principal.require_in_org(P.FARMS_REVIEW, farm.organization_id)
+    if resolution != "CLEARED" and not can_confirm:
+        principal.require_in_org(P.FARMS_REVIEW, farm.organization_id)
+    action = "FARM_CROSS_ORG_OVERLAP_RESOLVED" if cross_org else "FARM_OVERLAP_RESOLVED"
+    record_transition(db, ctx, OVERLAP_MACHINE, chk.id, chk.status, resolution, action, notes, farm.organization_id)
     chk.status, chk.resolved_by, chk.resolved_at, chk.resolution_notes = resolution, principal.user_id, utcnow(), notes
+    if cross_org:
+        other_id = chk.other_farm_id if chk.farm_id == farm.id else chk.farm_id
+        other = repo.get(db, other_id)
+        if other is not None:  # the other organization's audit trail records the decision too
+            record(db, ctx, action, ENTITY, other.id, None, {"overlap_check_id": chk.id, "status": resolution, "resolved_from_farm_id": farm.id},
+                   notes, organization_id=other.organization_id)
     db.commit()
     return chk
 

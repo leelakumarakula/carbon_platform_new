@@ -33,19 +33,27 @@ import { FarmsApi } from '../farms.api';
             @if (o.resolution_notes) { <div class="muted small">Resolution: {{ o.resolution_notes }}</div> }
           </div>
           <app-status-badge [status]="o.status === 'OPEN' ? 'WARNING' : o.status === 'CONFIRMED_CONFLICT' ? 'FAILED' : 'ACTIVE'" [text]="label(o.status)" />
-          @if (farm().can_review && o.status === 'OPEN') {
-            <button mat-button type="button" (click)="resolve(o, 'CONFIRMED_CONFLICT')" [disabled]="busy()">Confirm conflict</button>
-            <button mat-stroked-button type="button" (click)="resolve(o, 'CLEARED')" [disabled]="busy()">Clear</button>
+          @if (o.status === 'OPEN') {
+            @if (o.can_confirm) {
+              <button mat-button type="button" (click)="resolve(o, 'CONFIRMED_CONFLICT')" [disabled]="busy()">Confirm conflict</button>
+            }
+            @if (o.can_clear) {
+              <button mat-stroked-button type="button" (click)="resolve(o, 'CLEARED')" [disabled]="busy()">Clear</button>
+            } @else if (!o.same_organization && o.can_confirm) {
+              <span class="muted small cross-org">Only a Platform GIS Specialist can clear a cross-organization overlap.</span>
+            }
           }
         </div>
       } @empty { <p class="muted">No overlaps with other farm boundaries.</p> }
       <p class="muted small">Every saved boundary is compared with all current farm boundaries (all organizations). Open or confirmed overlaps
-        block verification until a GIS reviewer resolves them.</p>
+        block verification until a GIS reviewer resolves them. Overlaps with another organization's farm are cleared by a
+        Platform GIS Specialist.</p>
     </div>
   `,
   styles: `
     .line { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--mat-sys-outline-variant); flex-wrap: wrap; }
     .grow { flex: 1; min-width: 240px; }
+    .cross-org { max-width: 260px; }
   `,
 })
 export class FarmOverlapsPanel {

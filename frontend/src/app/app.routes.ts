@@ -105,6 +105,13 @@ export const routes: Routes = [
             loadComponent: () => import('./admin/roles/roles-page').then((m) => m.RolesPage),
           },
           {
+            path: 'consents',
+            title: 'Consent types',
+            canActivate: [permissionGuard],
+            data: { permissions: [P.CONSENTS_CONFIGURE] },
+            loadComponent: () => import('./admin/consents/consent-definitions-page').then((m) => m.ConsentDefinitionsPage),
+          },
+          {
             path: 'audit',
             title: 'Audit log',
             canActivate: [permissionGuard],

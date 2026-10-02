@@ -274,6 +274,8 @@ class OverlapOut(BaseModel):
     resolved_at: UtcDatetime | None
     resolution_notes: str | None
     other_geojson: dict[str, Any] | None
+    can_confirm: bool = False                # caller may mark this OPEN flag CONFIRMED_CONFLICT
+    can_clear: bool = False                  # caller may CLEAR it (cross-org: Platform GIS Specialist only, decision D5)
 
 
 # ---------- farm

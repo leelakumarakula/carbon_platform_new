@@ -1,7 +1,7 @@
 """Permission catalog and system roles (spec section 4).
 
 This module is the single source of truth for permissions and for the baseline
-permissions of the 19 system roles. `python -m app.seed.reference` syncs it to the
+permissions of the system roles (the 19 roles of spec section 4 plus Platform GIS Specialist, decision D5). `python -m app.seed.reference` syncs it to the
 database. Each later phase adds its module's permissions here and grants them to roles.
 Custom (non-system) roles are managed by Platform Admins through the API.
 """
@@ -39,6 +39,8 @@ class P:
     FARMS_READ = "farms.read"
     FARMS_MANAGE = "farms.manage"
     FARMS_REVIEW = "farms.review"
+    FARMS_REVIEW_CROSS_ORG = "farms.review_cross_org"
+    CONSENTS_CONFIGURE = "consents.configure"
 
 
 PERMISSIONS: tuple[PermissionDef, ...] = (
@@ -62,6 +64,10 @@ PERMISSIONS: tuple[PermissionDef, ...] = (
     PermissionDef(P.FARMS_READ, "farms", "View farms", "View farms, boundaries, ownership, history, evidence and overlap flags."),
     PermissionDef(P.FARMS_MANAGE, "farms", "Manage farms", "Create farms; record boundaries, ownership, history and evidence; submit for review."),
     PermissionDef(P.FARMS_REVIEW, "farms", "Review farms (GIS)", "Start GIS review, resolve overlap flags, verify or reject farms and ownership."),
+    PermissionDef(P.FARMS_REVIEW_CROSS_ORG, "farms", "Review cross-organization overlaps",
+                  "Clear or confirm boundary overlaps between farms of different organizations (platform-wide grant only)."),
+    PermissionDef(P.CONSENTS_CONFIGURE, "admin", "Configure consent types",
+                  "Publish versioned consent definitions and choose which are required for farmer activation."),
 )
 
 ALL_PERMISSION_CODES = frozenset(p.code for p in PERMISSIONS)
@@ -100,6 +106,9 @@ SYSTEM_ROLES: tuple[RoleDef, ...] = (
     _r("METHODOLOGY_SPECIALIST", "Methodology Specialist", PLATFORM, "Manages versioned, approval-controlled methodology configuration."),
     _r("GIS_SPECIALIST", "GIS / Remote Sensing Specialist", ORG, "Reviews polygons, overlaps, strata, sampling points and satellite observations.",
        P.FARMERS_READ, P.FARMS_READ, P.FARMS_REVIEW),
+    _r("PLATFORM_GIS_SPECIALIST", "Platform GIS Specialist", PLATFORM,
+       "Platform-wide GIS reviewer: resolves boundary overlaps between farms of different organizations.",
+       P.FARMERS_READ, P.FARMS_READ, P.FARMS_REVIEW_CROSS_ORG),
     _r("MRV_MANAGER", "MRV Manager", ORG, "Manages MRV plans, monitoring periods and approves monitoring datasets.",
        P.FARMERS_READ, P.FARMS_READ),
     _r("LAB_TECHNICIAN", "Lab Technician", ORG, "Receives samples, enters results and uploads lab reports."),
@@ -116,7 +125,7 @@ SYSTEM_ROLES: tuple[RoleDef, ...] = (
     _r("PLATFORM_ADMIN", "Platform Admin", PLATFORM, "Manages users, roles, organizations, master data and configuration; views audit logs.",
        P.USERS_READ, P.USERS_MANAGE, P.USERS_ASSIGN_ROLES, P.ROLES_READ, P.ROLES_MANAGE,
        P.ORGANIZATIONS_READ, P.ORGANIZATIONS_MANAGE, P.ORGANIZATIONS_MANAGE_MEMBERS, P.AUDIT_READ, P.SECURITY_READ,
-       P.FARMERS_READ, P.FARMS_READ),
+       P.CONSENTS_CONFIGURE, P.FARMERS_READ, P.FARMS_READ),
     _r("SECURITY_ADMIN", "Security Admin", PLATFORM,
        "Manages access policies, MFA, integration secrets, security events and access reviews.",
        P.USERS_READ, P.ROLES_READ, P.ORGANIZATIONS_READ, P.AUDIT_READ, P.SECURITY_READ, P.SECURITY_MANAGE),

@@ -15,7 +15,6 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.audit.service import record, record_transition, snapshot
-from app.core.config import get_settings
 from app.core.context import RequestContext
 from app.core.errors import Conflict, NotFound, PermissionDenied, ValidationFailed
 from app.models import (
@@ -46,7 +45,7 @@ from app.schemas.farmers import (
 from app.security import crypto
 from app.security.permissions import P
 from app.security.principal import Principal
-from app.services import access, document_service
+from app.services import access, consent_service, document_service
 from app.services.notification_service import notify
 from app.services.workflows import AGREEMENT_MACHINE, BANK_ACCOUNT_MACHINE, FARMER_MACHINE
 
@@ -174,11 +173,11 @@ def _active_phone(f: Farmer) -> bool:
     return any(c.is_active and c.contact_type in ("PHONE", "ALTERNATE_PHONE") for c in f.contacts)
 
 
-def _granted(f: Farmer) -> set[str]:
-    return {c.consent_type for c in f.consents if c.status == "GRANTED"}
+def _granted_definitions(f: Farmer) -> set[uuid.UUID]:
+    return {c.consent_definition_id for c in f.consents if c.status == "GRANTED" and c.consent_definition_id}
 
 
-def readiness(f: Farmer) -> list[TransitionReadiness]:
+def readiness(db: Session, f: Farmer) -> list[TransitionReadiness]:
     out: list[TransitionReadiness] = []
     for target in sorted(FARMER_MACHINE.allowed_from(f.status)):
         items: list[ChecklistItem] = []
@@ -192,9 +191,11 @@ def readiness(f: Farmer) -> list[TransitionReadiness]:
         elif target == "KYC_VERIFIED":
             items = [ChecklistItem(key="kyc_review", label="KYC reviewed by someone other than the submitter", done=False)]
         elif target == "ACTIVE" and f.status == "KYC_VERIFIED":
-            req = get_settings().FARMER_REQUIRED_CONSENTS
-            items = [ChecklistItem(key=f"consent_{c.lower()}", label=f"{c.replace('_', ' ').title()} consent granted",
-                                   done=c in _granted(f)) for c in req]
+            # Driven by the active consent definitions marked required_for_activation (decision D3): the farmer
+            # must have granted the *current* version of each.
+            granted = _granted_definitions(f)
+            items = [ChecklistItem(key=f"consent_{d.consent_type.lower()}", label=f"{d.title} consent granted (version {d.version})",
+                                   done=d.id in granted) for d in consent_service.required_for_activation(db)]
         out.append(TransitionReadiness(target=target, ready=all(i.done for i in items if i.required), items=items))
     return out
 
@@ -204,7 +205,7 @@ def change_status(db: Session, ctx: RequestContext, principal: Principal, farmer
     if target == "SUSPENDED" or (target == "ACTIVE" and f.status == "SUSPENDED"):
         principal.require_in_org(P.FARMERS_MANAGE, f.organization_id)  # farmers cannot suspend/reinstate themselves
     FARMER_MACHINE.assert_transition(f.status, target)
-    ready = next((r for r in readiness(f) if r.target == target), None)
+    ready = next((r for r in readiness(db, f) if r.target == target), None)
     if ready and not ready.ready:
         missing = [i.label for i in ready.items if i.required and not i.done]
         raise Conflict(f"Cannot move to {target} yet: " + "; ".join(missing) + ".", error_code="REQUIREMENTS_NOT_MET",
@@ -297,13 +298,22 @@ def deactivate_contact(db: Session, ctx: RequestContext, principal: Principal, f
 # ---------------------------------------------------------------- consents
 def grant_consent(db: Session, ctx: RequestContext, principal: Principal, farmer_id: uuid.UUID, data: ConsentIn) -> Farmer:
     f = get_farmer(db, principal, farmer_id, P.FARMERS_MANAGE)
+    definition = consent_service.resolve_for_grant(db, data.consent_type)
     document_service.require_attached(db, data.document_id, ENTITY, f.id, {DocumentCategory.CONSENT_FORM.value})
-    if any(c.consent_type == data.consent_type and c.status == "GRANTED" for c in f.consents):
+    current = [c for c in f.consents if c.consent_type == data.consent_type and c.status == "GRANTED"]
+    if any(c.consent_definition_id == definition.id for c in current):
         raise Conflict("This consent is already granted. Withdraw it first to record a new version.", error_code="CONSENT_ALREADY_GRANTED")
-    c = FarmerConsent(farmer_id=f.id, captured_by=ctx.user_id, captured_at=utcnow(), **data.model_dump())
+    for old in current:  # granted against an older definition version: kept, marked superseded by this grant
+        old.status = "SUPERSEDED"
+        record(db, ctx, "FARMER_CONSENT_SUPERSEDED", ENTITY, f.id, {"consent_id": old.id, "status": "GRANTED"},
+               {"status": "SUPERSEDED", "by_definition_version": definition.version}, organization_id=f.organization_id)
+    c = FarmerConsent(farmer_id=f.id, captured_by=ctx.user_id, captured_at=utcnow(), consent_definition_id=definition.id,
+                      **data.model_dump())
     db.add(c)
     db.flush()
-    record(db, ctx, "FARMER_CONSENT_GRANTED", ENTITY, f.id, None, {"consent_id": c.id, **data.model_dump()}, organization_id=f.organization_id)
+    record(db, ctx, "FARMER_CONSENT_GRANTED", ENTITY, f.id, None,
+           {"consent_id": c.id, "consent_definition_id": definition.id, "definition_version": definition.version, **data.model_dump()},
+           organization_id=f.organization_id)
     db.commit()
     return repo.get(db, f.id)  # type: ignore[return-value]
 

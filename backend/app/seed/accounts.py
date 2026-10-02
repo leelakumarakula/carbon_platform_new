@@ -74,6 +74,7 @@ DEMO_USERS = [
     ("security", "Demo Security Admin", None, "SECURITY_ADMIN"),
     ("support", "Demo Support Agent", None, "SUPPORT"),
     ("methodology", "Demo Methodology Specialist", None, "METHODOLOGY_SPECIALIST"),
+    ("platformgis", "Demo Platform GIS Specialist", None, "PLATFORM_GIS_SPECIALIST"),
     ("pm", "Demo Project Manager", "DEMO-DEV-A", "PROJECT_MANAGER"),
     ("supervisor", "Demo Field Supervisor", "DEMO-DEV-A", "FIELD_SUPERVISOR"),
     ("collector", "Demo Field Collector", "DEMO-DEV-A", "FIELD_AGENT"),

@@ -70,9 +70,14 @@ class Settings(BaseSettings):
     FARM_DECLARED_AREA_WARNING_PCT: float = 25.0  # warning only: declared vs measured area differ by more than this
     FARM_MAX_VERTICES: int = 5000
 
-    # Consent types that must be GRANTED before a farmer can become ACTIVE (assumption: data-processing
-    # consent only; confirm with the business — see docs/farmer-workflow.md).
-    FARMER_REQUIRED_CONSENTS: Annotated[list[str], NoDecode] = ["DATA_PROCESSING"]
+    # Basemap tiles for the map components (decision D6). The browser loads tiles directly from this URL
+    # template; it is configuration, not business logic. The default is OpenStreetMap's public server, which is
+    # for development only (usage policy: attribution, no heavy use) — set a licensed/self-hosted source for production.
+    MAP_TILE_PROVIDER: str = "osm-dev"
+    MAP_TILE_URL: str = "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+    MAP_TILE_ATTRIBUTION: str = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    MAP_TILE_MAX_ZOOM: int = 19
+    MAP_TILE_SUBDOMAINS: str = ""
 
     # Later-phase integrations (configured now so .env.example is complete)
     REDIS_URL: str | None = None
@@ -90,7 +95,7 @@ class Settings(BaseSettings):
     def _empty_port(cls, v: object) -> object:
         return None if v == "" else v
 
-    @field_validator("CORS_ORIGINS", "FARMER_REQUIRED_CONSENTS", mode="before")
+    @field_validator("CORS_ORIGINS", mode="before")
     @classmethod
     def _split_origins(cls, v: object) -> object:
         if isinstance(v, str) and not v.strip().startswith("["):

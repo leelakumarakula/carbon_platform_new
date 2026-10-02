@@ -93,6 +93,27 @@ class ConsentIn(BaseModel):
     document_id: uuid.UUID | None = None
 
 
+class ConsentDefinitionIn(BaseModel):
+    consent_type: TypeCode
+    title: Name
+    description: Annotated[str, StringConstraints(strip_whitespace=True, max_length=2000)] | None = None
+    text_version: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=40)] | None = None
+    required_for_activation: bool = False
+
+
+class ConsentDefinitionOut(BaseModel):
+    id: uuid.UUID
+    consent_type: str
+    version: int
+    title: str
+    description: str | None
+    text_version: str | None
+    required_for_activation: bool
+    status: str
+    created_at: UtcDatetime
+    retired_at: UtcDatetime | None
+
+
 class AgreementCreate(BaseModel):
     agreement_type: TypeCode
     template_version: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=40)]
@@ -146,6 +167,12 @@ class ContactOut(BaseModel):
 class ConsentOut(BaseModel):
     id: uuid.UUID
     consent_type: str
+    consent_definition_id: uuid.UUID | None = None
+    version: int | None = None                     # consent definition version this grant refers to
+    required_for_activation: bool = False
+    is_current_version: bool = False               # granted against the currently active definition
+    granted: bool = False
+    granted_at: UtcDatetime | None = None
     consent_text_version: str
     language: str | None
     capture_method: str

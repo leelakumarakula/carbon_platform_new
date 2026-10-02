@@ -4,6 +4,7 @@ from app.models.base import Base, Environment
 from app.models.documents import Document, DocumentCategory, DocumentVersion
 from app.models.farmers import (
     BankAccountStatus,
+    ConsentDefinition,
     Farmer,
     FarmerAgreement,
     FarmerBankAccount,
@@ -46,6 +47,7 @@ __all__ = [
     "AuditLog",
     "BankAccountStatus",
     "Base",
+    "ConsentDefinition",
     "Document",
     "DocumentCategory",
     "DocumentVersion",

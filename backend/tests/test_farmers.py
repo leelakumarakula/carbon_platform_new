@@ -97,7 +97,7 @@ def test_kyc_return_and_duplicate_flag(client: TestClient, db: Session, pm, qa, 
 def test_consents_and_activation(client: TestClient, db: Session, pm, qa, org) -> None:  # type: ignore[no-untyped-def]
     f = kyc_verified_farmer(client, pm, qa, org)
     act = client.post(f"{F}/{f['id']}/status", headers=pm.headers, json={"status": "ACTIVE", "reason": "onboarded"})
-    assert act.status_code == 409 and "Data Processing consent" in act.json()["message"]
+    assert act.status_code == 409 and "Personal data processing consent granted (version 1)" in act.json()["message"]
     body = {"consent_type": "data_processing", "consent_text_version": "DPC-2026-01", "language": "mr", "capture_method": "PAPER_SIGNED"}
     c = client.post(f"{F}/{f['id']}/consents", headers=pm.headers, json=body)
     assert c.status_code == 201 and c.json()["consents"][0]["consent_type"] == "DATA_PROCESSING"
@@ -112,6 +112,45 @@ def test_consents_and_activation(client: TestClient, db: Session, pm, qa, org) -
     sus = client.post(f"{F}/{f['id']}/status", headers=pm.headers, json={"status": "SUSPENDED", "reason": "investigation"})
     assert sus.json()["status"] == "SUSPENDED"
     assert client.post(f"{F}/{f['id']}/status", headers=pm.headers, json={"status": "ACTIVE", "reason": "cleared"}).json()["status"] == "ACTIVE"
+
+
+def test_consent_definitions_are_versioned_and_drive_activation(client: TestClient, db: Session, pm, qa, org, admin) -> None:  # type: ignore[no-untyped-def]
+    """Decision D3: consent types are configuration; activation requires the current version of every required one."""
+    defs = client.get("/api/v1/consent-definitions", headers=pm.headers).json()
+    assert [(d["consent_type"], d["version"], d["required_for_activation"]) for d in defs] == [("DATA_PROCESSING", 1, True)]
+    # Only consent configurers may publish; project managers cannot.
+    new_type = {"consent_type": "photo_use", "title": "Use of field photos", "required_for_activation": False}
+    assert client.post("/api/v1/admin/consent-definitions", headers=pm.headers, json=new_type).status_code == 403
+    r = client.post("/api/v1/admin/consent-definitions", headers=admin.headers, json=new_type)
+    assert r.status_code == 201 and r.json()["consent_type"] == "PHOTO_USE" and r.json()["version"] == 1
+    f = kyc_verified_farmer(client, pm, qa, org, id_number="2222 3333 4444")
+    base = {"consent_text_version": "DPC-2026-01", "language": "mr", "capture_method": "PAPER_SIGNED"}
+    unknown = client.post(f"{F}/{f['id']}/consents", headers=pm.headers, json=base | {"consent_type": "MARKETING"})
+    assert unknown.status_code == 422 and unknown.json()["error_code"] == "UNKNOWN_CONSENT_TYPE"
+    granted = client.post(f"{F}/{f['id']}/consents", headers=pm.headers, json=base | {"consent_type": "DATA_PROCESSING"}).json()
+    c = granted["consents"][0]
+    assert c["version"] == 1 and c["required_for_activation"] is True and c["granted"] is True and c["is_current_version"] is True
+    # Publishing version 2 retires version 1; the farmer's v1 grant no longer satisfies activation.
+    v2 = client.post("/api/v1/admin/consent-definitions", headers=admin.headers,
+                     json={"consent_type": "DATA_PROCESSING", "title": "Personal data processing", "text_version": "DPC-2027-01",
+                           "required_for_activation": True}).json()
+    assert v2["version"] == 2
+    all_defs = {(d["consent_type"], d["version"]): d["status"] for d in client.get("/api/v1/admin/consent-definitions", headers=admin.headers).json()}
+    assert all_defs[("DATA_PROCESSING", 1)] == "RETIRED" and all_defs[("DATA_PROCESSING", 2)] == "ACTIVE"
+    act = client.post(f"{F}/{f['id']}/status", headers=pm.headers, json={"status": "ACTIVE", "reason": "onboarded"})
+    assert act.status_code == 409 and "(version 2)" in act.json()["message"]
+    again = client.post(f"{F}/{f['id']}/consents", headers=pm.headers, json=base | {"consent_type": "DATA_PROCESSING",
+                                                                                     "consent_text_version": "DPC-2027-01"}).json()
+    assert [(x["version"], x["status"]) for x in again["consents"]] == [(1, "SUPERSEDED"), (2, "GRANTED")]  # history kept
+    assert client.post(f"{F}/{f['id']}/status", headers=pm.headers, json={"status": "ACTIVE", "reason": "onboarded"}).status_code == 200
+    # Retiring PHOTO_USE (not required) is audited.
+    rid = next(d["id"] for d in client.get("/api/v1/admin/consent-definitions", headers=admin.headers).json() if d["consent_type"] == "PHOTO_USE")
+    assert client.post(f"/api/v1/admin/consent-definitions/{rid}/retire", headers=admin.headers, json={"reason": "no longer used"}).json()["status"] == "RETIRED"
+    from sqlalchemy import select
+
+    from app.models import AuditLog
+    actions = set(db.scalars(select(AuditLog.action).where(AuditLog.entity_type == "consent_definition")).all())
+    assert {"CONSENT_DEFINITION_PUBLISHED", "CONSENT_DEFINITION_RETIRED"} <= actions
 
 
 def test_identity_locked_after_kyc(client: TestClient, pm, qa, org) -> None:  # type: ignore[no-untyped-def]

@@ -20,6 +20,8 @@ export const P = {
   FARMS_READ: 'farms.read',
   FARMS_MANAGE: 'farms.manage',
   FARMS_REVIEW: 'farms.review',
+  FARMS_REVIEW_CROSS_ORG: 'farms.review_cross_org',
+  CONSENTS_CONFIGURE: 'consents.configure',
 } as const;
 
 export type PermissionCode = (typeof P)[keyof typeof P];

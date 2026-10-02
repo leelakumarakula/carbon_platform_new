@@ -40,6 +40,7 @@ router = APIRouter(prefix="/farms", tags=["farms"])
 Reader = Annotated[Principal, Depends(require_any(P.FARMS_READ, P.FARMERS_SELF))]
 Manager = Annotated[Principal, Depends(require_any(P.FARMS_MANAGE, P.FARMERS_SELF))]
 Reviewer = Annotated[Principal, Depends(require_any(P.FARMS_REVIEW))]
+OverlapReviewer = Annotated[Principal, Depends(require_any(P.FARMS_REVIEW, P.FARMS_REVIEW_CROSS_ORG))]
 Kind = Literal["land", "crop", "practice"]
 
 
@@ -124,7 +125,7 @@ def overlaps(farm_id: uuid.UUID, principal: Reader, db: DB, include_obsolete: bo
 
 
 @router.post("/{farm_id}/overlaps/{check_id}/resolve", response_model=OverlapOut)
-def resolve_overlap(farm_id: uuid.UUID, check_id: uuid.UUID, body: OverlapResolve, principal: Reviewer, db: DB, ctx: Ctx) -> OverlapOut:
+def resolve_overlap(farm_id: uuid.UUID, check_id: uuid.UUID, body: OverlapResolve, principal: OverlapReviewer, db: DB, ctx: Ctx) -> OverlapOut:
     c = svc.resolve_overlap(db, ctx, principal, farm_id, check_id, body.resolution, body.notes)
     return overlap_out(db, principal, svc.get_farm(db, principal, farm_id), c)
 
