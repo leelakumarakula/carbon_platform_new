@@ -134,3 +134,56 @@ def point_distance_to_boundary_m(db: Session, boundary_id: uuid.UUID, lat: float
                      {"lat": lat, "lon": lon, "bid": boundary_id}).one()
     return float(row[0])
 
+
+
+# ---------------------------------------------------------------- projects (Phase 3)
+_PROJECT_UNION = text("""
+SET NOCOUNT ON;
+DECLARE @u geography = (
+    SELECT geography::UnionAggregate(b.boundary)
+    FROM dbo.project_farms pf
+    JOIN dbo.farms f ON f.id = pf.farm_id
+    JOIN dbo.farm_boundaries b ON b.id = f.current_boundary_id
+    WHERE pf.project_id = :pid AND pf.status = 'ACTIVE');
+DECLARE @sum float = (
+    SELECT SUM(b.boundary.STArea())
+    FROM dbo.project_farms pf
+    JOIN dbo.farms f ON f.id = pf.farm_id
+    JOIN dbo.farm_boundaries b ON b.id = f.current_boundary_id
+    WHERE pf.project_id = :pid AND pf.status = 'ACTIVE');
+SELECT @u.STAsText() AS wkt, @u.STArea() AS area_m2, @sum AS sum_m2, @u.STIsValid() AS valid, @u.EnvelopeAngle() AS angle,
+       @u.STGeometryType() AS gtype, @u.STNumGeometries() AS parts;
+""")
+
+
+@dataclass(frozen=True)
+class ProjectUnion:
+    wkt: str | None
+    area_m2: float
+    sum_m2: float
+    valid: bool
+    geometry_type: str | None
+    parts: int
+
+
+def project_union(db: Session, project_id: uuid.UUID) -> ProjectUnion:
+    """Union of the current boundaries of the project's active farms (geography::UnionAggregate). Overlapping
+    farm areas count once in the union area; `sum_m2` is the plain sum, so sum - union = internal overlap."""
+    r = db.execute(_PROJECT_UNION, {"pid": project_id}).one()
+    return ProjectUnion(r[0], float(r[1] or 0), float(r[2] or 0), bool(r[3]) and (r[4] is None or float(r[4]) < 90), r[5], int(r[6] or 0))
+
+
+_PROJECT_OVERLAPS = text("""
+SET NOCOUNT ON;
+DECLARE @g geography = (SELECT boundary FROM dbo.project_boundaries WHERE id = :bid);
+SELECT ob.project_id, p.organization_id, @g.STIntersection(ob.boundary).STArea() AS overlap_m2
+FROM dbo.project_boundaries ob
+JOIN dbo.projects p ON p.id = ob.project_id
+WHERE ob.status = 'CURRENT' AND ob.project_id <> :pid AND p.environment = :env AND p.status <> 'CLOSED'
+  AND ob.boundary.STIntersects(@g) = 1;
+""")
+
+
+def project_overlaps(db: Session, boundary_id: uuid.UUID, project_id: uuid.UUID, environment: str) -> list[tuple[uuid.UUID, uuid.UUID, float]]:
+    rows = db.execute(_PROJECT_OVERLAPS, {"bid": boundary_id, "pid": project_id, "env": environment}).all()
+    return [(uuid.UUID(str(r[0])), uuid.UUID(str(r[1])), float(r[2] or 0)) for r in rows]

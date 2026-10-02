@@ -36,8 +36,9 @@ export class ApiService {
     return this.http.post<T>(this.url(path), form);
   }
 
-  delete<T>(path: string, query?: Query): Observable<T> {
-    return this.http.delete<T>(this.url(path), { params: toParams(query) });
+  /** DELETE; `body` carries e.g. the reason for ending a record (the server keeps the record, see projects). */
+  delete<T>(path: string, query?: Query, body?: unknown): Observable<T> {
+    return this.http.delete<T>(this.url(path), { params: toParams(query), body });
   }
 
   private url(path: string): string {

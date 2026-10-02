@@ -13,14 +13,21 @@ const DEMO_PW = (process.env.DEMO_USER_PASSWORD || /^DEMO_USER_PASSWORD=(.*)$/m.
 fs.mkdirSync(OUT, { recursive: true });
 
 let stillIn = false;
+let lastPage = null; // for a failure screenshot
 let navItems = [];
 const phase2 = { pmPolygon: 0, overlapFlag: false, drawnArea: '', farmerFarms: 0 };
+const phase3 = { demoProjects: 0, created: '', areaText: '', boundaryShapes: 0, status: '', historyOk: false, audit: [], farmerProjects: 0,
+  buyerBlocked: false, tiles: false };
+const REQUIRED_AUDIT = ['PROJECT_CREATED', 'PROJECT_STATUS_CHANGED', 'PROJECT_FARM_ADDED', 'PROJECT_CARBON_RIGHT_CREATED',
+  'PROJECT_PARTICIPANT_ADDED', 'PROJECT_STANDARD_SELECTED', 'PROJECT_ACTIVITY_SELECTED', 'PROJECT_CREDITING_PERIOD_CREATED',
+  'PROJECT_BASELINE_UPDATED', 'PROJECT_SUBMITTED'];
 (async () => {
   const browser = await chromium.launch({ executablePath: CHROME, headless: true });
   const problems = [];
   async function session(email) {
     const ctx = await browser.newContext({ viewport: { width: 1360, height: 860 } });
     const page = await ctx.newPage();
+    lastPage = page;
     page.on('console', (m) => m.type() === 'error' && problems.push(`[${email}] console: ${m.text()}`));
     page.on('pageerror', (e) => problems.push(`[${email}] pageerror: ${e.message}`));
     page.on('response', (r) => r.url().includes('/api/') && r.status() >= 500 && problems.push(`[${email}] ${r.status()} ${r.url()}`));
@@ -30,6 +37,25 @@ const phase2 = { pmPolygon: 0, overlapFlag: false, drawnArea: '', farmerFarms: 0
     return { ctx, page };
   }
   const shot = async (page, name) => page.screenshot({ path: path.join(OUT, `${name}.jpg`), type: 'jpeg', quality: 70 });
+  // Material select: open by its label, pick the first matching enabled option.
+  async function choose(page, labelText, option) {
+    // A Material select does not open until its options have loaded, so retry the click briefly.
+    const opts = page.locator('mat-option:not(.mat-mdc-option-disabled)');
+    const target = (option ? opts.filter({ hasText: option }) : opts).first();
+    for (let i = 0; i < 20; i++) {
+      await page.getByRole('combobox', { name: labelText }).click({ force: true }); // long floating labels can overlap the trigger
+      if (await target.waitFor({ timeout: 1000 }).then(() => true, () => false)) break;
+      await page.keyboard.press('Escape');
+    }
+    await target.click();
+    await page.waitForTimeout(200);
+  }
+  async function confirmReason(page, button, reason) {
+    const dlg = page.locator('mat-dialog-container');
+    await dlg.getByLabel('Reason (recorded in the audit log)').fill(reason);
+    await dlg.getByRole('button', { name: button }).click();
+    await dlg.waitFor({ state: 'detached' });
+  }
 
   // ---- admin
   const { ctx, page } = await session('admin@demo.carbon.example');
@@ -121,6 +147,98 @@ const phase2 = { pmPolygon: 0, overlapFlag: false, drawnArea: '', farmerFarms: 0
   await shot(col.page, '15-boundary-check');
   await col.ctx.close();
 
+  // ---- Phase 3: project manager creates a project end to end (UI), then submits it for eligibility review
+  const pp = await session('pm@demo.carbon.example');
+  const P = pp.page;
+  P.on('request', (r) => { if (r.url().includes('/api/v1/config/client')) phase3.tiles = true; });
+  await P.getByRole('button', { name: 'Sign in' }).click();
+  await P.getByText('Welcome,').waitFor();
+  await P.goto(`${BASE}/projects`);
+  await P.getByText('Nashik soil health pilot (DEMO)').first().waitFor();
+  phase3.demoProjects = await P.getByText(/\(DEMO\)$/).count();
+  await shot(P, '20-projects');
+  await P.getByRole('link', { name: 'New project' }).click();
+  const projectName = `E2E pilot ${Date.now()}`;
+  await P.getByLabel('Project name').fill(projectName);
+  await P.getByRole('button', { name: 'Create project' }).click();
+  await P.getByRole('button', { name: 'Start data collection' }).waitFor();
+  phase3.created = await P.locator('h1').first().innerText();
+  const projectId = P.url().split('/projects/')[1].split('?')[0];
+  await P.getByRole('button', { name: 'Start data collection' }).click();
+  await confirmReason(P, 'Start data collection', 'E2E: collecting project data');
+  await P.getByText('Data collection', { exact: true }).first().waitFor();
+  // farms: pick a verified farm; it is already in a DEMO project, so the conflict must be acknowledged (not rejected)
+  await P.getByRole('tab', { name: /^Farms/ }).click();
+  await choose(P, 'Farm');
+  await P.getByLabel('Agreement / evidence reference').fill('E2E carbon-rights clause, participation agreement');
+  await P.getByText('Conflicts to acknowledge').waitFor();
+  await P.getByText('I acknowledge these conflicts').click();
+  await P.getByLabel('Why the farm can still join').fill('E2E: overlap with DEMO project to be assessed in eligibility review');
+  await P.getByRole('button', { name: 'Add farm' }).click();
+  await P.locator('.chip', { hasText: 'Rights:' }).first().waitFor();
+  await shot(P, '21-project-farms');
+  // boundary computed by SQL Server from the farm polygons
+  await P.getByRole('tab', { name: 'Boundary' }).click();
+  await P.getByText('Project area').waitFor();
+  await P.locator('path.leaflet-interactive').first().waitFor();
+  await P.waitForTimeout(1200);
+  phase3.areaText = await P.locator('dt:has-text("Project area") + dd').innerText();
+  phase3.boundaryShapes = await P.locator('path.leaflet-interactive').count();
+  await shot(P, '22-project-boundary');
+  // team
+  await P.getByRole('tab', { name: /^Team/ }).click();
+  await choose(P, 'Person', 'Demo QA Officer');
+  await P.getByRole('button', { name: 'Add to team' }).click();
+  await P.locator('.line').filter({ hasText: 'Demo QA Officer' }).first().waitFor();
+  // standard + activity references (no methodology selection)
+  await P.getByRole('tab', { name: 'Standard & activity' }).click();
+  await choose(P, 'Standard / route', 'Verified Carbon Standard');
+  await P.getByRole('button', { name: 'Select', exact: true }).first().click();
+  await P.getByText('Official source').waitFor();
+  await choose(P, 'Activity offered under the standard', 'reduced tillage');
+  await P.getByRole('button', { name: 'Select', exact: true }).nth(1).click();
+  await P.getByText('(current)').nth(1).waitFor();
+  await shot(P, '23-project-standard');
+  // crediting period + baseline metadata
+  await P.getByRole('tab', { name: 'Crediting & baseline' }).click();
+  await P.getByLabel('Start', { exact: true }).fill('2026-06-01');
+  await P.getByLabel('End', { exact: true }).fill('2036-05-31');
+  await P.getByRole('button', { name: 'Record period' }).click();
+  await P.getByText('2026-06-01 → 2036-05-31').first().waitFor();
+  await P.getByLabel('From', { exact: true }).fill('2021-06-01');
+  await P.getByLabel('To', { exact: true }).fill('2026-05-31');
+  await P.getByLabel('Baseline practices (description)').fill('Conventional tillage, residue burning');
+  await P.getByRole('button', { name: 'Record baseline' }).click();
+  await P.getByText('v1 ·').waitFor();
+  // carbon rights recorded with the farm
+  await P.getByRole('tab', { name: /^Carbon rights/ }).click();
+  await P.getByText('Unverified').first().waitFor();
+  // submit → ELIGIBILITY_REVIEW
+  await P.getByRole('button', { name: 'Submit for eligibility review' }).click();
+  await confirmReason(P, 'Submit for eligibility review', 'E2E: all project data recorded');
+  await P.getByText('Eligibility review', { exact: true }).first().waitFor();
+  phase3.status = 'ELIGIBILITY_REVIEW';
+  await P.getByRole('tab', { name: 'Status history' }).click();
+  await P.getByText('Submitted for eligibility review').waitFor();
+  phase3.historyOk = await P.getByText('E2E: all project data recorded').isVisible();
+  await shot(P, '24-project-history');
+  // audit events (read through the API as the platform admin)
+  const login = await pp.ctx.request.post(`${BASE}/api/v1/auth/login`, { data: { email: 'admin@demo.carbon.example', password: DEMO_PW } });
+  const token = (await login.json()).access_token;
+  const audit = await pp.ctx.request.get(`${BASE}/api/v1/admin/audit-logs?entity_type=project&entity_id=${projectId}&page_size=100`,
+    { headers: { Authorization: `Bearer ${token}` } });
+  phase3.audit = [...new Set((await audit.json()).items.map((r) => r.action))].sort();
+  await pp.ctx.close();
+
+  // ---- Phase 3: buyer has no project access
+  const b = await session('buyer@demo.carbon.example');
+  await b.page.getByRole('button', { name: 'Sign in' }).click();
+  await b.page.getByText('Welcome,').waitFor();
+  await b.page.goto(`${BASE}/projects`);
+  await b.page.getByText("You don't have access to this page").waitFor();
+  phase3.buyerBlocked = !(await b.page.locator('nav a', { hasText: 'Projects' }).count());
+  await b.ctx.close();
+
   // ---- farmer: least privilege + self-service
   const f = await session('farmer@demo.carbon.example');
   await f.page.getByRole('button', { name: 'Sign in' }).click();
@@ -136,16 +254,30 @@ const phase2 = { pmPolygon: 0, overlapFlag: false, drawnArea: '', farmerFarms: 0
   await f.page.getByText('Pimpalgaon plot 1 (DEMO)').first().waitFor();
   phase2.farmerFarms = await f.page.getByText(/Pimpalgaon plot \d \(DEMO\)/).count();
   await shot(f.page, '16-farmer-my-farms');
+  await f.page.goto(`${BASE}/me/projects`);
+  await f.page.getByText('Nashik soil health pilot (DEMO)').first().waitFor();
+  phase3.farmerProjects = await f.page.locator('mat-card').count();
+  await shot(f.page, '25-farmer-my-projects');
   await f.ctx.close();
   console.log('phase 2:', JSON.stringify(phase2));
+  console.log('phase 3:', JSON.stringify(phase3));
 
   await browser.close();
   // One 401 per session is expected: the silent session-restore attempt before sign-in.
   const real = problems.filter((p) => !p.includes('status of 401'));
   console.log(real.length ? 'PROBLEMS:\n' + real.join('\n') : 'OK: no unexpected console errors or 5xx responses');
   const p2ok = phase2.pmPolygon > 0 && phase2.overlapFlag && /ha/.test(phase2.drawnArea) && phase2.farmerFarms >= 2;
-  if (!stillIn || real.length || navItems.length !== 3 || !p2ok) process.exitCode = 1;
-})().catch((e) => {
+  const missingAudit = REQUIRED_AUDIT.filter((a) => !phase3.audit.includes(a));
+  if (missingAudit.length) console.log('missing audit events:', missingAudit);
+  const p3ok = phase3.demoProjects >= 2 && /ha/.test(phase3.areaText) && phase3.boundaryShapes >= 2 && phase3.status === 'ELIGIBILITY_REVIEW'
+    && phase3.historyOk && !missingAudit.length && phase3.farmerProjects >= 1 && phase3.buyerBlocked && phase3.tiles;
+  // farmer nav: Dashboard, My farmer profile, My farms, My projects
+  if (!stillIn || real.length || navItems.length !== 4 || !p2ok || !p3ok) process.exitCode = 1;
+})().catch(async (e) => {
   console.error('DRIVER FAILED:', e.message);
+  if (lastPage) {
+    await lastPage.screenshot({ path: path.join(OUT, 'zz-failure.jpg'), type: 'jpeg', quality: 70 }).catch(() => undefined);
+    console.error('page text:', (await lastPage.locator('body').innerText().catch(() => '')).slice(0, 1500));
+  }
   process.exit(1);
 });

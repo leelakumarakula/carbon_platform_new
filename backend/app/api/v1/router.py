@@ -3,6 +3,7 @@ from fastapi import APIRouter
 from app.api.v1 import (
     audit,
     auth,
+    catalog,
     client_config,
     consents,
     documents,
@@ -11,10 +12,12 @@ from app.api.v1 import (
     health,
     notifications,
     organizations,
+    projects,
     roles,
     users,
 )
 
 api_router = APIRouter()
-for module in (health, auth, client_config, users, roles, organizations, audit, consents, farmers, farms, documents, notifications):
+for module in (health, auth, client_config, users, roles, organizations, audit, consents, farmers, farms, catalog, projects, documents,
+               notifications):
     api_router.include_router(module.router)

@@ -41,6 +41,18 @@ revokes every role they hold in it.
 | farms.review_cross_org | clear or confirm overlaps between farms of different organizations (platform-wide only) |
 | consents.configure | publish versioned consent definitions; choose which are required for activation (privileged) |
 
+## Phase 3 permissions
+
+| Code | Meaning |
+|---|---|
+| projects.read | view projects of permitted organizations (farms, team, boundary, references, periods, carbon rights, documents, history) |
+| projects.manage | create/edit projects; farms, team, standard/activity references, crediting period, baseline, carbon rights, documents; submit, confirm activity, re-open, close |
+| projects.review | verify carbon-rights records; approve or return the eligibility review (never a project you submitted, never rights you recorded) |
+| standards.manage | maintain the standard/route and activity catalog (platform-wide; reference data only) |
+
+GIS review of a project boundary uses the existing `farms.review`. Farmers see only their own participation
+(`GET /projects/my-participation`, via `farmers.self`). Buyers have no project access.
+
 ## Permission-grant matrix (decision D4, approved)
 
 Granting a role needs `users.assign_roles` in the scope of the grant, plus every *privileged* permission the role
@@ -79,21 +91,21 @@ farm but cannot *clear* it (`CROSS_ORG_OVERLAP`). Only the **Platform GIS Specia
 
 ## System roles (spec §4)
 
-| Code | Scope | Phase 1 permissions |
+| Code | Scope | Permissions (Phases 1–3) |
 |---|---|---|
-| PLATFORM_ADMIN | platform | all users/roles/organizations permissions, audit.read, security.read, consents.configure, farmers.read, farms.read |
-| PLATFORM_GIS_SPECIALIST | platform | farmers.read, farms.read, farms.review_cross_org (decision D5; not one of the 19 spec roles) |
+| PLATFORM_ADMIN | platform | all users/roles/organizations permissions, audit.read, security.read, consents.configure, farmers.read, farms.read, projects.read, standards.manage |
+| PLATFORM_GIS_SPECIALIST | platform | farmers.read, farms.read, farms.review_cross_org, projects.read (decision D5; not one of the 19 spec roles) |
 | SECURITY_ADMIN | platform | users.read, roles.read, organizations.read, audit.read, security.read, security.manage |
-| SUPPORT | platform | users.read, organizations.read, farmers.read, farms.read |
-| METHODOLOGY_SPECIALIST | platform | (Phase 4) |
+| SUPPORT | platform | users.read, organizations.read, farmers.read, farms.read, projects.read |
+| METHODOLOGY_SPECIALIST | platform | projects.read, standards.manage (methodology permissions in Phase 4) |
 | FARMER | organization | farmers.self |
-| FIELD_AGENT, FIELD_SUPERVISOR | organization | farmers.read, farmers.manage, farms.read, farms.manage |
-| PROJECT_MANAGER | organization | the above + farmers.kyc_verify, farmers.bank_manage |
-| GIS_SPECIALIST | organization | farmers.read, farms.read, farms.review |
-| MRV_MANAGER | organization | farmers.read, farms.read |
-| QA_OFFICER | organization | farmers.read, farmers.kyc_verify, farms.read |
-| FINANCE_MANAGER | organization | farmers.read, farmers.bank_manage, farmers.bank_verify |
-| LAB_TECHNICIAN, LAB_MANAGER, CALCULATION_ANALYST, VVB_REVIEWER, REGISTRY_MANAGER, CREDIT_MANAGER, BUYER | organization | added in their module's phase (BUYER never gets farmer data) |
+| FIELD_AGENT, FIELD_SUPERVISOR | organization | farmers.read, farmers.manage, farms.read, farms.manage, projects.read |
+| PROJECT_MANAGER | organization | the above + farmers.kyc_verify, farmers.bank_manage, projects.manage |
+| GIS_SPECIALIST | organization | farmers.read, farms.read, farms.review, projects.read |
+| MRV_MANAGER | organization | farmers.read, farms.read, projects.read |
+| QA_OFFICER | organization | farmers.read, farmers.kyc_verify, farms.read, projects.read, projects.review |
+| FINANCE_MANAGER | organization | farmers.read, farmers.bank_manage, farmers.bank_verify, projects.read |
+| LAB_TECHNICIAN, LAB_MANAGER, CALCULATION_ANALYST, VVB_REVIEWER, REGISTRY_MANAGER, CREDIT_MANAGER, BUYER | organization | added in their module's phase (BUYER never gets farmer or project-private data) |
 
 Platform Admin deliberately lacks `security.manage`, so it cannot grant Security Admin or unlock accounts.
 That is separation of duties.

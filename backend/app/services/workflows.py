@@ -59,6 +59,26 @@ BANK_ACCOUNT_MACHINE = StateMachine.build(
     terminal={"INACTIVE"},
 )
 
+# Spec section 8 lists the full project lifecycle (20 states, all allowed by the DB CHECK constraint). Phase 3
+# implements only the early transitions; each later phase adds its own (METHODOLOGY_REVIEW in Phase 4, ...).
+# Assumptions (docs/project-workflow.md): ELIGIBILITY_REVIEW -> DATA_COLLECTION (returned), STANDARD_SELECTED /
+# ACTIVITY_SELECTED -> DATA_COLLECTION (re-opened for correction) and early states -> CLOSED (abandoned).
+PROJECT_MACHINE = StateMachine.build(
+    "project", initial="DRAFT",
+    transitions={
+        "DRAFT": {"DATA_COLLECTION", "CLOSED"},
+        "DATA_COLLECTION": {"ELIGIBILITY_REVIEW", "CLOSED"},
+        "ELIGIBILITY_REVIEW": {"STANDARD_SELECTED", "DATA_COLLECTION"},
+        "STANDARD_SELECTED": {"ACTIVITY_SELECTED", "DATA_COLLECTION", "CLOSED"},
+        "ACTIVITY_SELECTED": {"DATA_COLLECTION", "CLOSED"},
+    },
+    terminal={"CLOSED"},
+)
+
+CARBON_RIGHT_MACHINE = StateMachine.build(
+    "project_carbon_right", initial="ACTIVE", transitions={"ACTIVE": {"ENDED", "VOID"}}, terminal={"ENDED", "VOID"},
+)
+
 OVERLAP_MACHINE = StateMachine.build(
     "farm_overlap_check", initial="OPEN",
     transitions={"OPEN": {"CLEARED", "CONFIRMED_CONFLICT", "OBSOLETE"}, "CONFIRMED_CONFLICT": {"OBSOLETE"}, "CLEARED": {"OBSOLETE"}},

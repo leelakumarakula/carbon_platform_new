@@ -22,6 +22,10 @@ export const P = {
   FARMS_REVIEW: 'farms.review',
   FARMS_REVIEW_CROSS_ORG: 'farms.review_cross_org',
   CONSENTS_CONFIGURE: 'consents.configure',
+  PROJECTS_READ: 'projects.read',
+  PROJECTS_MANAGE: 'projects.manage',
+  PROJECTS_REVIEW: 'projects.review',
+  STANDARDS_MANAGE: 'standards.manage',
 } as const;
 
 export type PermissionCode = (typeof P)[keyof typeof P];

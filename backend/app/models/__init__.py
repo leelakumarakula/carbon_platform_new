@@ -1,6 +1,7 @@
 """All ORM models; importing this package registers every table on Base.metadata (used by Alembic)."""
 from app.models.audit import ApiAccessLog, AuditLog, LoginAudit, SecurityEvent, WorkflowEvent
 from app.models.base import Base, Environment
+from app.models.catalog import Activity, Standard, StandardActivity
 from app.models.documents import Document, DocumentCategory, DocumentVersion
 from app.models.farmers import (
     BankAccountStatus,
@@ -41,8 +42,23 @@ from app.models.identity import (
     UserStatus,
 )
 from app.models.notifications import Notification
+from app.models.projects import (
+    Project,
+    ProjectActivity,
+    ProjectBaseline,
+    ProjectBoundary,
+    ProjectCarbonRight,
+    ProjectCreditingPeriod,
+    ProjectDocument,
+    ProjectFarm,
+    ProjectParticipant,
+    ProjectStandard,
+    ProjectStatus,
+    ProjectStatusHistory,
+)
 
 __all__ = [
+    "Activity",
     "ApiAccessLog",
     "AuditLog",
     "BankAccountStatus",
@@ -76,11 +92,25 @@ __all__ = [
     "OrganizationType",
     "OrganizationUser",
     "Permission",
+    "Project",
+    "ProjectActivity",
+    "ProjectBaseline",
+    "ProjectBoundary",
+    "ProjectCarbonRight",
+    "ProjectCreditingPeriod",
+    "ProjectDocument",
+    "ProjectFarm",
+    "ProjectParticipant",
+    "ProjectStandard",
+    "ProjectStatus",
+    "ProjectStatusHistory",
     "RefreshToken",
     "Role",
     "RolePermission",
     "RoleScope",
     "SecurityEvent",
+    "Standard",
+    "StandardActivity",
     "User",
     "UserRole",
     "UserSession",

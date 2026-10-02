@@ -4,8 +4,8 @@
 |---|---|---|
 | 1 | Foundation: Angular, FastAPI, SQL Server, SQLAlchemy, Alembic, auth, RBAC, organizations, audit, dev setup | **Done** |
 | 2 | Farmer & farm (KYC, polygons, history, evidence) | **Done** |
-| 3 | Project | Next (awaiting approval) |
-| 4 | Methodology | — |
+| 3 | Project | **Done** |
+| 4 | Methodology | Next (awaiting approval) |
 | 5 | MRV / GIS | — |
 | 6 | Sample / lab | — |
 | 7 | Calculation | — |
@@ -117,6 +117,81 @@ Verification (exit gate, 2 Oct 2026)
 - Audit review (DEMO run): every Phase 2 action wrote audit rows (FARMER_*, FARM_*, DOCUMENT_UPLOADED), plus
   42 farmer and farm workflow events.
 
+## Phase 2 decisions (D1–D6) — applied
+
+- **D1, D2:** transitions and agreement/bank statuses confirmed; documented as internal workflow states.
+- **D3:** versioned `consent_definitions` with `required_for_activation`. A new version supersedes older grants
+  without overwriting them. Admin API and page. DATA_PROCESSING v1 is the only definition; no others were invented.
+- **D4:** permission-grant matrix (roles-permissions.md) and a privilege-escalation test suite.
+- **D5:** Platform GIS Specialist role (`farms.review_cross_org`). Only that role can clear cross-organization
+  overlaps; the decision is audited in both organizations.
+- **D6:** basemap tile source from `MAP_TILE_*` settings, via `GET /api/v1/config/client`.
+
+## Phase 3 — delivered
+
+**Project domain connecting verified farms to a carbon project.** Details are in [project-workflow.md](project-workflow.md).
+
+Backend
+- Migration `0004`:
+  - 14 tables: `projects`, `project_farms`, `project_participants`, `project_standards`, `project_activities`,
+    `project_crediting_periods`, `project_baselines`, `project_carbon_rights`, `project_documents`,
+    `project_boundaries`, `project_status_history`, `standards`, `activities`, `standard_activities`.
+  - The project code sequence and the `geography` spatial index.
+  - An append-only trigger on the status history.
+  - The new document categories.
+- Project state machine with all 20 lifecycle states allowed by the database. Only the early transitions are
+  implemented (DRAFT → DATA_COLLECTION → ELIGIBILITY_REVIEW → STANDARD_SELECTED → ACTIVITY_SELECTED, plus return,
+  re-open and close), each with readiness checklists and separation of duties.
+- Farm participation:
+  - Only verified farms of active farmers, in the project's organization and environment, can join.
+  - Conflicts (farm overlaps, other participations) are shown and acknowledged, never auto-rejected.
+  - Removal ends the participation and keeps the record.
+- Carbon-rights references (agreement, document or reference) with independent review. Team membership tied to
+  RBAC roles the user already holds.
+- Standard and activity catalog with selection history. Crediting periods with replacement. Versioned baseline
+  metadata, with no calculation. Project documents.
+- Project boundary derived by SQL Server (`UnionAggregate`):
+  - authoritative area with overlaps counted once;
+  - validity check;
+  - stale detection;
+  - overlaps with other projects;
+  - versioned, with GIS review.
+- Farmer self-service participation view (`/projects/my-participation`).
+- DEMO seed: 2 standards and 3 activities (illustrative), signed DEMO agreements, and 2 projects (one in
+  DATA_COLLECTION, one taken through the real eligibility review to ACTIVITY_SELECTED).
+
+Frontend
+- Projects list, create, and detail with tabs:
+  - overview with readiness and map;
+  - farms (eligible-farm selection, conflict acknowledgement, carbon rights);
+  - team;
+  - boundary map with GIS review;
+  - standard & activity;
+  - crediting period & baseline;
+  - carbon rights with review;
+  - documents;
+  - status history.
+- Admin "Standards & activities" catalog page and the farmer's "My projects" page.
+
+Verification (exit gate, 2 Oct 2026)
+- Backend: **168 pytest tests passed**:
+  - Phase 1 and 2: 132;
+  - decisions D1–D6: 13;
+  - Phase 3: 23 (18 project, 4 GIS, 1 DEMO seed).
+
+  ruff clean. mypy clean (99 files). `alembic check`: no drift. Migration 0004 tested up/down/up.
+- Frontend: **47 Vitest tests passed** (8 files). Production build OK (initial bundle 734 kB, 173 kB transferred).
+- E2E (`npm run e2e:smoke`) passed:
+  - Phases 1–2;
+  - the Project Manager runs the whole Phase 3 flow in the UI: create, start data collection, add a verified farm
+    (conflict acknowledged), boundary of 1.5014 ha computed by SQL Server, add team member, standard and activity,
+    crediting period, baseline, carbon rights, submit, then ELIGIBILITY_REVIEW and status history;
+  - all required audit events present;
+  - the farmer sees only their own participation;
+  - the buyer is blocked;
+  - map tiles load from server configuration;
+  - no console errors.
+
 ## Known limitations and open items
 
 - The rate limiter is in-memory (single API process). Redis is required before scaling out (Phase 12).
@@ -129,8 +204,12 @@ Verification (exit gate, 2 Oct 2026)
   - Offline capture and sync are not built.
   - Notifications are in-app only.
   - Satellite evidence is recorded manually only (adapter in Phase 5).
-  - OpenStreetMap public tiles are for development only.
-  - The workflow assumptions A1–A7 in farmer-workflow.md need business confirmation.
-  - No system role holds a platform-level `farms.review`, so cross-organization overlap flags can be cleared
-    only by a custom platform role.
+  - OpenStreetMap public tiles are the development default; production sets `MAP_TILE_*` (D6).
+  - A1–A5 were approved (D1–D3); the GIS thresholds (A6) and the farm verification gates (A7) are still to be confirmed.
+- Phase 3:
+  - Access is organization-scoped. Project-team membership is not yet used to narrow access.
+  - Only farms of the project's own organization can join (P3).
+  - Cross-organization overlapping project boundaries are flagged, not adjudicated.
+  - Each E2E run creates a DEMO-environment project in the development database.
+  - The project assumptions P1–P9 in project-workflow.md need confirmation.
 - The browser logs one expected 401 at start-up: the silent session-restore attempt when nobody is signed in.

@@ -30,10 +30,18 @@ export const NAVIGATION: readonly NavSection[] = [
     ],
   },
   {
+    title: 'Projects',
+    items: [
+      { label: 'Projects', icon: 'workspaces', route: '/projects', permissions: [P.PROJECTS_READ] },
+      { label: 'Standards & activities', icon: 'library_books', route: '/admin/catalog', permissions: [P.STANDARDS_MANAGE] },
+    ],
+  },
+  {
     title: 'My farm',
     items: [
       { label: 'My farmer profile', icon: 'badge', route: '/me/farmer', permissions: [P.FARMERS_SELF] },
       { label: 'My farms', icon: 'agriculture', route: '/farms', permissions: [P.FARMERS_SELF] },
+      { label: 'My projects', icon: 'handshake', route: '/me/projects', permissions: [P.FARMERS_SELF] },
     ],
   },
   {

@@ -45,7 +45,7 @@ transaction.
 | `core/` | `ApiService`, `ApiError`, auth service/guards/interceptors, permissions, navigation registry, notifications |
 | `shared/` | Status badge, page header, state view, reason dialog, form helpers, `PagedList` |
 | `layout/` | Shell: side navigation filtered by permissions, user menu, DEMO indicator |
-| `auth/`, `dashboard/`, `admin/`, `farmer/`, `farms/` | Feature pages; each feature has its own models and API service |
+| `auth/`, `dashboard/`, `admin/`, `farmer/`, `farms/`, `projects/` | Feature pages; each feature has its own models and API service |
 
 `shared/geo-map.ts` wraps Leaflet. The browser only draws and previews shapes; validation and area are
 always computed by SQL Server.
@@ -67,4 +67,8 @@ on the server. The client only mirrors them (state machines, password policy) fo
   version is written, and a filtered unique index guarantees one current row.
 - **Documents**: one document service for every module. Each owning module registers a resolver that decides
   access, so documents inherit their parent record's scope.
+- **Projects**: `project_service` (project, team, references, periods, workflow) and `project_farm_service`
+  (participation, carbon rights, derived boundary). The project boundary is a SQL Server `UnionAggregate` of the
+  participating farms' current boundaries, versioned like farm boundaries. Status history is a dedicated
+  append-only table in addition to `workflow_events`.
 - **Time**: stored as naive UTC `datetime2`, emitted as ISO-8601 with `Z`.

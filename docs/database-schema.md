@@ -60,10 +60,36 @@ Shared services added in Phase 2:
 | `document_versions` | **append-only (trigger)**; storage key, SHA-256, size, sniffed MIME, scan status |
 | `notifications` | in-app inbox; channel (IN_APP only for now), status, read time |
 
+## Phase 2 decisions (D3)
+
+| Table | Notes |
+|---|---|
+| `consent_definitions` | `consent_type` + `version` unique; title, `text_version`, `required_for_activation`, ACTIVE/RETIRED (one ACTIVE per type, filtered unique index). `farmer_consents.consent_definition_id` references the version granted; grants of an older version become SUPERSEDED |
+
+## Phase 3 tables (§7.4 projects, §7.5 standards/activities)
+
+| Table | Notes |
+|---|---|
+| `standards` | `code` unique; programme owner, VOLUNTARY/COMPLIANCE/OTHER, official `source_url`, ACTIVE/INACTIVE, `environment` |
+| `activities` | `code` unique; category, ACTIVE/INACTIVE, `environment` |
+| `standard_activities` | PK (standard, activity): which activities a standard offers (catalog link, not a rule) |
+| `projects` | `project_code` (sequence `seq_project_code`, PRJ-YYYY-nnnnnn); organization; type; country/region; start date; status CHECK with all 20 lifecycle states; current `standard_id` / `activity_id`; `methodology_status` CHECK = NOT_SELECTED (Phase 4 widens); `current_boundary_id`; submission and eligibility-review stamps; `environment` |
+| `project_farms` | participation: project, farm, farmer, ACTIVE/REMOVED (filtered unique ACTIVE per project+farm), period (CHECK end ≥ start), `farm_boundary_id` + area at add time, conflict acknowledgement + JSON snapshot, added/removed by/at/reason |
+| `project_participants` | team: user + project role (CHECK list of system role codes), ACTIVE/REMOVED (filtered unique), dates, notes |
+| `project_standards`, `project_activities` | selection history; filtered unique `is_current = 1` per project |
+| `project_crediting_periods` | period number (unique per project), start/end (CHECK end > start), PROPOSED/SUPERSEDED/CANCELLED (+ CONFIRMED/ACTIVE/ENDED reserved), `replaces_id` |
+| `project_baselines` | versioned baseline metadata (period, description, data sources); filtered unique current |
+| `project_carbon_rights` | per participation: holder type/farmer/organization/name, share % (0–100], agreement (→ `farmer_agreements`), document, reference (CHECK at least one), validity, ACTIVE/ENDED/VOID, UNVERIFIED/VERIFIED/REJECTED + reviewer |
+| `project_documents` | link to `documents` (categories PROJECT_DESIGN, CARBON_RIGHTS, BASELINE_DATA added) |
+| `project_boundaries` | `geography` union of farm boundaries, versioned CURRENT/SUPERSEDED (filtered unique), union area, sum of farm areas, internal overlap, farm boundary IDs used (JSON), validity, other-project overlaps (JSON), GIS review. **Spatial index** `six_project_boundaries_boundary` |
+| `project_status_history` | **append-only (trigger)**: from/to status, action, reason, user, time, request ID |
+
 ## Migrations
 
 `backend/alembic/versions/20261002_0001_phase1_identity_access_audit.py` and
-`20261002_0002_phase2_farmer_farm.py` (tables, sequences, spatial index, `document_versions` trigger). Spatial
+`20261002_0002_phase2_farmer_farm.py` (tables, sequences, spatial index, `document_versions` trigger),
+`20261002_0003_phase2_decisions_consent_definitions.py` (D3, with data backfill) and `20261002_0004_phase3_projects.py`
+(project tables, `seq_project_code`, project spatial index, `project_status_history` trigger, document categories). Spatial
 indexes (`six_*`) are hand-written SQL and excluded from autogenerate by `include_object` in `alembic/env.py`. Generate new revisions with
 `alembic revision --autogenerate`, review them, and add raw SQL (triggers, spatial indexes) by hand.
 `alembic check` must report no drift before a phase is closed.

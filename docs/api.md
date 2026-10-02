@@ -77,6 +77,45 @@ Records outside the caller's scope return 404. Uploads are `multipart/form-data`
 Workflow endpoints take `{ "reason": "..." }`. Farm responses include `allowed_transitions`, `readiness`
 checklists and `can_manage` / `can_review` flags, so the UI never has to guess the rules.
 
+## Endpoints (Phase 2 decisions)
+
+| Method | Path | Permission |
+|---|---|---|
+| GET | `/config/client` | signed in — basemap tile settings (`MAP_TILE_*`, decision D6) |
+| GET | `/consent-definitions` | farmers.read, farmers.self or consents.configure |
+| GET/POST | `/admin/consent-definitions` · `/{id}/retire` | consents.configure |
+
+## Endpoints (Phase 3)
+
+All project endpoints are organization-scoped; out-of-scope projects return 404. Workflow endpoints take `{ "reason": "..." }`.
+
+| Method | Path | Permission |
+|---|---|---|
+| GET/POST | `/projects` | projects.read / projects.manage |
+| GET | `/projects/my-participation` | farmers.self (own farms only) |
+| GET/PATCH | `/projects/{id}` | projects.read / projects.manage |
+| GET | `/projects/{id}/farms` (`include_removed`, `geometry`) · `/farms/eligible` | projects.read · projects.manage |
+| POST | `/projects/{id}/farms` | projects.manage (farm + participation period + carbon_rights; conflicts need `acknowledge_conflicts` + note) |
+| DELETE | `/projects/{id}/farms/{farm_id}` (body `{reason}`) | projects.manage — ends the participation, keeps the record |
+| GET/POST | `/projects/{id}/participants` · `/participants/candidates` | projects.read / projects.manage |
+| PATCH | `/projects/{id}/participants/{participant_id}` | projects.manage (`status: REMOVED` + reason removes) |
+| GET | `/projects/{id}/boundary` | projects.read |
+| POST | `/projects/{id}/boundary/recompute` · `/boundary/review` | projects.manage · farms.review |
+| GET/POST | `/projects/{id}/standards` · `/standard` | projects.read / projects.manage |
+| GET/POST | `/projects/{id}/activities` · `/activity` | projects.read / projects.manage |
+| GET/POST | `/projects/{id}/crediting-period` | projects.read / projects.manage |
+| GET/PATCH | `/projects/{id}/baseline` | projects.read / projects.manage (new version; reason required after the first) |
+| GET/POST | `/projects/{id}/carbon-rights` | projects.read / projects.manage |
+| POST | `/projects/{id}/carbon-rights/{rid}/review` · `/end` | projects.review (not the recorder) · projects.manage |
+| GET/POST | `/projects/{id}/documents` | projects.read / projects.manage |
+| POST | `/projects/{id}/start-data-collection` · `/submit` · `/confirm-activity` · `/reopen` · `/close` | projects.manage |
+| POST | `/projects/{id}/approve-eligibility` · `/return` | projects.review (approval: not the submitter) |
+| GET | `/projects/{id}/status-history` | projects.read |
+| GET/POST/PATCH | `/standards`, `/activities`, `/activities/{id}/standards` | read: projects.read or standards.manage · write: standards.manage |
+
+Project responses include `allowed_transitions` (already filtered by the caller's permissions), `readiness`
+checklists, `can_manage` / `can_review` / `can_review_boundary` and `is_editable`.
+
 ## Notable error codes
 
 `INVALID_CREDENTIALS`, `TOKEN_EXPIRED`, `SESSION_REVOKED`, `REFRESH_REUSED`, `ACCOUNT_INACTIVE`,
@@ -88,4 +127,9 @@ Phase 2: `REQUIREMENTS_NOT_MET` (details list the missing items), `SEPARATION_OF
 `DUPLICATE_REVIEW_REQUIRED`, `IDENTITY_LOCKED`, `FARMER_NOT_READY`, `FARM_NOT_EDITABLE`, `INVALID_POLYGON`,
 `INVALID_GEOJSON`, `INVALID_KML`, `UNSAFE_KML`, `UNSUPPORTED_GEOMETRY`, `TOO_MANY_VERTICES`, `CROSS_ORG_OVERLAP`,
 `RESTRICTED_DOCUMENT`, `UNSUPPORTED_FILE_TYPE`, `FILE_TOO_LARGE`, `MALWARE_DETECTED`, `CONSENT_ALREADY_GRANTED`,
-`BANK_ACCOUNT_EXISTS`, `USER_ALREADY_LINKED`.
+`BANK_ACCOUNT_EXISTS`, `USER_ALREADY_LINKED`, `UNKNOWN_CONSENT_TYPE`, `CROSS_ORG_OVERLAP`.
+
+Phase 3: `PROJECT_NOT_EDITABLE`, `FARM_NOT_VERIFIED`, `FARMER_NOT_ACTIVE`, `FARM_NOT_IN_PROJECT_ORGANIZATION`,
+`FARM_ALREADY_IN_PROJECT`, `CONFLICTS_REQUIRE_ACKNOWLEDGEMENT` (details list the conflicts), `ROLE_NOT_HELD`,
+`PARTICIPANT_EXISTS`, `STANDARD_REQUIRED`, `ACTIVITY_NOT_IN_STANDARD`, `STANDARD_INACTIVE`, `CREDITING_PERIOD_OVERLAP`,
+`REASON_REQUIRED`, `AGREEMENT_NOT_SIGNED`, `SHARE_EXCEEDS_100`, `BOUNDARY_STALE`, `NO_PROJECT_BOUNDARY`, `SEPARATION_OF_DUTIES`.

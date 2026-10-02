@@ -56,7 +56,10 @@ PROFILE_FIELDS = ("farmer_code", "full_name", "gender", "date_of_birth", "prefer
                   "group_organization_id", "address_line", "village", "sub_district", "district", "state", "postal_code",
                   "country", "status", "organization_id", "environment")
 FARMER_DOC_CATEGORIES = {c.value for c in DocumentCategory} - {DocumentCategory.FIELD_PHOTO.value,
-                                                                  DocumentCategory.GEOSPATIAL_FILE.value}
+                                                                  DocumentCategory.GEOSPATIAL_FILE.value,
+                                                                  DocumentCategory.PROJECT_DESIGN.value,
+                                                                  DocumentCategory.CARBON_RIGHTS.value,
+                                                                  DocumentCategory.BASELINE_DATA.value}
 
 
 def _not_found() -> NotFound:

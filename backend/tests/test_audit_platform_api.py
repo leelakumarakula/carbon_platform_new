@@ -179,3 +179,21 @@ def test_demo_farmers_and_farms_seed(db: Session) -> None:
     assert all(f.area_hectares and f.area_hectares > 0 for f in farms)
     assert db.scalars(select(FarmOverlapCheck).where(FarmOverlapCheck.status == "OPEN")).first()
     assert any(f.user_id for f in farmers)  # demo farmer login linked for self-service
+
+
+def test_demo_projects_seed(db: Session) -> None:
+    from app.models import Project, ProjectCarbonRight, ProjectFarm, Standard
+    from app.seed.demo_farms import seed_demo_farms
+    from app.seed.demo_projects import seed_demo_projects
+    seed_demo(db, "Demo-Password-123")
+    seed_demo_farms(db)
+    assert seed_demo_projects(db) == {"projects": 2, "standards": 2, "activities": 3}
+    assert seed_demo_projects(db) == {"projects": 0, "standards": 0, "activities": 0}  # idempotent
+    projects = db.scalars(select(Project).where(Project.environment == "DEMO")).all()
+    assert sorted(p.status for p in projects) == ["ACTIVITY_SELECTED", "DATA_COLLECTION"]
+    assert all(p.methodology_status == "NOT_SELECTED" and p.standard_id and p.activity_id and p.current_boundary_id for p in projects)
+    farms = db.scalars(select(ProjectFarm).where(ProjectFarm.project_id.in_([p.id for p in projects]))).all()
+    assert len(farms) == 6 and {f.status for f in farms} == {"ACTIVE"}
+    rights = db.scalars(select(ProjectCarbonRight).where(ProjectCarbonRight.project_id.in_([p.id for p in projects]))).all()
+    assert len(rights) == 6 and all(r.agreement_id for r in rights)
+    assert {s.environment for s in db.scalars(select(Standard).where(Standard.code.like("DEMO-%"))).all()} == {"DEMO"}

@@ -24,6 +24,9 @@ class DocumentCategory(str, Enum):
     FIELD_PHOTO = "FIELD_PHOTO"
     INPUT_RECORD = "INPUT_RECORD"
     GEOSPATIAL_FILE = "GEOSPATIAL_FILE"
+    PROJECT_DESIGN = "PROJECT_DESIGN"        # Phase 3: project description / design documents
+    CARBON_RIGHTS = "CARBON_RIGHTS"          # Phase 3: carbon-rights evidence (agreements, assignments)
+    BASELINE_DATA = "BASELINE_DATA"          # Phase 3: baseline-period data sources
     OTHER = "OTHER"
 
 

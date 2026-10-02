@@ -62,6 +62,29 @@ export const routes: Routes = [
         ],
       },
       {
+        path: 'projects',
+        canActivate: [permissionGuard],
+        data: { permissions: [P.PROJECTS_READ] },
+        children: [
+          { path: '', title: 'Projects', loadComponent: () => import('./projects/projects-list-page').then((m) => m.ProjectsListPage) },
+          {
+            path: 'new',
+            title: 'New project',
+            canActivate: [permissionGuard],
+            data: { permissions: [P.PROJECTS_MANAGE] },
+            loadComponent: () => import('./projects/project-create-page').then((m) => m.ProjectCreatePage),
+          },
+          { path: ':id', title: 'Project', loadComponent: () => import('./projects/project-detail-page').then((m) => m.ProjectDetailPage) },
+        ],
+      },
+      {
+        path: 'me/projects',
+        title: 'My project participation',
+        canActivate: [permissionGuard],
+        data: { permissions: [P.FARMERS_SELF] },
+        loadComponent: () => import('./projects/my-participation-page').then((m) => m.MyParticipationPage),
+      },
+      {
         path: 'admin',
         children: [
           {
@@ -103,6 +126,13 @@ export const routes: Routes = [
             canActivate: [permissionGuard],
             data: { permissions: [P.ROLES_READ] },
             loadComponent: () => import('./admin/roles/roles-page').then((m) => m.RolesPage),
+          },
+          {
+            path: 'catalog',
+            title: 'Standards & activities',
+            canActivate: [permissionGuard],
+            data: { permissions: [P.STANDARDS_MANAGE] },
+            loadComponent: () => import('./admin/catalog/catalog-page').then((m) => m.CatalogPage),
           },
           {
             path: 'consents',

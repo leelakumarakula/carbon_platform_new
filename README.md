@@ -8,7 +8,7 @@ Every step is auditable.
 The platform orchestrates external parties (laboratories, VVB/ACVA bodies, registries, banks) through
 adapters. It is not itself a laboratory, verifier, registry or certification body.
 
-> **Status:** Phase 1 (Foundation) and Phase 2 (Farmer & Farm) are complete. See [docs/implementation-status.md](docs/implementation-status.md).
+> **Status:** Phases 1 (Foundation), 2 (Farmer & Farm) and 3 (Project) are complete. See [docs/implementation-status.md](docs/implementation-status.md).
 
 ## Architecture
 
@@ -33,7 +33,7 @@ Details: [docs/architecture.md](docs/architecture.md).
 
 ```
 backend/    FastAPI app (api, core, models, schemas, services, repositories, security, audit, seed), alembic, tests
-frontend/   Angular app (core, shared, layout, auth, dashboard, admin, farmer, farms)
+frontend/   Angular app (core, shared, layout, auth, dashboard, admin, farmer, farms, projects)
 storage/    local-dev document storage (git-ignored contents)
 database/   seed / reference-data / scripts / documentation
 docs/       architecture, schema, API, roles, security, deployment, status
@@ -90,7 +90,7 @@ Schema changes go through Alembic only (agent rules 4–5).
 
 | Email prefix | Role | Organization |
 |---|---|---|
-| admin / security / support / methodology | Platform Admin / Security Admin / Support / Methodology Specialist | platform-wide |
+| admin / security / support / methodology / platformgis | Platform Admin / Security Admin / Support / Methodology Specialist / Platform GIS Specialist | platform-wide |
 | pm, supervisor, collector, gis, mrv, analyst, qa, registry, credits, finance | developer-side roles | Project Developer A (DEMO) |
 | farmer | Farmer | Farmer Producer Group E (DEMO) |
 | labtech, labmanager | Lab Technician, Lab Manager | Soil Laboratory B (DEMO) |
@@ -100,6 +100,11 @@ Schema changes go through Alembic only (agent rules 4–5).
 `seed-demo` also creates 5 DEMO farmers (KYC verified, consent granted, bank account pending verification)
 and 10 farms near Nashik: 6 VERIFIED, 1 in GIS review, 2 submitted and 1 draft, with one deliberate boundary
 overlap. Sign in as `farmer@…` to see the self-service view of the first farmer's two farms.
+
+It also creates a DEMO catalog (2 standards, 3 activities — illustrative reference entries only) and 2 DEMO
+projects on the verified farms: *Nashik soil health pilot* (DATA_COLLECTION, standard and activity selected) and
+*Niphad residue retention programme* (taken through the real eligibility review to ACTIVITY_SELECTED). No
+methodology is selected and nothing is calculated, verified or issued.
 
 Demo and live records cannot be mixed; the API rejects it with `ENVIRONMENT_MISMATCH`.
 
@@ -119,15 +124,16 @@ npm run e2e:smoke                       # E2E smoke (API + ng serve running, DEM
 
 ## Roles
 
-The 19 roles in spec §4 are defined in `backend/app/security/permissions.py`. See
+The 19 roles in spec §4 (plus Platform GIS Specialist, decision D5) are defined in `backend/app/security/permissions.py`. See
 [docs/roles-permissions.md](docs/roles-permissions.md). Phase 2 added the farmer and farm permissions to the
-field, project, GIS, QA, MRV and finance roles, and `farmers.self` to Farmer. Each later phase adds its module's permissions.
+field, project, GIS, QA, MRV and finance roles, and `farmers.self` to Farmer. Phase 3 added `projects.*` and `standards.manage`. Each later phase adds its module's permissions.
 
 ## Workflow
 
 Every workflow entity has an explicit state machine (`app/core/state_machine.py`, `app/services/workflows.py`).
 Each transition is validated, then written to `workflow_events` and `audit_logs`. Audit tables are append-only,
-enforced by database triggers. The farmer and farm workflows are described in [docs/farmer-workflow.md](docs/farmer-workflow.md).
+enforced by database triggers. The farmer and farm workflows are described in [docs/farmer-workflow.md](docs/farmer-workflow.md), the project
+workflow in [docs/project-workflow.md](docs/project-workflow.md).
 
 ## External integrations
 

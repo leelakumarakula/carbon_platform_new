@@ -2,7 +2,8 @@
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
-SEQUENCES = {"farmer": ("seq_farmer_code", "FRM"), "farm": ("seq_farm_code", "FARM"), "agreement": ("seq_agreement_number", "AGR")}
+SEQUENCES = {"farmer": ("seq_farmer_code", "FRM"), "farm": ("seq_farm_code", "FARM"), "agreement": ("seq_agreement_number", "AGR"),
+             "project": ("seq_project_code", "PRJ")}
 
 
 def next_code(db: Session, kind: str, year: int) -> str:

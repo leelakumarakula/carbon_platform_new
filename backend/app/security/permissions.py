@@ -41,6 +41,11 @@ class P:
     FARMS_REVIEW = "farms.review"
     FARMS_REVIEW_CROSS_ORG = "farms.review_cross_org"
     CONSENTS_CONFIGURE = "consents.configure"
+    # Phase 3 — projects, standard/activity catalog
+    PROJECTS_READ = "projects.read"
+    PROJECTS_MANAGE = "projects.manage"
+    PROJECTS_REVIEW = "projects.review"
+    STANDARDS_MANAGE = "standards.manage"
 
 
 PERMISSIONS: tuple[PermissionDef, ...] = (
@@ -66,6 +71,15 @@ PERMISSIONS: tuple[PermissionDef, ...] = (
     PermissionDef(P.FARMS_REVIEW, "farms", "Review farms (GIS)", "Start GIS review, resolve overlap flags, verify or reject farms and ownership."),
     PermissionDef(P.FARMS_REVIEW_CROSS_ORG, "farms", "Review cross-organization overlaps",
                   "Clear or confirm boundary overlaps between farms of different organizations (platform-wide grant only)."),
+    PermissionDef(P.PROJECTS_READ, "projects", "View projects",
+                  "View projects of permitted organizations: farms, team, boundary, standard/activity, periods, carbon-rights references."),
+    PermissionDef(P.PROJECTS_MANAGE, "projects", "Manage projects",
+                  "Create projects; add/remove farms, team, standard/activity references, crediting period, baseline metadata, "
+                  "carbon-rights references, documents; submit for eligibility review."),
+    PermissionDef(P.PROJECTS_REVIEW, "projects", "Review project eligibility",
+                  "Verify carbon-rights references and approve or return a project's eligibility review (never one you submitted)."),
+    PermissionDef(P.STANDARDS_MANAGE, "standards", "Manage standards & activities",
+                  "Maintain the standard/route and activity catalog and their links (reference data; no methodology rules)."),
     PermissionDef(P.CONSENTS_CONFIGURE, "admin", "Configure consent types",
                   "Publish versioned consent definitions and choose which are required for farmer activation."),
 )
@@ -98,39 +112,41 @@ SYSTEM_ROLES: tuple[RoleDef, ...] = (
     _r("FARMER", "Farmer", ORG, "Maintains profile, KYC, farms and history; views participation, sampling, credits and payouts.",
        P.FARMERS_SELF),
     _r("FIELD_AGENT", "Field Collector / Field Agent", ORG, "Performs assigned field visits, sampling, evidence capture and chain of custody.",
-       P.FARMERS_READ, P.FARMERS_MANAGE, P.FARMS_READ, P.FARMS_MANAGE),
+       P.FARMERS_READ, P.FARMERS_MANAGE, P.FARMS_READ, P.FARMS_MANAGE, P.PROJECTS_READ),
     _r("FIELD_SUPERVISOR", "Field Supervisor", ORG, "Assigns collectors and sampling points; reviews field submissions.",
-       P.FARMERS_READ, P.FARMERS_MANAGE, P.FARMS_READ, P.FARMS_MANAGE),
+       P.FARMERS_READ, P.FARMERS_MANAGE, P.FARMS_READ, P.FARMS_MANAGE, P.PROJECTS_READ),
     _r("PROJECT_MANAGER", "Project Manager / Project Developer", ORG, "Creates projects, selects standard/activity/methodology, manages MRV, VVB and registry workflows.",
-       P.FARMERS_READ, P.FARMERS_MANAGE, P.FARMERS_KYC_VERIFY, P.FARMERS_BANK_MANAGE, P.FARMS_READ, P.FARMS_MANAGE),
-    _r("METHODOLOGY_SPECIALIST", "Methodology Specialist", PLATFORM, "Manages versioned, approval-controlled methodology configuration."),
+       P.FARMERS_READ, P.FARMERS_MANAGE, P.FARMERS_KYC_VERIFY, P.FARMERS_BANK_MANAGE, P.FARMS_READ, P.FARMS_MANAGE,
+       P.PROJECTS_READ, P.PROJECTS_MANAGE),
+    _r("METHODOLOGY_SPECIALIST", "Methodology Specialist", PLATFORM, "Manages versioned, approval-controlled methodology configuration.",
+       P.PROJECTS_READ, P.STANDARDS_MANAGE),
     _r("GIS_SPECIALIST", "GIS / Remote Sensing Specialist", ORG, "Reviews polygons, overlaps, strata, sampling points and satellite observations.",
-       P.FARMERS_READ, P.FARMS_READ, P.FARMS_REVIEW),
+       P.FARMERS_READ, P.FARMS_READ, P.FARMS_REVIEW, P.PROJECTS_READ),
     _r("PLATFORM_GIS_SPECIALIST", "Platform GIS Specialist", PLATFORM,
        "Platform-wide GIS reviewer: resolves boundary overlaps between farms of different organizations.",
-       P.FARMERS_READ, P.FARMS_READ, P.FARMS_REVIEW_CROSS_ORG),
+       P.FARMERS_READ, P.FARMS_READ, P.FARMS_REVIEW_CROSS_ORG, P.PROJECTS_READ),
     _r("MRV_MANAGER", "MRV Manager", ORG, "Manages MRV plans, monitoring periods and approves monitoring datasets.",
-       P.FARMERS_READ, P.FARMS_READ),
+       P.FARMERS_READ, P.FARMS_READ, P.PROJECTS_READ),
     _r("LAB_TECHNICIAN", "Lab Technician", ORG, "Receives samples, enters results and uploads lab reports."),
     _r("LAB_MANAGER", "Lab Manager / Lab QA", ORG, "Approves or rejects lab results and requests retests."),
     _r("CALCULATION_ANALYST", "Carbon Calculation Analyst", ORG, "Runs approved calculation engines; cannot type a final credit quantity."),
     _r("QA_OFFICER", "Data Quality / QA Officer", ORG, "Reviews anomalies and duplicates; approves or rejects datasets.",
-       P.FARMERS_READ, P.FARMERS_KYC_VERIFY, P.FARMS_READ),
+       P.FARMERS_READ, P.FARMERS_KYC_VERIFY, P.FARMS_READ, P.PROJECTS_READ, P.PROJECTS_REVIEW),
     _r("VVB_REVIEWER", "VVB / ACVA Reviewer", ORG, "External verifier: reviews assigned projects, raises findings, submits decisions."),
     _r("REGISTRY_MANAGER", "Registry Manager", ORG, "Manages registry submissions, issuance tracking and serial reconciliation."),
     _r("CREDIT_MANAGER", "Credit Manager", ORG, "Manages issued-credit inventory, reservations, transfers and retirements."),
     _r("BUYER", "Buyer", ORG, "Browses eligible issued credits, orders, pays, requests transfer/retirement."),
     _r("FINANCE_MANAGER", "Finance / Payout Manager", ORG, "Reconciles payments, calculates farmer share per agreement, approves payouts.",
-       P.FARMERS_READ, P.FARMERS_BANK_MANAGE, P.FARMERS_BANK_VERIFY),
+       P.FARMERS_READ, P.FARMERS_BANK_MANAGE, P.FARMERS_BANK_VERIFY, P.PROJECTS_READ),
     _r("PLATFORM_ADMIN", "Platform Admin", PLATFORM, "Manages users, roles, organizations, master data and configuration; views audit logs.",
        P.USERS_READ, P.USERS_MANAGE, P.USERS_ASSIGN_ROLES, P.ROLES_READ, P.ROLES_MANAGE,
        P.ORGANIZATIONS_READ, P.ORGANIZATIONS_MANAGE, P.ORGANIZATIONS_MANAGE_MEMBERS, P.AUDIT_READ, P.SECURITY_READ,
-       P.CONSENTS_CONFIGURE, P.FARMERS_READ, P.FARMS_READ),
+       P.CONSENTS_CONFIGURE, P.FARMERS_READ, P.FARMS_READ, P.PROJECTS_READ, P.STANDARDS_MANAGE),
     _r("SECURITY_ADMIN", "Security Admin", PLATFORM,
        "Manages access policies, MFA, integration secrets, security events and access reviews.",
        P.USERS_READ, P.ROLES_READ, P.ORGANIZATIONS_READ, P.AUDIT_READ, P.SECURITY_READ, P.SECURITY_MANAGE),
     _r("SUPPORT", "Support / Operations", PLATFORM, "Assists farmers and field agents; limited read access.",
-       P.USERS_READ, P.ORGANIZATIONS_READ, P.FARMERS_READ, P.FARMS_READ),
+       P.USERS_READ, P.ORGANIZATIONS_READ, P.FARMERS_READ, P.FARMS_READ, P.PROJECTS_READ),
 )
 
 SYSTEM_ROLE_CODES = frozenset(r.code for r in SYSTEM_ROLES)
