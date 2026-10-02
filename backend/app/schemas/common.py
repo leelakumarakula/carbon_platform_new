@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 from typing import Annotated, Generic, TypeVar
 
 from email_validator import EmailNotValidError, validate_email
-from pydantic import AfterValidator, BaseModel, ConfigDict, PlainSerializer, StringConstraints
+from pydantic import AfterValidator, BaseModel, ConfigDict, PlainSerializer, StringConstraints, ValidationError
 
 T = TypeVar("T")
 
@@ -78,3 +78,16 @@ class Message(BaseModel):
 
 class IdRef(BaseModel):
     id: uuid.UUID
+
+
+M = TypeVar("M", bound=BaseModel)
+
+
+def validate_payload(schema: type[M], data: object) -> M:
+    """Validate a dynamically-chosen schema inside a route/service; failures become the standard 422 envelope."""
+    from app.core.errors import ValidationFailed
+    try:
+        return schema.model_validate(data)
+    except ValidationError as e:
+        raise ValidationFailed(details={"errors": [{"field": ".".join(str(p) for p in err["loc"]), "message": err["msg"],
+                                                    "type": err["type"]} for err in e.errors()]}) from e

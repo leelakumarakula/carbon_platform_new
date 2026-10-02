@@ -21,9 +21,12 @@ export const passwordChangedGuard: CanActivateChildFn = () => {
   return auth.mustChangePassword() ? inject(Router).createUrlTree(['/change-password']) : true;
 };
 
-/** Route `data: { permissions: [...] }` — every listed permission is required. */
+/** Route `data: { permissions: [...] }` — every listed permission is required;
+ *  `data: { anyPermissions: [...] }` — at least one is required (e.g. staff read OR farmer self-service). */
 export const permissionGuard: CanActivateFn = (route) => {
   const required = (route.data['permissions'] as string[] | undefined) ?? [];
+  const any = (route.data['anyPermissions'] as string[] | undefined) ?? [];
   const auth = inject(AuthService);
-  return auth.hasAll(required) ? true : inject(Router).createUrlTree(['/forbidden']);
+  const ok = auth.hasAll(required) && (any.length === 0 || any.some((p) => auth.has(p)));
+  return ok ? true : inject(Router).createUrlTree(['/forbidden']);
 };

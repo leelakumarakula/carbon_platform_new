@@ -9,7 +9,7 @@ from app.core.errors import Conflict, NotFound, PermissionDenied, ValidationFail
 from app.models import Role, RolePermission
 from app.repositories import identity as repo
 from app.schemas.identity import RoleCreate, RoleUpdate
-from app.security.permissions import SYSTEM_ROLE_CODES, P
+from app.security.permissions import PRIVILEGED_CODES, SYSTEM_ROLE_CODES, P
 from app.security.principal import Principal
 
 
@@ -25,7 +25,7 @@ def _check_permissions(db: Session, principal: Principal, codes: list[str]) -> d
     unknown = sorted(set(codes) - set(found))
     if unknown:
         raise ValidationFailed("Unknown permissions.", error_code="UNKNOWN_PERMISSION", details={"unknown": unknown})
-    not_held = sorted(c for c in set(codes) if not principal.has_platform(c))
+    not_held = sorted(c for c in set(codes) & PRIVILEGED_CODES if not principal.has_platform(c))
     if not_held:
         raise PermissionDenied("You cannot add permissions you do not hold platform-wide.",
                                error_code="ROLE_ESCALATION_BLOCKED", details={"missing_permissions": not_held})

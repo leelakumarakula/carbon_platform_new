@@ -29,6 +29,16 @@ class P:
     AUDIT_READ = "audit.read"
     SECURITY_READ = "security.read"
     SECURITY_MANAGE = "security.manage"
+    # Phase 2 — farmer & farm
+    FARMERS_READ = "farmers.read"
+    FARMERS_MANAGE = "farmers.manage"
+    FARMERS_KYC_VERIFY = "farmers.kyc_verify"
+    FARMERS_BANK_MANAGE = "farmers.bank_manage"
+    FARMERS_BANK_VERIFY = "farmers.bank_verify"
+    FARMERS_SELF = "farmers.self"
+    FARMS_READ = "farms.read"
+    FARMS_MANAGE = "farms.manage"
+    FARMS_REVIEW = "farms.review"
 
 
 PERMISSIONS: tuple[PermissionDef, ...] = (
@@ -43,9 +53,24 @@ PERMISSIONS: tuple[PermissionDef, ...] = (
     PermissionDef(P.AUDIT_READ, "audit", "View audit logs", "Read the append-only audit trail and workflow events."),
     PermissionDef(P.SECURITY_READ, "security", "View security events", "Read security events, login audit and sessions."),
     PermissionDef(P.SECURITY_MANAGE, "security", "Manage security", "Revoke sessions, unlock accounts, manage access policies."),
+    PermissionDef(P.FARMERS_READ, "farmers", "View farmers", "View farmer profiles, consents and agreements (KYC and bank data always masked)."),
+    PermissionDef(P.FARMERS_MANAGE, "farmers", "Manage farmers", "Register farmers; maintain contacts, consents, agreements and documents; submit KYC."),
+    PermissionDef(P.FARMERS_KYC_VERIFY, "farmers", "Verify KYC", "Verify or return a farmer's KYC submission. Cannot verify a submission you made."),
+    PermissionDef(P.FARMERS_BANK_MANAGE, "farmers", "Manage bank details", "Add or deactivate farmer bank accounts (numbers stored encrypted, shown masked)."),
+    PermissionDef(P.FARMERS_BANK_VERIFY, "farmers", "Verify bank details", "Verify or reject a farmer bank account."),
+    PermissionDef(P.FARMERS_SELF, "farmers", "Farmer self-service", "A farmer manages their own profile, consents, farms and history — never others'."),
+    PermissionDef(P.FARMS_READ, "farms", "View farms", "View farms, boundaries, ownership, history, evidence and overlap flags."),
+    PermissionDef(P.FARMS_MANAGE, "farms", "Manage farms", "Create farms; record boundaries, ownership, history and evidence; submit for review."),
+    PermissionDef(P.FARMS_REVIEW, "farms", "Review farms (GIS)", "Start GIS review, resolve overlap flags, verify or reject farms and ownership."),
 )
 
 ALL_PERMISSION_CODES = frozenset(p.code for p in PERMISSIONS)
+
+# Escalation guard scope: nobody may grant (or put into a role) a *privileged* permission they do not hold
+# themselves in that scope. Business-module permissions (farmers, farms, …) are delegated through
+# users.assign_roles so a Platform Admin can staff organizations without holding every business permission.
+PRIVILEGED_MODULES = frozenset({"admin", "audit", "security"})
+PRIVILEGED_CODES = frozenset(p.code for p in PERMISSIONS if p.module in PRIVILEGED_MODULES)
 
 
 @dataclass(frozen=True)
@@ -64,30 +89,39 @@ def _r(code: str, name: str, scope: str, description: str, *perms: str) -> RoleD
 PLATFORM, ORG = "PLATFORM", "ORGANIZATION"
 
 SYSTEM_ROLES: tuple[RoleDef, ...] = (
-    _r("FARMER", "Farmer", ORG, "Maintains profile, KYC, farms and history; views participation, sampling, credits and payouts."),
-    _r("FIELD_AGENT", "Field Collector / Field Agent", ORG, "Performs assigned field visits, sampling, evidence capture and chain of custody."),
-    _r("FIELD_SUPERVISOR", "Field Supervisor", ORG, "Assigns collectors and sampling points; reviews field submissions."),
-    _r("PROJECT_MANAGER", "Project Manager / Project Developer", ORG, "Creates projects, selects standard/activity/methodology, manages MRV, VVB and registry workflows."),
+    _r("FARMER", "Farmer", ORG, "Maintains profile, KYC, farms and history; views participation, sampling, credits and payouts.",
+       P.FARMERS_SELF),
+    _r("FIELD_AGENT", "Field Collector / Field Agent", ORG, "Performs assigned field visits, sampling, evidence capture and chain of custody.",
+       P.FARMERS_READ, P.FARMERS_MANAGE, P.FARMS_READ, P.FARMS_MANAGE),
+    _r("FIELD_SUPERVISOR", "Field Supervisor", ORG, "Assigns collectors and sampling points; reviews field submissions.",
+       P.FARMERS_READ, P.FARMERS_MANAGE, P.FARMS_READ, P.FARMS_MANAGE),
+    _r("PROJECT_MANAGER", "Project Manager / Project Developer", ORG, "Creates projects, selects standard/activity/methodology, manages MRV, VVB and registry workflows.",
+       P.FARMERS_READ, P.FARMERS_MANAGE, P.FARMERS_KYC_VERIFY, P.FARMERS_BANK_MANAGE, P.FARMS_READ, P.FARMS_MANAGE),
     _r("METHODOLOGY_SPECIALIST", "Methodology Specialist", PLATFORM, "Manages versioned, approval-controlled methodology configuration."),
-    _r("GIS_SPECIALIST", "GIS / Remote Sensing Specialist", ORG, "Reviews polygons, overlaps, strata, sampling points and satellite observations."),
-    _r("MRV_MANAGER", "MRV Manager", ORG, "Manages MRV plans, monitoring periods and approves monitoring datasets."),
+    _r("GIS_SPECIALIST", "GIS / Remote Sensing Specialist", ORG, "Reviews polygons, overlaps, strata, sampling points and satellite observations.",
+       P.FARMERS_READ, P.FARMS_READ, P.FARMS_REVIEW),
+    _r("MRV_MANAGER", "MRV Manager", ORG, "Manages MRV plans, monitoring periods and approves monitoring datasets.",
+       P.FARMERS_READ, P.FARMS_READ),
     _r("LAB_TECHNICIAN", "Lab Technician", ORG, "Receives samples, enters results and uploads lab reports."),
     _r("LAB_MANAGER", "Lab Manager / Lab QA", ORG, "Approves or rejects lab results and requests retests."),
     _r("CALCULATION_ANALYST", "Carbon Calculation Analyst", ORG, "Runs approved calculation engines; cannot type a final credit quantity."),
-    _r("QA_OFFICER", "Data Quality / QA Officer", ORG, "Reviews anomalies and duplicates; approves or rejects datasets."),
+    _r("QA_OFFICER", "Data Quality / QA Officer", ORG, "Reviews anomalies and duplicates; approves or rejects datasets.",
+       P.FARMERS_READ, P.FARMERS_KYC_VERIFY, P.FARMS_READ),
     _r("VVB_REVIEWER", "VVB / ACVA Reviewer", ORG, "External verifier: reviews assigned projects, raises findings, submits decisions."),
     _r("REGISTRY_MANAGER", "Registry Manager", ORG, "Manages registry submissions, issuance tracking and serial reconciliation."),
     _r("CREDIT_MANAGER", "Credit Manager", ORG, "Manages issued-credit inventory, reservations, transfers and retirements."),
     _r("BUYER", "Buyer", ORG, "Browses eligible issued credits, orders, pays, requests transfer/retirement."),
-    _r("FINANCE_MANAGER", "Finance / Payout Manager", ORG, "Reconciles payments, calculates farmer share per agreement, approves payouts."),
+    _r("FINANCE_MANAGER", "Finance / Payout Manager", ORG, "Reconciles payments, calculates farmer share per agreement, approves payouts.",
+       P.FARMERS_READ, P.FARMERS_BANK_MANAGE, P.FARMERS_BANK_VERIFY),
     _r("PLATFORM_ADMIN", "Platform Admin", PLATFORM, "Manages users, roles, organizations, master data and configuration; views audit logs.",
        P.USERS_READ, P.USERS_MANAGE, P.USERS_ASSIGN_ROLES, P.ROLES_READ, P.ROLES_MANAGE,
-       P.ORGANIZATIONS_READ, P.ORGANIZATIONS_MANAGE, P.ORGANIZATIONS_MANAGE_MEMBERS, P.AUDIT_READ, P.SECURITY_READ),
+       P.ORGANIZATIONS_READ, P.ORGANIZATIONS_MANAGE, P.ORGANIZATIONS_MANAGE_MEMBERS, P.AUDIT_READ, P.SECURITY_READ,
+       P.FARMERS_READ, P.FARMS_READ),
     _r("SECURITY_ADMIN", "Security Admin", PLATFORM,
        "Manages access policies, MFA, integration secrets, security events and access reviews.",
        P.USERS_READ, P.ROLES_READ, P.ORGANIZATIONS_READ, P.AUDIT_READ, P.SECURITY_READ, P.SECURITY_MANAGE),
     _r("SUPPORT", "Support / Operations", PLATFORM, "Assists farmers and field agents; limited read access.",
-       P.USERS_READ, P.ORGANIZATIONS_READ),
+       P.USERS_READ, P.ORGANIZATIONS_READ, P.FARMERS_READ, P.FARMS_READ),
 )
 
 SYSTEM_ROLE_CODES = frozenset(r.code for r in SYSTEM_ROLES)

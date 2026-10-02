@@ -28,6 +28,14 @@ export class ApiService {
     return this.http.put<T>(this.url(path), body);
   }
 
+  /** multipart/form-data upload: one file plus simple text fields. */
+  upload<T>(path: string, file: File, fields: Record<string, string>): Observable<T> {
+    const form = new FormData();
+    form.append('file', file, file.name);
+    for (const [k, v] of Object.entries(fields)) form.append(k, v);
+    return this.http.post<T>(this.url(path), form);
+  }
+
   delete<T>(path: string, query?: Query): Observable<T> {
     return this.http.delete<T>(this.url(path), { params: toParams(query) });
   }

@@ -52,6 +52,28 @@ class Settings(BaseSettings):
     BOOTSTRAP_ADMIN_NAME: str = "Platform Administrator"
     DEMO_USER_PASSWORD: str | None = None
 
+    # Personal-data protection. DATA_ENCRYPTION_KEY is a Fernet key (32 url-safe base64 bytes) used for
+    # field-level encryption of bank account numbers. Generate: python -c "from cryptography.fernet import
+    # Fernet; print(Fernet.generate_key().decode())". Losing it makes encrypted values unreadable.
+    DATA_ENCRYPTION_KEY: str = Field(min_length=44)
+
+    # Documents / object storage. "local" stores files under LOCAL_STORAGE_ROOT (development only);
+    # an S3-compatible backend (MinIO / AWS S3) is configured through OBJECT_STORAGE_* (see docs/deployment.md).
+    STORAGE_BACKEND: str = "local"
+    LOCAL_STORAGE_ROOT: str | None = None
+    MAX_UPLOAD_BYTES: int = 15 * 1024 * 1024
+    MALWARE_SCANNER: str = "signature"  # signature = EICAR/test-signature hook only; real AV adapter in Phase 12
+
+    # GIS (technical tolerances, not business rules — see docs/farmer-workflow.md)
+    FARM_OVERLAP_MIN_AREA_M2: float = 1.0      # shared edges produce ~0 m² numeric slivers; below this = touching
+    FARM_AREA_WARNING_HA: float = 1000.0       # warning only: unusually large single farm, likely a digitising error
+    FARM_DECLARED_AREA_WARNING_PCT: float = 25.0  # warning only: declared vs measured area differ by more than this
+    FARM_MAX_VERTICES: int = 5000
+
+    # Consent types that must be GRANTED before a farmer can become ACTIVE (assumption: data-processing
+    # consent only; confirm with the business — see docs/farmer-workflow.md).
+    FARMER_REQUIRED_CONSENTS: Annotated[list[str], NoDecode] = ["DATA_PROCESSING"]
+
     # Later-phase integrations (configured now so .env.example is complete)
     REDIS_URL: str | None = None
     OBJECT_STORAGE_ENDPOINT: str | None = None
@@ -68,7 +90,7 @@ class Settings(BaseSettings):
     def _empty_port(cls, v: object) -> object:
         return None if v == "" else v
 
-    @field_validator("CORS_ORIGINS", mode="before")
+    @field_validator("CORS_ORIGINS", "FARMER_REQUIRED_CONSENTS", mode="before")
     @classmethod
     def _split_origins(cls, v: object) -> object:
         if isinstance(v, str) and not v.strip().startswith("["):

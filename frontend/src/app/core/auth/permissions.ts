@@ -11,6 +11,15 @@ export const P = {
   AUDIT_READ: 'audit.read',
   SECURITY_READ: 'security.read',
   SECURITY_MANAGE: 'security.manage',
+  FARMERS_READ: 'farmers.read',
+  FARMERS_MANAGE: 'farmers.manage',
+  FARMERS_KYC_VERIFY: 'farmers.kyc_verify',
+  FARMERS_BANK_MANAGE: 'farmers.bank_manage',
+  FARMERS_BANK_VERIFY: 'farmers.bank_verify',
+  FARMERS_SELF: 'farmers.self',
+  FARMS_READ: 'farms.read',
+  FARMS_MANAGE: 'farms.manage',
+  FARMS_REVIEW: 'farms.review',
 } as const;
 
 export type PermissionCode = (typeof P)[keyof typeof P];

@@ -1,6 +1,29 @@
 """All ORM models; importing this package registers every table on Base.metadata (used by Alembic)."""
 from app.models.audit import ApiAccessLog, AuditLog, LoginAudit, SecurityEvent, WorkflowEvent
 from app.models.base import Base, Environment
+from app.models.documents import Document, DocumentCategory, DocumentVersion
+from app.models.farmers import (
+    BankAccountStatus,
+    Farmer,
+    FarmerAgreement,
+    FarmerBankAccount,
+    FarmerConsent,
+    FarmerContact,
+    FarmerDocument,
+    FarmerStatus,
+)
+from app.models.farms import (
+    Farm,
+    FarmBoundary,
+    FarmCropHistory,
+    FarmDocument,
+    FarmEvidence,
+    FarmLandHistory,
+    FarmOverlapCheck,
+    FarmOwnership,
+    FarmPracticeHistory,
+    FarmStatus,
+)
 from app.models.identity import (
     Organization,
     OrganizationStatus,
@@ -16,9 +39,49 @@ from app.models.identity import (
     UserSession,
     UserStatus,
 )
+from app.models.notifications import Notification
 
 __all__ = [
-    "ApiAccessLog", "AuditLog", "Base", "Environment", "LoginAudit", "Organization", "OrganizationStatus",
-    "OrganizationType", "OrganizationUser", "Permission", "RefreshToken", "Role", "RolePermission", "RoleScope",
-    "SecurityEvent", "User", "UserRole", "UserSession", "UserStatus", "WorkflowEvent",
+    "ApiAccessLog",
+    "AuditLog",
+    "BankAccountStatus",
+    "Base",
+    "Document",
+    "DocumentCategory",
+    "DocumentVersion",
+    "Environment",
+    "Farm",
+    "FarmBoundary",
+    "FarmCropHistory",
+    "FarmDocument",
+    "FarmEvidence",
+    "FarmLandHistory",
+    "FarmOverlapCheck",
+    "FarmOwnership",
+    "FarmPracticeHistory",
+    "FarmStatus",
+    "Farmer",
+    "FarmerAgreement",
+    "FarmerBankAccount",
+    "FarmerConsent",
+    "FarmerContact",
+    "FarmerDocument",
+    "FarmerStatus",
+    "LoginAudit",
+    "Notification",
+    "Organization",
+    "OrganizationStatus",
+    "OrganizationType",
+    "OrganizationUser",
+    "Permission",
+    "RefreshToken",
+    "Role",
+    "RolePermission",
+    "RoleScope",
+    "SecurityEvent",
+    "User",
+    "UserRole",
+    "UserSession",
+    "UserStatus",
+    "WorkflowEvent",
 ]

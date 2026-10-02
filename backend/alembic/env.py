@@ -13,9 +13,15 @@ if config.config_file_name is not None and config.attributes.get("configure_logg
 target_metadata = Base.metadata
 
 
+def include_object(obj, name, type_, reflected, compare_to):  # type: ignore[no-untyped-def]
+    """Spatial indexes (six_*) are created with raw SQL in migrations; SQLAlchemy cannot model them."""
+    return not (type_ == "index" and name and name.startswith("six_"))
+
+
 def run_migrations_offline() -> None:
     context.configure(url=str(get_settings().database_url()), target_metadata=target_metadata,
-                      literal_binds=True, compare_type=True)
+                      literal_binds=True, compare_type=True,
+                      include_object=include_object)
     with context.begin_transaction():
         context.run_migrations()
 
@@ -31,7 +37,8 @@ def run_migrations_online() -> None:
 
 
 def _run(connection) -> None:  # type: ignore[no-untyped-def]
-    context.configure(connection=connection, target_metadata=target_metadata, compare_type=True)
+    context.configure(connection=connection, target_metadata=target_metadata, compare_type=True,
+                      include_object=include_object)
     with context.begin_transaction():
         context.run_migrations()
 

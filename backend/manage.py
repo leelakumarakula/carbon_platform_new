@@ -67,8 +67,10 @@ def seed_demo() -> None:
     pw = get_settings().DEMO_USER_PASSWORD
     if not pw:
         sys.exit("Set DEMO_USER_PASSWORD (environment or backend/.env).")
+    from app.seed.demo_farms import seed_demo_farms
     with get_session_factory()() as db:
         print("demo data:", demo(db, pw), f"- accounts are <role>@{DEMO_DOMAIN}, environment=DEMO")
+        print("demo farmers & farms:", seed_demo_farms(db))
 
 
 def setup() -> None:

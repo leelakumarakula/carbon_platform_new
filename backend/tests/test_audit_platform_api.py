@@ -164,3 +164,18 @@ def test_role_revoke_reason_is_audited(client: TestClient, db: Session, admin: A
     assert r.status_code == 200
     row = db.scalars(select(AuditLog).where(AuditLog.action == "ROLE_REVOKED", AuditLog.entity_id == str(u.id))).one()
     assert row.reason == "role no longer needed"
+
+
+def test_demo_farmers_and_farms_seed(db: Session) -> None:
+    from app.models import Farm, Farmer, FarmOverlapCheck
+    from app.seed.demo_farms import seed_demo_farms
+    seed_demo(db, "Demo-Password-123")
+    assert seed_demo_farms(db) == {"farmers": 5, "farms": 10}
+    assert seed_demo_farms(db) == {"farmers": 0, "farms": 0}  # idempotent
+    farmers = db.scalars(select(Farmer).where(Farmer.environment == "DEMO")).all()
+    farms = db.scalars(select(Farm).where(Farm.environment == "DEMO")).all()
+    assert len(farmers) == 5 and {f.status for f in farmers} == {"ACTIVE"} and all(f.kyc_id_last4 for f in farmers)
+    assert len(farms) == 10 and sorted(f.status for f in farms).count("VERIFIED") == 6
+    assert all(f.area_hectares and f.area_hectares > 0 for f in farms)
+    assert db.scalars(select(FarmOverlapCheck).where(FarmOverlapCheck.status == "OPEN")).first()
+    assert any(f.user_id for f in farmers)  # demo farmer login linked for self-service

@@ -13,7 +13,7 @@ from app.repositories import identity as repo
 from app.schemas.common import PageParams
 from app.schemas.identity import RoleGrantIn, UserCreate, UserUpdate
 from app.security.passwords import hash_password, validate_password_policy
-from app.security.permissions import P
+from app.security.permissions import PRIVILEGED_CODES, P
 from app.security.principal import Principal
 from app.services.auth_service import revoke_user_sessions
 from app.services.workflows import USER_MACHINE
@@ -178,8 +178,8 @@ def _assign(db: Session, ctx: RequestContext, principal: Principal, user: User, 
 
 
 def _guard_escalation(principal: Principal, role: Role, org_id: uuid.UUID | None) -> None:
-    """Nobody may grant permissions they do not themselves hold in that scope."""
-    perms = {rp.permission.code for rp in role.permissions}
+    """Nobody may grant privileged (admin/audit/security) permissions they do not themselves hold in that scope."""
+    perms = {rp.permission.code for rp in role.permissions} & PRIVILEGED_CODES
     missing = sorted(p for p in perms if not principal.can_in_org(p, org_id))
     if missing:
         raise PermissionDenied("You cannot grant a role with permissions you do not hold.",

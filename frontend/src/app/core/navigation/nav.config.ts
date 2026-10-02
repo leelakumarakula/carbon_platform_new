@@ -23,6 +23,20 @@ export const NAVIGATION: readonly NavSection[] = [
     items: [{ label: 'Dashboard', icon: 'dashboard', route: '/dashboard' }],
   },
   {
+    title: 'Field operations',
+    items: [
+      { label: 'Farmers', icon: 'diversity_3', route: '/farmers', permissions: [P.FARMERS_READ] },
+      { label: 'Farms', icon: 'agriculture', route: '/farms', permissions: [P.FARMS_READ] },
+    ],
+  },
+  {
+    title: 'My farm',
+    items: [
+      { label: 'My farmer profile', icon: 'badge', route: '/me/farmer', permissions: [P.FARMERS_SELF] },
+      { label: 'My farms', icon: 'agriculture', route: '/farms', permissions: [P.FARMERS_SELF] },
+    ],
+  },
+  {
     title: 'Administration',
     items: [
       { label: 'Users', icon: 'group', route: '/admin/users', permissions: [P.USERS_READ] },

@@ -58,6 +58,9 @@ tr.clickable:hover { background: var(--mat-sys-surface-container-low); }
 .centered { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 64px 16px; gap: 8px; }
 .centered .big { font-size: 48px; width: 48px; height: 48px; color: var(--mat-sys-on-surface-variant); }
 
+/* tab panels */
+.tab-body { padding: 16px 2px; }
+
 /* Material cards: breathing room between header and first form field */
 .mat-mdc-card-header + .mat-mdc-card-content { padding-top: 12px; }
 

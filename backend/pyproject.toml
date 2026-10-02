@@ -9,7 +9,7 @@ addopts = "-p no:cacheprovider"
 filterwarnings = ["ignore::DeprecationWarning:starlette.*"]
 
 [tool.ruff]
-line-length = 130
+line-length = 150
 target-version = "py310"
 extend-exclude = ["alembic/versions"]
 
@@ -29,6 +29,7 @@ known-third-party = ["alembic"]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = ["S105", "S106", "S608", "E501"]
+"tests/conftest.py" = ["E402"]  # env vars must be set before the app is imported
 "manage.py" = ["S608"]
 "app/security/permissions.py" = ["E501"]  # catalog descriptions
 

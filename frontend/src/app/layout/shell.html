@@ -26,6 +26,25 @@
       @if (auth.isDemo()) {
         <span class="demo-flag" matTooltip="You are signed in with a DEMO account. Demo data is never mixed with real records.">DEMO</span>
       }
+      <button mat-icon-button type="button" [matMenuTriggerFor]="notifMenu" (menuOpened)="openNotifications()" aria-label="Notifications"
+              matTooltip="Notifications">
+        <mat-icon [matBadge]="unread() || null" matBadgeSize="small" matBadgeColor="warn" aria-hidden="false">notifications</mat-icon>
+      </button>
+      <mat-menu #notifMenu="matMenu" xPosition="before" class="notif-menu">
+        <div class="menu-head notif-head" (click)="$event.stopPropagation()">
+          <strong>Notifications</strong>
+          @if (unread()) { <button mat-button type="button" (click)="markAllRead()">Mark all read</button> }
+        </div>
+        <mat-divider />
+        @for (n of notifications(); track n.id) {
+          <button mat-menu-item type="button" (click)="openNotification(n)" [class.unread]="!n.read_at">
+            <span class="notif-title">{{ n.title }}</span>
+            <span class="notif-time">{{ n.created_at | date: 'short' }}</span>
+          </button>
+        } @empty {
+          <div class="menu-head"><small>No notifications.</small></div>
+        }
+      </mat-menu>
       <button mat-button type="button" [matMenuTriggerFor]="userMenu" class="user-button">
         <span class="avatar">{{ initials() }}</span>
         <span class="user-name">{{ auth.user()?.full_name }}</span>

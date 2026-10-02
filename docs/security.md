@@ -13,10 +13,15 @@
 | Input validation | Pydantic schemas; e-mail normalisation; codes upper-cased and pattern-checked |
 | Headers | nosniff, frame DENY, no-referrer, Permissions-Policy, API `Cache-Control: no-store` and CSP `default-src 'none'`, HSTS in production |
 | CORS | explicit origin list; credentials allowed only for those origins |
-| Body size | 25 MB limit (Content-Length); upload type validation and the malware-scan hook arrive with documents (Phase 2) |
+| Body size | 25 MB request limit (Content-Length); uploads read with a bounded reader, max `MAX_UPLOAD_BYTES` (15 MB) |
+| File uploads | type sniffed from content, not the extension or the client MIME type (PDF/PNG/JPEG/WebP, GeoJSON/KML); filenames sanitised; SHA-256 checksum; `MalwareScanner` hook (dev: EICAR signature only, real engine pending); files served only through the API as attachments; versions append-only |
+| KML/XML | DOCTYPE/ENTITY declarations rejected (no XXE or entity expansion); vertex limit 5000 |
+| Personal data | KYC ID numbers: only a keyed HMAC fingerprint and the last 4 digits are stored. Bank account numbers: Fernet-encrypted (`DATA_ENCRYPTION_KEY`), only the last 4 digits returned. KYC and bank-proof documents are RESTRICTED |
+| Record access | organization scope **or** self-service via `farmers.self` + a linked login; out-of-scope records 404; cross-org overlap details hidden |
+| Separation of duties | KYC submitter ≠ verifier, bank account adder ≠ verifier, farm submitter ≠ verifier, evidence capturer ≠ reviewer |
 | Audit | append-only tables enforced by DB triggers; secrets never logged (`SENSITIVE_FIELDS`) |
-| Secrets | environment / `.env` (never committed); production guard requires secure cookies and distinct keys |
+| Secrets | environment / `.env` (never committed); production guard requires secure cookies and distinct keys. Rotating `DATA_ENCRYPTION_KEY` needs a re-encryption job (not built yet). Losing it makes stored bank numbers unrecoverable, so keep it in the secret store with a backup |
 | MFA | columns and a secret-store reference are ready; enrolment flow planned with Security Admin tooling |
 
 Tests in `backend/tests` cover: unauthorized access, role escalation, cross-organization access, invalid,
-expired and forged tokens, refresh-token reuse, lockout, rate limiting, and append-only enforcement.
+expired and forged tokens, refresh-token reuse, lockout, rate limiting, and append-only enforcement. Phase 2 adds: cross-organization farmer/farm access, self-service limits, restricted documents, separation of duties, file-type spoofing, the EICAR test file, unsafe KML, and the absence of clear-text identity and bank numbers in responses and the database.

@@ -2,7 +2,7 @@
 from collections.abc import Callable
 from typing import Annotated
 
-from fastapi import Depends, Query, Request
+from fastapi import Depends, Query, Request, UploadFile
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 
@@ -50,6 +50,39 @@ def require(*codes: str) -> Callable[..., Principal]:
             raise PermissionDenied(details={"missing_permissions": missing})
         return principal
     return _check
+
+
+def require_any(*codes: str) -> Callable[..., Principal]:
+    """Route dependency: caller must hold at least one of the listed permissions. Record-level checks follow in services."""
+    def _check(principal: CurrentPrincipal) -> Principal:
+        if principal.user.must_change_password:
+            raise PermissionDenied("You must change your temporary password before continuing.",
+                                   error_code="PASSWORD_CHANGE_REQUIRED")
+        if not any(principal.has(c) for c in codes):
+            raise PermissionDenied(details={"required_any_of": list(codes)})
+        return principal
+    return _check
+
+
+def read_upload(file: UploadFile) -> bytes:
+    """Read an uploaded file (sync routes run in the threadpool), never buffering more than MAX_UPLOAD_BYTES + 1."""
+    limit = get_settings().MAX_UPLOAD_BYTES
+    data = file.file.read(limit + 1)
+    if len(data) > limit:
+        from app.core.errors import ValidationFailed
+        raise ValidationFailed(f"The file is larger than {limit // (1024 * 1024)} MB.", error_code="FILE_TOO_LARGE",
+                               details={"max_bytes": limit})
+    return data
+
+
+def active_principal(principal: CurrentPrincipal) -> Principal:
+    """Signed in and not blocked by a temporary password. Record-level access is checked in services."""
+    if principal.user.must_change_password:
+        raise PermissionDenied("You must change your temporary password before continuing.", error_code="PASSWORD_CHANGE_REQUIRED")
+    return principal
+
+
+ActivePrincipal = Annotated[Principal, Depends(active_principal)]
 
 
 def get_ctx(request: Request, principal: CurrentPrincipal) -> RequestContext:

@@ -15,5 +15,8 @@ frontend; written but not yet run on the development machine).
 4. Run `bootstrap-admin` once; the admin must change the password at first sign-in. Never run `seed-demo` in production.
 5. Run uvicorn behind a reverse proxy with `--proxy-headers`, so client IPs (rate limiting, audit) are correct.
 6. Use a Redis-backed rate limiter before running more than one API process.
-7. Back up SQL Server (full + log), monitor `security_events` for CRITICAL entries, and set a retention
+7. Set `DATA_ENCRYPTION_KEY` from the secret store and back it up separately. Without it, encrypted bank
+   numbers cannot be read. Set `STORAGE_BACKEND` to an object store (the S3 adapter is pending) and a real
+   `MALWARE_SCANNER` before accepting real uploads. Use a licensed or self-hosted map tile service.
+8. Back up SQL Server (full + log), monitor `security_events` for CRITICAL entries, and set a retention
    policy for `api_access_logs`.

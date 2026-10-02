@@ -4,6 +4,8 @@ Tests run against a real SQL Server database (`<SQL_SERVER_DATABASE>_test`) so c
 (later) geography behave exactly as in production. Each test runs inside a transaction that is rolled back.
 """
 import os
+import shutil
+import tempfile
 import uuid
 from collections.abc import Iterator
 from dataclasses import dataclass, field
@@ -14,6 +16,8 @@ os.environ["APP_ENV"] = "test"
 os.environ["SQL_SERVER_DATABASE"] = os.environ.get("TEST_SQL_SERVER_DATABASE", "carbon_platform_test")
 os.environ["DATABASE_URL"] = ""
 os.environ["LOGIN_RATE_LIMIT_PER_MINUTE"] = "1000"
+_STORAGE = tempfile.mkdtemp(prefix="cp-test-storage-")
+os.environ["LOCAL_STORAGE_ROOT"] = _STORAGE
 
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
@@ -48,6 +52,7 @@ def _database() -> Iterator[None]:
         sync_reference(db)
     yield
     get_engine().dispose()
+    shutil.rmtree(_STORAGE, ignore_errors=True)
 
 
 @pytest.fixture()

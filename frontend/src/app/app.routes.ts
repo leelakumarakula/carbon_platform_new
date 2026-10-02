@@ -23,6 +23,45 @@ export const routes: Routes = [
       { path: 'dashboard', title: 'Dashboard', loadComponent: () => import('./dashboard/dashboard-page').then((m) => m.DashboardPage) },
       { path: 'profile', title: 'My profile', loadComponent: () => import('./auth/profile-page').then((m) => m.ProfilePage) },
       {
+        path: 'farmers',
+        canActivate: [permissionGuard],
+        data: { anyPermissions: [P.FARMERS_READ, P.FARMERS_SELF] },
+        children: [
+          { path: '', title: 'Farmers', loadComponent: () => import('./farmer/farmers-list-page').then((m) => m.FarmersListPage) },
+          {
+            path: 'new',
+            title: 'Register farmer',
+            canActivate: [permissionGuard],
+            data: { permissions: [P.FARMERS_MANAGE] },
+            loadComponent: () => import('./farmer/farmer-create-page').then((m) => m.FarmerCreatePage),
+          },
+          { path: ':id', title: 'Farmer', loadComponent: () => import('./farmer/farmer-detail-page').then((m) => m.FarmerDetailPage) },
+        ],
+      },
+      {
+        path: 'me/farmer',
+        title: 'My farmer profile',
+        canActivate: [permissionGuard],
+        data: { permissions: [P.FARMERS_SELF] },
+        loadComponent: () => import('./farmer/my-farmer-page').then((m) => m.MyFarmerPage),
+      },
+      {
+        path: 'farms',
+        canActivate: [permissionGuard],
+        data: { anyPermissions: [P.FARMS_READ, P.FARMERS_SELF] },
+        children: [
+          { path: '', title: 'Farms', loadComponent: () => import('./farms/farms-list-page').then((m) => m.FarmsListPage) },
+          {
+            path: 'new',
+            title: 'Add farm',
+            canActivate: [permissionGuard],
+            data: { anyPermissions: [P.FARMS_MANAGE, P.FARMERS_SELF] },
+            loadComponent: () => import('./farms/farm-create-page').then((m) => m.FarmCreatePage),
+          },
+          { path: ':id', title: 'Farm', loadComponent: () => import('./farms/farm-detail-page').then((m) => m.FarmDetailPage) },
+        ],
+      },
+      {
         path: 'admin',
         children: [
           {

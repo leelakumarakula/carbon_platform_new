@@ -8,7 +8,7 @@ Every step is auditable.
 The platform orchestrates external parties (laboratories, VVB/ACVA bodies, registries, banks) through
 adapters. It is not itself a laboratory, verifier, registry or certification body.
 
-> **Status:** Phase 1 (Foundation) is complete. See [docs/implementation-status.md](docs/implementation-status.md).
+> **Status:** Phase 1 (Foundation) and Phase 2 (Farmer & Farm) are complete. See [docs/implementation-status.md](docs/implementation-status.md).
 
 ## Architecture
 
@@ -33,7 +33,8 @@ Details: [docs/architecture.md](docs/architecture.md).
 
 ```
 backend/    FastAPI app (api, core, models, schemas, services, repositories, security, audit, seed), alembic, tests
-frontend/   Angular app (core, shared, layout, auth, dashboard, admin, …)
+frontend/   Angular app (core, shared, layout, auth, dashboard, admin, farmer, farms)
+storage/    local-dev document storage (git-ignored contents)
 database/   seed / reference-data / scripts / documentation
 docs/       architecture, schema, API, roles, security, deployment, status
 docker/     Dockerfiles + nginx config used by docker-compose.yml
@@ -43,6 +44,10 @@ docker/     Dockerfiles + nginx config used by docker-compose.yml
 
 Copy [.env.example](.env.example) to `backend/.env` and fill it in. Generate secrets with
 `python -c "import secrets; print(secrets.token_urlsafe(48))"`. Never commit a real `.env`.
+
+`DATA_ENCRYPTION_KEY` (required) encrypts bank account numbers and keys the identity-number fingerprint.
+Generate it with `python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"`.
+Documents are stored under `storage/local-dev` (`STORAGE_BACKEND=local`, development only).
 
 For a local default instance with Windows authentication and TCP/IP disabled, leave `SQL_SERVER_PORT=` empty
 and set `SQL_SERVER_TRUSTED_CONNECTION=true`; the driver then connects through shared memory.
@@ -92,6 +97,10 @@ Schema changes go through Alembic only (agent rules 4–5).
 | vvb | VVB / ACVA Reviewer | Verification Body C (DEMO) |
 | buyer | Buyer | Buyer D (DEMO) |
 
+`seed-demo` also creates 5 DEMO farmers (KYC verified, consent granted, bank account pending verification)
+and 10 farms near Nashik: 6 VERIFIED, 1 in GIS review, 2 submitted and 1 draft, with one deliberate boundary
+overlap. Sign in as `farmer@…` to see the self-service view of the first farmer's two farms.
+
 Demo and live records cannot be mixed; the API rejects it with `ENVIRONMENT_MISMATCH`.
 
 ## Tests and checks (exit gate after every phase)
@@ -105,23 +114,24 @@ cd backend
 cd ../frontend
 npx ng test --watch=false               # Vitest
 npx ng build
+npm run e2e:smoke                       # E2E smoke (API + ng serve running, DEMO data seeded; see e2e/smoke.cjs header)
 ```
 
 ## Roles
 
 The 19 roles in spec §4 are defined in `backend/app/security/permissions.py`. See
-[docs/roles-permissions.md](docs/roles-permissions.md). In Phase 1 only the administrative roles carry
-permissions; each later phase adds its module's permissions to the relevant roles.
+[docs/roles-permissions.md](docs/roles-permissions.md). Phase 2 added the farmer and farm permissions to the
+field, project, GIS, QA, MRV and finance roles, and `farmers.self` to Farmer. Each later phase adds its module's permissions.
 
 ## Workflow
 
 Every workflow entity has an explicit state machine (`app/core/state_machine.py`, `app/services/workflows.py`).
 Each transition is validated, then written to `workflow_events` and `audit_logs`. Audit tables are append-only,
-enforced by database triggers.
+enforced by database triggers. The farmer and farm workflows are described in [docs/farmer-workflow.md](docs/farmer-workflow.md).
 
 ## External integrations
 
-None yet. Adapter interfaces for satellite, lab, VVB, registry, payment, notification and identity providers
+Phase 2 adds the `ObjectStorage` (local) and `MalwareScanner` (signature) adapters; S3 and a real antivirus engine are pending. Adapter interfaces for satellite, lab, VVB, registry, payment, notification and identity providers
 are added in their phases, configured by `*_PROVIDER` variables. A mock confirmation is never treated as real.
 
 ## Production deployment
