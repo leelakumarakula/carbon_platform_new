@@ -91,6 +91,37 @@ export const routes: Routes = [
         ],
       },
       {
+        path: 'mrv',
+        canActivate: [permissionGuard],
+        data: { permissions: [P.MRV_READ] },
+        children: [
+          { path: '', title: 'MRV', loadComponent: () => import('./mrv/mrv-dashboard-page').then((m) => m.MrvDashboardPage) },
+          { path: 'projects/:id', title: 'MRV workspace', loadComponent: () => import('./mrv/mrv-project-page').then((m) => m.MrvProjectPage) },
+          {
+            path: 'projects/:id/plans/new',
+            title: 'New MRV plan',
+            canActivate: [permissionGuard],
+            data: { permissions: [P.MRV_MANAGE] },
+            loadComponent: () => import('./mrv/mrv-plan-create-page').then((m) => m.MrvPlanCreatePage),
+          },
+          { path: 'plans/:id', title: 'MRV plan', loadComponent: () => import('./mrv/mrv-plan-detail-page').then((m) => m.MrvPlanDetailPage) },
+          { path: 'datasets/:id', title: 'MRV dataset', loadComponent: () => import('./mrv/mrv-dataset-page').then((m) => m.MrvDatasetPage) },
+        ],
+      },
+      {
+        path: 'field',
+        canActivate: [permissionGuard],
+        data: { permissions: [P.SAMPLING_COLLECT] },
+        children: [
+          { path: '', title: 'Field work', loadComponent: () => import('./mrv/field-dashboard-page').then((m) => m.FieldDashboardPage) },
+          {
+            path: 'collections/:id',
+            title: 'Field collection',
+            loadComponent: () => import('./mrv/field-collection-page').then((m) => m.FieldCollectionPage),
+          },
+        ],
+      },
+      {
         path: 'me/projects',
         title: 'My project participation',
         canActivate: [permissionGuard],

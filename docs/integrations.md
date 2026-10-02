@@ -9,7 +9,7 @@ never presented as a real external confirmation, and the UI labels DEMO data and
 | Malware scanner | in use (Phase 2) | `SignatureScanner` (EICAR test signature only). Real antivirus engine pending | `MALWARE_SCANNER` |
 | Basemap tiles | in use (D6) | any XYZ tile source; OpenStreetMap public tiles by default (development only) | `MAP_TILE_*` |
 | Notifications | in use | in-app only. Email, SMS and WhatsApp adapters pending | — |
-| Satellite, weather, land records | planned (Phase 5+) | mock + real | `SATELLITE_PROVIDER` |
+| Satellite, weather, land records | planned (Phase 6+); Phase 5 records no satellite data — field evidence only | mock + real | `SATELLITE_PROVIDER` |
 | Laboratory (LIMS) | planned (Phase 6) | manual entry + mock + real | `LAB_PROVIDER` |
 | Verification (VVB/ACVA) | planned (Phase 8) | workflow only; the platform is not the verifier | — |
 | Registry | planned (Phase 9) | Manual + mock; Verra / Gold Standard / CCTS adapters where APIs exist | `REGISTRY_PROVIDER` |

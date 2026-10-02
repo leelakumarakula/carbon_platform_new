@@ -3,9 +3,11 @@ import { ChangeDetectionStrategy, Component, OnInit, computed, inject, input, si
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTabsModule } from '@angular/material/tabs';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 
 import { ApiError } from '../core/api/api.models';
+import { AuthService } from '../core/auth/auth.service';
+import { P } from '../core/auth/permissions';
 import { NotifyService } from '../core/notify.service';
 import { DocumentInfo, label } from '../farmer/farmer.models';
 import { DocumentsPanel, UploadFn } from '../shared/documents-panel';
@@ -30,12 +32,12 @@ import { ProjectsApi } from './projects.api';
 
 const TABS = ['overview', 'farms', 'team', 'boundary', 'standard', 'methodology', 'periods', 'rights', 'documents', 'history'];
 /** Entered and left through the Methodology tab (evaluate / confirm / unlock), not the header buttons. */
-const TAB_ONLY: ProjectStatus[] = ['METHODOLOGY_REVIEW', 'METHODOLOGY_CONFIRMED'];
+const TAB_ONLY: ProjectStatus[] = ['METHODOLOGY_REVIEW', 'METHODOLOGY_CONFIRMED', 'MRV_PLANNED', 'MONITORING'];
 
 @Component({
   selector: 'app-project-detail-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DatePipe, MatTabsModule, MatButtonModule, PageHeader, StateView, StatusBadge, ReadinessPanel, DocumentsPanel, GeoMap,
+  imports: [DatePipe, RouterLink, MatTabsModule, MatButtonModule, PageHeader, StateView, StatusBadge, ReadinessPanel, DocumentsPanel, GeoMap,
     ProjectFarmsPanel, ProjectTeamPanel, ProjectBoundaryPanel, ProjectStandardPanel, ProjectPeriodsPanel, ProjectRightsPanel, ProjectHistoryPanel, ProjectMethodologyPanel],
   template: `
     <app-state-view [loading]="loading()" [error]="error()" (retry)="load()" />
@@ -44,6 +46,9 @@ const TAB_ONLY: ProjectStatus[] = ['METHODOLOGY_REVIEW', 'METHODOLOGY_CONFIRMED'
                        backLink="/projects" backLabel="Projects">
         @for (a of actions(); track a.target) {
           <button mat-stroked-button type="button" [class.danger]="a.danger" [disabled]="busy()" (click)="transition(a.target)">{{ a.label }}</button>
+        }
+        @if (p.methodology_status === 'CONFIRMED' && canMrv) {
+          <a mat-flat-button [routerLink]="['/mrv/projects', p.id]">MRV workspace</a>
         }
       </app-page-header>
       <div class="status-row">
@@ -125,6 +130,7 @@ export class ProjectDetailPage implements OnInit {
   private readonly dialog = inject(MatDialog);
   private readonly notify = inject(NotifyService);
   private readonly route = inject(ActivatedRoute);
+  protected readonly canMrv = inject(AuthService).has(P.MRV_READ);
   protected readonly label = label;
   protected readonly badge = projectBadge;
   protected readonly area = formatArea;

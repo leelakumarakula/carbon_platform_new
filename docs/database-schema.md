@@ -103,13 +103,40 @@ Shared services added in Phase 2:
 | `project_methodologies` | LOCKED/UNLOCKED (filtered unique: one LOCKED per project); version, evaluation result, review, rule revisions, confirmation and unlock stamps |
 | `projects` (changed) | `methodology_id`, `methodology_version_id`; `methodology_status` CHECK widened to NOT_SELECTED/UNDER_REVIEW/CONFIRMED |
 
+## Phase 5 tables (§7.6 MRV, §11 sampling)
+
+| Table | Notes |
+|---|---|
+| `mrv_plans` | unique (project, plan_version); DRAFT/SUBMITTED/APPROVED/SUPERSEDED/WITHDRAWN (filtered unique: one APPROVED per project); `project_methodology_id`, methodology + version; frequency, window (CHECK); `quantification_approach` CHECK (MEASURE_AND_REMEASURE / MEASURE_AND_MODEL / OTHER / CONFIGURATION_REQUIRED); `configuration_status`, `configuration_gaps` JSON, `gaps_acknowledged_by`; `supersedes_id`; submitted/approved stamps |
+| `mrv_plan_measurements` | configurable measurement definitions: code (unique per plan), category / value type / level CHECK lists, unit, `allowed_values` JSON, required, source METHODOLOGY / PROJECT_CONFIGURED, `monitoring_rule_id` |
+| `monitoring_periods` | unique (project, period_number); plan, methodology version; purpose; dates (CHECK); 9 statuses |
+| `project_strata` | versioned (`record_id`, `version`, filtered unique `is_current`); code, criteria JSON, `geometry` geography (spatial index `six_project_strata_geometry`), `area_hectares` (SQL Server), DRAFT/APPROVED/SUPERSEDED/RETIRED |
+| `stratum_farms` | PK (stratum, farm) + the farm boundary used |
+| `stratum_characteristics` | characteristic CHECK list, value, source |
+| `sampling_designs` | per period, unique (period, code); methodology version |
+| `sampling_design_versions` | DRAFT/APPROVED/SUPERSEDED (one APPROVED per design); statistical design CHECK; precision, confidence, CV, MDD, method, depth (CHECK), min distance, repeat sampling, **random seed**, requirement source, configuration status/gaps, `points_generated_at` |
+| `sampling_design_versions` (0007) | `field_rules` JSON: GPS tolerance, duplicate threshold, checklist version + items, minimum photos, each with source PLATFORM_DEFAULT / METHODOLOGY (frozen at creation) |
+| `field_collection_records` (0007) | `field_rules` JSON (copied from the design version at start), `checklist_version`, `gps_tolerance_m` |
+| `sampling_design_strata` | per version and stratum: `sample_count` (configured), allocation basis |
+| `sampling_points` | `point_code` (`seq_sampling_point_code`, SP-), `location` geography (spatial index `six_sampling_points_location`), lat/lon, planned depth, PLANNED/ASSIGNED/COLLECTED/SKIPPED/CANCELLED, farm + farm boundary, collector, planned date |
+| `sampling_point_relocations` | old/new coordinates, SQL Server distance, reason, PENDING/APPROVED/REJECTED, requester / reviewer stamps |
+| `sampling_assignments` | ACTIVE/REASSIGNED/COMPLETED/CANCELLED (filtered unique: one ACTIVE per point) |
+| `field_collection_records` | `collection_code` (`seq_field_collection_code`, FIELD-), version + `supersedes_id`; IN_PROGRESS/SUBMITTED/ACCEPTED/RETURNED/SUPERSEDED; GPS geography (spatial index `six_field_collection_records_gps`), accuracy, SQL Server `distance_from_point_m`, `gps_inside_farm`, deviation note; actual depth; quantity; checklist JSON; review stamps |
+| `monitoring_records` | versioned (`record_id`, `version`, `is_current`); measurement, level entity, phase, typed value columns, unit, source, RECORDED/SUPERSEDED/RETRACTED, change reason |
+| `mrv_evidence` | entity type/id, evidence type CHECK, `document_id`, `checksum_sha256`, lat/lon, source, status |
+| `mrv_datasets` | `dataset_code` unique, version + `supersedes_id`; 7 statuses (filtered unique: one open per period); `snapshot` JSON + `snapshot_sha256`; configuration gaps; `environment` |
+| `mrv_qa_reviews` | checks JSON, result PASS/FAIL/REQUIRES_CORRECTION, start/complete stamps |
+
 ## Migrations
 
 `backend/alembic/versions/20261002_0001_phase1_identity_access_audit.py` and
 `20261002_0002_phase2_farmer_farm.py` (tables, sequences, spatial index, `document_versions` trigger),
 `20261002_0003_phase2_decisions_consent_definitions.py` (D3, with data backfill) and `20261002_0004_phase3_projects.py`
 (project tables, `seq_project_code`, project spatial index, `project_status_history` trigger, document categories) and
-`20261002_0005_phase4_methodologies.py` (methodology tables, three append-only triggers, project columns and checks). Spatial
+`20261002_0005_phase4_methodologies.py` (methodology tables, three append-only triggers, project columns and checks) and
+`20261002_0006_phase5_mrv_sampling.py` (17 MRV/sampling tables, three spatial indexes, the SP- and FIELD- sequences) and
+`20261003_0007_phase5_field_rules_governance.py` (decisions S1/S2: `field_rules` JSON on design versions and field records,
+`checklist_version` and `gps_tolerance_m` on field records; existing rows backfilled with the defaults in force then). Spatial
 indexes (`six_*`) are hand-written SQL and excluded from autogenerate by `include_object` in `alembic/env.py`. Generate new revisions with
 `alembic revision --autogenerate`, review them, and add raw SQL (triggers, spatial indexes) by hand.
 `alembic check` must report no drift before a phase is closed.

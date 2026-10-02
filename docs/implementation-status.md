@@ -6,8 +6,8 @@
 | 2 | Farmer & farm (KYC, polygons, history, evidence) | **Done** |
 | 3 | Project | **Done** |
 | 4 | Standard / activity / methodology | **Done** |
-| 5 | MRV / GIS / sampling | Next (awaiting approval) |
-| 6 | Sample / lab | — |
+| 5 | MRV / GIS / sampling | **Done** |
+| 6 | Sample / lab | Next (awaiting approval) |
 | 7 | Calculation | — |
 | 8 | VVB / ACVA | — |
 | 9 | Registry / credits | — |
@@ -254,6 +254,51 @@ Verification (exit gate, 2 Oct 2026)
   - The DEMO project shows its DEMO-CCTS-SOIL 1.0 lock.
   - All methodology audit events were present and there were no console errors.
 
+## Phase 5 — delivered
+
+**MRV plan → monitoring period → stratification → sampling design → points → field collection → dataset → QA → APPROVED.**
+Details are in [mrv-workflow.md](mrv-workflow.md) and [sampling-workflow.md](sampling-workflow.md).
+
+Backend
+- Migrations `0006` + `0007` (field rules frozen per design version / field record): 17 tables (plans, measurements, periods, strata + characteristics + farms, designs + versions + allocations,
+  points, relocations, assignments, field collections, monitoring records, evidence, datasets, QA reviews), three spatial indexes,
+  the `SP-` and `FIELD-` sequences.
+- MRV only on a LOCKED, valid methodology version. Requirements come from the version's monitoring and SAMPLING rules; anything
+  not configured is **CONFIGURATION_REQUIRED** (listed, acknowledged at approval, reported by QA). No sampling rule is invented.
+- Versioned plans (never overwritten), monitoring periods (9 states), versioned strata (SQL Server union geometry and area),
+  versioned sampling designs with configured per-stratum counts (no per-area rule) and a stored random seed.
+- Point generation: seeded candidates, SQL Server containment in the farm boundaries, spacing, duplicate check against existing
+  points, project-boundary check, all-or-nothing. Relocation with old/new location, reason, requester, approval.
+- Assignment to collectors; mobile field collection (`FIELD-YYYY-NNNNNN`) with SQL Server GPS distance / inside-farm checks,
+  checklist, photo evidence (SHA-256), deviation notes, review, correction versions.
+- Configurable monitoring (activity) data with typed values and versioned corrections; evidence linked to project / farm /
+  period / point / collection / record.
+- Versioned datasets with a frozen snapshot + SHA-256 (re-verified on approval), 15 deterministic QA checks, PASS / FAIL /
+  REQUIRES_CORRECTION, approval by QA (not the submitter). The workflow ends at APPROVED; project status MRV_PLANNED → MONITORING;
+  nothing moves to calculation.
+- RBAC: `mrv.read/manage/collect/review/approve`, `sampling.manage/assign/collect/review`; separation of duties on every approval.
+- DEMO: on the locked Niphad project — approved plan (gaps acknowledged), period in DATA_COLLECTION, 2 strata, approved design,
+  6 points assigned to collector@demo, 2 accepted + 1 submitted collections with DEMO placeholder photos, practice records and a
+  COLLECTING dataset. No lab results, calculations or credits.
+
+Frontend
+- MRV dashboard (`/mrv`); project MRV workspace with tabs: plans, monitoring periods, stratification (map), sampling design,
+  points map + assignments + relocations + field-record review, monitoring data entry, evidence, datasets & QA, MRV history.
+- Plan create and plan detail (submit / approve with gap acknowledgement / return / withdraw); dataset + QA review page.
+- Mobile field collector dashboard (`/field`) and collection screen (`/field/collections/:id`: device GPS or manual entry,
+  depth, checklist, camera photo, relocation request, submit). Nav: "MRV" (`mrv.read`), "Field work" (`sampling.collect`).
+
+Verification (exit gate, 3 Oct 2026)
+- Backend: **226 pytest tests passed** (Phases 1–4: 207; Phase 5: 19 — 8 MRV API, 5 GIS/sampling, 5 review decisions
+  V1/S1/S2/SOC, 1 DEMO seed). ruff clean. mypy clean (118 files). `alembic check`: no drift. Migrations 0006 + 0007 tested
+  upgrade → downgrade (to 0005) → upgrade on the test database.
+- Frontend: **62 Vitest tests passed** (10 files). Production build OK (initial bundle 741 kB, 173 kB transferred).
+- E2E passed (Phases 1–5): MRV manager created and submitted a plan in the UI, QA approved it (gaps acknowledged), period
+  created and opened, design created and points generated, supervisor assigned points, collector collected on a 390 px phone
+  viewport (GPS, checklist, photo), supervisor accepted, dataset submitted, QA ran checks (0 FAIL), recorded PASS and approved;
+  period APPROVED, project MONITORING; buyer and farmer blocked from MRV; all required MRV audit events present; no console
+  errors.
+
 ## Known limitations and open items
 
 - The rate limiter is in-memory (single API process). Redis is required before scaling out (Phase 12).
@@ -265,7 +310,7 @@ Verification (exit gate, 2 Oct 2026)
     signature-only scanner are for development.
   - Offline capture and sync are not built.
   - Notifications are in-app only.
-  - Satellite evidence is recorded manually only (adapter in Phase 5).
+  - Satellite evidence is recorded manually only (no satellite adapter yet; Phase 5 adds field evidence only).
   - OpenStreetMap public tiles are the development default; production sets `MAP_TILE_*` (D6).
   - A1–A5 were approved (D1–D3); the GIS thresholds (A6) and the farm verification gates (A7) are still to be confirmed.
 - Phase 3:
@@ -279,4 +324,11 @@ Verification (exit gate, 2 Oct 2026)
     by a specialist and approved by a second person.
   - Calculation readiness is NOT_PRODUCTION_READY everywhere.
   - Assumptions M1–M5 in methodology-engine.md need confirmation.
+- Phase 5:
+  - Offline field capture and sync are not built; the field screens need a connection.
+  - Sample-based methodology parameters (e.g. SOC) are left for Phase 6 analysis; QA reports them as pending.
+  - Decisions V1, S1, S2 were applied after review (production block of gap approval; GPS / duplicate / checklist / photo values
+    are versioned, configurable PLATFORM DEFAULTS frozen per design version and field record — migration 0007). Assumptions
+    V2–V4 and S3–S4 still need confirmation. No production exception to V1 exists.
+  - Each E2E run adds an MRV plan, period, points and dataset to its DEMO-environment project in the development database.
 - The browser logs one expected 401 at start-up: the silent session-restore attempt when nobody is signed in.

@@ -217,3 +217,27 @@ def test_demo_methodologies_seed(db: Session) -> None:
     locked = db.scalars(select(ProjectMethodology).where(ProjectMethodology.status == "LOCKED")).all()
     b = db.get(Project, locked[0].project_id)
     assert b is not None and b.status == "METHODOLOGY_CONFIRMED" and b.methodology_status == "CONFIRMED"
+
+
+def test_demo_mrv_seed(db: Session) -> None:
+    from app.models import FieldCollectionRecord, MrvDataset, MrvPlan, Project, SamplingPoint
+    from app.seed.demo_farms import seed_demo_farms
+    from app.seed.demo_methodologies import seed_demo_methodologies
+    from app.seed.demo_mrv import seed_demo_mrv
+    from app.seed.demo_projects import seed_demo_projects
+    seed_demo(db, "Demo-Password-123")
+    seed_demo_farms(db)
+    seed_demo_projects(db)
+    seed_demo_methodologies(db)
+    assert seed_demo_mrv(db) == {"plans": 1, "points": 6, "collections": 3}
+    assert seed_demo_mrv(db) == {"plans": 0, "points": 0, "collections": 0}  # idempotent
+    plan = db.scalars(select(MrvPlan)).one()
+    assert plan.status == "APPROVED" and plan.configuration_status == "CONFIGURATION_REQUIRED" and plan.gaps_acknowledged_by is not None
+    p = db.get(Project, plan.project_id)
+    assert p is not None and p.environment == "DEMO" and p.status == "MONITORING"
+    pts = db.scalars(select(SamplingPoint).where(SamplingPoint.project_id == p.id)).all()
+    assert sorted(x.status for x in pts) == ["ASSIGNED"] * 3 + ["COLLECTED"] * 3
+    cols = db.scalars(select(FieldCollectionRecord).where(FieldCollectionRecord.project_id == p.id)).all()
+    assert sorted(c.status for c in cols) == ["ACCEPTED", "ACCEPTED", "SUBMITTED"]
+    ds = db.scalars(select(MrvDataset).where(MrvDataset.project_id == p.id)).one()
+    assert ds.status == "COLLECTING" and ds.environment == "DEMO"

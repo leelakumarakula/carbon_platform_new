@@ -11,6 +11,7 @@ from app.api.v1 import (
     farms,
     health,
     methodologies,
+    mrv,
     notifications,
     organizations,
     projects,
@@ -20,6 +21,6 @@ from app.api.v1 import (
 
 api_router = APIRouter()
 for module in (health, auth, client_config, users, roles, organizations, audit, consents, farmers, farms, catalog, projects,
-               methodologies, documents,
+               methodologies, mrv, documents,
                notifications):
     api_router.include_router(module.router)

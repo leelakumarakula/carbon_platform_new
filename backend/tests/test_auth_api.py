@@ -71,7 +71,7 @@ def test_me_requires_auth_and_returns_permissions(client: TestClient, db: Sessio
     me = client.get("/api/v1/auth/me", headers=login(client, u)).json()
     assert me["user"]["email"] == u.email
     assert set(me["permissions"]) == {"users.read", "organizations.read", "farmers.read", "farms.read", "projects.read",
-                                       "methodologies.read"}  # read-only
+                                       "methodologies.read", "mrv.read"}  # read-only
     assert me["user"]["roles"][0]["role_code"] == "SUPPORT"
 
 

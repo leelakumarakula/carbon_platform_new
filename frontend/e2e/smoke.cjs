@@ -20,6 +20,13 @@ let navItems = [];
 const phase2 = { pmPolygon: 0, overlapFlag: false, drawnArea: '', farmerFarms: 0 };
 const phase3 = { demoProjects: 0, created: '', areaText: '', boundaryShapes: 0, status: '', historyOk: false, audit: [], farmerProjects: 0,
   buyerBlocked: false, tiles: false };
+const phase5 = { dashboard: false, planApproved: false, periodOpen: false, points: 0, assigned: false, collected: '', accepted: 0, qaFails: -1,
+  datasetApproved: false, periodStatus: '', projectStatus: '', audit: [], buyerBlocked: false, farmerBlocked: false };
+const REQUIRED_AUDIT_P5 = ['MRV_PLAN_CREATED', 'MRV_PLAN_APPROVED', 'MONITORING_PERIOD_CREATED', 'STRATUM_CREATED', 'SAMPLING_DESIGN_CREATED',
+  'SAMPLING_POINT_CREATED', 'SAMPLING_POINT_ASSIGNED', 'FIELD_COLLECTION_SUBMITTED', 'FIELD_COLLECTION_ACCEPTED', 'MRV_EVIDENCE_ADDED',
+  'MRV_DATASET_SUBMITTED', 'MRV_QA_COMPLETED', 'MRV_DATASET_APPROVED'];
+const PNG = Buffer.from('89504e470d0a1a0a0000000d4948445200000001000000010806000000'
+  + '1f15c4890000000d49444154789c6360f8cf00000301010018dd8db40000000049454e44ae426082', 'hex');
 const phase4 = { catalog: false, approvedReadOnly: false, demoLock: '', candidates: 0, recommended: false, locked: '', audit: [] };
 const REQUIRED_AUDIT_P4 = ['PROJECT_METHODOLOGY_CANDIDATES_EVALUATED', 'PROJECT_METHODOLOGY_REVIEWED', 'PROJECT_METHODOLOGY_CONFIRMED'];
 const REQUIRED_AUDIT = ['PROJECT_CREATED', 'PROJECT_STATUS_CHANGED', 'PROJECT_FARM_ADDED', 'PROJECT_CARBON_RIGHT_CREATED',
@@ -28,8 +35,8 @@ const REQUIRED_AUDIT = ['PROJECT_CREATED', 'PROJECT_STATUS_CHANGED', 'PROJECT_FA
 (async () => {
   const browser = await chromium.launch({ executablePath: CHROME, headless: true });
   const problems = [];
-  async function session(email) {
-    const ctx = await browser.newContext({ viewport: { width: 1360, height: 860 } });
+  async function session(email, viewport = { width: 1360, height: 860 }) {
+    const ctx = await browser.newContext({ viewport });
     const page = await ctx.newPage();
     lastPage = page;
     page.on('console', (m) => m.type() === 'error' && problems.push(`[${email}] console: ${m.text()}`));
@@ -298,6 +305,155 @@ const REQUIRED_AUDIT = ['PROJECT_CREATED', 'PROJECT_STATUS_CHANGED', 'PROJECT_FA
   phase4.demoLock = (await pm2.page.locator('.locked strong').innerText()).trim();
   phase4.audit = await auditActions();
   await pm2.ctx.close();
+
+  // ---- Phase 5: MRV plan → period → strata → sampling design → points → field collection → dataset → QA → APPROVED
+  const MRV = `${BASE}/api/v1/mrv`;
+  const json = async (r) => { if (!r.ok()) throw new Error(`${r.url()} → ${r.status()} ${await r.text()}`); return r.json(); };
+  const signIn = async (who, viewport) => {
+    const s = await session(`${who}@demo.carbon.example`, viewport);
+    await s.page.getByRole('button', { name: 'Sign in' }).click();
+    await s.page.getByText('Welcome,').waitFor();
+    return s;
+  };
+  const mrv = await signIn('mrv');
+  const M = mrv.page;
+  await M.goto(`${BASE}/mrv`);
+  await M.getByText(projectName).first().waitFor();
+  phase5.dashboard = true;
+  await shot(M, '40-mrv-dashboard');
+  await M.getByText(projectName).first().click();
+  await M.getByText('CONFIGURATION_REQUIRED.').waitFor(); // the DEMO methodology configures no sampling rules
+  await M.getByRole('link', { name: 'Create MRV plan' }).click();
+  await M.getByLabel('Monitoring start').fill('2026-06-01');
+  await M.getByLabel('Monitoring end').fill('2036-05-31');
+  await M.getByRole('button', { name: 'Add measurement' }).click();
+  await M.getByLabel('Code').fill('TILL');
+  await M.getByLabel('Name', { exact: true }).fill('Tillage practice');
+  await M.getByLabel('Allowed values (comma separated)').fill('CONVENTIONAL, REDUCED, NO_TILL');
+  await shot(M, '41-mrv-plan-create');
+  await M.getByTestId('create-plan').click();
+  await M.getByTestId('submit-plan').click();
+  await confirmReason(M, 'Submit', 'E2E: plan ready for approval');
+  await M.getByText('Submitted', { exact: true }).first().waitFor();
+  const planUrl = M.url();
+  const qa = await signIn('qa');
+  await qa.page.goto(planUrl);
+  await qa.page.getByTestId('approve-plan').click();
+  await confirmReason(qa.page, 'Approve', 'E2E: plan approved; CONFIGURATION_REQUIRED gaps acknowledged');
+  await qa.page.getByText('Approved', { exact: true }).first().waitFor();
+  phase5.planApproved = true;
+  await shot(qa.page, '42-mrv-plan-approved');
+  // monitoring period in the UI
+  await M.goto(`${BASE}/mrv/projects/${projectId}?tab=periods`);
+  await M.getByLabel('Name', { exact: true }).fill('E2E monitoring 1');
+  await M.getByLabel('Start', { exact: true }).fill('2026-06-01');
+  await M.getByLabel('End', { exact: true }).fill('2027-05-31');
+  await M.getByRole('button', { name: 'Create period' }).click();
+  for (const step of ['Mark planned', 'Start period', 'Open data collection']) {
+    await M.getByRole('button', { name: step }).first().click();
+    await confirmReason(M, step, `E2E: ${step.toLowerCase()}`);
+  }
+  await M.getByText('Data collection', { exact: true }).first().waitFor();
+  phase5.periodOpen = true;
+  await shot(M, '43-mrv-periods');
+  // strata (API: MRV manager creates, GIS approves), sampling design in the UI
+  const mrvH = await as('mrv');
+  const colH = await as('collector');
+  const farmIds = (await json(await api.get(`${BASE}/api/v1/projects/${projectId}/farms`, { headers: pmH }))).map((f) => f.farm_id);
+  const st = await json(await api.post(`${MRV}/projects/${projectId}/strata`, { headers: mrvH,
+    data: { code: 'E2E1', name: 'E2E stratum', farm_ids: farmIds, characteristics: [{ characteristic: 'SOIL_TYPE', value: 'Vertisol' }] } }));
+  await json(await api.post(`${MRV}/strata/${st.id}/approve`, { headers: gisH, data: { reason: 'E2E stratum geometry ok' } }));
+  await M.goto(`${BASE}/mrv/projects/${projectId}?tab=design`);
+  await M.getByTestId('count-E2E1').fill('2');
+  await M.getByRole('button', { name: /Create design/ }).click();
+  await M.getByText('SOIL-1').first().waitFor();
+  const period = (await json(await api.get(`${MRV}/monitoring-periods?project_id=${projectId}`, { headers: mrvH })))[0];
+  const design = (await json(await api.get(`${MRV}/sampling-designs?project_id=${projectId}`, { headers: mrvH })))[0];
+  await json(await api.post(`${MRV}/sampling-designs/${design.id}/versions/${design.current.id}/approve`, { headers: gisH, data: { reason: 'E2E design ok' } }));
+  await M.reload();
+  await M.getByTestId('generate-points').click();
+  await M.getByText('Points generated').waitFor();
+  await shot(M, '44-mrv-design');
+  // supervisor assigns the points to the collector (UI)
+  const sup = await signIn('supervisor');
+  await sup.page.goto(`${BASE}/mrv/projects/${projectId}?tab=points`);
+  await sup.page.getByRole('button', { name: 'Select unassigned' }).click();
+  await choose(sup.page, 'Field collector', 'collector@');
+  await sup.page.getByTestId('assign').click();
+  await sup.page.getByText('Assigned', { exact: true }).first().waitFor();
+  const pts = await json(await api.get(`${MRV}/sampling-points?monitoring_period_id=${period.id}`, { headers: mrvH }));
+  phase5.points = pts.length;
+  phase5.assigned = pts.every((x) => x.status === 'ASSIGNED');
+  await shot(sup.page, '45-mrv-points-map');
+  // field collector on a phone: first point through the UI, the second through the API
+  const fieldS = await signIn('collector', { width: 390, height: 844 });
+  const C = fieldS.page;
+  await C.goto(`${BASE}/field`);
+  await C.locator(`[data-point="${pts[0].point_code}"]`).getByTestId('start-collection').click();
+  await C.getByText('Field checklist').waitFor();
+  await C.getByLabel('Latitude').fill(String(pts[0].latitude));
+  await C.getByLabel('Longitude').fill(String(pts[0].longitude));
+  for (const k of ['location_confirmed', 'depth_measured', 'sample_labelled']) await C.locator(`[data-check="${k}"] input`).check();
+  await C.getByTestId('photo').setInputFiles({ name: 'sample.png', mimeType: 'image/png', buffer: PNG });
+  await C.getByText('Photos (1)').waitFor();
+  await shot(C, '46-field-collection-mobile');
+  await C.getByTestId('submit-collection').click();
+  await C.getByText('Submitted', { exact: true }).first().waitFor();
+  phase5.collected = (await C.locator('app-page-header h1').innerText().catch(() => '')).trim();
+  await C.goto(`${BASE}/field`);
+  await C.getByText('Collected', { exact: true }).first().waitFor();
+  await shot(C, '47-field-dashboard-mobile');
+  const fc2 = await json(await api.post(`${MRV}/field-collections`, { headers: colH, data: { sampling_point_id: pts[1].id } }));
+  await json(await api.patch(`${MRV}/field-collections/${fc2.id}`, { headers: colH, data: { collected_at: new Date().toISOString(),
+    gps_latitude: Number(pts[1].latitude), gps_longitude: Number(pts[1].longitude), actual_depth_top_cm: 0, actual_depth_bottom_cm: 30,
+    checklist: { location_confirmed: true, depth_measured: true, sample_labelled: true, photo_taken: true } } }));
+  await json(await api.post(`${MRV}/evidence`, { headers: colH, multipart: { project_id: projectId, entity_type: 'FIELD_COLLECTION', entity_id: fc2.id,
+    evidence_type: 'FIELD_PHOTO', file: { name: 'sample.png', mimeType: 'image/png', buffer: PNG } } }));
+  await json(await api.post(`${MRV}/field-collections/${fc2.id}/submit`, { headers: colH }));
+  // supervisor accepts both records (UI)
+  await sup.page.reload();
+  lastPage = sup.page;
+  await sup.page.getByTestId('accept').nth(1).waitFor();
+  for (let left = 2; left > 0; left--) {
+    await sup.page.getByTestId('accept').first().click();
+    await confirmReason(sup.page, 'Accepted', 'E2E: sample and photo checked');
+    for (let t = 0; t < 50 && (await sup.page.getByTestId('accept').count()) >= left; t++) await sup.page.waitForTimeout(200);
+  }
+  phase5.accepted = (await json(await api.get(`${MRV}/field-collections?monitoring_period_id=${period.id}`, { headers: mrvH })))
+    .filter((x) => x.status === 'ACCEPTED').length;
+  // activity data per farm (API), dataset created (API), submitted (UI)
+  const plan = (await json(await api.get(`${MRV}/plans?project_id=${projectId}`, { headers: mrvH }))).find((x) => x.status === 'APPROVED');
+  const till = plan.measurements.find((m) => m.code === 'TILL');
+  for (const fid of farmIds) {
+    await json(await api.post(`${MRV}/monitoring-records`, { headers: colH, data: { monitoring_period_id: period.id, measurement_id: till.id,
+      farm_id: fid, value: 'REDUCED', observed_on: new Date().toISOString().slice(0, 10), measurement_phase: 'PROJECT' } }));
+  }
+  const ds = await json(await api.post(`${MRV}/datasets`, { headers: mrvH, data: { monitoring_period_id: period.id } }));
+  await M.goto(`${BASE}/mrv/datasets/${ds.id}`);
+  await M.getByTestId('submit-dataset').click();
+  await confirmReason(M, 'Submit', 'E2E: collection complete');
+  await M.getByText('Submitted', { exact: true }).first().waitFor();
+  // QA officer: deterministic checks, PASS, approve (UI)
+  lastPage = qa.page;
+  await qa.page.goto(`${BASE}/mrv/datasets/${ds.id}`);
+  await qa.page.getByTestId('start-qa').click();
+  await qa.page.getByTestId('complete-qa').waitFor();
+  phase5.qaFails = await qa.page.locator('.check', { hasText: 'FAIL' }).count();
+  await shot(qa.page, '48-mrv-qa-review');
+  await qa.page.getByTestId('complete-qa').click();
+  await confirmReason(qa.page, 'Record', 'E2E: all checks pass');
+  await qa.page.getByTestId('approve-dataset').click();
+  await confirmReason(qa.page, 'Approve', 'E2E: dataset approved');
+  await qa.page.getByText('Approved', { exact: true }).first().waitFor();
+  phase5.datasetApproved = true;
+  await shot(qa.page, '49-mrv-dataset-approved');
+  phase5.periodStatus = (await json(await api.get(`${MRV}/monitoring-periods/${period.id}`, { headers: mrvH }))).status;
+  phase5.projectStatus = (await json(await api.get(`${BASE}/api/v1/projects/${projectId}`, { headers: pmH }))).status;
+  phase5.audit = [...new Set((await json(await api.get(`${MRV}/projects/${projectId}/history`, { headers: mrvH }))).map((h) => h.action))].sort();
+  await M.goto(`${BASE}/mrv/projects/${projectId}?tab=history`);
+  await M.getByText('Mrv dataset approved').first().waitFor();
+  await shot(M, '50-mrv-history');
+  for (const x of [mrv, qa, sup, fieldS]) await x.ctx.close();
   await api.dispose();
 
   // ---- Phase 3: buyer has no project access
@@ -307,6 +463,11 @@ const REQUIRED_AUDIT = ['PROJECT_CREATED', 'PROJECT_STATUS_CHANGED', 'PROJECT_FA
   await b.page.goto(`${BASE}/projects`);
   await b.page.getByText("You don't have access to this page").waitFor();
   phase3.buyerBlocked = !(await b.page.locator('nav a', { hasText: 'Projects' }).count());
+  await b.page.goto(`${BASE}/mrv`);
+  await b.page.getByText("You don't have access to this page").waitFor();
+  await b.page.goto(`${BASE}/field`);
+  await b.page.getByText("You don't have access to this page").waitFor();
+  phase5.buyerBlocked = !(await b.page.locator('nav a', { hasText: 'MRV' }).count());
   await b.ctx.close();
 
   // ---- farmer: least privilege + self-service
@@ -315,6 +476,9 @@ const REQUIRED_AUDIT = ['PROJECT_CREATED', 'PROJECT_STATUS_CHANGED', 'PROJECT_FA
   await f.page.getByText('Welcome,').waitFor();
   navItems = await f.page.locator('nav a').allInnerTexts();
   console.log('farmer nav:', navItems.map((s) => s.replace(/\s+/g, ' ').trim()));
+  await f.page.goto(`${BASE}/mrv`);
+  await f.page.getByText("You don't have access to this page").waitFor();
+  phase5.farmerBlocked = true;
   await f.page.goto(`${BASE}/admin/users`);
   await f.page.getByText("You don't have access to this page").waitFor();
   await shot(f.page, '09-farmer-forbidden');
@@ -332,6 +496,7 @@ const REQUIRED_AUDIT = ['PROJECT_CREATED', 'PROJECT_STATUS_CHANGED', 'PROJECT_FA
   console.log('phase 2:', JSON.stringify(phase2));
   console.log('phase 3:', JSON.stringify(phase3));
   console.log('phase 4:', JSON.stringify(phase4));
+  console.log('phase 5:', JSON.stringify(phase5));
 
   await browser.close();
   // One 401 per session is expected: the silent session-restore attempt before sign-in.
@@ -347,7 +512,12 @@ const REQUIRED_AUDIT = ['PROJECT_CREATED', 'PROJECT_STATUS_CHANGED', 'PROJECT_FA
   if (missingP4.length) console.log('missing phase 4 audit events:', missingP4);
   const p4ok = phase4.catalog && phase4.approvedReadOnly && phase4.candidates >= 2 && phase4.recommended && /version/.test(phase4.locked)
     && /DEMO-CCTS-SOIL/.test(phase4.demoLock) && !missingP4.length;
-  if (!stillIn || real.length || navItems.length !== 4 || !p2ok || !p3ok || !p4ok) process.exitCode = 1;
+  const missingP5 = REQUIRED_AUDIT_P5.filter((a) => !phase5.audit.includes(a));
+  if (missingP5.length) console.log('missing phase 5 audit events:', missingP5);
+  const p5ok = phase5.dashboard && phase5.planApproved && phase5.periodOpen && phase5.points === 2 && phase5.assigned
+    && /^FIELD-\d{4}-\d{6}$/.test(phase5.collected) && phase5.accepted === 2 && phase5.qaFails === 0 && phase5.datasetApproved
+    && phase5.periodStatus === 'APPROVED' && phase5.projectStatus === 'MONITORING' && phase5.buyerBlocked && phase5.farmerBlocked && !missingP5.length;
+  if (!stillIn || real.length || navItems.length !== 4 || !p2ok || !p3ok || !p4ok || !p5ok) process.exitCode = 1;
 })().catch(async (e) => {
   console.error('DRIVER FAILED:', e.message);
   if (lastPage) {

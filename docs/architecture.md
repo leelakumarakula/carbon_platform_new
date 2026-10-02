@@ -30,7 +30,7 @@ models; no module reaches into another's tables except through its service.
 | `security/` | Permission catalog + system roles, password policy, tokens, `Principal` |
 | `audit/` | Audit/workflow/security-event writers, API access-log writer |
 | `api/` | `deps.py` (principal, `require()`, context, paging) and versioned routers |
-| `rules/` | Pure functions: geometry parsing (GeoJSON/KML to WKT), file-type sniffing, the deterministic methodology applicability engine |
+| `rules/` | Pure functions: geometry parsing (GeoJSON/KML to WKT), file-type sniffing, the deterministic methodology applicability engine, seeded sampling-point candidate generation (SQL Server decides containment) |
 | `integrations/` | Adapters: `ObjectStorage` (local; S3 pending), `MalwareScanner` (signature; real AV pending) |
 | `seed/` | Reference data sync, bootstrap admin, DEMO data (accounts, farmers, farms) |
 
@@ -45,7 +45,7 @@ transaction.
 | `core/` | `ApiService`, `ApiError`, auth service/guards/interceptors, permissions, navigation registry, notifications |
 | `shared/` | Status badge, page header, state view, reason dialog, form helpers, `PagedList` |
 | `layout/` | Shell: side navigation filtered by permissions, user menu, DEMO indicator |
-| `auth/`, `dashboard/`, `admin/`, `farmer/`, `farms/`, `projects/`, `methodologies/` | Feature pages; each feature has its own models and API service |
+| `auth/`, `dashboard/`, `admin/`, `farmer/`, `farms/`, `projects/`, `methodologies/`, `mrv/` (MRV workspace + mobile field screens) | Feature pages; each feature has its own models and API service |
 
 `shared/geo-map.ts` wraps Leaflet. The browser only draws and previews shapes; validation and area are
 always computed by SQL Server.

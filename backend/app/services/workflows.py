@@ -74,7 +74,11 @@ PROJECT_MACHINE = StateMachine.build(
         # Phase 4: candidate evaluation + specialist review, then confirm = lock methodology + version.
         "METHODOLOGY_REVIEW": {"METHODOLOGY_CONFIRMED", "DATA_COLLECTION", "CLOSED"},
         # Unlocking is explicit and audited (never silent); MRV_PLANNED is added in Phase 5.
-        "METHODOLOGY_CONFIRMED": {"METHODOLOGY_REVIEW", "CLOSED"},
+        "METHODOLOGY_CONFIRMED": {"METHODOLOGY_REVIEW", "MRV_PLANNED", "CLOSED"},
+        # Phase 5: first MRV plan approved → MRV_PLANNED; first monitoring period started → MONITORING.
+        # CALCULATION_READY and later are added in Phase 7+.
+        "MRV_PLANNED": {"MONITORING", "CLOSED"},
+        "MONITORING": {"CLOSED"},
     },
     terminal={"CLOSED"},
 )
@@ -87,6 +91,35 @@ METHODOLOGY_VERSION_MACHINE = StateMachine.build(
     "methodology_version", initial="DRAFT",
     transitions={"DRAFT": {"IN_REVIEW", "WITHDRAWN"}, "IN_REVIEW": {"APPROVED", "DRAFT"}, "APPROVED": {"SUPERSEDED", "RETIRED"}},
     terminal={"SUPERSEDED", "RETIRED", "WITHDRAWN"},
+)
+
+MRV_PLAN_MACHINE = StateMachine.build(
+    "mrv_plan", initial="DRAFT",
+    transitions={"DRAFT": {"SUBMITTED", "WITHDRAWN"}, "SUBMITTED": {"APPROVED", "DRAFT"}, "APPROVED": {"SUPERSEDED"}},
+    terminal={"SUPERSEDED", "WITHDRAWN"},
+)
+
+MONITORING_PERIOD_MACHINE = StateMachine.build(
+    "monitoring_period", initial="DRAFT",
+    transitions={"DRAFT": {"PLANNED"}, "PLANNED": {"ACTIVE"}, "ACTIVE": {"DATA_COLLECTION"},
+                 "DATA_COLLECTION": {"SUBMITTED"}, "SUBMITTED": {"QA_REVIEW", "DATA_COLLECTION"},
+                 "QA_REVIEW": {"APPROVED", "REJECTED"}, "REJECTED": {"DATA_COLLECTION"},
+                 "APPROVED": {"CLOSED", "DATA_COLLECTION"}},  # re-opened only by a new (correction) dataset version
+    terminal={"CLOSED"},
+)
+
+MRV_DATASET_MACHINE = StateMachine.build(
+    "mrv_dataset", initial="DRAFT",
+    transitions={"DRAFT": {"COLLECTING"}, "COLLECTING": {"SUBMITTED"}, "SUBMITTED": {"QA_REVIEW", "COLLECTING"},
+                 "QA_REVIEW": {"APPROVED", "REJECTED"}, "APPROVED": {"SUPERSEDED"}},
+    terminal={"REJECTED", "SUPERSEDED"},
+)
+
+FIELD_COLLECTION_MACHINE = StateMachine.build(
+    "field_collection", initial="IN_PROGRESS",
+    transitions={"IN_PROGRESS": {"SUBMITTED"}, "SUBMITTED": {"ACCEPTED", "RETURNED"}, "RETURNED": {"SUBMITTED"},
+                 "ACCEPTED": {"SUPERSEDED"}},
+    terminal={"SUPERSEDED"},
 )
 
 OVERLAP_MACHINE = StateMachine.build(

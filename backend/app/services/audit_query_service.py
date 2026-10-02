@@ -47,12 +47,16 @@ def list_audit(db: Session, principal: Principal, params: PageParams, *, entity_
     stmt = _between(stmt, AuditLog.occurred_at, start, end)
     rows, total = paginate(db, stmt, params, {"occurred_at": AuditLog.occurred_at, "action": AuditLog.action},
                            "-occurred_at", AuditLog.id.desc())
+    return audit_rows_out(db, rows), total
+
+
+def audit_rows_out(db: Session, rows: Any) -> list[AuditLogOut]:
     emails = dict(db.execute(select(User.id, User.email).where(User.id.in_({r.user_id for r in rows if r.user_id})))
                   .tuples().all()) if rows else {}
     return [AuditLogOut(id=r.id, occurred_at=r.occurred_at, user_id=r.user_id, user_email=emails.get(r.user_id),
                         organization_id=r.organization_id, action=r.action, entity_type=r.entity_type,
                         entity_id=r.entity_id, old_value=_j(r.old_value), new_value=_j(r.new_value), reason=r.reason,
-                        request_id=r.request_id, ip_address=r.ip_address) for r in rows], total
+                        request_id=r.request_id, ip_address=r.ip_address) for r in rows]
 
 
 def list_workflow_events(db: Session, principal: Principal, params: PageParams, *, entity_type: str | None,

@@ -72,7 +72,9 @@ PROJECT_FIELDS = ("project_code", "name", "description", "project_type", "organi
 TRANSITION_PERMISSION = {"DATA_COLLECTION": P.PROJECTS_MANAGE, "ELIGIBILITY_REVIEW": P.PROJECTS_MANAGE,
                          "STANDARD_SELECTED": P.PROJECTS_REVIEW, "ACTIVITY_SELECTED": P.PROJECTS_MANAGE, "CLOSED": P.PROJECTS_MANAGE,
                          # Phase 4: entered through the methodology endpoints (evaluate / confirm / unlock)
-                         "METHODOLOGY_REVIEW": P.PROJECTS_MANAGE, "METHODOLOGY_CONFIRMED": P.PROJECTS_MANAGE}
+                         "METHODOLOGY_REVIEW": P.PROJECTS_MANAGE, "METHODOLOGY_CONFIRMED": P.PROJECTS_MANAGE,
+                         # Phase 5: entered through the MRV endpoints (plan approval / period start)
+                         "MRV_PLANNED": P.MRV_MANAGE, "MONITORING": P.MRV_MANAGE}
 
 
 def _not_found() -> NotFound:

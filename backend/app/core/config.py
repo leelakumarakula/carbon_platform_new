@@ -79,6 +79,17 @@ class Settings(BaseSettings):
     MAP_TILE_MAX_ZOOM: int = 19
     MAP_TILE_SUBDOMAINS: str = ""
 
+    # MRV / sampling (technical tolerances, not methodology rules)
+    # Field-collection PLATFORM DEFAULTS (decisions S1, S2) — not methodology requirements. A methodology version's SAMPLING
+    # rule may override them; the values used are frozen on each design version / collection record (services/field_rules.py).
+    GPS_MAX_DISTANCE_M: float = 30.0          # collection GPS further than this from the planned point needs a note
+    FIELD_CHECKLIST_VERSION: str = "PLATFORM-DEFAULT-1"
+    FIELD_MIN_PHOTOS_PER_SAMPLE: int = 1
+    # Decision V1 (platform governance, not a methodology rule): approving an MRV plan with CONFIGURATION_REQUIRED gaps is
+    # allowed (with an audited acknowledgement) for DEMO projects and outside production only. No production exception exists.
+    SAMPLING_MAX_ATTEMPTS_PER_POINT: int = 400  # rejection-sampling attempts per requested point before giving up
+    SAMPLING_DUPLICATE_DISTANCE_M: float = 1.0  # two points closer than this in one period are duplicates
+
     # Which farms may join a project (decision P3, kept as implemented in Phase 3). Only SAME_ORGANIZATION is
     # supported; a partner-organization policy needs a business decision (partnership model, consent, rights).
     PROJECT_FARM_ORG_POLICY: str = "SAME_ORGANIZATION"

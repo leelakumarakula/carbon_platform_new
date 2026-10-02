@@ -135,6 +135,39 @@ checklists, `can_manage` / `can_review` / `can_review_boundary` and `is_editable
 | POST | `/projects/{id}/methodology/reviews` | methodologies.review_project |
 | POST | `/projects/{id}/methodology/confirm` · `/unlock` | projects.manage (confirm: not the recommender) |
 
+## Endpoints (Phase 5) — prefix `/mrv`
+
+| Method | Path | Permission |
+|---|---|---|
+| GET | `/mrv/projects` · `/mrv/projects/{id}/requirements` · `/mrv/projects/{id}/history` | mrv.read |
+| GET | `/mrv/projects/{id}/collectors` | sampling.assign |
+| GET/POST | `/mrv/plans` (`project_id`) | mrv.read / mrv.manage |
+| GET/PATCH | `/mrv/plans/{id}` · POST `/mrv/plans/{id}/measurements` | mrv.read / mrv.manage (DRAFT only) |
+| POST | `/mrv/plans/{id}/submit` · `/withdraw` | mrv.manage |
+| POST | `/mrv/plans/{id}/approve` (`acknowledge_configuration_gaps`) · `/return` | mrv.approve (not the submitter) |
+| GET/POST | `/mrv/monitoring-periods` · GET `/mrv/monitoring-periods/{id}` | mrv.read / mrv.manage |
+| POST | `/mrv/monitoring-periods/{id}/{plan\|start\|open-collection\|submit\|close}` | mrv.manage |
+| GET/POST | `/mrv/projects/{id}/strata` (`include_history`) · PATCH `/mrv/strata/{id}` | mrv.read or sampling.collect / sampling.manage |
+| POST | `/mrv/strata/{id}/approve` | sampling.review (not the creator) |
+| GET/POST | `/mrv/sampling-designs` · GET `/mrv/sampling-designs/{id}` · POST `/{id}/versions` | mrv.read / sampling.manage |
+| POST | `/mrv/sampling-designs/{id}/versions/{vid}/approve` | sampling.review (not the creator) |
+| POST | `/mrv/sampling-designs/{id}/generate-points` | sampling.manage |
+| GET | `/mrv/sampling-points` (`project_id`, `monitoring_period_id`, `mine`) · `/mrv/sampling-points/{id}` | mrv.read or sampling.collect (collectors: own points) |
+| POST | `/mrv/sampling-points/assign` (bulk) · `/mrv/sampling-points/{id}/assign` | sampling.assign |
+| POST | `/mrv/sampling-points/{id}/skip` | sampling.review |
+| GET/POST | `/mrv/sampling-points/{id}/relocations` | read / sampling.collect (assigned) or sampling.manage |
+| POST | `/mrv/relocations/{id}/decision` | sampling.review (not the requester) |
+| GET/POST | `/mrv/field-collections` · GET/PATCH `/mrv/field-collections/{id}` · POST `/{id}/submit` | sampling.collect (assigned collector) |
+| POST | `/mrv/field-collections/{id}/review` | sampling.review (not the collector) |
+| POST | `/mrv/field-collections/{id}/correct` | sampling.collect or sampling.review |
+| GET/POST | `/mrv/monitoring-records` · POST `/mrv/monitoring-records/{record_id}/amend` | mrv.read / mrv.collect or mrv.manage |
+| GET/POST | `/mrv/evidence` (multipart, file optional for GPS / notes) | mrv.read or own collection / mrv.collect, mrv.manage or sampling.collect |
+| GET/POST | `/mrv/datasets` · GET `/mrv/datasets/{id}` · `/mrv/datasets/{id}/snapshot` | mrv.read / mrv.manage |
+| POST | `/mrv/datasets/{id}/submit` | mrv.manage |
+| POST | `/mrv/datasets/{id}/approve` · `/reject` | mrv.approve (not the submitter; approve needs QA PASS) |
+| GET | `/mrv/qa/{dataset_id}` (checks + reviews) | mrv.read |
+| POST | `/mrv/qa/{dataset_id}/start` · `/complete` | mrv.review (complete: not the submitter) |
+
 ## Notable error codes
 
 `INVALID_CREDENTIALS`, `TOKEN_EXPIRED`, `SESSION_REVOKED`, `REFRESH_REUSED`, `ACCOUNT_INACTIVE`,
@@ -156,3 +189,10 @@ Phase 3: `PROJECT_NOT_EDITABLE`, `FARM_NOT_VERIFIED`, `FARMER_NOT_ACTIVE`, `FARM
 Phase 4: `VERSION_NOT_EDITABLE`, `VERSION_EXISTS`, `INVALID_RULE`, `RULE_EXISTS`, `INVALID_BASE_VERSION`, `INVALID_SUPERSEDE`,
 `DECLARED_FACT_CONFLICT`, `CANDIDATE_NOT_FOUND`, `CANDIDATE_NOT_ELIGIBLE`, `EVIDENCE_NOT_ACKNOWLEDGED`, `SPECIALIST_REVIEW_REQUIRED`,
 `EVALUATION_OUTDATED`, `VERSION_NOT_APPROVED`, `CREDITING_PERIOD_NOT_COMPLIANT`, `NOT_LOCKED`.
+
+Phase 5: `METHODOLOGY_NOT_LOCKED`, `METHODOLOGY_VERSION_INVALID`, `PROJECT_NOT_IN_MRV`, `METHODOLOGY_REQUIREMENT`, `CONFIGURATION_REQUIRED`,
+`PLAN_IN_PROGRESS`, `PLAN_NOT_EDITABLE`, `MRV_PLAN_NOT_APPROVED`, `OUTSIDE_PLAN_WINDOW`, `PERIOD_OVERLAP`, `PERIOD_NOT_OPEN`, `PERIOD_NOT_COLLECTING`,
+`FARM_ALREADY_STRATIFIED`, `REVISION_EXISTS`, `CHARACTERISTICS_REQUIRED`, `STRATUM_NOT_APPROVED`, `DESIGN_EXISTS`, `DRAFT_EXISTS`, `DESIGN_NOT_APPROVED`,
+`POINTS_ALREADY_GENERATED`, `INSUFFICIENT_AREA`, `NOT_A_COLLECTOR`, `NOT_ASSIGNED`, `OUTSIDE_FARM`, `DUPLICATE_POINT`, `RELOCATION_PENDING`,
+`COLLECTION_EXISTS`, `CORRECTION_EXISTS`, `MEASUREMENT_NOT_IN_PLAN`, `LEVEL_REQUIRED`, `UNIT_MISMATCH`, `INVALID_VALUE`, `DUPLICATE_RECORD`,
+`DATASET_EMPTY`, `QA_CHECKS_FAILED`, `QA_NOT_PASSED`, `SNAPSHOT_MISMATCH`.

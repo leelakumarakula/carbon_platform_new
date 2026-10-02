@@ -27,6 +27,7 @@ export const NAVIGATION: readonly NavSection[] = [
     items: [
       { label: 'Farmers', icon: 'diversity_3', route: '/farmers', permissions: [P.FARMERS_READ] },
       { label: 'Farms', icon: 'agriculture', route: '/farms', permissions: [P.FARMS_READ] },
+      { label: 'Field work', icon: 'pin_drop', route: '/field', permissions: [P.SAMPLING_COLLECT] },
     ],
   },
   {
@@ -34,6 +35,7 @@ export const NAVIGATION: readonly NavSection[] = [
     items: [
       { label: 'Projects', icon: 'workspaces', route: '/projects', permissions: [P.PROJECTS_READ] },
       { label: 'Methodologies', icon: 'menu_book', route: '/methodologies', permissions: [P.METHODOLOGIES_READ] },
+      { label: 'MRV', icon: 'monitoring', route: '/mrv', permissions: [P.MRV_READ] },
       { label: 'Standards & activities', icon: 'library_books', route: '/admin/catalog', permissions: [P.STANDARDS_MANAGE] },
     ],
   },

@@ -110,6 +110,11 @@ Phase 4 adds 2 DEMO methodologies (`DEMO-ALM-SOC` with versions 1.0, 2.0 and a 2
 **illustrative, invented for the demo** and labelled as such. The Niphad project is taken through candidate evaluation,
 specialist recommendation and confirmation, so its methodology version is locked.
 
+Phase 5 adds DEMO MRV data on the Niphad project: an approved MRV plan (CONFIGURATION_REQUIRED gaps acknowledged — the DEMO
+methodology configures no sampling rules), a monitoring period in data collection, two strata, an approved sampling design,
+six points assigned to `collector@demo.carbon.example` (sign in on a phone-sized window and open **Field work**), accepted and
+submitted field records with DEMO placeholder photos, and a COLLECTING dataset. There are no lab results, calculations or credits.
+
 Demo and live records cannot be mixed; the API rejects it with `ENVIRONMENT_MISMATCH`.
 
 ## Tests and checks (exit gate after every phase)
@@ -131,7 +136,7 @@ npm run e2e:smoke                       # E2E smoke (API + ng serve running, DEM
 
 The 19 roles in spec §4 (plus Platform GIS Specialist, decision D5) are defined in `backend/app/security/permissions.py`. See
 [docs/roles-permissions.md](docs/roles-permissions.md). Phase 2 added the farmer and farm permissions to the
-field, project, GIS, QA, MRV and finance roles, and `farmers.self` to Farmer. Phase 3 added `projects.*` and `standards.manage`; Phase 4 added `methodologies.*`. Each later phase adds its module's permissions.
+field, project, GIS, QA, MRV and finance roles, and `farmers.self` to Farmer. Phase 3 added `projects.*` and `standards.manage`; Phase 4 added `methodologies.*`; Phase 5 added `mrv.*` and `sampling.*`. Each later phase adds its module's permissions.
 
 ## Workflow
 
@@ -139,7 +144,8 @@ Every workflow entity has an explicit state machine (`app/core/state_machine.py`
 Each transition is validated, then written to `workflow_events` and `audit_logs`. Audit tables are append-only,
 enforced by database triggers. The farmer and farm workflows are described in [docs/farmer-workflow.md](docs/farmer-workflow.md), the project
 workflow in [docs/project-workflow.md](docs/project-workflow.md), methodology selection in
-[docs/methodology-engine.md](docs/methodology-engine.md), lineage in [docs/data-lineage.md](docs/data-lineage.md).
+[docs/methodology-engine.md](docs/methodology-engine.md), MRV in [docs/mrv-workflow.md](docs/mrv-workflow.md) and
+[docs/sampling-workflow.md](docs/sampling-workflow.md), lineage in [docs/data-lineage.md](docs/data-lineage.md).
 
 ## External integrations
 

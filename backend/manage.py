@@ -28,6 +28,8 @@ def create_db() -> None:
             print(f"Created database {name}")
         c.execute(text(f"ALTER DATABASE [{name}] SET READ_COMMITTED_SNAPSHOT ON WITH ROLLBACK IMMEDIATE"))
         c.execute(text(f"ALTER DATABASE [{name}] SET ALLOW_SNAPSHOT_ISOLATION ON"))
+        if name.endswith("_test"):  # disposable test database: no point-in-time recovery, keep the log small
+            c.execute(text(f"ALTER DATABASE [{name}] SET RECOVERY SIMPLE"))
     engine.dispose()
     print(f"Database {name} ready")
 
@@ -69,12 +71,14 @@ def seed_demo() -> None:
         sys.exit("Set DEMO_USER_PASSWORD (environment or backend/.env).")
     from app.seed.demo_farms import seed_demo_farms
     from app.seed.demo_methodologies import seed_demo_methodologies
+    from app.seed.demo_mrv import seed_demo_mrv
     from app.seed.demo_projects import seed_demo_projects
     with get_session_factory()() as db:
         print("demo data:", demo(db, pw), f"- accounts are <role>@{DEMO_DOMAIN}, environment=DEMO")
         print("demo farmers & farms:", seed_demo_farms(db))
         print("demo projects:", seed_demo_projects(db))
         print("demo methodologies:", seed_demo_methodologies(db))
+        print("demo MRV (no lab results, calculations or credits):", seed_demo_mrv(db))
 
 
 def setup() -> None:

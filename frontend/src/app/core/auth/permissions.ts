@@ -30,6 +30,15 @@ export const P = {
   METHODOLOGIES_MANAGE: 'methodologies.manage',
   METHODOLOGIES_APPROVE: 'methodologies.approve',
   METHODOLOGIES_REVIEW_PROJECT: 'methodologies.review_project',
+  MRV_READ: 'mrv.read',
+  MRV_MANAGE: 'mrv.manage',
+  MRV_COLLECT: 'mrv.collect',
+  MRV_REVIEW: 'mrv.review',
+  MRV_APPROVE: 'mrv.approve',
+  SAMPLING_MANAGE: 'sampling.manage',
+  SAMPLING_ASSIGN: 'sampling.assign',
+  SAMPLING_COLLECT: 'sampling.collect',
+  SAMPLING_REVIEW: 'sampling.review',
 } as const;
 
 export type PermissionCode = (typeof P)[keyof typeof P];

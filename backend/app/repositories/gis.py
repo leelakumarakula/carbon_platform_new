@@ -187,3 +187,78 @@ WHERE ob.status = 'CURRENT' AND ob.project_id <> :pid AND p.environment = :env A
 def project_overlaps(db: Session, boundary_id: uuid.UUID, project_id: uuid.UUID, environment: str) -> list[tuple[uuid.UUID, uuid.UUID, float]]:
     rows = db.execute(_PROJECT_OVERLAPS, {"bid": boundary_id, "pid": project_id, "env": environment}).all()
     return [(uuid.UUID(str(r[0])), uuid.UUID(str(r[1])), float(r[2] or 0)) for r in rows]
+
+
+# ---------------------------------------------------------------- MRV / sampling (Phase 5)
+_UNION_OF = text("""
+SET NOCOUNT ON;
+DECLARE @u geography = (SELECT geography::UnionAggregate(boundary) FROM dbo.farm_boundaries
+                        WHERE id IN (SELECT CAST([value] AS uniqueidentifier) FROM OPENJSON(:ids)));
+SELECT @u.STAsText(), @u.STArea(), @u.STIsValid(), @u.STGeometryType();
+""")
+
+
+def union_of_boundaries(db: Session, boundary_ids: list[uuid.UUID]) -> tuple[str | None, float, bool, str | None]:
+    """Union of the given farm boundary versions (stratum geometry). Area in m² by SQL Server."""
+    import json as _json
+    r = db.execute(_UNION_OF, {"ids": _json.dumps([str(b) for b in boundary_ids])}).one()
+    return r[0], float(r[1] or 0), bool(r[2]), r[3]
+
+
+_CONTAINS_MANY = text("""
+SET NOCOUNT ON;
+SELECT j.k, b.id, b.farm_id
+FROM OPENJSON(:pts) WITH (k int '$.k', lat float '$.lat', lon float '$.lon') j
+CROSS APPLY (SELECT TOP 1 fb.id, fb.farm_id FROM dbo.farm_boundaries fb
+             WHERE fb.id IN (SELECT CAST([value] AS uniqueidentifier) FROM OPENJSON(:bids))
+               AND fb.boundary.STIntersects(geography::Point(j.lat, j.lon, 4326)) = 1) b;
+""")
+
+
+def points_in_boundaries(db: Session, points: list[tuple[float, float]], boundary_ids: list[uuid.UUID]
+                         ) -> dict[int, tuple[uuid.UUID, uuid.UUID]]:
+    """Index of each point that lies inside one of the given farm boundaries → (boundary_id, farm_id). Authoritative
+    containment by SQL Server (STIntersects); points on no boundary are absent from the result."""
+    import json as _json
+    if not points:
+        return {}
+    pts = _json.dumps([{"k": i, "lat": lat, "lon": lon} for i, (lat, lon) in enumerate(points)])
+    rows = db.execute(_CONTAINS_MANY, {"pts": pts, "bids": _json.dumps([str(b) for b in boundary_ids])}).all()
+    return {int(r[0]): (uuid.UUID(str(r[1])), uuid.UUID(str(r[2]))) for r in rows}
+
+
+_NEAREST_EXISTING = text("""
+SET NOCOUNT ON;
+SELECT j.k, MIN(sp.location.STDistance(geography::Point(j.lat, j.lon, 4326)))
+FROM OPENJSON(:pts) WITH (k int '$.k', lat float '$.lat', lon float '$.lon') j
+JOIN dbo.sampling_points sp ON sp.monitoring_period_id = :period AND sp.status <> 'CANCELLED'
+WHERE (:exclude IS NULL OR sp.id <> :exclude)
+GROUP BY j.k;
+""")
+
+
+def nearest_existing_point_m(db: Session, period_id: uuid.UUID, points: list[tuple[float, float]],
+                             exclude_id: uuid.UUID | None = None) -> dict[int, float]:
+    import json as _json
+    if not points:
+        return {}
+    pts = _json.dumps([{"k": i, "lat": lat, "lon": lon} for i, (lat, lon) in enumerate(points)])
+    return {int(r[0]): float(r[1]) for r in db.execute(_NEAREST_EXISTING, {"pts": pts, "period": period_id, "exclude": exclude_id}).all()}
+
+
+def distance_to_point_m(db: Session, point_id: uuid.UUID, lat: float, lon: float) -> float:
+    row = db.execute(text("SELECT location.STDistance(geography::Point(:lat, :lon, 4326)) FROM dbo.sampling_points WHERE id = :pid"),
+                     {"lat": lat, "lon": lon, "pid": point_id}).one()
+    return float(row[0])
+
+
+def point_inside_boundary(db: Session, boundary_id: uuid.UUID, lat: float, lon: float) -> bool:
+    row = db.execute(text("SELECT boundary.STIntersects(geography::Point(:lat, :lon, 4326)) FROM dbo.farm_boundaries WHERE id = :bid"),
+                     {"lat": lat, "lon": lon, "bid": boundary_id}).one()
+    return bool(row[0])
+
+
+def point_inside_project(db: Session, project_boundary_id: uuid.UUID, lat: float, lon: float) -> bool:
+    row = db.execute(text("SELECT boundary.STIntersects(geography::Point(:lat, :lon, 4326)) FROM dbo.project_boundaries WHERE id = :bid"),
+                     {"lat": lat, "lon": lon, "bid": project_boundary_id}).one()
+    return bool(row[0])

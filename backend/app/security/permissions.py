@@ -51,6 +51,16 @@ class P:
     METHODOLOGIES_MANAGE = "methodologies.manage"
     METHODOLOGIES_APPROVE = "methodologies.approve"
     METHODOLOGIES_REVIEW_PROJECT = "methodologies.review_project"
+    # Phase 5 — MRV and sampling
+    MRV_READ = "mrv.read"
+    MRV_MANAGE = "mrv.manage"
+    MRV_COLLECT = "mrv.collect"
+    MRV_REVIEW = "mrv.review"
+    MRV_APPROVE = "mrv.approve"
+    SAMPLING_MANAGE = "sampling.manage"
+    SAMPLING_ASSIGN = "sampling.assign"
+    SAMPLING_COLLECT = "sampling.collect"
+    SAMPLING_REVIEW = "sampling.review"
 
 
 PERMISSIONS: tuple[PermissionDef, ...] = (
@@ -93,6 +103,18 @@ PERMISSIONS: tuple[PermissionDef, ...] = (
                   "Approve or return a submitted methodology version (never one you submitted). Drafts never become active by themselves."),
     PermissionDef(P.METHODOLOGIES_REVIEW_PROJECT, "methodologies", "Review project methodology candidates",
                   "Run the candidate rules engine for a project and record the specialist recommendation for a candidate."),
+    PermissionDef(P.MRV_READ, "mrv", "View MRV", "View MRV plans, monitoring periods, strata, sampling, field records, data, datasets and QA."),
+    PermissionDef(P.MRV_MANAGE, "mrv", "Manage MRV", "Create MRV plans and versions, monitoring periods and datasets; submit them."),
+    PermissionDef(P.MRV_COLLECT, "mrv", "Record monitoring data", "Record monitoring (activity) data and MRV evidence."),
+    PermissionDef(P.MRV_REVIEW, "mrv", "Review MRV datasets", "Run MRV QA reviews (automated checks + result)."),
+    PermissionDef(P.MRV_APPROVE, "mrv", "Approve MRV", "Approve or return MRV plans; approve or reject MRV datasets (never your own submission)."),
+    PermissionDef(P.SAMPLING_MANAGE, "sampling", "Manage stratification & sampling",
+                  "Create strata and sampling designs; generate sampling points from an approved design."),
+    PermissionDef(P.SAMPLING_ASSIGN, "sampling", "Assign sampling points", "Assign sampling points to field collectors."),
+    PermissionDef(P.SAMPLING_COLLECT, "sampling", "Collect samples (field)",
+                  "Field collection on sampling points assigned to you; request point relocations."),
+    PermissionDef(P.SAMPLING_REVIEW, "sampling", "Review sampling",
+                  "Approve strata and sampling design versions; accept/return field collections; decide relocations (never your own)."),
     PermissionDef(P.CONSENTS_CONFIGURE, "admin", "Configure consent types",
                   "Publish versioned consent definitions and choose which are required for farmer activation."),
 )
@@ -125,28 +147,31 @@ SYSTEM_ROLES: tuple[RoleDef, ...] = (
     _r("FARMER", "Farmer", ORG, "Maintains profile, KYC, farms and history; views participation, sampling, credits and payouts.",
        P.FARMERS_SELF),
     _r("FIELD_AGENT", "Field Collector / Field Agent", ORG, "Performs assigned field visits, sampling, evidence capture and chain of custody.",
-       P.FARMERS_READ, P.FARMERS_MANAGE, P.FARMS_READ, P.FARMS_MANAGE, P.PROJECTS_READ),
+       P.FARMERS_READ, P.FARMERS_MANAGE, P.FARMS_READ, P.FARMS_MANAGE, P.PROJECTS_READ, P.MRV_COLLECT, P.SAMPLING_COLLECT),
     _r("FIELD_SUPERVISOR", "Field Supervisor", ORG, "Assigns collectors and sampling points; reviews field submissions.",
-       P.FARMERS_READ, P.FARMERS_MANAGE, P.FARMS_READ, P.FARMS_MANAGE, P.PROJECTS_READ),
+       P.FARMERS_READ, P.FARMERS_MANAGE, P.FARMS_READ, P.FARMS_MANAGE, P.PROJECTS_READ, P.MRV_READ, P.MRV_COLLECT,
+       P.SAMPLING_ASSIGN, P.SAMPLING_COLLECT, P.SAMPLING_REVIEW),
     _r("PROJECT_MANAGER", "Project Manager / Project Developer", ORG, "Creates projects, selects standard/activity/methodology, manages MRV, VVB and registry workflows.",
        P.FARMERS_READ, P.FARMERS_MANAGE, P.FARMERS_KYC_VERIFY, P.FARMERS_BANK_MANAGE, P.FARMS_READ, P.FARMS_MANAGE,
-       P.PROJECTS_READ, P.PROJECTS_MANAGE, P.METHODOLOGIES_READ),
+       P.PROJECTS_READ, P.PROJECTS_MANAGE, P.METHODOLOGIES_READ, P.MRV_READ, P.MRV_MANAGE),
     _r("METHODOLOGY_SPECIALIST", "Methodology Specialist", PLATFORM, "Manages versioned, approval-controlled methodology configuration.",
        P.PROJECTS_READ, P.STANDARDS_MANAGE, P.METHODOLOGIES_READ, P.METHODOLOGIES_MANAGE, P.METHODOLOGIES_APPROVE,
-       P.METHODOLOGIES_REVIEW_PROJECT),
+       P.METHODOLOGIES_REVIEW_PROJECT, P.MRV_READ),
     _r("GIS_SPECIALIST", "GIS / Remote Sensing Specialist", ORG, "Reviews polygons, overlaps, strata, sampling points and satellite observations.",
-       P.FARMERS_READ, P.FARMS_READ, P.FARMS_REVIEW, P.PROJECTS_READ),
+       P.FARMERS_READ, P.FARMS_READ, P.FARMS_REVIEW, P.PROJECTS_READ, P.MRV_READ, P.SAMPLING_MANAGE, P.SAMPLING_REVIEW),
     _r("PLATFORM_GIS_SPECIALIST", "Platform GIS Specialist", PLATFORM,
        "Platform-wide GIS reviewer: resolves boundary overlaps between farms of different organizations.",
-       P.FARMERS_READ, P.FARMS_READ, P.FARMS_REVIEW_CROSS_ORG, P.PROJECTS_READ),
+       P.FARMERS_READ, P.FARMS_READ, P.FARMS_REVIEW_CROSS_ORG, P.PROJECTS_READ, P.MRV_READ),
     _r("MRV_MANAGER", "MRV Manager", ORG, "Manages MRV plans, monitoring periods and approves monitoring datasets.",
-       P.FARMERS_READ, P.FARMS_READ, P.PROJECTS_READ, P.METHODOLOGIES_READ),
+       P.FARMERS_READ, P.FARMS_READ, P.PROJECTS_READ, P.METHODOLOGIES_READ, P.MRV_READ, P.MRV_MANAGE, P.MRV_COLLECT, P.MRV_REVIEW,
+       P.SAMPLING_MANAGE, P.SAMPLING_ASSIGN),
     _r("LAB_TECHNICIAN", "Lab Technician", ORG, "Receives samples, enters results and uploads lab reports."),
     _r("LAB_MANAGER", "Lab Manager / Lab QA", ORG, "Approves or rejects lab results and requests retests."),
     _r("CALCULATION_ANALYST", "Carbon Calculation Analyst", ORG, "Runs approved calculation engines; cannot type a final credit quantity.",
-       P.METHODOLOGIES_READ),
+       P.METHODOLOGIES_READ, P.MRV_READ),
     _r("QA_OFFICER", "Data Quality / QA Officer", ORG, "Reviews anomalies and duplicates; approves or rejects datasets.",
-       P.FARMERS_READ, P.FARMERS_KYC_VERIFY, P.FARMS_READ, P.PROJECTS_READ, P.PROJECTS_REVIEW, P.METHODOLOGIES_READ),
+       P.FARMERS_READ, P.FARMERS_KYC_VERIFY, P.FARMS_READ, P.PROJECTS_READ, P.PROJECTS_REVIEW, P.METHODOLOGIES_READ, P.MRV_READ,
+       P.MRV_REVIEW, P.MRV_APPROVE),
     _r("VVB_REVIEWER", "VVB / ACVA Reviewer", ORG, "External verifier: reviews assigned projects, raises findings, submits decisions."),
     _r("REGISTRY_MANAGER", "Registry Manager", ORG, "Manages registry submissions, issuance tracking and serial reconciliation."),
     _r("CREDIT_MANAGER", "Credit Manager", ORG, "Manages issued-credit inventory, reservations, transfers and retirements."),
@@ -156,12 +181,12 @@ SYSTEM_ROLES: tuple[RoleDef, ...] = (
     _r("PLATFORM_ADMIN", "Platform Admin", PLATFORM, "Manages users, roles, organizations, master data and configuration; views audit logs.",
        P.USERS_READ, P.USERS_MANAGE, P.USERS_ASSIGN_ROLES, P.ROLES_READ, P.ROLES_MANAGE,
        P.ORGANIZATIONS_READ, P.ORGANIZATIONS_MANAGE, P.ORGANIZATIONS_MANAGE_MEMBERS, P.AUDIT_READ, P.SECURITY_READ,
-       P.CONSENTS_CONFIGURE, P.FARMERS_READ, P.FARMS_READ, P.PROJECTS_READ, P.STANDARDS_MANAGE, P.METHODOLOGIES_READ),
+       P.CONSENTS_CONFIGURE, P.FARMERS_READ, P.FARMS_READ, P.PROJECTS_READ, P.STANDARDS_MANAGE, P.METHODOLOGIES_READ, P.MRV_READ),
     _r("SECURITY_ADMIN", "Security Admin", PLATFORM,
        "Manages access policies, MFA, integration secrets, security events and access reviews.",
        P.USERS_READ, P.ROLES_READ, P.ORGANIZATIONS_READ, P.AUDIT_READ, P.SECURITY_READ, P.SECURITY_MANAGE),
     _r("SUPPORT", "Support / Operations", PLATFORM, "Assists farmers and field agents; limited read access.",
-       P.USERS_READ, P.ORGANIZATIONS_READ, P.FARMERS_READ, P.FARMS_READ, P.PROJECTS_READ, P.METHODOLOGIES_READ),
+       P.USERS_READ, P.ORGANIZATIONS_READ, P.FARMERS_READ, P.FARMS_READ, P.PROJECTS_READ, P.METHODOLOGIES_READ, P.MRV_READ),
 )
 
 SYSTEM_ROLE_CODES = frozenset(r.code for r in SYSTEM_ROLES)

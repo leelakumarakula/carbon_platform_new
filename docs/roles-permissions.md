@@ -65,6 +65,25 @@ GIS review of a project boundary uses the existing `farms.review`. Farmers see o
 Methodology **confirmation and unlock** use `projects.manage` (project developer). The person who recommended a
 candidate cannot confirm it. Labs, finance and buyers cannot change methodologies (tested).
 
+## Phase 5 permissions
+
+| Code | Meaning | Holders |
+|---|---|---|
+| mrv.read | view MRV plans, periods, strata, designs, points, records, evidence, datasets, QA, MRV history | MRV manager, project manager, field supervisor, GIS, platform GIS, methodology specialist, calculation analyst, QA, platform admin, support |
+| mrv.manage | create/submit plans, periods and their actions, monitoring datasets | MRV manager, project manager |
+| mrv.collect | record monitoring data and MRV evidence | MRV manager, field supervisor, field agent |
+| mrv.review | run and complete QA reviews (never on a dataset you submitted) | MRV manager, QA officer |
+| mrv.approve | approve MRV plans and datasets (never ones you submitted) | QA officer |
+| sampling.manage | create strata and sampling designs, generate points | MRV manager, GIS specialist |
+| sampling.assign | assign points to field collectors | MRV manager, field supervisor |
+| sampling.collect | collect samples at **assigned** points only (field collection, photos, relocation requests) | field supervisor, field agent |
+| sampling.review | approve strata, design versions, relocations; accept/return field records; skip points | field supervisor, GIS specialist |
+
+Field collectors (field agents) only collect: they hold no review or approval permission, see only their own points
+and cannot read the MRV workspace. Buyers, labs, VVB and finance have no MRV access; farmers keep only their
+self-service pages. Separation of duties applies to every approval (plan, stratum, design, relocation, field record,
+QA completion, dataset).
+
 ## Permission-grant matrix (decision D4, approved)
 
 Granting a role needs `users.assign_roles` in the scope of the grant, plus every *privileged* permission the role

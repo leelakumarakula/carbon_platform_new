@@ -67,3 +67,11 @@ tr.clickable:hover { background: var(--mat-sys-surface-container-low); }
 /* ---------- snack bars ---------- */
 .snack-success { --mat-snack-bar-container-color: #1b5e20; }
 .snack-error { --mat-snack-bar-container-color: #8e1b1b; }
+
+/* Plain data tables (MRV, Phase 5) */
+.table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.table th { text-align: left; font-weight: 500; color: var(--mat-sys-on-surface-variant); }
+.table th, .table td { padding: 6px 10px; border-bottom: 1px solid var(--mat-sys-outline-variant); vertical-align: middle; }
+.note { padding: 10px 14px; border-radius: 8px; margin: 8px 0; font-size: 13px; background: var(--mat-sys-surface-container); }
+.note.warn { background: #fff4d6; color: #5d4000; }
+.note.bad { background: #fdecec; color: #8e1b1b; }
