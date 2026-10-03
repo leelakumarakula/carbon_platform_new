@@ -139,6 +139,12 @@ registry-stated issuance (batches, vintages, serial numbers exactly as supplied)
 and registry-issued quantities are never converted into each other. On DEMO data the Registry tab shows "DEMO — no registry issuance" and
 NO_VERIFIED_DECISION; the only DEMO registry record is the fictitious counterparty "Carbon Registry R (DEMO)".
 
+Phase 9B adds the credit ledger (no marketplace, price or payment). A registry-issued (ISSUED) batch is opened into the ledger by a
+credit manager and confirmed by a second person; credits are then reserved, transferred (INTERNAL, or REGISTRY with the registry's reference
+and evidence PDF) and retired (only with the registry's retirement certificate), each movement atomic, conserved and protected against
+double spending. Buyers see their own holdings under **My credits** and may request retirement. On DEMO data the **Credit ledger** and
+**My credits** pages show "DEMO — no registry-issued credits"; nothing is opened, transferred or retired.
+
 Demo and live records cannot be mixed; the API rejects it with `ENVIRONMENT_MISMATCH`.
 
 ## Tests and checks (exit gate after every phase)
@@ -160,7 +166,7 @@ npm run e2e:smoke                       # E2E smoke (API + ng serve running, DEM
 
 The 19 roles in spec §4 (plus Platform GIS Specialist, decision D5) are defined in `backend/app/security/permissions.py`. See
 [docs/roles-permissions.md](docs/roles-permissions.md). Phase 2 added the farmer and farm permissions to the
-field, project, GIS, QA, MRV and finance roles, and `farmers.self` to Farmer. Phase 3 added `projects.*` and `standards.manage`; Phase 4 added `methodologies.*`; Phase 5 added `mrv.*` and `sampling.*`; Phase 6 added `lab.*`; Phase 7 added `calculation.*`; Phase 8B added `verification.*`; Phase 9A added `registry.*` and `credits.read`. Each later phase adds its module's permissions.
+field, project, GIS, QA, MRV and finance roles, and `farmers.self` to Farmer. Phase 3 added `projects.*` and `standards.manage`; Phase 4 added `methodologies.*`; Phase 5 added `mrv.*` and `sampling.*`; Phase 6 added `lab.*`; Phase 7 added `calculation.*`; Phase 8B added `verification.*`; Phase 9A added `registry.*` and `credits.read`; Phase 9B added `credits.manage`, `credits.confirm`, `credits.holder_read` and `credits.holder_retire`. Each later phase adds its module's permissions.
 
 ## Workflow
 

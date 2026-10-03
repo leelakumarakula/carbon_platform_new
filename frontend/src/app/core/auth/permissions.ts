@@ -64,6 +64,10 @@ export const P = {
   REGISTRY_MANAGE: 'registry.manage',
   REGISTRY_CONFIRM: 'registry.confirm',
   CREDITS_READ: 'credits.read',
+  CREDITS_MANAGE: 'credits.manage',
+  CREDITS_CONFIRM: 'credits.confirm',
+  CREDITS_HOLDER_READ: 'credits.holder_read',
+  CREDITS_HOLDER_RETIRE: 'credits.holder_retire',
 } as const;
 
 export type PermissionCode = (typeof P)[keyof typeof P];

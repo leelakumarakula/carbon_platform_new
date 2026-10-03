@@ -91,6 +91,11 @@ class P:
     REGISTRY_MANAGE = "registry.manage"      # accounts, registrations, submissions, registry responses, record issuances
     REGISTRY_CONFIRM = "registry.confirm"    # independently confirm a recorded issuance (never the recorder)
     CREDITS_READ = "credits.read"            # registry-issued credit batches (read-only in 9A)
+    # Phase 9B — credit ledger (no marketplace, pricing, orders or payment)
+    CREDITS_MANAGE = "credits.manage"        # open inventory, reserve / release, request transfers and retirements, request reversals
+    CREDITS_CONFIRM = "credits.confirm"      # second person: confirm openings, complete transfers / retirements, apply reversals
+    CREDITS_HOLDER_READ = "credits.holder_read"      # holders (e.g. buyers): own positions only, through the holder view
+    CREDITS_HOLDER_RETIRE = "credits.holder_retire"  # holders: request retirement of own positions
 
 
 PERMISSIONS: tuple[PermissionDef, ...] = (
@@ -188,6 +193,16 @@ PERMISSIONS: tuple[PermissionDef, ...] = (
                   "Independently confirm a recorded registry issuance against its evidence (never the user who recorded it)."),
     PermissionDef(P.CREDITS_READ, "credits", "View issued credits",
                   "View registry-issued credit batches and serial ranges (read-only; no inventory, transfer or retirement)."),
+    PermissionDef(P.CREDITS_MANAGE, "credits", "Manage credit ledger",
+                  "Open registry-issued batches in the ledger, reserve and release credits, request transfers and retirements, request "
+                  "reversals and record registry inventory reconciliations (never confirms them)."),
+    PermissionDef(P.CREDITS_CONFIRM, "credits", "Confirm credit ledger operations",
+                  "As a second person: confirm ledger openings, complete transfers and registry-evidenced retirements, apply or reject "
+                  "reversals (never your own request)."),
+    PermissionDef(P.CREDITS_HOLDER_READ, "credits", "View own credit holdings",
+                  "Credit holders: view the organization's own positions (project, period, vintage, methodology, registry, serial range)."),
+    PermissionDef(P.CREDITS_HOLDER_RETIRE, "credits", "Request retirement of own credits",
+                  "Credit holders: request retirement of the organization's own available credits (completed only with registry evidence)."),
     PermissionDef(P.CALCULATION_APPROVE, "calculation", "Approve calculations",
                   "Approve or reject a calculation run after QA PASS (never your own run). Calculated is not verified or issued."),
     PermissionDef(P.CONSENTS_CONFIGURE, "admin", "Configure consent types",
@@ -254,14 +269,15 @@ SYSTEM_ROLES: tuple[RoleDef, ...] = (
     _r("QA_OFFICER", "Data Quality / QA Officer", ORG, "Reviews anomalies and duplicates; approves or rejects datasets.",
        P.FARMERS_READ, P.FARMERS_KYC_VERIFY, P.FARMS_READ, P.PROJECTS_READ, P.PROJECTS_REVIEW, P.METHODOLOGIES_READ, P.MRV_READ,
        P.MRV_REVIEW, P.MRV_APPROVE, P.LAB_READ, P.CALCULATION_READ, P.CALCULATION_REVIEW, P.CALCULATION_APPROVE, P.VERIFICATION_READ,
-       P.REGISTRY_READ, P.REGISTRY_CONFIRM),
+       P.REGISTRY_READ, P.REGISTRY_CONFIRM, P.CREDITS_READ, P.CREDITS_CONFIRM),
     _r("VVB_REVIEWER", "VVB / ACVA Reviewer", ORG, "External verifier: reviews assigned projects, raises findings, submits decisions.",
        P.VERIFICATION_VVB_READ, P.VERIFICATION_VVB_REVIEW, P.VERIFICATION_DECIDE),
     _r("REGISTRY_MANAGER", "Registry Manager", ORG, "Manages registry submissions, issuance tracking and serial reconciliation.",
        P.REGISTRY_READ, P.REGISTRY_MANAGE, P.CREDITS_READ),
     _r("CREDIT_MANAGER", "Credit Manager", ORG, "Manages issued-credit inventory, reservations, transfers and retirements.",
-       P.CREDITS_READ),
-    _r("BUYER", "Buyer", ORG, "Browses eligible issued credits, orders, pays, requests transfer/retirement."),
+       P.CREDITS_READ, P.CREDITS_MANAGE),
+    _r("BUYER", "Buyer", ORG, "Browses eligible issued credits, orders, pays, requests transfer/retirement.",
+       P.CREDITS_HOLDER_READ, P.CREDITS_HOLDER_RETIRE),
     _r("FINANCE_MANAGER", "Finance / Payout Manager", ORG, "Reconciles payments, calculates farmer share per agreement, approves payouts.",
        P.FARMERS_READ, P.FARMERS_BANK_MANAGE, P.FARMERS_BANK_VERIFY, P.PROJECTS_READ, P.CREDITS_READ),
     _r("PLATFORM_ADMIN", "Platform Admin", PLATFORM, "Manages users, roles, organizations, master data and configuration; views audit logs.",

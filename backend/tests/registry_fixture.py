@@ -11,8 +11,10 @@ from typing import Any
 
 from app.integrations.registry import (
     AccountRef,
+    CreditMovement,
     ExternalIssuance,
     ExternalRef,
+    InventoryLine,
     ParsedSerialRange,
     RegistryTimeout,
     RegistryUnavailable,
@@ -81,3 +83,13 @@ class TestRegistryAdapter:
         if a is None or b is None or a.group(1) != b.group(1):
             return None
         return ParsedSerialRange(series=a.group(1), start=int(a.group(2)), end=int(b.group(2)))
+
+    # Phase 9B: declared so the protocol is complete; the platform never calls them automatically (manual, evidence-backed flows)
+    def transfer_credits(self, account: AccountRef, movement: CreditMovement, idempotency_key: str) -> ExternalRef:
+        return ExternalRef(f"TEST-TRF-{idempotency_key[:8]}")
+
+    def retire_credits(self, account: AccountRef, movement: CreditMovement, idempotency_key: str) -> ExternalRef:
+        return ExternalRef(f"TEST-RET-{idempotency_key[:8]}")
+
+    def get_credit_inventory(self, account: AccountRef) -> list[InventoryLine]:
+        return []

@@ -206,6 +206,34 @@ No request body can carry a calculated value (unknown fields are refused with 42
 | GET/POST | `/calculations/qa/{run_id}` · POST `/start` · `/complete` | calculation.read / calculation.review (not the run's creator, freezer, executor or submitter) |
 | POST | `/runs/{id}/approve` · `/reject` | calculation.approve (same separation of duties; approval needs QA PASS) |
 
+## Endpoints (Phase 9B) — credit ledger
+
+Prefix `/credits` (details: [credit-ledger-workflow.md](credit-ledger-workflow.md)). Every POST accepts an optional `Idempotency-Key`
+(same key + same body replays; a different body → 409 `IDEMPOTENCY_KEY_REUSED`). Request bodies carry movement quantities only — whole
+units — and never a balance (extra fields → 422). No price, order, payment or marketplace endpoint exists.
+
+| Method | Path | Permission |
+|---|---|---|
+| GET | `/inventory?project_id` (derived balances per batch and owner; DEMO note) · `/batches/{id}/positions?include_consumed` · `/entries/{id}` · `/reversals` · `/reservations?batch_id` | credits.read / manage / confirm |
+| GET | `/transfers?batch_id` · `/retirements?batch_id` · `/retirements/{id}/lineage` | the above, or the holder (own organization only) |
+| POST | `/batches/{id}/open` | credits.manage |
+| POST | `/openings/{id}/confirm` | credits.confirm in the custodian organization, never the requester |
+| POST | `/openings/{id}/cancel` | credits.manage / credits.confirm |
+| POST | `/reservations` · `/reservations/{id}/release` · `/reservations/expire-due` | credits.manage |
+| GET | `/recipients?environment` (ACTIVE BUYER / PROJECT_DEVELOPER organizations) | credits.manage |
+| POST | `/transfers` · `/transfers/{id}/cancel` | credits.manage |
+| POST | `/transfers/{id}/documents` (PDF, REGISTRY_TRANSFER_EVIDENCE) · `/retirements/{id}/documents` (PDF, RETIREMENT_CERTIFICATE) | credits.manage / credits.confirm |
+| POST | `/transfers/{id}/complete` (REGISTRY: `registry_transfer_reference` + `document_id`) · `/transfers/{id}/reject` | credits.confirm, never the requester |
+| POST | `/retirements` · `/retirements/{id}/cancel` | credits.manage, or credits.holder_retire for the holder's own credits |
+| POST | `/retirements/{id}/retire` (`registry_retirement_reference`, `retirement_date`, `document_id`, optional registry-stated `retired_serials`) · `/retirements/{id}/reject` | credits.confirm, never the requester |
+| POST | `/entries/{id}/reverse` | credits.manage (INTERNAL TRANSFER_COMPLETE only) |
+| POST | `/reversals/{id}/apply` · `/reversals/{id}/reject` | credits.confirm, never the requester |
+| GET | `/holdings` (allow-listed holder view of the caller organization's positions) | credits.holder_read |
+| POST | `/accounts/{id}/statements` (PDF registry statement) · `/accounts/{id}/reconcile` (registry-stated per-batch quantities → RECONCILED / MISMATCH; nothing auto-fixed) | credits.manage |
+
+The 9A read-only batch endpoints (`/batches`, `/batches/{id}`, `/batches/{id}/lineage`) are unchanged. `/registry` gained no transfer,
+retirement, reservation or inventory endpoint.
+
 ## Endpoints (Phase 9A) — registry submission & credit issuance
 
 Prefix `/registry` (project-organization scope; registries are external counterparties — no registry portal):
@@ -219,8 +247,8 @@ Prefix `/registry` (project-organization scope; registries are external counterp
 | POST | `/submissions/{id}/issuances` (optional `Idempotency-Key`) · `/issuances/{id}/void` · `/issuances/{id}/cancel` · `/issuances/{id}/correct` | registry.manage |
 | POST | `/issuances/{id}/confirm` | registry.confirm (never the recorder) |
 
-Prefix `/credits` — read-only: GET `/batches?project_id&period_id` · `/batches/{id}` · `/batches/{id}/lineage` (credits.read). No inventory,
-reservation, transfer or retirement endpoint exists; no endpoint takes a calculated or VVB-verified value as an issuance quantity.
+Prefix `/credits` — read-only in 9A: GET `/batches?project_id&period_id` · `/batches/{id}` · `/batches/{id}/lineage` (credits.read). The
+ledger endpoints were added in Phase 9B (above); no endpoint takes a calculated or VVB-verified value as an issuance or ledger quantity.
 
 ## Endpoints (Phase 8B) — VVB / ACVA verification
 
@@ -332,3 +360,11 @@ Phase 9A: `NOT_A_REGISTRY`, `UNKNOWN_ADAPTER`, `REGISTRY_ACCOUNT_EXISTS`, `UNIT_
 `ISSUANCE_NOT_CONFIRMED`, `CORRECTION_PENDING`, `DUPLICATE_REGISTRY_REFERENCE`, `DOCUMENT_IMMUTABLE` (403), `SEPARATION_OF_DUTIES` (403), and the
 404s `REGISTRY_ACCOUNT_NOT_FOUND`, `REGISTRY_REGISTRATION_NOT_FOUND`, `REGISTRY_SUBMISSION_NOT_FOUND`, `CREDIT_ISSUANCE_NOT_FOUND`,
 `CREDIT_BATCH_NOT_FOUND`.
+
+Phase 9B: `INSUFFICIENT_AVAILABLE` (409; the loser of a race — a `CREDIT_DOUBLE_SPEND_CONFLICT` audit is recorded), `BATCH_NOT_ISSUED`,
+`OPENING_EXISTS`, `OPENING_NOT_REQUESTED`, `RESERVATION_NOT_ACTIVE`, `EXPIRY_IN_PAST`, `QUANTITY_REQUIRED`, `SERIAL_RANGE_NOT_FOUND`,
+`INVALID_RECIPIENT`, `SAME_PARTY`, `RECIPIENT_ACCOUNT_REQUIRED`, `TRANSFER_NOT_REQUESTED`, `RETIREMENT_NOT_REQUESTED`, `REGISTRY_EVIDENCE_REQUIRED`,
+`DUPLICATE_REGISTRY_REFERENCE`, `RETIRED_SERIALS_MISMATCH`, `REVERSAL_NOT_ALLOWED`, `REVERSAL_NOT_POSSIBLE`, `REVERSAL_EXISTS`,
+`REVERSAL_NOT_REQUESTED`, `IDEMPOTENCY_KEY_REUSED`, `LEDGER_ACTIVITY_EXISTS` (9A correction / cancellation after ledger activity),
+`SEPARATION_OF_DUTIES` (403), `DOCUMENT_IMMUTABLE` (403), and the 404s `CREDIT_OPENING_NOT_FOUND`, `CREDIT_RESERVATION_NOT_FOUND`,
+`CREDIT_TRANSFER_NOT_FOUND`, `CREDIT_RETIREMENT_NOT_FOUND`, `CREDIT_REVERSAL_NOT_FOUND`, `CREDIT_ENTRY_NOT_FOUND`, `ORGANIZATION_NOT_FOUND`.

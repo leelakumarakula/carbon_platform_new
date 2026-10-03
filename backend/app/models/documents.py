@@ -36,6 +36,8 @@ class DocumentCategory(str, Enum):
     REGISTRY_SUBMISSION = "REGISTRY_SUBMISSION"  # Phase 9A: a document sent to the registry with a submission (PDF only)
     REGISTRY_RESPONSE = "REGISTRY_RESPONSE"  # Phase 9A: registry receipt / query / acceptance / rejection / registration evidence (PDF)
     ISSUANCE_STATEMENT = "ISSUANCE_STATEMENT"  # Phase 9A: the registry's issuance statement backing recorded batches / serials (PDF)
+    RETIREMENT_CERTIFICATE = "RETIREMENT_CERTIFICATE"  # Phase 9B: the registry's retirement certificate (PDF only)
+    REGISTRY_TRANSFER_EVIDENCE = "REGISTRY_TRANSFER_EVIDENCE"  # Phase 9B: registry evidence of a transfer between accounts (PDF only)
     OTHER = "OTHER"
 
 

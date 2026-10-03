@@ -38,6 +38,9 @@ const phase8b = { labels: false, assignment: '', proposed: '', accepted: '', sub
   vvbIsolated: false, nonVvbBlocked: false, unknownSubmission: 0, vvbNav: false, audit: [] };
 const phase9a = { demoNote: false, cards: false, blocker: false, createRefused: '', niphadRefused: '', registryNav: false, registryPage: false,
   creditsEmpty: false, noDemoCredits: false, demoRegistry: '', outsidersBlocked: false, vvbNoRegistry: false, projectStatus: '' };
+const phase9b = { ledgerNav: false, demoNote: false, columns: false, ledgerEmpty: false, inventoryEmpty: false, openRefused: '', reserveRefused: '',
+  transferRefused: '', retireRefused: '', balanceRejected: '', holderNav: false, holderDemoNote: false, holderEmpty: false, holderNoLedger: false,
+  outsidersBlocked: false, nonHoldersBlocked: false };
 const REQUIRED_AUDIT_P6 = ['LAB_ENGAGEMENT_PROPOSED', 'LAB_ENGAGEMENT_ACCEPTED', 'LAB_ENGAGEMENT_ENDED', 'LAB_SAMPLE_REGISTERED', 'LAB_CUSTODY_SEALED',
   'LAB_TEST_CREATED', 'LAB_SHIPMENT_CREATED', 'LAB_SHIPMENT_DISPATCHED', 'LAB_SHIPMENT_RECEIPT_RECORDED', 'LAB_TEST_STARTED', 'LAB_RESULT_CREATED',
   'LAB_REPORT_ATTACHED', 'LAB_RESULT_SUBMITTED', 'LAB_QA_STARTED', 'LAB_RESULT_APPROVED', 'LAB_RETEST_REQUESTED', 'LAB_RESULT_SUPERSEDED'];
@@ -861,6 +864,61 @@ const REQUIRED_AUDIT = ['PROJECT_CREATED', 'PROJECT_STATUS_CHANGED', 'PROJECT_FA
   }
   phase9a.outsidersBlocked = out9 === 4;
   phase9a.vvbNoRegistry = (await api.get(`${REG}/projects/${projectId}/periods/${period.id}`, { headers: await as('vvb') })).status() === 403;
+
+  // ---- Phase 9B: credit ledger — honest DEMO path. DEMO has no registry-issued batch, so nothing is opened, reserved, transferred or
+  // retired; the ledger and holder views state "DEMO — no registry-issued credits" and every movement on a non-existent batch is refused.
+  const LEDGER_DEMO = 'DEMO — no registry-issued credits';
+  const cm = await signIn('credits');
+  const CM = cm.page;
+  lastPage = CM;
+  phase9b.ledgerNav = (await CM.locator('nav a', { hasText: 'Credit ledger' }).count()) > 0;
+  await CM.goto(`${BASE}/ledger`);
+  await CM.getByTestId('ledger-demo-note').waitFor();
+  phase9b.demoNote = (await CM.getByTestId('ledger-demo-note').innerText()).includes(LEDGER_DEMO);
+  const head9 = await CM.getByTestId('ledger-inventory').locator('thead').innerText();
+  phase9b.columns = ['Issued (registry)', 'Available', 'Reserved', 'Pending transfer', 'Pending retirement', 'Transferred out', 'Retired']
+    .every((h) => head9.includes(h));
+  phase9b.ledgerEmpty = (await CM.getByTestId('no-ledger-batches').count()) === 1;
+  await shot(CM, '97-ledger-demo');
+  await cm.ctx.close();
+  const cmH = await as('credits');
+  const inv9 = await json(await api.get(`${CRED}/inventory`, { headers: cmH }));
+  phase9b.inventoryEmpty = inv9.batches.length === 0 && inv9.demo_note === LEDGER_DEMO;
+  const ghost = require('crypto').randomUUID();
+  const until = new Date(Date.now() + 86400000).toISOString();
+  phase9b.openRefused = await errCode(await api.post(`${CRED}/batches/${ghost}/open`, { headers: { ...cmH, 'Idempotency-Key': `e2e-${ghost}` } }));
+  phase9b.reserveRefused = await errCode(await api.post(`${CRED}/reservations`, { headers: cmH,
+    data: { batch_id: ghost, owner_organization_id: ghost, quantity: 1, purpose: 'E2E reservation', expires_at: until } }));
+  phase9b.transferRefused = await errCode(await api.post(`${CRED}/transfers`, { headers: cmH,
+    data: { kind: 'INTERNAL', batch_id: ghost, sender_organization_id: ghost, recipient_organization_id: require('crypto').randomUUID(), quantity: 1 } }));
+  phase9b.retireRefused = await errCode(await api.post(`${CRED}/retirements`, { headers: cmH,
+    data: { batch_id: ghost, owner_organization_id: ghost, quantity: 1, beneficiary: 'E2E', reason: 'E2E retirement' } }));
+  phase9b.balanceRejected = await errCode(await api.post(`${CRED}/reservations`, { headers: cmH,
+    data: { batch_id: ghost, owner_organization_id: ghost, quantity: 1, purpose: 'E2E reservation', expires_at: until, available: 1000 } }));
+  const by = await signIn('buyer');
+  const BY = by.page;
+  lastPage = BY;
+  phase9b.holderNav = (await BY.locator('nav a', { hasText: 'My credits' }).count()) > 0
+    && (await BY.locator('nav a', { hasText: 'Credit ledger' }).count()) === 0;
+  await BY.goto(`${BASE}/holdings`);
+  await BY.getByTestId('holdings-demo-note').waitFor();
+  phase9b.holderDemoNote = (await BY.getByTestId('holdings-demo-note').innerText()).includes(LEDGER_DEMO);
+  phase9b.holderEmpty = (await BY.getByTestId('no-holdings').count()) === 1;
+  await shot(BY, '98-holdings-demo');
+  await BY.goto(`${BASE}/ledger`);
+  await BY.getByText("You don't have access to this page").waitFor();
+  phase9b.holderNoLedger = (await api.get(`${CRED}/inventory`, { headers: await as('buyer') })).status() === 403;
+  await by.ctx.close();
+  let out9b = 0;
+  for (const who of ['vvb', 'farmer', 'labtech', 'buyer']) {
+    if ((await api.get(`${CRED}/inventory`, { headers: await as(who) })).status() === 403) out9b++;
+  }
+  phase9b.outsidersBlocked = out9b === 4;
+  let nh9b = 0;
+  for (const who of ['vvb', 'farmer', 'labtech', 'credits']) {
+    if ((await api.get(`${CRED}/holdings`, { headers: await as(who) })).status() === 403) nh9b++;
+  }
+  phase9b.nonHoldersBlocked = nh9b === 4;
   for (const x of [mrv, qa, sup, fieldS]) await x.ctx.close();
   await api.dispose();
 
@@ -916,6 +974,7 @@ const REQUIRED_AUDIT = ['PROJECT_CREATED', 'PROJECT_STATUS_CHANGED', 'PROJECT_FA
   console.log('phase 8A:', JSON.stringify(phase8a));
   console.log('phase 8B:', JSON.stringify(phase8b));
   console.log('phase 9A:', JSON.stringify(phase9a));
+  console.log('phase 9B:', JSON.stringify(phase9b));
 
   await browser.close();
   // One 401 per session is expected: the silent session-restore attempt before sign-in.
@@ -965,7 +1024,12 @@ const REQUIRED_AUDIT = ['PROJECT_CREATED', 'PROJECT_STATUS_CHANGED', 'PROJECT_FA
     && phase9a.niphadRefused === '409 NO_VERIFIED_DECISION' && phase9a.registryNav && phase9a.registryPage && phase9a.creditsEmpty
     && phase9a.noDemoCredits && phase9a.demoRegistry === 'Carbon Registry R (DEMO)' && phase9a.outsidersBlocked && phase9a.vvbNoRegistry
     && phase9a.projectStatus === 'MONITORING';
-  if (!stillIn || real.length || navItems.length !== 4 || !p2ok || !p3ok || !p4ok || !p5ok || !p6ok || !p7ok || !p8ok || !p8bok || !p9ok) process.exitCode = 1;
+  const p9bok = phase9b.ledgerNav && phase9b.demoNote && phase9b.columns && phase9b.ledgerEmpty && phase9b.inventoryEmpty
+    && phase9b.openRefused.startsWith('404') && phase9b.reserveRefused.startsWith('404') && phase9b.transferRefused.startsWith('404')
+    && phase9b.retireRefused.startsWith('404') && phase9b.balanceRejected.startsWith('422') && phase9b.holderNav && phase9b.holderDemoNote
+    && phase9b.holderEmpty && phase9b.holderNoLedger && phase9b.outsidersBlocked && phase9b.nonHoldersBlocked;
+  if (!stillIn || real.length || navItems.length !== 4 || !p2ok || !p3ok || !p4ok || !p5ok || !p6ok || !p7ok || !p8ok || !p8bok || !p9ok
+    || !p9bok) process.exitCode = 1;
 })().catch(async (e) => {
   console.error('DRIVER FAILED:', e.message);
   if (lastPage) {

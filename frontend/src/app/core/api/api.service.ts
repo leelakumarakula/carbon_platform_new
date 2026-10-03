@@ -16,8 +16,10 @@ export class ApiService {
     return this.http.get<T>(this.url(path), { params: toParams(query) });
   }
 
-  post<T>(path: string, body: unknown = {}): Observable<T> {
-    return this.http.post<T>(this.url(path), body, { withCredentials: true });
+  /** `idempotencyKey` is sent as `Idempotency-Key` so a retried submission replays instead of acting twice. */
+  post<T>(path: string, body: unknown = {}, idempotencyKey?: string): Observable<T> {
+    const headers = idempotencyKey ? { 'Idempotency-Key': idempotencyKey } : undefined;
+    return this.http.post<T>(this.url(path), body, { withCredentials: true, headers });
   }
 
   patch<T>(path: string, body: unknown): Observable<T> {

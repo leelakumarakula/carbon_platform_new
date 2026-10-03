@@ -151,6 +151,20 @@ export const routes: Routes = [
         loadComponent: () => import('./registry/credits-page').then((m) => m.CreditsPage),
       },
       {
+        path: 'ledger',
+        title: 'Credit ledger',
+        canActivate: [permissionGuard],
+        data: { permissions: [P.CREDITS_READ] },
+        loadComponent: () => import('./ledger/ledger-page').then((m) => m.LedgerPage),
+      },
+      {
+        path: 'holdings',
+        title: 'My credits',
+        canActivate: [permissionGuard],
+        data: { permissions: [P.CREDITS_HOLDER_READ] },
+        loadComponent: () => import('./ledger/holdings-page').then((m) => m.HoldingsPage),
+      },
+      {
         path: 'vvb',
         canActivate: [permissionGuard],
         data: { permissions: [P.VERIFICATION_VVB_READ] },

@@ -12,7 +12,7 @@
 | 8A | Internal pre-verification (findings, calculation report, internal readiness) | **Done** |
 | 8B | VVB / ACVA verification (assignments, submission, findings, corrective actions, recorded decision) | **Done** |
 | 9A | Registry submission & credit issuance (no inventory, ownership, reservation, transfer or retirement) | **Done** |
-| 9B | Credit ledger: inventory, reservation, transfer, retirement | — |
+| 9B | Credit ledger: ownership, reservation, transfer, retirement (no marketplace, price or payment) | **Done** |
 | 10 | Marketplace | — |
 | 11 | Revenue / payout | — |
 | 12 | Production hardening | — |
@@ -497,6 +497,48 @@ Verification (exit gate, 3 Oct 2026)
   R (DEMO)"; VVB, buyer, farmer and laboratory users were refused the registry and credits APIs; the project stayed MONITORING; no unexpected
   console errors.
 
+## Phase 9B — delivered
+
+**Credit ledger — ownership, reservation, transfer and retirement of registry-issued credits; no marketplace, price, order or payment.**
+Details: [credit-ledger-workflow.md](credit-ledger-workflow.md) (decisions X1–X5, D1–D21).
+
+Backend
+- Migration `0014`: `credit_ledger_entries` (append-only), `credit_positions` (immutable UTXOs), `credit_openings`, `credit_reservations`,
+  `credit_transfers`, `credit_retirements`, `credit_reversals`; sequences LEDG / OPN / RSV / TRF / RET / REV; documents categories
+  RETIREMENT_CERTIFICATE / REGISTRY_TRANSFER_EVIDENCE (PDF only); seven triggers (conservation on posting, consume-once, RETIRED terminal,
+  no delete, final workflow states immutable); downgrade refused while Phase 9B rows exist. No earlier data changed.
+- `ledger_service`: one transaction per movement; UPDLOCK / HOLDLOCK / ROWLOCK locked reads in deterministic order; guarded single-row
+  consumption (loser → 409 INSUFFICIENT_AVAILABLE + CREDIT_DOUBLE_SPEND_CONFLICT audit); deadlock retry; Idempotency-Key replay on every POST;
+  dual-control opening (initial owner = holding registry account's organization), reservations with lazy expiry + sweep, INTERNAL / REGISTRY
+  transfers (REGISTRY completion needs the registry reference + evidence PDF), retirements (RETIRED only with the registry reference, date
+  and RETIREMENT_CERTIFICATE; registry-stated serials checked against the quantity), compensating REVERSAL of INTERNAL transfers under dual
+  control, manual reconciliation (MISMATCH recorded, never auto-fixed), retirement lineage. 9A correction / cancellation guarded
+  (LEDGER_ACTIVITY_EXISTS; untouched batches closed by an explicit ISSUANCE_ADJUSTMENT).
+- Adapter: `transfer_credits`, `retire_credits`, `get_credit_inventory` (MANUAL raises `ManualActionRequired`; the TEST adapter implements them).
+- Permissions `credits.manage`, `credits.confirm`, `credits.holder_read`, `credits.holder_retire` (D16). Holder view allow-listed.
+
+Frontend
+- `/ledger` (credits.read): inventory with Issued (registry) / Available / Reserved / Pending transfer / Pending retirement / Transferred out /
+  Retired; open / confirm opening; batch detail with per-owner balances, positions and entries; reservation, transfer and retirement forms;
+  second-person completion (evidence upload), retirement recording (certificate, reference, date, serials), reversals, retirement lineage.
+  `/holdings` (credits.holder_read): own positions and retirement requests. Idempotency-Key per submission. DEMO note; no marketplace UI.
+
+Verification (exit gate, 3 Oct 2026)
+- Backend: **306 pytest tests passed** (Phase 9B: 7 functional test functions covering the listed scenarios + 6 concurrency / trigger
+  tests). Concurrency tests A–E run on separate database connections (threads, own sessions, barrier) against a committed world restored
+  from a SQL Server database snapshot afterwards: A reservations 600 + 600 / 1000, B transfers 600 + 600 / 1000, C retirements 80 + 80 / 100,
+  D reservation vs retirement — exactly one winner each, the loser 409 INSUFFICIENT_AVAILABLE, the owner's total unchanged (A also asserts
+  the loser's CREDIT_DOUBLE_SPEND_CONFLICT audit); E fault
+  injection before posting — full rollback. ruff clean. mypy clean (168 files). `alembic check`: no drift (development and test databases).
+  Test database: downgrade 0014 → base, upgrade base → 0014, downgrade → base, upgrade → 0014. The development database (no Phase 9B rows)
+  is at 0014 and was not downgraded.
+- Frontend: **111 Vitest tests passed** (16 files). Production build OK.
+- E2E passed (Phases 1–9B) after the final code changes: the Credit Manager saw "Credit ledger" with "DEMO — no registry-issued credits",
+  the seven labelled columns and no batch; the inventory API returned no DEMO batch; opening, reserving, transferring and retiring a
+  non-existent batch returned 404 CREDIT_BATCH_NOT_FOUND; a request carrying a balance was rejected (422); the buyer saw only "My credits"
+  with the DEMO note and no holdings and was refused the ledger (UI and API); VVB, farmer, laboratory and buyer users were refused the
+  inventory and non-holders the holdings API; no unexpected console errors.
+
 ## Known limitations and open items
 
 - The rate limiter is in-memory (single API process). Redis is required before scaling out (Phase 12).
@@ -575,4 +617,17 @@ Verification (exit gate, 3 Oct 2026)
   - The registry document checklist and the unit equivalence are configuration per registry account; none is invented.
   - The UI records one serial range per batch (the API accepts several); issuance correction is available through the API only.
   - Inventory, ownership, reservation, transfer and retirement are Phase 9B; marketplace Phase 10; payouts Phase 11.
+- Phase 9B:
+  - Buyer KYC / onboarding is Phase 10: buyers can already receive, hold and request retirement of credits (X2) — a compliance dependency.
+  - No registry API and no registry-specific serial parser exist in the application: REGISTRY transfers and retirements are recorded
+    manually with evidence; sub-ranges exist only when registry-stated or parser-derived (TEST fixture), otherwise positions hold a
+    quantity within the 9A range.
+  - A confirmer must hold credits.confirm in the custodian organization (the holding registry account's organization); a credit-holding
+    organization without such a user cannot complete transfers or retirements of its credits.
+  - Reservation expiry is lazy (on reads and writes) plus a manual sweep endpoint; there is no background worker (Phase 12).
+  - Reconciliation is manual (registry statement + stated quantities); scheduled sync needs a registry API.
+  - Multi-period isolation is enforced and tested at batch level (each batch belongs to one period; positions never merge across batches).
+  - The UI has no reconciliation screen (API only) and records at most one registry-stated retired serial range per retirement (the API
+    accepts several).
+  - DEMO has no registry-issued batch, so every ledger workflow is exercised only in the rolled-back TEST database.
 - The browser logs one expected 401 at start-up: the silent session-restore attempt when nobody is signed in.

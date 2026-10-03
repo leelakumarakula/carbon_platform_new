@@ -129,14 +129,26 @@ access in Phase 7. No new role was added.
 VVB/ACVA, methodology specialists (platform-wide), farmers, buyers, laboratory roles and finance have no Phase 8A access (the VVB sees
 the Phase 8A finding summaries only inside a submitted Phase 8B manifest).
 
+## Phase 9B (decision D16) — credit ledger
+
+| Role | Permissions | Phase 9B actions | Separation of duties |
+|---|---|---|---|
+| Credit Manager | credits.read, credits.manage | request openings, reserve / release, request / cancel transfers, request / cancel retirements, request reversals, reconcile registry statements | never confirms their own request |
+| QA Officer | credits.read, credits.confirm | confirm openings; complete / reject transfers (REGISTRY: reference + evidence); retire / reject retirements (certificate); apply / reject reversals | confirmer ≠ requester (service + DB check); must hold credits.confirm in the custodian organization (the holding registry account's organization) |
+| Project Manager, Registry Manager, Finance Manager | credits.read | read the ledger (inventory, positions, entries, workflows) | — |
+| Buyer | credits.holder_read, credits.holder_retire | see own organization's holdings (allow-listed); request / cancel retirement of own AVAILABLE credits | a credit-team confirmer records the registry retirement |
+
+The VVB Reviewer, laboratory roles, farmers and methodology roles have no credits permission. A user holding both credits.manage and
+credits.confirm may confirm someone else's request, never their own. Buyer KYC is Phase 10.
+
 ## Phase 9A (decision D18) — registry submission & credit issuance
 
 | Role | Permissions | Phase 9A actions | Separation of duties |
 |---|---|---|---|
 | Project Manager, Registry Manager | registry.read, registry.manage, credits.read | registry accounts (unit equivalence, checklist), registrations, submissions (freeze, record submitted / query / response, withdraw, cancel, reconcile), record / void / cancel / correct issuances | never confirms an issuance they recorded (registry.confirm is not granted to them) |
-| QA Officer | registry.read, registry.confirm | independently confirm recorded issuances | confirmer ≠ recorder (also a DB check) |
+| QA Officer | registry.read, registry.confirm (9B adds credits.read, credits.confirm) | independently confirm recorded issuances | confirmer ≠ recorder (also a DB check) |
 | MRV Manager, Calculation Analyst | registry.read | read registry records | — |
-| Credit Manager, Finance Manager | credits.read | read registry-issued credit batches (read-only) | — |
+| Credit Manager, Finance Manager | credits.read (9B adds credits.manage to the Credit Manager) | read registry-issued credit batches | — |
 
 The VVB Reviewer, farmers, buyers, laboratory roles and methodology specialists have no registry or credits permission. Registries are
 external counterparties without users (D2). The Registry Manager reaches the registry panel through the `/registry` page (no project or MRV

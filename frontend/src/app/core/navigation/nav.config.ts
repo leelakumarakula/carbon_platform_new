@@ -49,7 +49,12 @@ export const NAVIGATION: readonly NavSection[] = [
     items: [
       { label: 'Registry', icon: 'account_balance', route: '/registry', permissions: [P.REGISTRY_READ] },
       { label: 'Issued credits', icon: 'workspace_premium', route: '/credits', permissions: [P.CREDITS_READ] },
+      { label: 'Credit ledger', icon: 'account_tree', route: '/ledger', permissions: [P.CREDITS_READ] },
     ],
+  },
+  {
+    title: 'Credits',
+    items: [{ label: 'My credits', icon: 'wallet', route: '/holdings', permissions: [P.CREDITS_HOLDER_READ] }],
   },
   {
     title: 'Laboratory',

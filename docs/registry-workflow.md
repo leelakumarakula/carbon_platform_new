@@ -17,7 +17,9 @@ states, with evidence, and a second person confirms each issuance.
 
 Phase 9A does **not** include:
 
-- available inventory, credit ownership, reservations, transfers or retirements (9B);
+- available inventory, credit ownership, reservations, transfers or retirements (Phase 9B — see
+  [credit-ledger-workflow.md](credit-ledger-workflow.md); an ISSUED batch enters the ledger only through a dual-control opening, and a 9A
+  correction or cancellation is refused with `LEDGER_ACTIVITY_EXISTS` once the batch has ledger activity);
 - marketplace, buyers or payment (Phase 10);
 - revenue or farmer payouts (Phase 11);
 - validation, accreditation, or any real registry API (no contract exists).
@@ -160,7 +162,7 @@ The snapshot is canonical JSON plus SHA-256, fixed by a trigger once FROZEN. It 
 | registry.read | Project Manager, Registry Manager, QA Officer, MRV Manager, Calculation Analyst |
 | registry.manage | Project Manager, Registry Manager (accounts, registrations, submissions, responses, recording issuances) |
 | registry.confirm | QA Officer (independent confirmation, never the recorder) |
-| credits.read | Project Manager, Registry Manager, Credit Manager, Finance Manager |
+| credits.read | Project Manager, Registry Manager, Credit Manager, Finance Manager (Phase 9B adds QA Officer, and the ledger permissions credits.manage / confirm / holder_read / holder_retire) |
 
 The VVB Reviewer, farmers, buyers and laboratory roles have no registry or credits permission. All records are organization-scoped:
 404 out of scope, 403 when visible but forbidden.

@@ -275,3 +275,28 @@ CREDIT_BATCH_MACHINE = StateMachine.build(
     transitions={"RECORDED": {"ISSUED", "VOIDED"}, "ISSUED": {"SUPERSEDED", "CANCELLED"}},
     terminal={"VOIDED", "SUPERSEDED", "CANCELLED"},
 )
+
+
+# ---------------------------------------------------------------- Phase 9B — credit ledger
+CREDIT_OPENING_MACHINE = StateMachine.build(
+    "credit_opening", initial="REQUESTED", transitions={"REQUESTED": {"CONFIRMED", "CANCELLED"}}, terminal={"CONFIRMED", "CANCELLED"},
+)
+
+CREDIT_RESERVATION_MACHINE = StateMachine.build(
+    "credit_reservation", initial="ACTIVE", transitions={"ACTIVE": {"CONSUMED", "RELEASED", "EXPIRED"}},
+    terminal={"CONSUMED", "RELEASED", "EXPIRED"},
+)
+
+CREDIT_TRANSFER_MACHINE = StateMachine.build(
+    "credit_transfer", initial="REQUESTED", transitions={"REQUESTED": {"COMPLETED", "CANCELLED", "REJECTED"}},
+    terminal={"COMPLETED", "CANCELLED", "REJECTED"},
+)
+
+CREDIT_RETIREMENT_MACHINE = StateMachine.build(
+    "credit_retirement", initial="REQUESTED", transitions={"REQUESTED": {"RETIRED", "REJECTED", "CANCELLED"}},
+    terminal={"RETIRED", "REJECTED", "CANCELLED"},
+)
+
+CREDIT_REVERSAL_MACHINE = StateMachine.build(
+    "credit_reversal", initial="REQUESTED", transitions={"REQUESTED": {"APPLIED", "REJECTED"}}, terminal={"APPLIED", "REJECTED"},
+)

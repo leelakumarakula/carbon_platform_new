@@ -197,6 +197,9 @@ def record(db: Session, ctx: RequestContext, principal: Principal, submission_id
            corrects: CreditIssuance | None = None, correction_reason: str | None = None, adapter: RegistryAdapter | None = None
            ) -> CreditIssuance:
     s, p = ra.submission_for(db, principal, submission_id, P.REGISTRY_MANAGE)
+    if corrects is not None:                                       # Phase 9B (X4): no correction over ledger activity
+        from app.services import ledger_service
+        ledger_service.ledger_guard(db, [b.id for b in batches_of(db, corrects.id)])
     if request_key:
         prior = db.scalars(select(CreditIssuance).where(CreditIssuance.client_request_key == request_key)).first()
         if prior is not None:
@@ -290,6 +293,9 @@ def confirm(db: Session, ctx: RequestContext, principal: Principal, issuance_id:
         if original is not None:
             if original.status != "CONFIRMED":
                 raise Conflict(f"The corrected issuance is {original.status}.", error_code="ISSUANCE_NOT_CONFIRMED")
+            from app.services import ledger_service  # Phase 9B (X4): guard + explicit ISSUANCE_ADJUSTMENT if untouched
+            ledger_service.issuance_adjustment(db, ctx, principal, original, [b.id for b in batches_of(db, original.id)],
+                                               f"Issuance {original.issuance_code} corrected by {i.issuance_code}")
             original.corrected_by_issuance_id = i.id
             _issuance_transition(db, ctx, original, p, "CORRECTED", "CREDIT_ISSUANCE_CORRECTED", i.correction_reason, corrected_by=i.issuance_code)
             for b in batches_of(db, original.id):
@@ -333,6 +339,8 @@ def cancel(db: Session, ctx: RequestContext, principal: Principal, issuance_id: 
     if i.status != "CONFIRMED":
         raise Conflict(f"Only a CONFIRMED issuance can be cancelled (it is {i.status}).", error_code="ISSUANCE_NOT_CONFIRMED")
     rs._evidence(db, ra.SUBMISSION_ENTITY, s.id, document_id, {DocumentCategory.ISSUANCE_STATEMENT.value, DocumentCategory.REGISTRY_RESPONSE.value})
+    from app.services import ledger_service  # Phase 9B (X4): guard + explicit ISSUANCE_ADJUSTMENT if untouched
+    ledger_service.issuance_adjustment(db, ctx, principal, i, [b.id for b in batches_of(db, i.id)], f"Issuance {i.issuance_code} cancelled: {reason}")
     i.cancelled_by, i.cancelled_at, i.cancel_reason, i.cancel_document_id = principal.user_id, utcnow(), reason, document_id
     _issuance_transition(db, ctx, i, p, "CANCELLED", "CREDIT_ISSUANCE_CANCELLED", reason, document_id=document_id)
     for b in batches_of(db, i.id):

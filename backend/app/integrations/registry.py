@@ -6,7 +6,8 @@ states and never simulates a registry response.
 - `ManualRegistryAdapter` never answers on the registry's behalf: every call raises `ManualActionRequired`, and the operator records the
   external reference with evidence instead.
 - Serial numbers belong to the registry. An adapter may offer a registry-specific `parse_serial_range`; no universal format is assumed.
-- Not part of 9A (deferred to 9B / later): get_credit_inventory, transfer_credits, retire_credits.
+- Phase 9B declares transfer_credits / retire_credits / get_credit_inventory; without a contracted registry API they raise
+  `ManualActionRequired` — registry transfers, retirements and inventory reconciliation are recorded manually with registry evidence.
 """
 from dataclasses import dataclass, field
 from datetime import date
@@ -84,6 +85,24 @@ class SubmissionPackage:
     documents: tuple[dict[str, Any], ...] = field(default_factory=tuple)
 
 
+@dataclass(frozen=True)
+class CreditMovement:
+    """A registry-side transfer or retirement request (Phase 9B). Serials are only those the registry supplies."""
+    batch_external_issuance_id: str
+    quantity: int
+    serial_start: str | None = None
+    serial_end: str | None = None
+    recipient_external_account_id: str | None = None
+    beneficiary: str | None = None
+    reason: str | None = None
+
+
+@dataclass(frozen=True)
+class InventoryLine:
+    external_issuance_id: str
+    quantity: int
+
+
 class ManualActionRequired(RuntimeError):
     """The registry is operated manually: record the external reference and evidence instead."""
 
@@ -106,6 +125,9 @@ class RegistryAdapter(Protocol):
     def get_issuances(self, account: AccountRef, external_project_id: str) -> list[ExternalIssuance]: ...
     def submit_document(self, account: AccountRef, external_submission_id: str, document: dict[str, Any]) -> ExternalRef: ...
     def parse_serial_range(self, serial_start: str, serial_end: str) -> ParsedSerialRange | None: ...
+    def transfer_credits(self, account: AccountRef, movement: CreditMovement, idempotency_key: str) -> ExternalRef: ...
+    def retire_credits(self, account: AccountRef, movement: CreditMovement, idempotency_key: str) -> ExternalRef: ...
+    def get_credit_inventory(self, account: AccountRef) -> list[InventoryLine]: ...
 
 
 class ManualRegistryAdapter:
@@ -133,6 +155,15 @@ class ManualRegistryAdapter:
 
     def parse_serial_range(self, serial_start: str, serial_end: str) -> ParsedSerialRange | None:
         return None                     # no registry-specific format is known: serials are stored verbatim only
+
+    def transfer_credits(self, account: AccountRef, movement: CreditMovement, idempotency_key: str) -> ExternalRef:
+        raise self._manual()
+
+    def retire_credits(self, account: AccountRef, movement: CreditMovement, idempotency_key: str) -> ExternalRef:
+        raise self._manual()
+
+    def get_credit_inventory(self, account: AccountRef) -> list[InventoryLine]:
+        raise self._manual()
 
 
 # The application's adapters. Test adapters are injected into the service layer and never registered here.

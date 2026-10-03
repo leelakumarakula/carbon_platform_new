@@ -156,22 +156,22 @@ def test_permission_grants_and_api_surface(db: Session) -> None:
                                          .join(Role, Role.id == RolePermission.role_id).where(Role.code == role))
                 if c.startswith(("registry.", "credits."))}
     assert perms("PROJECT_MANAGER") == perms("REGISTRY_MANAGER") == {"registry.read", "registry.manage", "credits.read"}
-    assert perms("QA_OFFICER") == {"registry.read", "registry.confirm"}
+    assert perms("QA_OFFICER") == {"registry.read", "registry.confirm", "credits.read", "credits.confirm"}   # + Phase 9B ledger confirmer
     assert perms("MRV_MANAGER") == perms("CALCULATION_ANALYST") == {"registry.read"}
-    assert perms("CREDIT_MANAGER") == perms("FINANCE_MANAGER") == {"credits.read"}
-    for role in ("VVB_REVIEWER", "FARMER", "BUYER", "LAB_MANAGER", "METHODOLOGY_SPECIALIST"):
+    assert perms("FINANCE_MANAGER") == {"credits.read"} and perms("CREDIT_MANAGER") == {"credits.read", "credits.manage"}   # 9B
+    assert perms("BUYER") == {"credits.holder_read", "credits.holder_retire"}                       # Phase 9B holder view
+    for role in ("VVB_REVIEWER", "FARMER", "LAB_MANAGER", "METHODOLOGY_SPECIALIST"):
         assert perms(role) == set(), role
     from app.main import app
     paths = [r.path for r in app.routes if hasattr(r, "path")]
     assert not any(p.startswith("/api/v1/registry-portal") for p in paths)
     segments = {seg for p in paths for seg in p.split("/")}
-    # ("retire" exists only for consent definitions and methodology versions, Phases 2 / 4 — not for credits)
-    for word in ("transfer", "transfers", "retirements", "retirement", "reserve", "reservations", "inventory", "marketplace", "orders", "payouts"):
+    # Phase 9B adds the credit ledger under /credits (reservations, transfers, retirements); marketplace, orders and payouts stay absent,
+    # and the 9A registry API itself never transfers, reserves or retires credits
+    for word in ("marketplace", "orders", "payouts", "checkout", "payments"):
         assert word not in segments, word
-    assert not any("retire" in p for p in paths if p.startswith(("/api/v1/credits", "/api/v1/registry")))
-    credit_paths = [p for p in paths if p.startswith("/api/v1/credits")]
-    assert credit_paths and all(m == {"GET"} for r in app.routes if getattr(r, "path", "").startswith("/api/v1/credits")
-                                for m in [getattr(r, "methods", {"GET"}) - {"HEAD"}])
+    assert not any(w in p for p in paths if p.startswith("/api/v1/registry") for w in ("transfer", "retire", "reserv", "inventory"))
+    assert [p for p in paths if p.startswith("/api/v1/credits/batches")]                                      # 9A read-only batch views remain
     # the TEST adapter is never part of the application runtime
     assert set(ADAPTERS) == {"MANUAL"}
 

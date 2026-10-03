@@ -17,7 +17,10 @@ SEQUENCES = {"farmer": ("seq_farmer_code", "FRM"), "farm": ("seq_farm_code", "FA
              "verification_decision": ("seq_verification_decision_code", "VDEC"),
              "registry_registration": ("seq_registry_registration_code", "RREG"),
              "registry_submission": ("seq_registry_submission_code", "RSUB"),
-             "credit_issuance": ("seq_credit_issuance_code", "ISS"), "credit_batch": ("seq_credit_batch_code", "CB")}
+             "credit_issuance": ("seq_credit_issuance_code", "ISS"), "credit_batch": ("seq_credit_batch_code", "CB"),
+             "credit_entry": ("seq_credit_entry_code", "LEDG"), "credit_opening": ("seq_credit_opening_code", "OPN"),
+             "credit_reservation": ("seq_credit_reservation_code", "RSV"), "credit_transfer": ("seq_credit_transfer_code", "TRF"),
+             "credit_retirement": ("seq_credit_retirement_code", "RET"), "credit_reversal": ("seq_credit_reversal_code", "REV")}
 
 
 def next_code(db: Session, kind: str, year: int) -> str:

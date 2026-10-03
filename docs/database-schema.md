@@ -199,6 +199,24 @@ statuses VERIFICATION / VERIFIED already existed in the status check).
 RSUB / ISS / CB; its downgrade refuses to run while any Phase 9A row or registry document exists. No earlier table changes (the project
 status ISSUED already existed in the status check).
 
+## Phase 9B tables (credit ledger) — migration 0014
+
+Workflow details: [credit-ledger-workflow.md](credit-ledger-workflow.md).
+
+| Table | Key columns / rules |
+|---|---|
+| `credit_ledger_entries` | `entry_code` (LEDG-); `entry_type` (OPEN_INVENTORY, RESERVE, RESERVATION_RELEASE, RESERVATION_EXPIRE, TRANSFER_REQUEST, TRANSFER_COMPLETE, TRANSFER_CANCEL, RETIREMENT_REQUEST, RETIRE, RETIREMENT_CANCEL, REVERSAL, ISSUANCE_ADJUSTMENT); batch; organization and counterparty organization; links to the opening / reservation / transfer / retirement / reversal / issuance; whole quantity; actor; `confirmed_by` (check ≠ actor); reason; `request_key` (filtered unique); `posted`. Trigger `trg_credit_ledger_entries_guard`: append-only, posted once, and on posting conservation per type (OPEN_INVENTORY outputs = issued quantity of an ISSUED batch; ISSUANCE_ADJUSTMENT leaves no open quantity; otherwise inputs = outputs > 0 and open = issued) plus no overlap of parsed sub-ranges |
+| `credit_positions` | immutable UTXO: batch; 9A `serial_range_id`; owner organization; holding registry account (or registry-stated external account id); state AVAILABLE / RESERVED / TRANSFER_PENDING / RETIREMENT_PENDING / RETIRED; status OPEN / CONSUMED; whole quantity; optional registry-stated / parsed sub-range (`parsed_bounds` check: end − start + 1 = quantity); reservation / transfer / retirement links; `created_by_entry_id`, `consumed_by_entry_id` (check: consumed ⇔ link). Trigger `trg_credit_positions_guard`: insert only into an unposted entry, consume once, never update otherwise, never delete; RETIRED never consumed |
+| `credit_openings` | `opening_code` (OPN-); batch; owner (holding account organization); REQUESTED / CONFIRMED / CANCELLED (filtered unique: one REQUESTED / CONFIRMED per batch); requester / confirmer (check ≠); entry. Final states immutable |
+| `credit_reservations` | `reservation_code` (RSV-); batch; owner; optional recipient; purpose + generic `purpose_reference`; whole quantity; `expires_at`; ACTIVE / CONSUMED / RELEASED / EXPIRED. Final states immutable |
+| `credit_transfers` | `transfer_code` (TRF-); kind INTERNAL / REGISTRY; batch; sender / recipient (check distinct); recipient registry account id (REGISTRY); quantity; optional reservation; REQUESTED / COMPLETED / CANCELLED / REJECTED; requester / completer (check ≠); `registry_transfer_reference` (filtered unique per registry) + REGISTRY_TRANSFER_EVIDENCE document (check: required for a COMPLETED REGISTRY transfer). No price, payment or order column. Final states immutable |
+| `credit_retirements` | `retirement_code` (RET-); batch; owner; quantity; beneficiary; reason; REQUESTED / RETIRED / REJECTED / CANCELLED; requester / retirer (check ≠); `registry_retirement_reference` (filtered unique per registry), registry-stated `retirement_date`, RETIREMENT_CERTIFICATE document (check: all required when RETIRED); `retired_serials` JSON (registry-stated). Final states immutable |
+| `credit_reversals` | `reversal_code` (REV-); reversed entry (filtered unique: one open per entry); reason; REQUESTED / APPLIED / REJECTED; requester / decider (check ≠); compensating entry. Final states immutable |
+
+0014 also adds the sequences LEDG / OPN / RSV / TRF / RET / REV and the documents categories `RETIREMENT_CERTIFICATE` and
+`REGISTRY_TRANSFER_EVIDENCE` (PDF only). The five entry → workflow foreign keys are created after the tables (cyclic references). Its
+downgrade refuses to run while any Phase 9B row or ledger document exists. No earlier table changes.
+
 ## Migrations
 
 `backend/alembic/versions/20261002_0001_phase1_identity_access_audit.py` and
@@ -218,7 +236,9 @@ CALCULATION_REPORT category, four triggers; downgrade refused while Phase 8A row
 `20261003_0012_phase8b_vvb_verification.py` (7 verification tables, VAS / VSUB / VFND / CAR / VDEC sequences, VERIFICATION_REPORT /
 VERIFICATION_EVIDENCE categories, seven triggers; downgrade refused while Phase 8B rows exist) and
 `20261003_0013_phase9a_registry_credit_issuance.py` (7 registry / credit tables, RREG / RSUB / ISS / CB sequences, three registry document
-categories, seven triggers; downgrade refused while Phase 9A rows exist). Spatial
+categories, seven triggers; downgrade refused while Phase 9A rows exist) and
+`20261003_0014_phase9b_credit_ledger.py` (7 ledger tables, LEDG / OPN / RSV / TRF / RET / REV sequences, two ledger document categories,
+seven triggers; downgrade refused while Phase 9B rows exist). Spatial
 indexes (`six_*`) are hand-written SQL and excluded from autogenerate by `include_object` in `alembic/env.py`. Generate new revisions with
 `alembic revision --autogenerate`, review them, and add raw SQL (triggers, spatial indexes) by hand.
 `alembic check` must report no drift before a phase is closed.

@@ -53,6 +53,15 @@ from app.models.lab import (
     ProjectLaboratoryEngagementRule,
     SampleCustodyEvent,
 )
+from app.models.ledger import (
+    CreditLedgerEntry,
+    CreditOpening,
+    CreditPosition,
+    CreditReservation,
+    CreditRetirement,
+    CreditReversal,
+    CreditTransfer,
+)
 from app.models.methodologies import (
     Methodology,
     MethodologyActivity,
@@ -141,7 +150,14 @@ __all__ = [
     "CorrectiveActionEvent",
     "CreditBatch",
     "CreditIssuance",
+    "CreditLedgerEntry",
+    "CreditOpening",
+    "CreditPosition",
+    "CreditReservation",
+    "CreditRetirement",
+    "CreditReversal",
     "CreditSerialRange",
+    "CreditTransfer",
     "Document",
     "DocumentCategory",
     "DocumentVersion",
