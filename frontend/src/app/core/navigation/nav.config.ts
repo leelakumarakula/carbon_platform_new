@@ -70,6 +70,18 @@ export const NAVIGATION: readonly NavSection[] = [
     ],
   },
   {
+    title: 'Finance',
+    items: [
+      { label: 'Revenue & costs', icon: 'account_balance', route: '/finance/revenue',
+        anyPermissions: [P.REVENUE_READ, P.COSTS_MANAGE, P.COSTS_APPROVE] },
+      { label: 'Revenue sharing', icon: 'pie_chart', route: '/finance/sharing', anyPermissions: [P.SHARING_MANAGE, P.SHARING_APPROVE] },
+      { label: 'Settlements', icon: 'calculate', route: '/finance/settlements',
+        anyPermissions: [P.SETTLEMENT_READ, P.SETTLEMENT_CALCULATE, P.SETTLEMENT_APPROVE] },
+      { label: 'Payouts', icon: 'savings', route: '/finance/payouts',
+        anyPermissions: [P.PAYOUTS_READ, P.PAYOUTS_CALCULATE, P.PAYOUTS_APPROVE, P.PAYOUTS_EXECUTE, P.PAYOUTS_RECONCILE] },
+    ],
+  },
+  {
     title: 'Laboratory',
     items: [{ label: 'Laboratory', icon: 'science', route: '/laboratory', permissions: [P.LAB_LAB_READ] }],
   },
@@ -79,6 +91,7 @@ export const NAVIGATION: readonly NavSection[] = [
       { label: 'My farmer profile', icon: 'badge', route: '/me/farmer', permissions: [P.FARMERS_SELF] },
       { label: 'My farms', icon: 'agriculture', route: '/farms', permissions: [P.FARMERS_SELF] },
       { label: 'My projects', icon: 'handshake', route: '/me/projects', permissions: [P.FARMERS_SELF] },
+      { label: 'My payouts', icon: 'savings', route: '/me/payouts', permissions: [P.FARMERS_SELF] },
     ],
   },
   {

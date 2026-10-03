@@ -261,6 +261,47 @@ export const routes: Routes = [
         loadComponent: () => import('./projects/my-participation-page').then((m) => m.MyParticipationPage),
       },
       {
+        path: 'me/payouts',
+        title: 'My payouts',
+        canActivate: [permissionGuard],
+        data: { permissions: [P.FARMERS_SELF] },
+        loadComponent: () => import('./finance/my-payouts-page').then((m) => m.MyPayoutsPage),
+      },
+      {
+        path: 'finance',
+        children: [
+          { path: '', pathMatch: 'full', redirectTo: 'revenue' },
+          {
+            path: 'revenue',
+            title: 'Revenue & costs',
+            canActivate: [permissionGuard],
+            data: { anyPermissions: [P.REVENUE_READ, P.COSTS_MANAGE, P.COSTS_APPROVE] },
+            loadComponent: () => import('./finance/revenue-page').then((m) => m.RevenuePage),
+          },
+          {
+            path: 'sharing',
+            title: 'Revenue sharing',
+            canActivate: [permissionGuard],
+            data: { anyPermissions: [P.SHARING_MANAGE, P.SHARING_APPROVE] },
+            loadComponent: () => import('./finance/sharing-page').then((m) => m.SharingPage),
+          },
+          {
+            path: 'settlements',
+            title: 'Settlements',
+            canActivate: [permissionGuard],
+            data: { anyPermissions: [P.SETTLEMENT_READ, P.SETTLEMENT_CALCULATE, P.SETTLEMENT_APPROVE] },
+            loadComponent: () => import('./finance/settlements-page').then((m) => m.SettlementsPage),
+          },
+          {
+            path: 'payouts',
+            title: 'Payouts',
+            canActivate: [permissionGuard],
+            data: { anyPermissions: [P.PAYOUTS_READ, P.PAYOUTS_CALCULATE, P.PAYOUTS_APPROVE, P.PAYOUTS_EXECUTE, P.PAYOUTS_RECONCILE] },
+            loadComponent: () => import('./finance/payouts-page').then((m) => m.PayoutsPage),
+          },
+        ],
+      },
+      {
         path: 'admin',
         children: [
           {

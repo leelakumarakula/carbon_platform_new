@@ -70,7 +70,8 @@ describe('Ledger helpers', () => {
     expect(labels(['credits.holder_read'])).not.toContain('Credit ledger');
     expect(labels(['verification.vvb_read', 'lab.lab_read'])).not.toContain('Credit ledger');
     const all = NAVIGATION.flatMap((s) => s.items.map((i) => `${i.label} ${i.route}`.toLowerCase())).join(' ');
-    for (const word of ['checkout', 'payout', 'price', 'invoice']) expect(all).not.toContain(word);   // Phase 10 adds the marketplace only
+    for (const word of ['checkout', 'price', 'invoice']) expect(all).not.toContain(word);   // Phase 10 adds the marketplace only
+    expect(NAVIGATION.flatMap((s) => s.items).filter((i) => i.route.includes('payout')).map((i) => i.route).sort()).toEqual(['/finance/payouts', '/me/payouts']);   // Phase 11 only
   });
 });
 

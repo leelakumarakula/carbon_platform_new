@@ -14,7 +14,7 @@
 | 9A | Registry submission & credit issuance (no inventory, ownership, reservation, transfer or retirement) | **Done** |
 | 9B | Credit ledger: ownership, reservation, transfer, retirement (no marketplace, price or payment) | **Done** |
 | 10 | Marketplace: buyer KYC, listings, orders, manual payments, refunds (no fee, tax, commission or payout) | **Done** |
-| 11 | Revenue / payout | — |
+| 11 | Revenue, farmer entitlement, payouts & reconciliation (configurable sharing; no tax, fee or payout provider) | **Done** |
 | 12 | Production hardening | — |
 
 ## Phase 1 — delivered
@@ -588,6 +588,61 @@ Verification (exit gate, 3 Oct 2026)
   Listings; a DEMO listing of a non-existent batch was refused (404 CREDIT_BATCH_NOT_FOUND); VVB, farmer and laboratory users were refused
   the marketplace, orders, payments and KYC APIs; no unexpected console errors or 5xx responses.
 
+## Phase 11 — delivered
+
+**Revenue, farmer entitlement, payouts and reconciliation — a money ledger beside the 9B credit ledger; every economic value is approved,
+versioned configuration (no hard-coded percentage, fee or tax).** Details: [payout-workflow.md](payout-workflow.md) (decision lock
+[phase-11-decision-lock.md](phase-11-decision-lock.md); D9 per order item, D10 reversals, D11 chargebacks out of scope, D12 approved
+per-period farm allocation).
+
+Backend
+- Migration `0016`:
+  - tables: revenue_records (append-only), revenue_share_versions, farm_allocation_versions, farm_allocation_lines (append-only),
+    project_costs, settlement_runs, settlement_revenue_items / settlement_cost_items (one ACTIVE claim per record),
+    farmer_entitlements (append-only), payouts, payout_transactions (append-only), payout_reconciliations (append-only),
+    payout_adjustments;
+  - sequences RVN / RSH / FAL / PCS / SET / PYT / ADJ;
+  - documents categories COST_EVIDENCE, PAYOUT_EVIDENCE (restricted) and RECONCILIATION_EVIDENCE (restricted), all PDF only;
+  - 13 triggers;
+  - downgrade refused while Phase 11 rows exist.
+- Revenue:
+  - recognized per order item inside the Phase 10 delivery-completion transaction (payment CONFIRMED + 9B transfer COMPLETED);
+  - reversed by a completed refund in the refund transaction;
+  - idempotent, with re-run endpoints.
+  The two hooks are the only Phase 10 change.
+- Configuration:
+  - revenue-share versions and per-period farm allocations, with author ≠ approver, immutable once approved, superseded by new versions;
+  - project costs with PDF evidence, recorder ≠ approver, and corrections as negative costs.
+- Settlement engine (`fin-calc-1`):
+  - Decimal only;
+  - per-line quantization to the currency minor unit with the version's rounding mode;
+  - frozen canonical snapshot + SHA-256;
+  - verify / recompute;
+  - concurrency-safe claims;
+  - recovery cases for reversals of paid-out revenue.
+- Payouts:
+  - lifecycle D20;
+  - calculator ≠ approver ≠ executor, executor ≠ reconciler;
+  - VERIFIED bank account referenced (last 4) and re-checked under lock at execution (ON_HOLD on change);
+  - MANUAL adapter (PAID with reference + PDF);
+  - reissue of failed payouts.
+- Reconciliation: MATCHED / EXCEPTION against statements, then run completion.
+- Lineage, financial summary and farmer self-service.
+- 14 permissions (`revenue.*`, `settlement.*`, `payouts.*`, `sharing.*`, `costs.*`); no new role.
+
+Frontend
+- Finance section: **Revenue & costs**, **Revenue sharing**, **Settlements** and **Payouts** (with reconciliation and recovery cases).
+- Farmer **My payouts**.
+- DEMO note and configuration-required states. No form sends a payout amount.
+
+Tests
+- `tests/test_finance.py`: RBAC, client-amount refusal, recognition / reversal, configuration, the full settlement → payout →
+  reconciliation lifecycle, recovery cases, netting, the TEST adapter, rounding, DEMO and the downgrade guard.
+- `tests/test_finance_concurrency.py`: database snapshot; eight races (recognition × delivery, calculation × 2, settlement approval × 2,
+  payout creation × 2, execution × 2, bank change × execution, reconciliation × 2, refund × settlement) and the direct-SQL trigger tests.
+- `finance.spec.ts`.
+- E2E: Phase 11 DEMO-honest block.
+
 ## Known limitations and open items
 
 - The rate limiter is in-memory (single API process). Redis is required before scaling out (Phase 12).
@@ -689,4 +744,17 @@ Verification (exit gate, 3 Oct 2026)
   - Listing and order expiry are lazy (on read / before writes); scheduled expiry and payment reconciliation jobs are Phase 12.
   - Every DEMO run leaves DEMO-BUYER-D's buyer profile KYC_VERIFIED in the development database (KYC demonstration); no listing, order or
     payment is created.
+- Phase 11:
+  - Payee organization (D16 / D38): a settlement includes only revenue whose seller is the project organization; revenue sold by
+    another holder is not distributed until an inter-organization policy is decided.
+  - Payees (D22): only farmers are payees.
+  - Recovery (D29): recovery cases are resolved manually; there is no automatic netting or clawback.
+  - Tax / withholding (D31): none is calculated.
+  - Rounding (D27): chosen per approved version, with no platform default.
+  - No payout provider is contracted: payouts are manual with evidence, and provider paths are exercised only with the TEST adapter.
+    Chargebacks are out of scope (D11).
+  - A revenue-share version must cover the whole monitoring period; mid-period agreement changes need a business decision.
+  - DEMO has no revenue, so every financial workflow is exercised only in the rolled-back TEST database. DEMO shows the DEMO note and
+    empty / configuration-required states.
+  - No scheduled reconciliation or payout job exists (Phase 12).
 - The browser logs one expected 401 at start-up: the silent session-restore attempt when nobody is signed in.

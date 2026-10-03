@@ -43,7 +43,7 @@ describe('Marketplace helpers and navigation', () => {
     expect(DEMO_NOTE).toBe('DEMO — no registry-issued credits; nothing is listed');
   });
 
-  it('shows marketplace navigation only to roles holding the permissions; no payout or checkout entry', () => {
+  it('shows marketplace navigation only to roles holding the permissions; no checkout entry; payouts only in the Phase 11 finance section', () => {
     const labels = (perms: string[]) => visibleNavigation(NAVIGATION, (c) => perms.includes(c)).flatMap((s) => s.items.map((i) => i.label));
     const buyer = labels(['marketplace.read', 'orders.place', 'orders.read', 'payments.record', 'buyers.kyc_submit', 'credits.holder_read']);
     expect(buyer).toEqual(expect.arrayContaining(['Marketplace', 'Orders', 'Buyer profile', 'My credits']));
@@ -56,7 +56,8 @@ describe('Marketplace helpers and navigation', () => {
       expect(labels(perms).filter((l) => ['Marketplace', 'Orders', 'Payments', 'Listings', 'KYC review'].includes(l))).toEqual([]);
     }
     const all = NAVIGATION.flatMap((s) => s.items.map((i) => `${i.label} ${i.route}`.toLowerCase())).join(' ');
-    for (const word of ['payout', 'checkout', 'invoice', 'commission']) expect(all).not.toContain(word);
+    for (const word of ['checkout', 'invoice', 'commission']) expect(all).not.toContain(word);
+    expect(NAVIGATION.flatMap((s) => s.items).filter((i) => i.route.includes('payout')).map((i) => i.route).sort()).toEqual(['/finance/payouts', '/me/payouts']);   // Phase 11 only
   });
 });
 

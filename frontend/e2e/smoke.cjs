@@ -44,6 +44,9 @@ const phase9b = { ledgerNav: false, demoNote: false, columns: false, ledgerEmpty
 const phase10 = { buyerNav: false, demoNote: false, noListings: false, kyc: '', kycUi: false, orderRefused: '', balanceRejected: '',
   noOrders: false, financeNav: false, noPayments: false, listingRefused: '', sellerEmpty: false, complianceNav: false, outsidersBlocked: false,
   noFakeData: false };
+const phase11 = { financeNav: false, demoNote: false, revenueEmpty: false, configRequired: false, payoutsEmpty: false, sharingRefused: '',
+  costRefused: '', settlementRefused: '', amountRejected: '', farmerNav: false, farmerEmpty: false, outsidersBlocked: false, farmerBlocked: false,
+  noFakeData: false };
 const REQUIRED_AUDIT_P6 = ['LAB_ENGAGEMENT_PROPOSED', 'LAB_ENGAGEMENT_ACCEPTED', 'LAB_ENGAGEMENT_ENDED', 'LAB_SAMPLE_REGISTERED', 'LAB_CUSTODY_SEALED',
   'LAB_TEST_CREATED', 'LAB_SHIPMENT_CREATED', 'LAB_SHIPMENT_DISPATCHED', 'LAB_SHIPMENT_RECEIPT_RECORDED', 'LAB_TEST_STARTED', 'LAB_RESULT_CREATED',
   'LAB_REPORT_ATTACHED', 'LAB_RESULT_SUBMITTED', 'LAB_QA_STARTED', 'LAB_RESULT_APPROVED', 'LAB_RETEST_REQUESTED', 'LAB_RESULT_SUPERSEDED'];
@@ -1008,6 +1011,74 @@ const REQUIRED_AUDIT = ['PROJECT_CREATED', 'PROJECT_STATUS_CHANGED', 'PROJECT_FA
   }
   phase10.outsidersBlocked = out10 === 3;
   phase10.noFakeData = phase10.noOrders && phase10.noPayments && phase10.sellerEmpty && phase10.noListings;
+
+  // ---- Phase 11: revenue, settlements, payouts — honest DEMO path. DEMO has no registry-issued credits, so no revenue is recognized and no
+  // cost, sharing configuration, settlement, entitlement or payout is created (every DEMO write is refused); pages show the DEMO note and
+  // configuration-required / empty states. No request may carry a revenue or payout amount.
+  const FIN = `${BASE}/api/v1`;
+  const FIN_DEMO = 'DEMO — no registry-issued credits; no revenue, cost, entitlement or payout exists in DEMO';
+  const uuid = () => require('crypto').randomUUID();
+  const fn = await signIn('finance');
+  const FN = fn.page;
+  lastPage = FN;
+  phase11.financeNav = (await FN.locator('nav a', { hasText: 'Revenue & costs' }).count()) > 0
+    && (await FN.locator('nav a', { hasText: 'Settlements' }).count()) > 0 && (await FN.locator('nav a', { hasText: 'Payouts' }).count()) > 0;
+  await FN.goto(`${BASE}/finance/revenue`);
+  await FN.getByTestId('fin-demo-note').waitFor();
+  phase11.demoNote = (await FN.getByTestId('fin-demo-note').innerText()).includes(FIN_DEMO);
+  await FN.locator('[data-testid="fin-no-revenue"], [data-testid="fin-no-project"]').first().waitFor();
+  await shot(FN, '9a-finance-revenue-demo');
+  await FN.goto(`${BASE}/finance/settlements`);
+  await FN.locator('[data-testid="no-runs"]').waitFor();
+  await FN.locator('[data-testid="config-required"], [data-testid="fin-no-project"]').first().waitFor();
+  phase11.configRequired = (await FN.getByTestId('config-required').count()) === 1 || (await FN.getByTestId('fin-no-project').count()) === 1;
+  await shot(FN, '9b-finance-settlements-config-required');
+  await FN.goto(`${BASE}/finance/payouts`);
+  await FN.getByTestId('no-payouts').waitFor();
+  await shot(FN, '9c-finance-payouts-demo');
+  await fn.ctx.close();
+  const finH = await as('finance');
+  const sum = await json(await api.get(`${FIN}/revenue/summary`, { headers: finH }));
+  const rev = await json(await api.get(`${FIN}/revenue?project_id=${projectId}`, { headers: pmH }));
+  phase11.revenueEmpty = sum.revenue.length === 0 && sum.demo_note === FIN_DEMO && Array.isArray(rev) && rev.length === 0;
+  const runs = await json(await api.get(`${FIN}/settlements`, { headers: finH }));
+  const pays = await json(await api.get(`${FIN}/payouts`, { headers: finH }));
+  const cases = await json(await api.get(`${FIN}/payouts/adjustments`, { headers: finH }));
+  phase11.payoutsEmpty = runs.length === 0 && pays.length === 0 && cases.length === 0;
+  phase11.sharingRefused = await errCode(await api.post(`${FIN}/revenue-share`, { headers: pmH, data: { project_id: projectId,
+    farmer_share_pct: '40', deduct_approved_costs: false, rounding_mode: 'DOWN', effective_from: '2026-01-01', source_reference: 'E2E DEMO' } }));
+  phase11.costRefused = await errCode(await api.post(`${FIN}/costs`, { headers: pmH, data: { project_id: projectId, category: 'E2E',
+    description: 'E2E DEMO cost', amount: '1.00', currency: 'INR', incurred_on: '2026-09-01' } }));
+  const period11 = (await json(await api.get(`${FIN}/revenue/projects`, { headers: pmH }))).find((x) => x.id === projectId)?.periods?.[0]?.id ?? uuid();
+  phase11.settlementRefused = await errCode(await api.post(`${FIN}/settlements`, { headers: finH, data: { project_id: projectId,
+    monitoring_period_id: period11, currency: 'INR', revenue_share_version_id: uuid(), allocation_version_id: uuid() } }));
+  phase11.amountRejected = await errCode(await api.post(`${FIN}/revenue/recognize`, { headers: finH,
+    data: { order_item_id: uuid(), amount: '1000.00' } }));
+  const fa = await signIn('farmer');
+  const FA = fa.page;
+  lastPage = FA;
+  phase11.farmerNav = (await FA.locator('nav a', { hasText: 'My payouts' }).count()) > 0
+    && (await FA.locator('nav a', { hasText: 'Settlements' }).count()) === 0;
+  await FA.goto(`${BASE}/me/payouts`);
+  await FA.getByTestId('no-my-payouts').waitFor();
+  const mp = await json(await api.get(`${FIN}/payouts/me`, { headers: await as('farmer') }));
+  phase11.farmerEmpty = mp.payouts.length === 0;
+  await shot(FA, '9d-farmer-my-payouts');
+  await FA.goto(`${BASE}/finance/payouts`);
+  await FA.getByText("You don't have access to this page").waitFor();
+  await fa.ctx.close();
+  let out11 = 0;
+  for (const who of ['vvb', 'labtech', 'buyer']) {
+    const h = await as(who);
+    const codes = [];
+    for (const url of [`${FIN}/revenue/summary`, `${FIN}/settlements`, `${FIN}/payouts`, `${FIN}/payouts/adjustments`]) {
+      codes.push((await api.get(url, { headers: h })).status());
+    }
+    if (codes.every((c) => c === 403)) out11++;
+  }
+  phase11.outsidersBlocked = out11 === 3;
+  phase11.farmerBlocked = (await api.get(`${FIN}/payouts`, { headers: await as('farmer') })).status() === 403;
+  phase11.noFakeData = phase11.revenueEmpty && phase11.payoutsEmpty && phase11.farmerEmpty;
   for (const x of [mrv, qa, sup, fieldS]) await x.ctx.close();
   await api.dispose();
 
@@ -1065,6 +1136,7 @@ const REQUIRED_AUDIT = ['PROJECT_CREATED', 'PROJECT_STATUS_CHANGED', 'PROJECT_FA
   console.log('phase 9A:', JSON.stringify(phase9a));
   console.log('phase 9B:', JSON.stringify(phase9b));
   console.log('phase 10:', JSON.stringify(phase10));
+  console.log('phase 11:', JSON.stringify(phase11));
 
   await browser.close();
   // One 401 per session is expected: the silent session-restore attempt before sign-in.
@@ -1076,7 +1148,7 @@ const REQUIRED_AUDIT = ['PROJECT_CREATED', 'PROJECT_STATUS_CHANGED', 'PROJECT_FA
   if (missingAudit.length) console.log('missing audit events:', missingAudit);
   const p3ok = phase3.demoProjects >= 2 && /ha/.test(phase3.areaText) && phase3.boundaryShapes >= 2 && phase3.status === 'ELIGIBILITY_REVIEW'
     && phase3.historyOk && !missingAudit.length && phase3.farmerProjects >= 1 && phase3.buyerBlocked && phase3.tiles;
-  // farmer nav: Dashboard, My farmer profile, My farms, My projects
+  // farmer nav: Dashboard, My farmer profile, My farms, My projects, My payouts (Phase 11)
   const missingP4 = REQUIRED_AUDIT_P4.filter((a) => !phase4.audit.includes(a));
   if (missingP4.length) console.log('missing phase 4 audit events:', missingP4);
   const p4ok = phase4.catalog && phase4.approvedReadOnly && phase4.candidates >= 2 && phase4.recommended && /version/.test(phase4.locked)
@@ -1122,8 +1194,12 @@ const REQUIRED_AUDIT = ['PROJECT_CREATED', 'PROJECT_STATUS_CHANGED', 'PROJECT_FA
     && phase10.orderRefused === '404 LISTING_NOT_FOUND' && phase10.balanceRejected.startsWith('422') && phase10.noOrders && phase10.financeNav
     && phase10.noPayments && phase10.listingRefused === '404 CREDIT_BATCH_NOT_FOUND' && phase10.sellerEmpty && phase10.complianceNav && phase10.outsidersBlocked
     && phase10.noFakeData;
-  if (!stillIn || real.length || navItems.length !== 4 || !p2ok || !p3ok || !p4ok || !p5ok || !p6ok || !p7ok || !p8ok || !p8bok || !p9ok
-    || !p9bok || !p10ok) process.exitCode = 1;
+  const p11ok = phase11.financeNav && phase11.demoNote && phase11.revenueEmpty && phase11.configRequired && phase11.payoutsEmpty
+    && phase11.sharingRefused === '409 DEMO_FINANCE_NOT_ALLOWED' && phase11.costRefused === '409 DEMO_FINANCE_NOT_ALLOWED'
+    && phase11.settlementRefused === '409 DEMO_FINANCE_NOT_ALLOWED' && phase11.amountRejected.startsWith('422') && phase11.farmerNav
+    && phase11.farmerEmpty && phase11.outsidersBlocked && phase11.farmerBlocked && phase11.noFakeData;
+  if (!stillIn || real.length || navItems.length !== 5 || !p2ok || !p3ok || !p4ok || !p5ok || !p6ok || !p7ok || !p8ok || !p8bok || !p9ok
+    || !p9bok || !p10ok || !p11ok) process.exitCode = 1;
 })().catch(async (e) => {
   console.error('DRIVER FAILED:', e.message);
   if (lastPage) {

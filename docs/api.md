@@ -206,11 +206,36 @@ No request body can carry a calculated value (unknown fields are refused with 42
 | GET/POST | `/calculations/qa/{run_id}` · POST `/start` · `/complete` | calculation.read / calculation.review (not the run's creator, freezer, executor or submitter) |
 | POST | `/runs/{id}/approve` · `/reject` | calculation.approve (same separation of duties; approval needs QA PASS) |
 
+## Endpoints (Phase 11) — revenue, sharing, costs, settlements, payouts
+
+Details: [payout-workflow.md](payout-workflow.md). Every POST accepts an `Idempotency-Key`; extra fields are rejected with 422. No request
+carries a revenue, entitlement, settlement figure or payout amount; the server calculates them all. The only typed amounts are a project
+cost actually incurred and a bank-statement line. DEMO projects are refused (`DEMO_FINANCE_NOT_ALLOWED`).
+
+| Method | Path | Permission |
+|---|---|---|
+| GET | `/revenue/projects` · `/revenue?project_id=` · `/revenue/summary` | any finance permission (organization-scoped) |
+| POST | `/revenue/recognize` (order item) · `/revenue/reverse-refund` (refund): idempotent re-runs | revenue.manage |
+| GET / POST | `/revenue-share` · `/allocations` (create DRAFT) | read: finance · create: sharing.manage |
+| POST | `/revenue-share/{id}/submit` · `/allocations/{id}/submit` | sharing.manage |
+| POST | `/revenue-share/{id}/approve` / `return` · `/allocations/{id}/approve` / `return` | sharing.approve (never the author) |
+| GET / POST | `/costs` · `/costs/{id}/documents` (COST_EVIDENCE) | costs.manage |
+| POST | `/costs/{id}/approve` / `reject` | costs.approve (never the recorder) |
+| GET | `/settlements` · `/settlements/{id}` · `/settlements/{id}/verify` · `/settlements/{id}/lineage` | settlement.read / calculate / approve, payouts.read, revenue.read |
+| POST | `/settlements` · `/{id}/calculate` · `/{id}/submit` · `/{id}/cancel` | settlement.calculate |
+| POST | `/settlements/{id}/approve` / `reject` | settlement.approve (never the calculator) |
+| GET | `/payouts` · `/payouts/{id}` · `/payouts/{id}/lineage` · `/payouts/adjustments` | payouts.*, settlement.read |
+| POST | `/payouts/from-settlement/{run}` · `/{id}/submit` · `/cancel` · `/release-hold` · `/reissue` | payouts.calculate |
+| POST | `/payouts/{id}/approve` / `reject` | payouts.approve (never the calculator; needs a VERIFIED bank account) |
+| POST | `/payouts/{id}/initiate` · `/documents` (PAYOUT_EVIDENCE) · `/confirm-paid` · `/fail` · `/query-status` | payouts.execute (never the approver or calculator) |
+| POST | `/payouts/{id}/documents` (RECONCILIATION_EVIDENCE) · `/payouts/{id}/reconcile` · `/payouts/adjustments/{id}/close` | payouts.reconcile (never the executor) |
+| GET | `/payouts/me` | farmers.self (own payouts only) |
+
 ## Endpoints (Phase 10) — marketplace
 
 Details: [marketplace.md](marketplace.md). Authenticated only (no public catalogue). Every POST accepts an `Idempotency-Key`. Bodies carry
-whole-credit quantities and Decimal money only — never a balance, fee or tax (extra fields → 422). There is no checkout, invoice, offer,
-payout or webhook endpoint.
+whole-credit quantities and Decimal money only — never a balance, fee or tax (extra fields → 422). There is no checkout, invoice, offer
+or webhook endpoint (payouts are Phase 11, under `/payouts`).
 
 | Method | Path | Permission |
 |---|---|---|
@@ -384,6 +409,16 @@ Phase 9A: `NOT_A_REGISTRY`, `UNKNOWN_ADAPTER`, `REGISTRY_ACCOUNT_EXISTS`, `UNIT_
 `ISSUANCE_NOT_CONFIRMED`, `CORRECTION_PENDING`, `DUPLICATE_REGISTRY_REFERENCE`, `DOCUMENT_IMMUTABLE` (403), `SEPARATION_OF_DUTIES` (403), and the
 404s `REGISTRY_ACCOUNT_NOT_FOUND`, `REGISTRY_REGISTRATION_NOT_FOUND`, `REGISTRY_SUBMISSION_NOT_FOUND`, `CREDIT_ISSUANCE_NOT_FOUND`,
 `CREDIT_BATCH_NOT_FOUND`.
+
+Phase 11: `DEMO_FINANCE_NOT_ALLOWED`, `REVENUE_NOT_RECOGNIZABLE`, `REFUND_NOT_COMPLETED`, `INVALID_DATES`, `DUPLICATE_FARM_ALLOCATION`,
+`FARM_NOT_IN_PERIOD`, `ALLOCATION_NOT_CONSERVED`, `CORRECTION_TARGET_REQUIRED`, `COST_LOCKED`, `COST_EVIDENCE_REQUIRED`, `SHARING_RULE_NOT_APPROVED`,
+`SHARING_RULE_NOT_EFFECTIVE`, `ALLOCATION_NOT_APPROVED`, `CONFIGURATION_SUPERSEDED`, `NOTHING_TO_SETTLE`, `NEGATIVE_DISTRIBUTABLE`,
+`ROUNDING_EXCEEDS_DISTRIBUTABLE`, `SETTLEMENT_NOT_CALCULATED`, `SETTLEMENT_NOT_REPRODUCIBLE`, `SETTLEMENT_NOT_APPROVED`, `PAYOUT_NOT_FAILED`,
+`PAYOUT_NOT_ON_HOLD`, `BANK_ACCOUNT_NOT_VERIFIED`, `BANK_ACCOUNT_CHANGED` (409; the payout is put ON_HOLD), `MANUAL_ACTION_REQUIRED`,
+`UNKNOWN_PAYOUT_ADAPTER`, `PAYOUT_NOT_PENDING`, `PAYOUT_LOCKED`, `PAYOUT_EVIDENCE_REQUIRED`, `PAYOUT_NOT_PAID`, `REASON_REQUIRED`,
+`INVALID_STATUS_TRANSITION`, `SEPARATION_OF_DUTIES` (403), `DOCUMENT_IMMUTABLE` (403), and the 404s `PROJECT_NOT_FOUND`,
+`MONITORING_PERIOD_NOT_FOUND`, `PROJECT_FARM_NOT_FOUND`, `CONFIG_VERSION_NOT_FOUND`, `PROJECT_COST_NOT_FOUND`, `SETTLEMENT_NOT_FOUND`,
+`PAYOUT_NOT_FOUND`, `ADJUSTMENT_NOT_FOUND`, `ORDER_ITEM_NOT_FOUND`, `REFUND_NOT_FOUND`.
 
 Phase 10: `NOT_A_BUYER`, `ORGANIZATION_REQUIRED`, `ORGANIZATION_INACTIVE`, `BUYER_PROFILE_LOCKED`, `IDENTIFIER_TYPE_REQUIRED`,
 `KYC_DOCUMENT_REQUIRED`, `REASON_REQUIRED`, `BUYER_KYC_REQUIRED`, `NOT_A_SELLER`, `NO_AVAILABLE_CREDITS`, `LISTED_QUANTITY_EXCEEDS_AVAILABLE`,

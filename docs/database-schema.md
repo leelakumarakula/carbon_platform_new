@@ -239,6 +239,28 @@ replays). 0015 adds the sequences LST / ORD / PAY / RFD and the documents catego
 REFUND_EVIDENCE, ORDER_CONFIRMATION, LISTING_DOCUMENT (PDF only). No invoice table and no INV sequence (tax / invoice rules undefined — D10).
 Its downgrade refuses to run while any Phase 10 row or marketplace document exists. No earlier table changes.
 
+## Phase 11 tables (revenue, sharing, settlement, payouts) — migration 0016
+
+Money is `Numeric(19,4)` with an ISO-4217 currency; percentages are `Numeric(9,6)`. No table stores a default percentage, fee or tax.
+
+| Table | Key columns / rules |
+|---|---|
+| `revenue_records` | `revenue_code` (RVN-).<br>Kind RECOGNITION (> 0) / REVERSAL (< 0, with `reverses_revenue_id` and `refund_id`).<br>Lineage: order item, order, payment, 9B transfer, batch, project, monitoring period, seller organization.<br>Filtered unique: one recognition per order item; one reversal per recognition.<br>Append-only (trigger). |
+| `revenue_share_versions` | `version_code` (RSH-), project, `version_no`.<br>`farmer_share_pct` (0 < x ≤ 100), `deduct_approved_costs`, `rounding_mode` (HALF_UP / HALF_EVEN / DOWN), effective from / to, `source_reference`.<br>DRAFT / IN_REVIEW / APPROVED / SUPERSEDED; approver ≠ creator (check).<br>Trigger: identity fixed; values frozen once submitted; APPROVED only becomes SUPERSEDED; never deleted. |
+| `farm_allocation_versions` / `farm_allocation_lines` | Version (FAL-) per project and monitoring period, with `basis_reference` and the same workflow and triggers.<br>Lines: append-only; one per project farm (unique), with farm, farmer and `share_pct` (Σ = 100 enforced on submit). |
+| `project_costs` | `cost_code` (PCS-); project; optional period; category; description; amount ≠ 0 (a negative amount corrects an approved cost via `corrects_cost_id`); currency; incurred on; reference.<br>PENDING_APPROVAL / APPROVED / REJECTED; approver ≠ creator.<br>Trigger: fixed; APPROVED / REJECTED final. |
+| `settlement_runs` | `run_code` (SET-); project, organization, period, currency, revenue-share version, allocation version; `calculation_version`.<br>Figures: gross, deducted costs, distributable, farmer total, developer residual.<br>`input_snapshot` (canonical JSON) + `input_sha256`.<br>DRAFT / CALCULATED / PENDING_APPROVAL / APPROVED / COMPLETED / REJECTED / CANCELLED; approver ≠ calculator (check).<br>Trigger: figures and snapshot frozen once calculated; APPROVED only becomes COMPLETED; final states frozen. |
+| `settlement_revenue_items` / `settlement_cost_items` | The run's claims on revenue records / costs, with amount and `active`.<br>Filtered unique on `active = 1`: a record is settled at most once.<br>Trigger: only `active` 1 → 0 (on reject / cancel). |
+| `farmer_entitlements` | Append-only: one row per run and allocation line, with project farm, farm, farmer, share %, rounded amount. |
+| `payouts` | `payout_code` (PYT-); run; payer organization; farmer; amount > 0 (Σ the farmer's entitlements); status (D20); adapter (MANUAL); `bank_account_id` (FK to the Phase 2 VERIFIED account) + `bank_last4` only; external reference (unique per adapter); evidence; `replaces_payout_id`.<br>Checks: approver ≠ calculator; executor ≠ approver; bank account required from APPROVED; reference + executor when PAID.<br>Filtered unique: one open payout per run and farmer.<br>Trigger: identity and amount fixed; execution frozen once PAID (then only RECONCILED); final states frozen. |
+| `payout_transactions` | Append-only: INITIATED / PAID / FAILED / UNCONFIRMED / STATUS_QUERIED, with adapter, reference, amount, evidence, actor. |
+| `payout_reconciliations` | Append-only: MATCHED / EXCEPTION, statement reference / amount / currency / date, RECONCILIATION_EVIDENCE, note, reconciler. |
+| `payout_adjustments` | Recovery case (ADJ-): reversal (unique), original run, amount, OPEN / CLOSED with resolution.<br>Trigger: fixed; CLOSED final. |
+
+Every configuration, cost, run and payout row carries a filtered unique `request_key` and an `action_key`. 0016 adds the RVN / RSH /
+FAL / PCS / SET / PYT / ADJ sequences and the COST_EVIDENCE, PAYOUT_EVIDENCE and RECONCILIATION_EVIDENCE document categories (PDF
+only). Its downgrade refuses to run while any Phase 11 row or financial document exists. No earlier table changes.
+
 ## Migrations
 
 `backend/alembic/versions/20261002_0001_phase1_identity_access_audit.py` and
@@ -262,7 +284,9 @@ categories, seven triggers; downgrade refused while Phase 9A rows exist) and
 `20261003_0014_phase9b_credit_ledger.py` (7 ledger tables, LEDG / OPN / RSV / TRF / RET / REV sequences, two ledger document categories,
 seven triggers; downgrade refused while Phase 9B rows exist) and
 `20261003_0015_phase10_marketplace.py` (9 marketplace tables, LST / ORD / PAY / RFD sequences, five marketplace document categories, nine
-triggers; downgrade refused while Phase 10 rows exist). Spatial
+triggers; downgrade refused while Phase 10 rows exist) and
+`20261003_0016_phase11_financials.py` (13 finance tables, RVN / RSH / FAL / PCS / SET / PYT / ADJ sequences, three financial document
+categories, thirteen triggers; downgrade refused while Phase 11 rows exist). Spatial
 indexes (`six_*`) are hand-written SQL and excluded from autogenerate by `include_object` in `alembic/env.py`. Generate new revisions with
 `alembic revision --autogenerate`, review them, and add raw SQL (triggers, spatial indexes) by hand.
 `alembic check` must report no drift before a phase is closed.

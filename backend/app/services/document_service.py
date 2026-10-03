@@ -71,6 +71,9 @@ def _validate(data: bytes, category: str) -> str:
     if category in (DocumentCategory.BUYER_KYC_DOCUMENT.value, DocumentCategory.PAYMENT_EVIDENCE.value, DocumentCategory.REFUND_EVIDENCE.value,
                     DocumentCategory.ORDER_CONFIRMATION.value, DocumentCategory.LISTING_DOCUMENT.value) and mime != "application/pdf":
         raise ValidationFailed("Marketplace documents must be PDF files.", error_code="UNSUPPORTED_FILE_TYPE")   # Phase 10 D28 / D29
+    if category in (DocumentCategory.COST_EVIDENCE.value, DocumentCategory.PAYOUT_EVIDENCE.value,
+                    DocumentCategory.RECONCILIATION_EVIDENCE.value) and mime != "application/pdf":
+        raise ValidationFailed("Financial evidence must be a PDF file.", error_code="UNSUPPORTED_FILE_TYPE")   # Phase 11
     if category == DocumentCategory.CALCULATION_REPORT.value and mime != "application/pdf":
         raise ValidationFailed("Calculation reports are PDF files.", error_code="UNSUPPORTED_FILE_TYPE")
     if category in (DocumentCategory.LAB_REPORT.value, DocumentCategory.CUSTODY_DOCUMENT.value) and mime != "application/pdf":

@@ -80,6 +80,21 @@ export const P = {
   REFUNDS_APPROVE: 'refunds.approve',
   BUYERS_KYC_SUBMIT: 'buyers.kyc_submit',
   BUYERS_KYC_VERIFY: 'buyers.kyc_verify',
+  // Phase 11 — revenue, sharing configuration, costs, settlements, payouts
+  REVENUE_READ: 'revenue.read',
+  REVENUE_MANAGE: 'revenue.manage',
+  SETTLEMENT_READ: 'settlement.read',
+  SETTLEMENT_CALCULATE: 'settlement.calculate',
+  SETTLEMENT_APPROVE: 'settlement.approve',
+  PAYOUTS_READ: 'payouts.read',
+  PAYOUTS_CALCULATE: 'payouts.calculate',
+  PAYOUTS_APPROVE: 'payouts.approve',
+  PAYOUTS_EXECUTE: 'payouts.execute',
+  PAYOUTS_RECONCILE: 'payouts.reconcile',
+  SHARING_MANAGE: 'sharing.manage',
+  SHARING_APPROVE: 'sharing.approve',
+  COSTS_MANAGE: 'costs.manage',
+  COSTS_APPROVE: 'costs.approve',
 } as const;
 
 export type PermissionCode = (typeof P)[keyof typeof P];

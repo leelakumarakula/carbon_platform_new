@@ -160,7 +160,8 @@ def test_rbac_matrix_payment_boundary_and_no_second_balance(db: Session) -> None
     assert _perms(db, "MARKETPLACE_COMPLIANCE") == {"buyers.kyc_verify"}
     for role in ("QA_OFFICER", "VVB_REVIEWER", "LAB_TECHNICIAN", "LAB_MANAGER", "FARMER", "METHODOLOGY_SPECIALIST", "REGISTRY_MANAGER"):
         assert _perms(db, role) == set(), role
-    # 44: no payment provider without a contract — MANUAL is the only runtime adapter and never fakes a confirmation; no webhook / payout route
+    # 44: no payment provider without a contract — MANUAL is the only runtime adapter and never fakes a confirmation; no webhook route
+    # (Phase 11 payouts live under /payouts only)
     assert set(ADAPTERS) == {"MANUAL"} and Settings.model_fields["PAYMENT_PROVIDER"].default == "manual"
     manual = ADAPTERS["MANUAL"]
     for call in (lambda: manual.create_payment(PaymentRequest("P", "O", Decimal(1), "INR", "k")), lambda: manual.get_status("x"),
@@ -169,7 +170,8 @@ def test_rbac_matrix_payment_boundary_and_no_second_balance(db: Session) -> None
             call()
     from app.main import app
     paths = [getattr(r, "path", "") for r in app.routes]
-    assert not any(w in p for p in paths for w in ("webhook", "payout", "checkout", "commission", "invoice"))
+    assert not any(w in p for p in paths for w in ("webhook", "checkout", "commission", "invoice"))
+    assert all(p.startswith("/api/v1/payouts") for p in paths if "payout" in p)
     # D24: no marketplace table stores a credit balance; carbon and money never share a column
     for t in ("marketplace_listings", "orders", "order_items", "payments", "refunds"):
         cols = {c.name for c in Base.metadata.tables[t].columns}

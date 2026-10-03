@@ -129,6 +129,18 @@ access in Phase 7. No new role was added.
 VVB/ACVA, methodology specialists (platform-wide), farmers, buyers, laboratory roles and finance have no Phase 8A access (the VVB sees
 the Phase 8A finding summaries only inside a submitted Phase 8B manifest).
 
+## Phase 11 — revenue, sharing, settlements, payouts (no new role)
+
+| Role | Phase 11 permissions | Actions | Separation of duties |
+|---|---|---|---|
+| Finance / Payout Manager | revenue.read, revenue.manage, settlement.read / calculate / approve, payouts.read / calculate / approve / execute / reconcile, sharing.approve, costs.manage, costs.approve | Re-run recognition. Approve sharing configuration and costs. Calculate / approve settlement runs. Calculate, approve, execute and reconcile payouts. Close recovery cases. | Rule / allocation approver ≠ author; cost approver ≠ recorder; settlement approver ≠ calculator; payout approver ≠ calculator; executor ≠ approver and calculator; reconciler ≠ executor (service + DB checks). |
+| Project Manager | revenue.read, settlement.read, payouts.read, sharing.manage, costs.manage | Author revenue-share versions and farm allocations from the project's agreements; record costs with evidence; read revenue, settlements and payouts. | Never approves its own configuration (no sharing.approve). |
+| Farmer | — (existing farmers.self) | **My payouts**: own payouts only (amount, status, dates, last 4). | — |
+
+Every finance record is visible only inside the project organization: 404 outside it, 403 when visible but not allowed. Payout and
+reconciliation evidence is restricted to payouts.execute / reconcile / approve. Several FINANCE_MANAGER users are needed to run one payout
+end to end; that is by design.
+
 ## Phase 10 (decisions D27, D28) — marketplace
 
 | Role | Permissions | Phase 10 actions | Separation of duties |

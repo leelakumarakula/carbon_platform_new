@@ -110,6 +110,21 @@ class P:
     REFUNDS_APPROVE = "refunds.approve"      # seller finance: approve / complete / reject — never the requester
     BUYERS_KYC_SUBMIT = "buyers.kyc_submit"  # buyer: maintain and submit the organization's buyer profile and KYC documents
     BUYERS_KYC_VERIFY = "buyers.kyc_verify"  # platform: verify / return / suspend buyer KYC — never the submitter
+    # Phase 11 — revenue, entitlements, payouts (money ledger; the 9B credit ledger is untouched). No value is hard-coded.
+    REVENUE_READ = "revenue.read"            # recognized revenue, reversals, financial summary of the organization's projects
+    REVENUE_MANAGE = "revenue.manage"        # re-run idempotent recognition / reversal for Phase 10 records (never an amount)
+    SETTLEMENT_READ = "settlement.read"
+    SETTLEMENT_CALCULATE = "settlement.calculate"   # create and calculate settlement runs
+    SETTLEMENT_APPROVE = "settlement.approve"       # approve / reject a calculated run — never its calculator
+    PAYOUTS_READ = "payouts.read"
+    PAYOUTS_CALCULATE = "payouts.calculate"  # create payouts from an approved run, submit, cancel, release holds, reissue failed payouts
+    PAYOUTS_APPROVE = "payouts.approve"      # approve / reject payouts — never the calculator
+    PAYOUTS_EXECUTE = "payouts.execute"      # record execution with evidence — never the approver
+    PAYOUTS_RECONCILE = "payouts.reconcile"  # reconcile paid payouts against statements — never the executor; close recovery cases
+    SHARING_MANAGE = "sharing.manage"        # author revenue-share versions and farm allocation tables
+    SHARING_APPROVE = "sharing.approve"      # approve / return them — never the author
+    COSTS_MANAGE = "costs.manage"            # record project costs with evidence
+    COSTS_APPROVE = "costs.approve"          # approve / reject costs — never the recorder
 
 
 PERMISSIONS: tuple[PermissionDef, ...] = (
@@ -238,6 +253,24 @@ PERMISSIONS: tuple[PermissionDef, ...] = (
                   "Buyers: maintain the organization's buyer profile and submit KYC documents for review."),
     PermissionDef(P.BUYERS_KYC_VERIFY, "marketplace", "Verify buyer KYC",
                   "Platform compliance: verify, return or suspend a buyer organization's KYC (never one you submitted)."),
+    PermissionDef(P.REVENUE_READ, "finance", "View revenue", "View recognized revenue, reversals and financial summaries of the organization's projects."),
+    PermissionDef(P.REVENUE_MANAGE, "finance", "Manage revenue recognition",
+                  "Re-run the idempotent recognition / reversal of revenue from Phase 10 records (no amount is ever entered)."),
+    PermissionDef(P.SETTLEMENT_READ, "finance", "View settlements", "View settlement runs, their frozen inputs and entitlements."),
+    PermissionDef(P.SETTLEMENT_CALCULATE, "finance", "Calculate settlements", "Create and calculate settlement runs from approved configuration."),
+    PermissionDef(P.SETTLEMENT_APPROVE, "finance", "Approve settlements", "Approve or reject a calculated settlement run (never one you calculated)."),
+    PermissionDef(P.PAYOUTS_READ, "finance", "View payouts", "View payouts, their execution and reconciliation of the organization's projects."),
+    PermissionDef(P.PAYOUTS_CALCULATE, "finance", "Calculate payouts",
+                  "Create payouts from an approved settlement run; submit, cancel, release holds and reissue failed payouts."),
+    PermissionDef(P.PAYOUTS_APPROVE, "finance", "Approve payouts", "Approve or reject a payout (never one you calculated)."),
+    PermissionDef(P.PAYOUTS_EXECUTE, "finance", "Execute payouts", "Record payout execution with evidence (never a payout you approved)."),
+    PermissionDef(P.PAYOUTS_RECONCILE, "finance", "Reconcile payouts",
+                  "Reconcile paid payouts against bank statements (never a payout you executed) and close recovery cases."),
+    PermissionDef(P.SHARING_MANAGE, "finance", "Author revenue sharing",
+                  "Author revenue-share versions and per-period farm allocation tables from the project's agreements."),
+    PermissionDef(P.SHARING_APPROVE, "finance", "Approve revenue sharing", "Approve or return revenue-share versions and farm allocations (never your own)."),
+    PermissionDef(P.COSTS_MANAGE, "finance", "Record project costs", "Record project costs actually incurred, with evidence."),
+    PermissionDef(P.COSTS_APPROVE, "finance", "Approve project costs", "Approve or reject recorded project costs (never one you recorded)."),
     PermissionDef(P.CALCULATION_APPROVE, "calculation", "Approve calculations",
                   "Approve or reject a calculation run after QA PASS (never your own run). Calculated is not verified or issued."),
     PermissionDef(P.CONSENTS_CONFIGURE, "admin", "Configure consent types",
@@ -282,7 +315,7 @@ SYSTEM_ROLES: tuple[RoleDef, ...] = (
        P.FARMERS_READ, P.FARMERS_MANAGE, P.FARMERS_KYC_VERIFY, P.FARMERS_BANK_MANAGE, P.FARMS_READ, P.FARMS_MANAGE,
        P.PROJECTS_READ, P.PROJECTS_MANAGE, P.METHODOLOGIES_READ, P.MRV_READ, P.MRV_MANAGE, P.LAB_READ, P.LAB_ENGAGE, P.CALCULATION_READ,
        P.VERIFICATION_READ, P.VERIFICATION_MANAGE, P.VERIFICATION_RESPOND, P.REGISTRY_READ, P.REGISTRY_MANAGE, P.CREDITS_READ,
-       P.MARKETPLACE_READ, P.ORDERS_READ),
+       P.MARKETPLACE_READ, P.ORDERS_READ, P.REVENUE_READ, P.SETTLEMENT_READ, P.PAYOUTS_READ, P.SHARING_MANAGE, P.COSTS_MANAGE),
     _r("METHODOLOGY_SPECIALIST", "Methodology Specialist", PLATFORM, "Manages versioned, approval-controlled methodology configuration.",
        P.PROJECTS_READ, P.STANDARDS_MANAGE, P.METHODOLOGIES_READ, P.METHODOLOGIES_MANAGE, P.METHODOLOGIES_APPROVE,
        P.METHODOLOGIES_REVIEW_PROJECT, P.MRV_READ),
@@ -317,7 +350,9 @@ SYSTEM_ROLES: tuple[RoleDef, ...] = (
        P.BUYERS_KYC_SUBMIT),
     _r("FINANCE_MANAGER", "Finance / Payout Manager", ORG, "Reconciles payments, calculates farmer share per agreement, approves payouts.",
        P.FARMERS_READ, P.FARMERS_BANK_MANAGE, P.FARMERS_BANK_VERIFY, P.PROJECTS_READ, P.CREDITS_READ, P.MARKETPLACE_READ,
-       P.LISTINGS_APPROVE, P.ORDERS_READ, P.PAYMENTS_CONFIRM, P.REFUNDS_REQUEST, P.REFUNDS_APPROVE),
+       P.LISTINGS_APPROVE, P.ORDERS_READ, P.PAYMENTS_CONFIRM, P.REFUNDS_REQUEST, P.REFUNDS_APPROVE, P.REVENUE_READ, P.REVENUE_MANAGE,
+       P.SETTLEMENT_READ, P.SETTLEMENT_CALCULATE, P.SETTLEMENT_APPROVE, P.PAYOUTS_READ, P.PAYOUTS_CALCULATE, P.PAYOUTS_APPROVE,
+       P.PAYOUTS_EXECUTE, P.PAYOUTS_RECONCILE, P.SHARING_APPROVE, P.COSTS_MANAGE, P.COSTS_APPROVE),
     _r("MARKETPLACE_COMPLIANCE", "Marketplace Compliance Officer", PLATFORM,
        "Platform compliance (D28): reviews buyer organizations' KYC submissions — verifies, returns or suspends; never one they submitted.",
        P.BUYERS_KYC_VERIFY),

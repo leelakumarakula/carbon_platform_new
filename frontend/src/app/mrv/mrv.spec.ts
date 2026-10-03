@@ -87,7 +87,7 @@ describe('MRV helpers', () => {
     expect(items(['sampling.collect'])).toContain('Field work');
     expect(items(['sampling.collect'])).not.toContain('MRV');
     expect(items([])).toEqual(['Dashboard']);
-    expect(items(['farmers.self'])).toHaveLength(4); // farmer navigation unchanged
+    expect(items(['farmers.self'])).toHaveLength(5); // farmer navigation: + My payouts (Phase 11)
   });
 });
 

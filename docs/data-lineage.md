@@ -40,7 +40,9 @@ CREDIT → REGISTRY → VERIFICATION → CALCULATION RUN → METHODOLOGY VERSION
 | Ownership history | every movement is one posted `credit_ledger_entries` row with its input (consumed) and output (created) positions, actor and confirmer; conservation (inputs = outputs; open = issued) checked by a DB trigger | 9B |
 | Order → listing → 9B reservation / transfer → batch | `orders` / `order_items` (price and quantity snapshots) → `marketplace_listings` (disclosure snapshot + SHA-256) → the item's 9B `credit_reservations` and `credit_transfers` (`purpose_reference` = item code) → the TRANSFER_COMPLETE ledger entry → `credit_batches` → the 9A chain (credits.read only; buyers stop at the batch). `GET /orders/{id}/lineage` | 10 |
 | Payments, refunds | `payments` (evidence PDF, recorder, confirmer) → append-only `payment_events` (payload SHA-256) → `refunds` (evidence, requester, approver); money is never linked to a carbon quantity | 10 |
-| Revenue, payouts | — | 11 |
+| Revenue → order item → payment / 9B transfer → batch → period | `revenue_records` (RECOGNITION per order item: order, item, payment, transfer, batch, project, monitoring period, seller; REVERSAL → recognition + refund) — `GET /revenue?project_id=` | 11 |
+| Payout → entitlements → settlement run → configuration → revenue | `payouts` (+ append-only `payout_transactions`, `payout_reconciliations`) → `farmer_entitlements` (allocation line, farm, farmer) → `settlement_runs` (`input_snapshot` + SHA-256, verify endpoint) → `revenue_share_versions` (source reference) / `farm_allocation_versions` (basis) → `settlement_revenue_items` / `settlement_cost_items` → `revenue_records` → the Phase 10 / 9B / 9A chains. `GET /payouts/{id}/lineage`, `GET /settlements/{id}/lineage` | 11 |
+| Recovery case | `payout_adjustments` → the REVERSAL and its refund → the original settlement run whose payout was executed | 11 |
 
 Reverse lineage, from a farm up to its projects, works through `project_farms` (`GET /projects/my-participation` for the
 farmer's own farms; project farms lists for staff). Every link above is written in the same transaction as its

@@ -35,7 +35,7 @@ from app.models.documents import DocumentCategory
 from app.repositories.sequences import next_code
 from app.security.permissions import P
 from app.security.principal import Principal
-from app.services import document_service
+from app.services import document_service, finance_service
 from app.services import ledger_service as ls
 from app.services import marketplace_service as ms
 from app.services import order_service as os_
@@ -470,6 +470,7 @@ def decide_refund(db: Session, ctx: RequestContext, principal: Principal, refund
         else:
             ref.completed_by, ref.completed_at, ref.external_reference, ref.evidence_document_id = principal.user_id, now, ext_ref, doc_id
             _pay(db, ctx, pay, "REFUNDED", ref.refund_code)
+            finance_service.reverse_for_refund_in_tx(db, ctx, refund=ref, order=x, actor_id=principal.user_id)   # Phase 11 D10 (reversal)
             if x.status == "REFUND_PENDING":
                 for it in os_.items_of(db, x.id):
                     res = ls.lock_reservation(db, it.reservation_id) if it.reservation_id else None

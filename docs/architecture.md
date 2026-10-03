@@ -90,4 +90,15 @@ on the server. The client only mirrors them (state machines, password policy) fo
   expiry, cancellation, T4 delivery wrapper, resolution, confirmation PDF, lineage), `payment_service` (T2 manual recording, provider outbox
   and events, T3 confirmation, reconciliation, refunds), `marketplace_mappers` (allow-listed outputs). Routers: `/marketplace`, `/orders`,
   `/payments` + `/refunds`. Frontend: `/marketplace` (+ `/listings`, `/profile`, `/kyc-review`), `/orders`, `/payments`.
+- **Revenue & payouts (11)**:
+  - `models/finance.py`: revenue records, revenue-share versions, farm allocation versions / lines, project costs, settlement runs +
+    claims, farmer entitlements, payouts, payout transactions, reconciliations, recovery cases.
+  - `integrations/payout.py`: PayoutAdapter Protocol, ManualPayoutAdapter.
+  - `finance_service`: access helpers, `recognize_in_tx` / `reverse_for_refund_in_tx` (called inside the Phase 10 delivery and refund
+    transactions), configuration, costs.
+  - `settlement_service`: the pure `calculate_figures` (fin-calc-1), snapshot + hash, claims, verify, approval, recovery cases.
+  - `payout_service`: lifecycle, bank re-check under lock, adapter, reconciliation, lineage, summary, self-service.
+  - `finance_mappers`.
+  - Routers: `/revenue`, `/revenue-share`, `/allocations`, `/costs`, `/settlements` (`api/v1/finance.py`) and `/payouts` (`api/v1/payouts.py`).
+  - Frontend: `/finance/revenue`, `/finance/sharing`, `/finance/settlements`, `/finance/payouts`, `/me/payouts`.
 - **Time**: stored as naive UTC `datetime2`, emitted as ISO-8601 with `Z`.

@@ -118,8 +118,9 @@ def test_permission_grants_surface_and_registry_boundary(db: Session) -> None:
     from app.main import app
     paths = [getattr(r, "path", "") for r in app.routes]
     segments = {seg for p in paths for seg in p.split("/")}
-    for word in ("checkout", "invoices", "payouts", "offers", "prices", "pricing"):      # Phase 10 adds no checkout, invoice, offer or payout
+    for word in ("checkout", "invoices", "offers", "prices", "pricing"):                 # Phase 10 adds no checkout, invoice or offer
         assert word not in segments, word
+    assert all(p.startswith("/api/v1/payouts") for p in paths if "payouts" in p.split("/"))   # Phase 11: payouts only under /payouts
     for word, prefix in (("listings", "/api/v1/marketplace"), ("orders", "/api/v1/orders"), ("payments", "/api/v1/payments")):
         assert all(p.startswith(prefix) for p in paths if word in p.split("/")), word     # the marketplace never sits under /credits
     manual = ADAPTERS["MANUAL"]

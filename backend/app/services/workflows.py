@@ -346,3 +346,35 @@ REFUND_MACHINE = StateMachine.build(
     transitions={"REQUESTED": {"APPROVED", "REJECTED"}, "APPROVED": {"COMPLETED", "REJECTED"}},
     terminal={"COMPLETED", "REJECTED"},
 )
+
+
+# ---------------------------------------------------------------- Phase 11 — revenue sharing, costs, settlement, payouts (D20)
+SHARING_CONFIG_MACHINE = StateMachine.build(
+    "sharing_config", initial="DRAFT",
+    transitions={"DRAFT": {"IN_REVIEW"}, "IN_REVIEW": {"APPROVED", "DRAFT"}, "APPROVED": {"SUPERSEDED"}},
+    terminal={"SUPERSEDED"},
+)
+
+PROJECT_COST_MACHINE = StateMachine.build(
+    "project_cost", initial="PENDING_APPROVAL", transitions={"PENDING_APPROVAL": {"APPROVED", "REJECTED"}}, terminal={"APPROVED", "REJECTED"},
+)
+
+SETTLEMENT_MACHINE = StateMachine.build(
+    "settlement_run", initial="DRAFT",
+    transitions={"DRAFT": {"CALCULATED", "CANCELLED"}, "CALCULATED": {"PENDING_APPROVAL", "CANCELLED"},
+                 "PENDING_APPROVAL": {"APPROVED", "REJECTED"}, "APPROVED": {"COMPLETED"}},
+    terminal={"COMPLETED", "REJECTED", "CANCELLED"},
+)
+
+PAYOUT_MACHINE = StateMachine.build(
+    "payout", initial="CALCULATED",
+    transitions={"CALCULATED": {"PENDING_APPROVAL", "CANCELLED"}, "PENDING_APPROVAL": {"APPROVED", "REJECTED", "CANCELLED"},
+                 "APPROVED": {"PAYMENT_PENDING", "ON_HOLD"}, "ON_HOLD": {"PENDING_APPROVAL", "CANCELLED"},
+                 "PAYMENT_PENDING": {"PAID", "FAILED", "UNCONFIRMED"}, "UNCONFIRMED": {"PAID", "FAILED", "PAYMENT_PENDING"},
+                 "PAID": {"RECONCILED"}},
+    terminal={"RECONCILED", "REJECTED", "CANCELLED", "FAILED"},
+)
+
+PAYOUT_ADJUSTMENT_MACHINE = StateMachine.build(
+    "payout_adjustment", initial="OPEN", transitions={"OPEN": {"CLOSED"}}, terminal={"CLOSED"},
+)

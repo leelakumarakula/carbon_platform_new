@@ -43,11 +43,15 @@ class DocumentCategory(str, Enum):
     REFUND_EVIDENCE = "REFUND_EVIDENCE"        # Phase 10: evidence of a completed refund (PDF only)
     ORDER_CONFIRMATION = "ORDER_CONFIRMATION"  # Phase 10: deterministic order confirmation (generated PDF; not a tax invoice)
     LISTING_DOCUMENT = "LISTING_DOCUMENT"      # Phase 10: a document the seller publishes on a listing (PDF only, buyer-visible)
+    COST_EVIDENCE = "COST_EVIDENCE"            # Phase 11: evidence of a project cost actually incurred (PDF only)
+    PAYOUT_EVIDENCE = "PAYOUT_EVIDENCE"        # Phase 11: remittance proof of a manual payout (PDF only, restricted)
+    RECONCILIATION_EVIDENCE = "RECONCILIATION_EVIDENCE"  # Phase 11: bank / provider statement for reconciliation (PDF only, restricted)
     OTHER = "OTHER"
 
 
 RESTRICTED_CATEGORIES = frozenset({DocumentCategory.KYC_ID.value, DocumentCategory.BANK_PROOF.value,
-                                   DocumentCategory.BUYER_KYC_DOCUMENT.value})
+                                   DocumentCategory.BUYER_KYC_DOCUMENT.value, DocumentCategory.PAYOUT_EVIDENCE.value,
+                                   DocumentCategory.RECONCILIATION_EVIDENCE.value})
 
 
 class DocumentStatus(str, Enum):

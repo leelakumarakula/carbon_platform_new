@@ -59,12 +59,13 @@ describe('Verification helpers', () => {
     expect(assignmentBadge('COMPLETED')).toBe('ACTIVE');
   });
 
-  it('shows the VVB workspace only to VVB users; no transfer, retirement or payout navigation exists (the Phase 10 marketplace has its own section)', () => {
+  it('shows the VVB workspace only to VVB users; no transfer or retirement navigation exists (the Phase 10 marketplace and Phase 11 finance have their own sections)', () => {
     const labels = (perms: string[]) => visibleNavigation(NAVIGATION, (c) => perms.includes(c)).flatMap((s) => s.items.map((i) => i.label));
     expect(labels(['verification.vvb_read'])).toContain('VVB workspace');
     expect(labels(['verification.read', 'verification.manage', 'calculation.read'])).not.toContain('VVB workspace');
     const all = NAVIGATION.flatMap((s) => s.items.map((i) => `${i.label} ${i.route}`.toLowerCase())).join(' ');
-    for (const word of ['transfer', 'retire', 'reservation', 'inventory', 'payout']) expect(all).not.toContain(word);
+    for (const word of ['transfer', 'retire', 'reservation', 'inventory']) expect(all).not.toContain(word);
+    expect(NAVIGATION.flatMap((s) => s.items).filter((i) => i.route.includes('payout')).map((i) => i.route).sort()).toEqual(['/finance/payouts', '/me/payouts']);   // Phase 11 only
   });
 });
 

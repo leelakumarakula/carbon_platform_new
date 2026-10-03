@@ -53,7 +53,7 @@ describe('Calculation helpers', () => {
     const items = (codes: string[]) => visibleNavigation(NAVIGATION, (c) => codes.includes(c)).flatMap((s) => s.items.map((i) => i.label));
     expect(items(['calculation.read'])).toContain('Calculations');
     expect(items(['mrv.read', 'lab.lab_read'])).not.toContain('Calculations');
-    expect(items(['farmers.self'])).toHaveLength(4);
+    expect(items(['farmers.self'])).toHaveLength(5);   // + My payouts (Phase 11)
   });
 
   it('formats values for display only (the stored text stays exact)', () => {

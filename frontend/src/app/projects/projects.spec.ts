@@ -45,7 +45,7 @@ describe('Projects: workflow labels and navigation', () => {
     expect(items(['projects.read'])).toContain('Projects');
     expect(items(['projects.read'])).not.toContain('Standards & activities');
     expect(items(['standards.manage'])).toContain('Standards & activities');
-    expect(items(['farmers.self'])).toEqual(['Dashboard', 'My farmer profile', 'My farms', 'My projects']);
+    expect(items(['farmers.self'])).toEqual(['Dashboard', 'My farmer profile', 'My farms', 'My projects', 'My payouts']);
     expect(items([])).toEqual(['Dashboard']); // e.g. a buyer: no project navigation
   });
 });

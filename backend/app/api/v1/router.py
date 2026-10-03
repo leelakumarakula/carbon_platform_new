@@ -12,6 +12,7 @@ from app.api.v1 import (
     documents,
     farmers,
     farms,
+    finance,
     health,
     lab,
     laboratory,
@@ -22,6 +23,7 @@ from app.api.v1 import (
     orders,
     organizations,
     payments,
+    payouts,
     projects,
     registry,
     roles,
@@ -33,5 +35,5 @@ from app.api.v1 import (
 api_router = APIRouter()
 for module in (health, auth, client_config, users, roles, organizations, audit, consents, farmers, farms, catalog, projects,
                methodologies, mrv, lab, laboratory, calculations, calculation_preverification, verification, vvb, registry, credits,
-               marketplace, orders, payments, documents, notifications):
+               marketplace, orders, payments, finance, payouts, documents, notifications):
     api_router.include_router(module.router)

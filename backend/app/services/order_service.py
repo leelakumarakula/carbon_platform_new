@@ -39,7 +39,7 @@ from app.reports import pdf
 from app.repositories.sequences import next_code
 from app.security.permissions import P
 from app.security.principal import Principal
-from app.services import document_service
+from app.services import document_service, finance_service
 from app.services import ledger_service as ls
 from app.services import marketplace_service as ms
 from app.services.workflows import ORDER_ITEM_MACHINE, ORDER_MACHINE
@@ -280,6 +280,7 @@ def complete_transfer(db: Session, ctx: RequestContext, principal: Principal, tr
             raise Conflict(f"Order {x.order_code} is {x.status}; this delivery cannot be completed now.", error_code="ORDER_NOT_DELIVERABLE")
         ls.complete_transfer_in_tx(db, ctx, tr, batch=b, confirmer_id=principal.user_id, data=data, key=key)
         _item(db, ctx, item, "DELIVERED")
+        finance_service.recognize_in_tx(db, ctx, order=x, item=item, actor_id=principal.user_id)   # Phase 11 D8 / D9 (same transaction)
         if all(i.status == "DELIVERED" for i in items_of(db, x.id)) and x.status == "TRANSFER_PENDING":
             frm = _order(db, ctx, x, "COMPLETED")
             x.completed_at = utcnow()

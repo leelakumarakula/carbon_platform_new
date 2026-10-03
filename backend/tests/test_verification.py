@@ -488,10 +488,11 @@ def test_no_validation_registry_or_issuance_surface_exists() -> None:
     assert len(v) >= 30
     segments = {seg for p in paths for seg in p.split("/")}
     # registry submission and issuance arrive in Phase 9A under their own prefixes (/registry, /credits), retirement in Phase 9B under
-    # /credits only and the marketplace in Phase 10 under /marketplace only; validation, buffer and payout endpoints still do not exist, and
-    # the verification APIs never register or issue
-    for word in ("validation", "validations", "buffer", "payouts"):
+    # /credits only, the marketplace in Phase 10 under /marketplace only and Phase 11 payouts under /payouts only; validation and buffer
+    # endpoints still do not exist, and the verification APIs never register or issue
+    for word in ("validation", "validations", "buffer"):
         assert word not in segments, word
+    assert all(p.startswith("/api/v1/payouts") for p in paths if "payouts" in p.split("/"))
     assert all(p.startswith("/api/v1/marketplace") for p in paths if "marketplace" in p.split("/"))
     assert all(p.startswith("/api/v1/credits/") for p in paths if "retirements" in p.split("/"))
     for p in v:

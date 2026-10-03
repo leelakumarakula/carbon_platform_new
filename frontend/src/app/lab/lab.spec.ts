@@ -66,7 +66,7 @@ describe('Laboratory helpers', () => {
     expect(items(['lab.lab_read'])).not.toContain('MRV');
     expect(items(['lab.lab_read'])).not.toContain('Farmers');
     expect(items(['mrv.read', 'lab.read'])).not.toContain('Laboratory');
-    expect(items(['farmers.self'])).toHaveLength(4);
+    expect(items(['farmers.self'])).toHaveLength(5);   // + My payouts (Phase 11)
     expect(items(['farmers.self'])).not.toContain('Laboratory');
   });
 });
