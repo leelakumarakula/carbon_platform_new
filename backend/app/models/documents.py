@@ -89,6 +89,7 @@ class Document(UUIDPrimaryKey, Base):
     created_at: Mapped[datetime] = mapped_column(default=utcnow, server_default=text("SYSUTCDATETIME()"))
 
     versions: Mapped[list["DocumentVersion"]] = relationship(back_populates="document", order_by="DocumentVersion.version")
+    scans: Mapped[list["DocumentScan"]] = relationship(viewonly=True, order_by="DocumentScan.scanned_at")   # Phase 12B: append-only history
 
 
 class DocumentVersion(UUIDPrimaryKey, Base):
@@ -111,3 +112,35 @@ class DocumentVersion(UUIDPrimaryKey, Base):
     uploaded_at: Mapped[datetime] = mapped_column(default=utcnow, server_default=text("SYSUTCDATETIME()"))
 
     document: Mapped[Document] = relationship(back_populates="versions")
+
+
+SCAN_RESULTS = ["CLEAN", "INFECTED", "NOT_SCANNED", "ERROR"]
+SCAN_TRIGGERS = ["UPLOAD", "RESCAN", "RELEASE"]
+
+
+class DocumentScan(UUIDPrimaryKey, Base):
+    """Phase 12B D15 — append-only antivirus scan history (trigger): every acceptance scan, background rescan and release rescan is a new
+    row; nothing is overwritten. The document version's own `scan_status` stays the immutable acceptance result."""
+    __tablename__ = "document_scans"
+    __table_args__ = (
+        CheckConstraint(in_check("result", SCAN_RESULTS), name="result"),
+        CheckConstraint(in_check("trigger_type", SCAN_TRIGGERS), name="trigger_type"),
+        CheckConstraint(in_check("environment", Environment), name="environment"),
+        Index("ix_document_scans_document", "document_id", "scanned_at"),
+        Index("ix_document_scans_version", "document_version_id", "scanned_at"),
+    )
+    document_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("documents.id"))
+    document_version_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("document_versions.id"))
+    environment: Mapped[str] = mapped_column(Unicode(10))
+    checksum_sha256: Mapped[str] = mapped_column(Unicode(64))           # the bytes that were scanned
+    result: Mapped[str] = mapped_column(Unicode(15))
+    provider: Mapped[str] = mapped_column(Unicode(60))                  # scanner identity
+    engine_version: Mapped[str | None] = mapped_column(Unicode(120))
+    threat_name: Mapped[str | None] = mapped_column(Unicode(200))
+    error_code: Mapped[str | None] = mapped_column(Unicode(60))
+    detail: Mapped[str | None] = mapped_column(Unicode(400))
+    trigger_type: Mapped[str] = mapped_column(Unicode(10))
+    background_job_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("background_jobs.id"))
+    actor_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id"))
+    duration_ms: Mapped[int | None] = mapped_column(Integer)
+    scanned_at: Mapped[datetime] = mapped_column(default=utcnow, server_default=text("SYSUTCDATETIME()"))

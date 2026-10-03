@@ -29,6 +29,7 @@ from app.main import create_app
 from app.models import Organization, OrganizationUser, Role, User, UserRole
 from app.models.base import Environment
 from app.security.passwords import hash_password
+from tests.av_fixture import av  # noqa: F401 - TEST-only antivirus double fixture (Phase 12B D17)
 
 PASSWORD = "Correct-Horse-42"
 _HASH = hash_password(PASSWORD)

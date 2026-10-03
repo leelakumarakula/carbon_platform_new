@@ -57,12 +57,19 @@ class Settings(BaseSettings):
     # Fernet; print(Fernet.generate_key().decode())". Losing it makes encrypted values unreadable.
     DATA_ENCRYPTION_KEY: str = Field(min_length=44)
 
-    # Documents / object storage. "local" stores files under LOCAL_STORAGE_ROOT (development only);
-    # an S3-compatible backend (MinIO / AWS S3) is configured through OBJECT_STORAGE_* (see docs/deployment.md).
+    # Documents / object storage (Phase 12B D2–D11). "local" stores files under LOCAL_STORAGE_ROOT (development / test only);
+    # "s3" is the S3-compatible MinIO backend (stdlib SigV4 client): one private, versioned bucket per data environment named
+    # "<OBJECT_STORAGE_BUCKET_PREFIX>-<live|demo>", server-side encryption (SSE-S3) required on every object.
     STORAGE_BACKEND: str = "local"
     LOCAL_STORAGE_ROOT: str | None = None
     MAX_UPLOAD_BYTES: int = 15 * 1024 * 1024
-    MALWARE_SCANNER: str = "signature"  # signature = EICAR/test-signature hook only; real AV adapter in Phase 12
+    # Antivirus (Phase 12B D12–D17). "signature" = EICAR/test-signature check only (development / test / DEMO, reported NOT_SCANNED);
+    # production requires a commercial scanner adapter registered under MALWARE_SCANNER with ANTIVIRUS_ENDPOINT / ANTIVIRUS_API_KEY.
+    # No vendor is selected yet: the vendor adapter is a deployment prerequisite (docs/storage-and-scanning.md).
+    MALWARE_SCANNER: str = "signature"
+    ANTIVIRUS_ENDPOINT: str | None = None
+    ANTIVIRUS_API_KEY: str | None = None
+    ANTIVIRUS_TIMEOUT_SECONDS: int = 30
 
     # GIS (technical tolerances, not business rules — see docs/farmer-workflow.md)
     FARM_OVERLAP_MIN_AREA_M2: float = 1.0      # shared edges produce ~0 m² numeric slivers; below this = touching
@@ -102,10 +109,15 @@ class Settings(BaseSettings):
 
     # Later-phase integrations (configured now so .env.example is complete)
     REDIS_URL: str | None = None
-    OBJECT_STORAGE_ENDPOINT: str | None = None
-    OBJECT_STORAGE_ACCESS_KEY: str | None = None
+    OBJECT_STORAGE_ENDPOINT: str | None = None            # e.g. https://minio.internal:9000 (path-style; TLS required in production)
+    OBJECT_STORAGE_REGION: str = "us-east-1"              # SigV4 signing region (MinIO default)
+    OBJECT_STORAGE_ACCESS_KEY: str | None = None          # application identity: put / get / head / list — no delete permission (D8)
     OBJECT_STORAGE_SECRET_KEY: str | None = None
-    OBJECT_STORAGE_BUCKET: str | None = None
+    OBJECT_STORAGE_DELETE_ACCESS_KEY: str | None = None   # separate identity used ONLY by the orphan-deletion job (D10); unset = no deletion
+    OBJECT_STORAGE_DELETE_SECRET_KEY: str | None = None
+    OBJECT_STORAGE_BUCKET_PREFIX: str = "carbon"          # buckets: <prefix>-live, <prefix>-demo (one private bucket per environment)
+    OBJECT_STORAGE_CA_CERT: str | None = None             # CA bundle for a private TLS endpoint
+    OBJECT_STORAGE_TIMEOUT_SECONDS: int = 30
     SATELLITE_PROVIDER: str = "mock"
     LAB_PROVIDER: str = "mock"
     REGISTRY_PROVIDER: str = "manual"
@@ -125,6 +137,7 @@ class Settings(BaseSettings):
     JOB_RETENTION_INTERVAL: int = 86400       # retention purge infrastructure (daily; purges nothing until a policy exists)
     JOB_RECOVERY_INTERVAL: int = 60           # recovery tick: republish unpublished jobs, requeue due retries, recover stale leases
     JOB_HEARTBEAT_SECONDS: int = 30           # worker heartbeat into SQL Server
+    JOB_RESCAN_INTERVAL: int = 86400          # Phase 12B D15: background rescan of documents not yet scanned CLEAN by a real scanner
 
     @field_validator("SQL_SERVER_PORT", mode="before")
     @classmethod
@@ -155,10 +168,19 @@ class Settings(BaseSettings):
         if not set(self.JOB_ENVIRONMENTS) <= {"LIVE", "DEMO"}:
             raise ValueError("JOB_ENVIRONMENTS may contain only LIVE and DEMO")
         intervals = (self.JOB_EXPIRY_INTERVAL, self.JOB_ORPHAN_SCAN_INTERVAL, self.JOB_RETENTION_INTERVAL, self.JOB_RECOVERY_INTERVAL,
-                     self.JOB_HEARTBEAT_SECONDS)
+                     self.JOB_HEARTBEAT_SECONDS, self.JOB_RESCAN_INTERVAL)
         floors = (self.JOB_MAX_RETRIES, self.JOB_BATCH_SIZE - 1, self.JOB_RETRY_BACKOFF_SECONDS, self.JOB_ORPHAN_GRACE_HOURS)
         if min(floors) < 0 or min(intervals) < 30:
             raise ValueError("Job settings out of range (intervals are at least 30 s; batch size at least 1)")
+        if self.STORAGE_BACKEND not in ("local", "s3"):
+            raise ValueError("STORAGE_BACKEND must be 'local' or 's3'")
+        if self.STORAGE_BACKEND == "s3" and not (self.OBJECT_STORAGE_ENDPOINT and self.OBJECT_STORAGE_ACCESS_KEY and self.OBJECT_STORAGE_SECRET_KEY):
+            raise ValueError("STORAGE_BACKEND=s3 needs OBJECT_STORAGE_ENDPOINT, OBJECT_STORAGE_ACCESS_KEY and OBJECT_STORAGE_SECRET_KEY")
+        if self.is_production:
+            if self.STORAGE_BACKEND != "s3" or not (self.OBJECT_STORAGE_ENDPOINT or "").startswith("https://"):
+                raise ValueError("Production requires STORAGE_BACKEND=s3 with an https:// OBJECT_STORAGE_ENDPOINT (MinIO, D2 / D5)")
+            if self.MALWARE_SCANNER == "signature" or not (self.ANTIVIRUS_ENDPOINT and self.ANTIVIRUS_API_KEY):
+                raise ValueError("Production requires a real antivirus scanner (MALWARE_SCANNER, ANTIVIRUS_ENDPOINT, ANTIVIRUS_API_KEY; D13 / D17)")
         if self.JOB_STALE_AFTER_SECONDS < 900:
             raise ValueError("JOB_STALE_AFTER_SECONDS must exceed every task time limit (at least 900 s)")
         return self

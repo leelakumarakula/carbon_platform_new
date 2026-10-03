@@ -19,11 +19,14 @@ from typing import Any
 from sqlalchemy import and_, or_, select
 from sqlalchemy.orm import Session
 
+from app.audit.service import record
+from app.core import metrics
 from app.core.config import get_settings
 from app.core.context import RequestContext
-from app.core.errors import AppError
-from app.integrations.storage import get_storage
-from app.models import BackgroundJob, CreditReservation, DocumentVersion, MarketplaceListing, Order
+from app.core.errors import AppError, NotFound
+from app.integrations.malware import get_scanner
+from app.integrations.storage import KEY_PATTERN, StorageError, get_deletion_storage, get_storage
+from app.models import BackgroundJob, CreditReservation, Document, DocumentScan, DocumentVersion, MarketplaceListing, Order
 from app.models.base import utcnow
 from app.services import ledger_service as ls
 from app.services import marketplace_service as ms
@@ -125,18 +128,41 @@ def expire_marketplace_objects(db: Session, ctx: RequestContext, job: Background
     return _finish(counts, time.monotonic() < deadline)
 
 
-# ---------------------------------------------------------------- orphan stored files (detection / reporting only)
+# ---------------------------------------------------------------- orphan stored files (Phase 12B D10: detect, then delete safely)
 def scan_orphan_files(db: Session, ctx: RequestContext, job: BackgroundJob, deadline: float) -> dict[str, Any]:
-    """Two-stage safety: a stored object is an orphan CANDIDATE only if no document version references it AND it is older than
-    JOB_ORPHAN_GRACE_HOURS (uploads in flight, uncommitted transactions and retries are younger). Deletion is DEFERRED: the current
-    storage abstraction has no delete operation, so this job reports candidates and deletes nothing."""
+    """An object is an orphan CANDIDATE only if it has a server-generated key, no document version references it, and it is older than
+    JOB_ORPHAN_GRACE_HOURS (uploads in flight, uncommitted transactions and retries are younger). Each candidate is then re-checked
+    inside its own transaction under UPDLOCK + HOLDLOCK on the storage key (a key-range lock: a concurrent insert of a version
+    referencing that key waits until this transaction ends) and deleted only if still unreferenced — with the separate deletion
+    identity (D8). Every deletion is audited. Without a deletion identity, candidates are reported and nothing is deleted."""
     storage = get_storage()
-    if not hasattr(storage, "iter_objects"):
-        return {"supported": False, "message": "The configured storage backend cannot list objects; orphan scan unavailable."}
+    deleter = get_deletion_storage()
     cutoff = utcnow() - timedelta(hours=get_settings().JOB_ORPHAN_GRACE_HOURS)
-    counts = {"scanned": 0, "referenced": 0, "orphan_candidates": 0, "recent_unreferenced": 0}
+    counts = {"scanned": 0, "referenced": 0, "orphan_candidates": 0, "recent_unreferenced": 0, "unrecognized_keys": 0, "deleted": 0,
+              "became_referenced": 0, "delete_failures": 0}
     sample: list[str] = []
     chunk: list[Any] = []
+
+    def delete_one(key: str, size: int, modified: datetime) -> None:
+        assert deleter is not None
+        hit = db.scalars(select(DocumentVersion.id).with_hint(DocumentVersion, "WITH (UPDLOCK, HOLDLOCK)", "mssql")
+                         .where(DocumentVersion.storage_key == key)).first()
+        if hit is not None:                                          # referenced after the scan: never delete
+            db.rollback()
+            counts["became_referenced"] += 1
+            return
+        try:
+            deleter.delete(key)
+        except (StorageError, OSError):
+            db.rollback()
+            counts["delete_failures"] += 1
+            metrics.inc("storage_failures_total", {"operation": "delete"})
+            return
+        record(db, ctx, "STORAGE_ORPHAN_DELETED", "storage_object", key, None,
+               {"key": key, "size_bytes": size, "last_modified": modified, "environment": job.environment, "job_code": job.job_code})
+        db.commit()
+        counts["deleted"] += 1
+        metrics.inc("orphan_objects_deleted_total", {"environment": job.environment})
 
     def flush() -> None:
         keys = [o.key for o in chunk]
@@ -146,12 +172,16 @@ def scan_orphan_files(db: Session, ctx: RequestContext, job: BackgroundJob, dead
             counts["scanned"] += 1
             if o.key in refs:
                 counts["referenced"] += 1
+            elif not KEY_PATTERN.match(o.key):
+                counts["unrecognized_keys"] += 1                        # not a document object (e.g. a temp file): never deleted
             elif o.modified_at > cutoff:
                 counts["recent_unreferenced"] += 1                       # possibly an upload in flight: never a candidate yet
             else:
                 counts["orphan_candidates"] += 1
                 if len(sample) < 20:
                     sample.append(o.key)
+                if deleter is not None:
+                    delete_one(o.key, o.size_bytes, o.modified_at)
         chunk.clear()
 
     complete = True
@@ -164,8 +194,58 @@ def scan_orphan_files(db: Session, ctx: RequestContext, job: BackgroundJob, dead
                 break
     if chunk:
         flush()
-    return {"supported": True, **counts, "sample_candidates": sample, "grace_hours": get_settings().JOB_ORPHAN_GRACE_HOURS,
-            "deletion": "DEFERRED", "complete": complete}
+    return {**counts, "sample_candidates": sample, "grace_hours": get_settings().JOB_ORPHAN_GRACE_HOURS,
+            "deletion": "ENABLED" if deleter is not None else "DISABLED (no deletion identity configured)", "complete": complete}
+
+
+# ---------------------------------------------------------------- document rescans (Phase 12B D12 / D15)
+def rescan_documents(db: Session, ctx: RequestContext, job: BackgroundJob, deadline: float) -> dict[str, Any]:
+    """One document (job entity) or a batch: documents of the job's environment whose current version has no CLEAN scan yet (accepted
+    before Phase 12B, by a test scanner, or while the scanner was unavailable) and no INFECTED result. Each document is rescanned in its
+    own transaction; an INFECTED result quarantines it. A rescan never releases a document (D16)."""
+    from app.services import document_service as ds
+    counts = {"documents": 0, "clean": 0, "infected": 0, "not_scanned": 0, "errors": 0}
+
+    def one(doc: Document) -> None:
+        rows = ds.rescan(db, ctx, doc, "RESCAN", job.id)
+        db.commit()
+        counts["documents"] += 1
+        for r in rows:
+            key = {"CLEAN": "clean", "INFECTED": "infected", "NOT_SCANNED": "not_scanned"}.get(r.result, "errors")
+            counts[key] += 1
+
+    if job.entity_type == "document" and job.entity_id:
+        doc = db.get(Document, uuid.UUID(job.entity_id))
+        if doc is None or doc.environment != job.environment:
+            raise NotFound("Document not found in this environment.", error_code="DOCUMENT_NOT_FOUND")
+        one(doc)
+        return {**counts, "complete": True}
+    if get_scanner().name == "signature":
+        return {**counts, "complete": True, "skipped": True,
+                "message": "No antivirus engine is configured (test-signature scanner only); a batch rescan would add no information."}
+    current = (select(DocumentVersion.id).where(DocumentVersion.document_id == Document.id, DocumentVersion.version == Document.current_version)
+               .scalar_subquery())
+    clean = select(DocumentScan.id).where(DocumentScan.document_version_id == current, DocumentScan.result == "CLEAN").exists()
+    infected = select(DocumentScan.id).where(DocumentScan.document_id == Document.id, DocumentScan.result == "INFECTED").exists()
+    last: uuid.UUID | None = None
+    complete = True
+    while True:
+        if time.monotonic() >= deadline:
+            complete = False
+            break
+        stmt = select(Document.id).where(Document.environment == job.environment, ~clean, ~infected)
+        if last is not None:
+            stmt = stmt.where(Document.id > last)
+        ids = list(db.scalars(stmt.order_by(Document.id).limit(get_settings().JOB_BATCH_SIZE)).all())
+        db.commit()
+        if not ids:
+            break
+        for did in ids:
+            doc = db.get(Document, did, populate_existing=True)
+            if doc is not None:
+                one(doc)
+        last = ids[-1]
+    return {**counts, "complete": complete}
 
 
 # ---------------------------------------------------------------- retention purge (infrastructure only)

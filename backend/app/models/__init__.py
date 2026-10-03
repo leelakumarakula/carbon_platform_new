@@ -3,7 +3,7 @@ from app.models.audit import ApiAccessLog, AuditLog, LoginAudit, SecurityEvent, 
 from app.models.base import Base, Environment
 from app.models.calculation import CalculationInput, CalculationOutput, CalculationQaReview, CalculationRun
 from app.models.catalog import Activity, Standard, StandardActivity
-from app.models.documents import Document, DocumentCategory, DocumentVersion
+from app.models.documents import Document, DocumentCategory, DocumentScan, DocumentVersion
 from app.models.farmers import (
     BankAccountStatus,
     ConsentDefinition,
@@ -196,6 +196,7 @@ __all__ = [
     "CreditTransfer",
     "Document",
     "DocumentCategory",
+    "DocumentScan",
     "DocumentVersion",
     "Environment",
     "Farm",

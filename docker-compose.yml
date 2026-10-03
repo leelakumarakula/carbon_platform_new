@@ -26,14 +26,27 @@ services:
     command: redis-server --appendonly yes --maxmemory-policy noeviction
     ports: ["127.0.0.1:6379:6379"]   # local only: never publish an unauthenticated broker
 
+  # Phase 12B: MinIO with SSE-S3 (KMS single-key mode: development only). The application never uses the root user.
   minio:
     image: minio/minio:latest
     command: server /data --console-address ":9001"
     environment:
-      MINIO_ROOT_USER: ${OBJECT_STORAGE_ACCESS_KEY:?set OBJECT_STORAGE_ACCESS_KEY}
-      MINIO_ROOT_PASSWORD: ${OBJECT_STORAGE_SECRET_KEY:?set OBJECT_STORAGE_SECRET_KEY}
-    ports: ["9000:9000", "9001:9001"]
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:?set MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?set MINIO_ROOT_PASSWORD}
+      MINIO_KMS_SECRET_KEY: ${MINIO_KMS_SECRET_KEY:?set MINIO_KMS_SECRET_KEY}
+    ports: ["127.0.0.1:9000:9000", "127.0.0.1:9001:9001"]
     volumes: [miniodata:/data]
+
+  # One-shot: private versioned buckets per environment, SSE-S3 default encryption, application identity without delete,
+  # separate deletion identity (docker/minio-init.sh).
+  minio-init:
+    image: minio/mc:latest
+    entrypoint: ["/bin/sh", "/init/minio-init.sh"]
+    env_file: .env
+    environment:
+      MINIO_URL: http://minio:9000
+    volumes: ["./docker/minio-init.sh:/init/minio-init.sh:ro"]
+    depends_on: [minio]
 
   backend:
     build: { context: ., dockerfile: docker/backend.Dockerfile }
@@ -45,11 +58,13 @@ services:
       SQL_SERVER_DRIVER: ODBC Driver 18 for SQL Server
       SQL_SERVER_TRUSTED_CONNECTION: "false"
       REDIS_URL: redis://redis:6379/0
+      STORAGE_BACKEND: s3
       OBJECT_STORAGE_ENDPOINT: http://minio:9000
       CORS_ORIGINS: http://localhost:4200
     depends_on:
       sqlserver: { condition: service_healthy }
       redis: { condition: service_started }
+      minio-init: { condition: service_completed_successfully }
     ports: ["8000:8000"]
 
   # Phase 12A: same image as the API. SQL Server is the job record; Redis only transports job ids.
@@ -64,9 +79,12 @@ services:
       SQL_SERVER_DRIVER: ODBC Driver 18 for SQL Server
       SQL_SERVER_TRUSTED_CONNECTION: "false"
       REDIS_URL: redis://redis:6379/0
+      STORAGE_BACKEND: s3
+      OBJECT_STORAGE_ENDPOINT: http://minio:9000
     depends_on:
       sqlserver: { condition: service_healthy }
       redis: { condition: service_started }
+      minio-init: { condition: service_completed_successfully }
 
   beat:   # exactly ONE beat per environment (duplicate slots are still harmless: per-slot idempotency keys)
     build: { context: ., dockerfile: docker/backend.Dockerfile }

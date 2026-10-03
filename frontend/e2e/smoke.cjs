@@ -49,6 +49,8 @@ const phase11 = { financeNav: false, demoNote: false, revenueEmpty: false, confi
   noFakeData: false };
 const phase12 = { jobsNav: false, statusPanel: false, demoNote: false, brokerHonest: false, registry: 0, triggered: '', replay: false,
   cancelledUi: false, arbitraryRefused: '', retryRefused: '', outsidersBlocked: false, noFinanceTasks: false, audit: [] };
+const phase12b = { scanState: '', eicarRefused: '', quarantined: '', quarantineNav: false, quarantinePage: false, historyUi: false,
+  releaseRefused: '', stillQuarantined: false, downloadBlocked: '', outsidersBlocked: false, adminNoManage: '', audit: [] };
 const REQUIRED_AUDIT_P6 = ['LAB_ENGAGEMENT_PROPOSED', 'LAB_ENGAGEMENT_ACCEPTED', 'LAB_ENGAGEMENT_ENDED', 'LAB_SAMPLE_REGISTERED', 'LAB_CUSTODY_SEALED',
   'LAB_TEST_CREATED', 'LAB_SHIPMENT_CREATED', 'LAB_SHIPMENT_DISPATCHED', 'LAB_SHIPMENT_RECEIPT_RECORDED', 'LAB_TEST_STARTED', 'LAB_RESULT_CREATED',
   'LAB_REPORT_ATTACHED', 'LAB_RESULT_SUBMITTED', 'LAB_QA_STARTED', 'LAB_RESULT_APPROVED', 'LAB_RETEST_REQUESTED', 'LAB_RESULT_SUPERSEDED'];
@@ -1135,6 +1137,52 @@ const REQUIRED_AUDIT = ['PROJECT_CREATED', 'PROJECT_STATUS_CHANGED', 'PROJECT_FA
   phase12.outsidersBlocked = out12 === 5;
   const aud12 = await json(await api.get(`${BASE}/api/v1/admin/audit-logs?entity_type=background_job&entity_id=${job12.id}`, { headers: adH }));
   phase12.audit = [...new Set(aud12.items.map((a) => a.action))].sort();
+
+  // ---- Phase 12B-I: document safety. This development machine has no antivirus engine: the signature scanner blocks EICAR and records
+  // everything else NOT_SCANNED (never "clean"). A security administrator quarantines a DEMO document; release is refused because the
+  // release rescan is not CLEAN (a test-signature result never is). Every step is audited; nothing is faked.
+  const DOCS = `${BASE}/api/v1/evidence/documents`;
+  const pmH12 = await as('pm');
+  const farmers12 = await json(await api.get(`${BASE}/api/v1/farmers`, { headers: pmH12 }));
+  const farmer12 = (farmers12.items ?? farmers12)[0];
+  const up12 = await json(await api.post(`${BASE}/api/v1/farmers/${farmer12.id}/documents`, { headers: pmH12,
+    multipart: { category: 'OTHER', title: 'E2E 12B safety check', file: { name: 'e2e-12b.pdf', mimeType: 'application/pdf', buffer: PDF } } }));
+  phase12b.scanState = (await json(await api.get(`${DOCS}/${up12.id}`, { headers: pmH12 }))).scan_state;
+  const EICAR = 'X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*';
+  phase12b.eicarRefused = await errCode(await api.post(`${BASE}/api/v1/farmers/${farmer12.id}/documents`, { headers: pmH12,
+    multipart: { category: 'OTHER', title: 'EICAR', file: { name: 'eicar.pdf', mimeType: 'application/pdf', buffer: Buffer.from(`%PDF-1.4
+${EICAR}`) } } }));
+  const secH = await as('security');
+  const q12 = await api.post(`${DOCS}/${up12.id}/quarantine`, { headers: secH, data: { reason: 'E2E: security hold for review' } });
+  phase12b.quarantined = `${q12.status()} ${(await q12.json()).status}`;
+  phase12b.downloadBlocked = await errCode(await api.get(`${DOCS}/${up12.id}/download`, { headers: pmH12 }));
+  const se = await signIn('security');
+  const SE = se.page;
+  lastPage = SE;
+  phase12b.quarantineNav = (await SE.locator('nav a', { hasText: 'Document quarantine' }).count()) > 0;
+  await SE.goto(`${BASE}/admin/quarantine`);
+  const qRow = SE.locator(`[data-doc="${up12.id}"]`);
+  await qRow.waitFor();
+  phase12b.quarantinePage = (await qRow.getByRole('button', { name: 'Release' }).count()) === 1;
+  await qRow.locator('a').click();
+  await SE.getByTestId('scan-history').getByText('NOT_SCANNED').first().waitFor();
+  phase12b.historyUi = true;
+  await shot(SE, '9g-security-document-quarantine');
+  await se.ctx.close();
+  phase12b.releaseRefused = await errCode(await api.post(`${DOCS}/${up12.id}/release`, { headers: secH, data: { reason: 'E2E: attempt release' } }));
+  phase12b.stillQuarantined = (await json(await api.get(`${DOCS}/${up12.id}/scans`, { headers: secH }))).map((x) => x.result).join(',') === 'NOT_SCANNED,NOT_SCANNED'
+    && (await json(await api.get(`${DOCS}/quarantined`, { headers: secH }))).some((d) => d.id === up12.id);
+  let out12b = 0;
+  for (const who of ['pm', 'finance', 'farmer', 'buyer', 'vvb']) {
+    const h = await as(who);
+    const codes = [(await api.get(`${DOCS}/quarantined`, { headers: h })).status(), (await api.get(`${DOCS}/${up12.id}/scans`, { headers: h })).status(),
+      (await api.post(`${DOCS}/${up12.id}/release`, { headers: h, data: { reason: 'E2E: not allowed' } })).status()];
+    if (codes.every((c) => c === 403)) out12b++;
+  }
+  phase12b.outsidersBlocked = out12b === 5;
+  phase12b.adminNoManage = `${(await api.get(`${DOCS}/quarantined`, { headers: adH })).status()} ${(await api.post(`${DOCS}/${up12.id}/rescan`, { headers: adH })).status()}`;
+  const aud12b = await json(await api.get(`${BASE}/api/v1/admin/audit-logs?entity_id=${farmer12.id}`, { headers: adH }));
+  phase12b.audit = [...new Set(aud12b.items.map((a) => a.action))].filter((a) => a.startsWith('DOCUMENT_')).sort();
   for (const x of [mrv, qa, sup, fieldS]) await x.ctx.close();
   await api.dispose();
 
@@ -1194,6 +1242,7 @@ const REQUIRED_AUDIT = ['PROJECT_CREATED', 'PROJECT_STATUS_CHANGED', 'PROJECT_FA
   console.log('phase 10:', JSON.stringify(phase10));
   console.log('phase 11:', JSON.stringify(phase11));
   console.log('phase 12A:', JSON.stringify(phase12));
+  console.log('phase 12B-I:', JSON.stringify(phase12b));
 
   await browser.close();
   // One 401 per session is expected: the silent session-restore attempt before sign-in.
@@ -1255,13 +1304,18 @@ const REQUIRED_AUDIT = ['PROJECT_CREATED', 'PROJECT_STATUS_CHANGED', 'PROJECT_FA
     && phase11.sharingRefused === '409 DEMO_FINANCE_NOT_ALLOWED' && phase11.costRefused === '409 DEMO_FINANCE_NOT_ALLOWED'
     && phase11.settlementRefused === '409 DEMO_FINANCE_NOT_ALLOWED' && phase11.amountRejected.startsWith('422') && phase11.farmerNav
     && phase11.farmerEmpty && phase11.outsidersBlocked && phase11.farmerBlocked && phase11.noFakeData;
-  const p12ok = phase12.jobsNav && phase12.statusPanel && phase12.demoNote && phase12.brokerHonest && phase12.registry === 4
+  const p12ok = phase12.jobsNav && phase12.statusPanel && phase12.demoNote && phase12.brokerHonest && phase12.registry === 5
     && /^201 DEMO (QUEUED|CLAIMED|RUNNING|SUCCEEDED)$/.test(phase12.triggered) && phase12.replay && phase12.cancelledUi
     && phase12.arbitraryRefused === '422 TASK_NOT_TRIGGERABLE' && phase12.retryRefused === '409 JOB_NOT_RETRYABLE' && phase12.outsidersBlocked
     && phase12.noFinanceTasks && phase12.audit.includes('JOB_CREATED')
     && (after12.status === 'CANCELLED' ? phase12.audit.includes('JOB_CANCELLED') : phase12.audit.includes('JOB_SUCCEEDED'));
+  const p12bok = phase12b.scanState === 'NOT_SCANNED' && phase12b.eicarRefused === '422 MALWARE_DETECTED' && phase12b.quarantined === '200 QUARANTINED'
+    && phase12b.downloadBlocked === '409 DOCUMENT_QUARANTINED' && phase12b.quarantineNav && phase12b.quarantinePage && phase12b.historyUi
+    && phase12b.releaseRefused === '409 DOCUMENT_RELEASE_REFUSED' && phase12b.stillQuarantined && phase12b.outsidersBlocked
+    && phase12b.adminNoManage === '200 403'
+    && ['DOCUMENT_QUARANTINED', 'DOCUMENT_RELEASE_REFUSED', 'DOCUMENT_RESCANNED', 'DOCUMENT_UPLOADED'].every((a) => phase12b.audit.includes(a));
   if (!stillIn || real.length || navItems.length !== 5 || !p2ok || !p3ok || !p4ok || !p5ok || !p6ok || !p7ok || !p8ok || !p8bok || !p9ok
-    || !p9bok || !p10ok || !p11ok || !p12ok) process.exitCode = 1;
+    || !p9bok || !p10ok || !p11ok || !p12ok || !p12bok) process.exitCode = 1;
 })().catch(async (e) => {
   console.error('DRIVER FAILED:', e.message);
   if (lastPage) {

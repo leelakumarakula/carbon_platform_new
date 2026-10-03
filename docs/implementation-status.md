@@ -700,6 +700,45 @@ Tests
 - `jobs.spec.ts`.
 - E2E: Phase 12A block.
 
+## Phase 12B-I — delivered
+
+**Storage and document safety: MinIO object storage through the S3 API, antivirus scanning with append-only history, quarantine and
+security release, safe orphan deletion, local → MinIO migration.** Details: [storage-and-scanning.md](storage-and-scanning.md). Design
+and decisions: [phase-12b-discovery.md](phase-12b-discovery.md), [phase-12b-decision-lock.md](phase-12b-decision-lock.md) (D1–D51;
+12B-I implements D2–D17).
+
+Backend
+- Migration `0018`: `document_scans` (append-only trigger; downgrade refused while scan history exists). No Phase 1–12A table changes.
+- `app/integrations/s3.py`: standard-library SigV4 client (no boto3 / MinIO SDK); refuses XML with a DTD.
+- `S3ObjectStorage`: one private, versioned bucket per environment; SSE-S3 required and confirmed; SHA-256 as the signed payload hash and
+  object metadata; server-generated keys only; no delete on the application identity. Separate deletion identity for orphan cleanup.
+  `local` storage refused in production.
+- Upload order: scan → write object → verify (size, SHA-256, SSE) → database rows → commit. A storage outage leaves no database row.
+- Antivirus boundary `AntivirusScanner` + registry. No vendor selected (D13): production refuses to start without a registered real
+  scanner and its endpoint / key. The `signature` scanner records NOT_SCANNED (never CLEAN). LIVE production refuses uploads while the
+  scanner is unavailable; elsewhere the document is quarantined and a rescan queued.
+- Quarantine / background rescan / release-after-clean-rescan; `scan_state` on `DocumentOut`; security endpoints under
+  `/api/v1/evidence/documents` (`security.read` / `security.manage`).
+- Jobs: `ORPHAN_FILE_SCAN` now deletes aged, unreferenced, server-generated objects after a locked re-check (audited
+  `STORAGE_ORPHAN_DELETED`); new `DOCUMENT_RESCAN` (`maintenance.rescan_documents`, `JOB_RESCAN_INTERVAL`).
+- `manage.py storage-migrate [--dry-run]`: copy + verify, idempotent, never deletes local originals.
+- `app/core/metrics.py`: in-process counters / timings (AV, storage, orphan deletions) — exposition arrives with 12B-II.
+- `docker-compose.yml` + `docker/minio-init.sh`: MinIO with SSE-S3 (development KMS key), buckets, versioning, two identities (not run
+  here: Docker is not installed).
+
+Frontend
+- Documents show the scan state; quarantined documents cannot be downloaded from the UI.
+- Security → **Document quarantine**: quarantined documents, scan history, rescan, release (reason; server decides).
+
+Tests
+- `tests/test_storage_av.py`: AWS SigV4 known-answer tests; S3 protocol against the TEST-only stub server `tests/s3_stub.py` (SigV4
+  verification, payload hash, SSE, versioning, policies, two identities, pagination); keys; production guards; documents end to end on
+  S3; antivirus clean / infected / unavailable with the TEST-only double `tests/av_fixture.py`; append-only history; quarantine / rescan /
+  release / RBAC / environment isolation; orphan deletion (local and S3); migration.
+- `tests/test_storage_concurrency.py`: real two-connection race between an uncommitted upload and orphan deletion (commit → kept;
+  rollback → deleted).
+- `quarantine.spec.ts`; E2E: Phase 12B-I block.
+
 ## Known limitations and open items
 
 - The rate limiter is in-memory (single API process). Redis is required before scaling out (Phase 12).
@@ -707,8 +746,9 @@ Tests
 - Status values for later entities (orders, payouts, lab results, …) are still to be confirmed. See the
   architecture document's open questions.
 - Phase 2:
-  - The S3/MinIO storage adapter and a real antivirus engine are not built. `local` storage and the
-    signature-only scanner are for development.
+  - Phase 12B-I built the MinIO adapter and the antivirus boundary. No antivirus vendor is selected (D13): the vendor adapter is a
+    deployment prerequisite, and production refuses to start without it. The MinIO adapter is verified against a TEST-only S3 stub;
+    real MinIO integration is pending the deployment environment.
   - Offline capture and sync are not built.
   - Notifications are in-app only.
   - Satellite evidence is recorded manually only (no satellite adapter yet; Phase 5 adds field evidence only).

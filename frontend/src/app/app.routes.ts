@@ -373,6 +373,13 @@ export const routes: Routes = [
             loadComponent: () => import('./admin/security/security-page').then((m) => m.SecurityPage),
           },
           {
+            path: 'quarantine',
+            title: 'Document quarantine',
+            canActivate: [permissionGuard],
+            data: { permissions: [P.SECURITY_READ] },
+            loadComponent: () => import('./admin/security/quarantine-page').then((m) => m.QuarantinePage),
+          },
+          {
             path: 'jobs',
             title: 'Background jobs',
             canActivate: [permissionGuard],

@@ -107,7 +107,10 @@ export const NAVIGATION: readonly NavSection[] = [
   },
   {
     title: 'Security',
-    items: [{ label: 'Security center', icon: 'shield', route: '/admin/security', permissions: [P.SECURITY_READ] }],
+    items: [
+      { label: 'Security center', icon: 'shield', route: '/admin/security', permissions: [P.SECURITY_READ] },
+      { label: 'Document quarantine', icon: 'gpp_bad', route: '/admin/quarantine', permissions: [P.SECURITY_READ] },
+    ],
   },
 ];
 

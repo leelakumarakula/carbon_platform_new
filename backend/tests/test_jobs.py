@@ -93,7 +93,8 @@ def _no_broker(monkeypatch: pytest.MonkeyPatch) -> None:
 
 # ---------------------------------------------------------------- registry allow-list and the financial boundary
 def test_registry_is_an_allow_list_with_no_financial_or_approval_work() -> None:
-    assert set(registry.TASKS) == {"EXPIRY_CREDIT_RESERVATIONS", "EXPIRY_MARKETPLACE_OBJECTS", "ORPHAN_FILE_SCAN", "RETENTION_PURGE"}
+    assert set(registry.TASKS) == {"EXPIRY_CREDIT_RESERVATIONS", "EXPIRY_MARKETPLACE_OBJECTS", "ORPHAN_FILE_SCAN", "DOCUMENT_RESCAN",
+                                   "RETENTION_PURGE"}
     assert {s.queue for s in registry.TASKS.values()} == {"maintenance"} and registry.QUEUES == ("default", "maintenance")
     from app.workers.celery_app import celery_app
     celery_app.loader.import_default_modules()
@@ -414,7 +415,8 @@ def test_marketplace_sweep_and_pending_payment_behaviour(client: TestClient, db:
     assert _run(db, again) == "SUCCEEDED" and json.loads(db.get(BackgroundJob, again.id).result or "{}")["orders_expired"] == 0  # type: ignore[union-attr]
 
 
-def test_orphan_scan_reports_candidates_and_deletes_nothing(db: Session) -> None:
+def test_orphan_cleanup_deletes_only_aged_unreferenced_objects(db: Session) -> None:
+    """Phase 12B D10 changed this job from detection-only to safe deletion (full coverage in test_storage_av.py)."""
     import os
     import time as _time
 
@@ -428,9 +430,10 @@ def test_orphan_scan_reports_candidates_and_deletes_nothing(db: Session) -> None
     job = _enqueue(db, "ORPHAN_FILE_SCAN")
     assert _run(db, job) == "SUCCEEDED"
     res = json.loads(db.get(BackgroundJob, job.id).result or "{}")  # type: ignore[union-attr]
-    assert res["supported"] and res["deletion"] == "DEFERRED" and res["complete"]
+    assert res["deletion"] == "ENABLED" and res["complete"] and res["deleted"] >= 1
     assert old_key in res["sample_candidates"] and new_key not in res["sample_candidates"] and res["recent_unreferenced"] >= 1
-    assert st.exists(old_key) and st.exists(new_key)                                  # detection only: nothing deleted
+    assert not st.exists(old_key) and st.exists(new_key)                              # aged orphan deleted; in-flight upload kept
+    assert db.scalars(select(AuditLog).where(AuditLog.action == "STORAGE_ORPHAN_DELETED", AuditLog.entity_id == old_key)).one()
     demo = _enqueue(db, "ORPHAN_FILE_SCAN", env="DEMO")                              # the DEMO scan only looks under demo/
     assert _run(db, demo) == "SUCCEEDED"
     assert old_key not in json.loads(db.get(BackgroundJob, demo.id).result or "{}")["sample_candidates"]  # type: ignore[union-attr]

@@ -41,8 +41,16 @@ TASKS: dict[str, TaskSpec] = {s.job_type: s for s in (
              "each order / listing is locked and re-checked (state, deadline, held payment) in its own transaction",
              interval_setting="JOB_EXPIRY_INTERVAL", manually_triggerable=True),
     TaskSpec("ORPHAN_FILE_SCAN", "maintenance.scan_orphan_files", QUEUE_MAINTENANCE,
-             "Report stored files no document version references and older than the grace period (detection only; deletes nothing).",
-             handlers.scan_orphan_files, "read-only", interval_setting="JOB_ORPHAN_SCAN_INTERVAL", manually_triggerable=True),
+             "Delete stored objects no document version references and older than the grace period (Phase 12B D10; separate deletion "
+             "identity; each deletion audited).",
+             handlers.scan_orphan_files,
+             "each candidate is re-checked under a key-range lock in its own transaction; a referenced or recent object is never deleted",
+             interval_setting="JOB_ORPHAN_SCAN_INTERVAL", manually_triggerable=True),
+    TaskSpec("DOCUMENT_RESCAN", "maintenance.rescan_documents", QUEUE_MAINTENANCE,
+             "Rescan one document (security request / scanner-unavailable upload) or every document without a CLEAN scan; INFECTED "
+             "quarantines. Never releases (Phase 12B D12 / D15 / D16).",
+             handlers.rescan_documents, "append-only scan rows; quarantine is idempotent; release is a separate security action",
+             interval_setting="JOB_RESCAN_INTERVAL", manually_triggerable=True),
     TaskSpec("RETENTION_PURGE", "maintenance.retention_purge", QUEUE_MAINTENANCE,
              "Retention purge infrastructure: no retention policy is configured, so nothing is purged.",
              handlers.retention_purge, "no-op until an approved retention policy exists", interval_setting="JOB_RETENTION_INTERVAL",

@@ -52,10 +52,20 @@ export type UploadFn = (file: File, category: string, title: string) => Observab
           </div>
         </div>
         @if (d.sensitivity === 'RESTRICTED') { <app-status-badge status="WARNING" text="Restricted" /> }
-        @if (d.versions[d.versions.length - 1]?.scan_status === 'NOT_SCANNED') {
-          <mat-icon class="muted" matTooltip="No antivirus engine configured yet; only a test-signature check ran.">gpp_maybe</mat-icon>
+        @switch (d.scan_state) {
+          @case ('NOT_SCANNED') {
+            <mat-icon class="muted" data-testid="scan-not-scanned" matTooltip="No antivirus engine configured; only a test-signature check ran.">gpp_maybe</mat-icon>
+          }
+          @case ('PENDING_SCAN') {
+            <mat-icon class="muted" data-testid="scan-pending" matTooltip="Accepted before antivirus scanning; a background rescan is due.">hourglass_empty</mat-icon>
+          }
+          @case ('CLEAN') { <mat-icon class="ok" data-testid="scan-clean" matTooltip="Antivirus scan: clean">verified_user</mat-icon> }
         }
-        <button mat-icon-button type="button" (click)="download(d)" aria-label="Download" matTooltip="Download (audited)"><mat-icon>download</mat-icon></button>
+        @if (d.status === 'QUARANTINED') {
+          <app-status-badge data-testid="scan-quarantined" status="CRITICAL" [text]="quarantineText(d)" />
+        } @else {
+          <button mat-icon-button type="button" (click)="download(d)" aria-label="Download" matTooltip="Download (audited)"><mat-icon>download</mat-icon></button>
+        }
       </div>
     } @empty {
       <p class="muted">No documents yet.</p>
@@ -65,6 +75,7 @@ export type UploadFn = (file: File, category: string, title: string) => Observab
     .upload { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; }
     .doc { display: flex; align-items: center; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--mat-sys-outline-variant); }
     .meta { flex: 1; min-width: 0; }
+    .ok { color: var(--mat-sys-primary); }
   `,
 })
 export class DocumentsPanel {
@@ -107,6 +118,10 @@ export class DocumentsPanel {
         this.notify.error(e);
       },
     });
+  }
+
+  protected quarantineText(d: DocumentInfo): string {
+    return d.scan_state === 'INFECTED' ? 'Quarantined: malware' : d.scan_state === 'SCANNER_UNAVAILABLE' ? 'Quarantined: awaiting scan' : 'Quarantined';
   }
 
   download(d: DocumentInfo): void {

@@ -26,6 +26,8 @@ export interface DocumentVersion {
   uploaded_at: string;
 }
 
+export type ScanState = 'PENDING_SCAN' | 'CLEAN' | 'NOT_SCANNED' | 'SCANNER_UNAVAILABLE' | 'INFECTED' | 'QUARANTINED';
+
 export interface DocumentInfo {
   id: string;
   entity_type: string;
@@ -38,6 +40,8 @@ export interface DocumentInfo {
   environment: string;
   created_at: string;
   versions: DocumentVersion[];
+  /** Phase 12B antivirus state of the current version. NOT_SCANNED = only the test-signature check ran (never "clean"). */
+  scan_state: ScanState;
 }
 
 export interface Contact {

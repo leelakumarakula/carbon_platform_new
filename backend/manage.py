@@ -7,11 +7,15 @@
   python manage.py seed-demo          DEMO organizations + one user per role (password from DEMO_USER_PASSWORD)
   python manage.py setup              create-db + migrate + seed-reference
   python manage.py jobs-recover       one background-job recovery pass (requeue stale / due jobs, republish unpublished ones)
+  python manage.py storage-migrate [--dry-run]
+                                      copy every document object from LOCAL_STORAGE_ROOT into the configured object store
+                                      (STORAGE_BACKEND=s3), verifying SHA-256; local originals are never deleted
 """
 import argparse
 import os
 import re
 import sys
+from collections.abc import Callable
 
 from sqlalchemy import create_engine, text
 
@@ -93,6 +97,25 @@ def jobs_recover() -> None:
         print("job recovery:", job_service.recover(db))
 
 
+def storage_migrate(dry_run: bool = False) -> None:
+    """Runbook (Phase 12B D9): local -> MinIO. Requires STORAGE_BACKEND=s3 and the OBJECT_STORAGE_* settings; idempotent (re-run
+    after an interruption); exits non-zero if any object is missing, mismatched or could not be written."""
+    from app.core.database import get_session_factory
+    from app.integrations.storage import LocalFileStorage, get_storage, local_root
+    from app.services.storage_migration import migrate_local_to
+    target = get_storage()
+    if target.name != "s3":
+        sys.exit("storage-migrate needs STORAGE_BACKEND=s3 and the OBJECT_STORAGE_* settings (the target object store).")
+    problems = target.health()
+    if problems:
+        sys.exit("Object store is not ready: " + "; ".join(problems))
+    with get_session_factory()() as db:
+        rep = migrate_local_to(db, LocalFileStorage(local_root()), target, dry_run=dry_run)
+    print("storage migration" + (" (dry run)" if dry_run else "") + ":", rep.as_dict())
+    if not rep.ok:
+        sys.exit(1)
+
+
 def setup() -> None:
     create_db()
     migrate()
@@ -100,12 +123,15 @@ def setup() -> None:
 
 
 def main() -> None:
-    cmds = {"create-db": create_db, "migrate": migrate, "seed-reference": seed_reference,
-            "bootstrap-admin": bootstrap_admin, "seed-demo": seed_demo,
-            "setup": setup, "jobs-recover": jobs_recover}
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("command", choices=sorted(cmds))
-    cmds[p.parse_args().command]()
+    p.add_argument("command", choices=["bootstrap-admin", "create-db", "jobs-recover", "migrate", "seed-demo", "seed-reference", "setup",
+                                       "storage-migrate"])
+    p.add_argument("--dry-run", action="store_true", help="storage-migrate: check and count, write nothing")
+    args = p.parse_args()
+    cmds: dict[str, Callable[[], None]] = {
+        "create-db": create_db, "migrate": migrate, "seed-reference": seed_reference, "bootstrap-admin": bootstrap_admin,
+        "seed-demo": seed_demo, "setup": setup, "jobs-recover": jobs_recover, "storage-migrate": lambda: storage_migrate(args.dry_run)}
+    cmds[args.command]()
 
 
 if __name__ == "__main__":

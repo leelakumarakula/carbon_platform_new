@@ -51,6 +51,10 @@ class ValidationFailed(AppError):
     status_code, error_code, message = 422, "VALIDATION_FAILED", "The submitted data is invalid."
 
 
+class ServiceUnavailable(AppError):
+    status_code, error_code, message = 503, "SERVICE_UNAVAILABLE", "A required service is temporarily unavailable. Please try again later."
+
+
 class RateLimited(AppError):
     status_code, error_code, message = 429, "RATE_LIMITED", "Too many requests. Please try again later."
 
