@@ -131,6 +131,8 @@ No vendor is chosen; OpenMetrics is an open format most self-hosted platforms (o
 | `readiness_failures_total{check,state}`, `db_failures_total`, gauge `database_up` | counter / gauge | dependencies |
 | `orphan_objects_deleted_total` | counter | orphan cleanup |
 
+The full alert catalogue (severities, signals, runbooks) is in [operations-runbook.md](operations-runbook.md) §5 (Phase 12B-III).
+
 **Alert ownership: the Platform / DevOps team** (no named individuals; routing configured in the chosen platform). Alert categories —
 thresholds are set by Platform / DevOps at deployment (no SLA numbers were decided, D31):
 - **Page (critical):** readiness `not_ready` on any node; `database_up == 0`; sustained 5xx (`api_errors_total`); CRITICAL security events

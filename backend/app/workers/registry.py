@@ -52,8 +52,10 @@ TASKS: dict[str, TaskSpec] = {s.job_type: s for s in (
              handlers.rescan_documents, "append-only scan rows; quarantine is idempotent; release is a separate security action",
              interval_setting="JOB_RESCAN_INTERVAL", manually_triggerable=True),
     TaskSpec("RETENTION_PURGE", "maintenance.retention_purge", QUEUE_MAINTENANCE,
-             "Retention purge infrastructure: no retention policy is configured, so nothing is purged.",
-             handlers.retention_purge, "no-op until an approved retention policy exists", interval_setting="JOB_RETENTION_INTERVAL",
+             "Operational retention (D48, OPERATIONAL_RETENTION_DAYS): access logs, read notifications, stopped worker heartbeats, "
+             "stale temporary upload files. Append-only, financial, credit, audit and verification records are never purged.",
+             handlers.retention_purge, "age-based deletes in bounded batches; a second run finds nothing older than the cutoff",
+             interval_setting="JOB_RETENTION_INTERVAL",
              manually_triggerable=True),
 )}
 

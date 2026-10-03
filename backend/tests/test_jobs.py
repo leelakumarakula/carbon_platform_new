@@ -439,13 +439,14 @@ def test_orphan_cleanup_deletes_only_aged_unreferenced_objects(db: Session) -> N
     assert old_key not in json.loads(db.get(BackgroundJob, demo.id).result or "{}")["sample_candidates"]  # type: ignore[union-attr]
 
 
-def test_retention_purge_without_policy_purges_nothing(db: Session) -> None:
+def test_retention_purge_runs_the_operational_policies(db: Session) -> None:
+    """Phase 12B-III D48 replaced the 12A no-op with operational policies (full coverage in test_operations.py)."""
     before = db.scalar(select(func.count()).select_from(AuditLog))
     job = _enqueue(db)
-    assert _run(db, job) == "SUCCEEDED" and handlers.RETENTION_POLICIES == ()
-    assert json.loads(db.get(BackgroundJob, job.id).result or "{}") == {  # type: ignore[union-attr]
-        "message": "No retention policy is configured; nothing was purged.", "policies_configured": 0, "purged": 0}
-    assert db.scalar(select(func.count()).select_from(AuditLog)) > before             # only new job audit rows; nothing deleted
+    assert _run(db, job) == "SUCCEEDED" and len(handlers.RETENTION_POLICIES) == 4
+    res = json.loads(db.get(BackgroundJob, job.id).result or "{}")  # type: ignore[union-attr]
+    assert res["retention_days"] == 60 and res["complete"] and "audit_logs" in res["never_purged"]
+    assert db.scalar(select(func.count()).select_from(AuditLog)) > before             # audit rows are only ever added
 
 
 def test_schedule_creates_one_job_per_environment_and_slot(db: Session) -> None:

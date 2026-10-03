@@ -63,6 +63,15 @@ def fresh(db: Session) -> Session:
     return Session(bind=db.connection(), join_transaction_mode="create_savepoint", expire_on_commit=False, autoflush=False)
 
 
+def measured(db: Session, fn: Callable[[Session], Any]) -> Any:
+    """Run `fn` in a fresh session and close it straight away (an open one would interfere with later commits of the test)."""
+    s = fresh(db)
+    try:
+        return fn(s)
+    finally:
+        s.close()
+
+
 def _clone(db: Session, model: Any, template: Any, n: int, overrides: Callable[[int], dict[str, Any]]) -> None:
     cols = {c.key: getattr(template, c.key) for c in model.__mapper__.column_attrs}
     rows = [{**cols, "id": uuid.uuid4(), **overrides(i)} for i in range(n)]
@@ -101,7 +110,7 @@ def test_order_listing_reads_do_not_scale_with_other_organizations(client: TestC
     ctx = RequestContext(request_id="perf", user_id=m.buyer.user.id)
 
     with counting(Order) as base:
-        before, t0 = _timed(lambda: os_.visible_orders(fresh(db), ctx, buyer))
+        before, t0 = _timed(lambda: measured(db, lambda s: os_.visible_orders(s, ctx, buyer)))
     noise = _orgs(db, 20)
     stamp = uuid.uuid4().hex[:6].upper()
     _clone(db, Order, order, NOISE, lambda i: {"order_code": f"P{stamp}{i:07d}"[:20], "request_key": None, "status": "CANCELLED",
@@ -109,12 +118,12 @@ def test_order_listing_reads_do_not_scale_with_other_organizations(client: TestC
     _clone(db, MarketplaceListing, listing, NOISE, lambda i: {"listing_code": f"Q{stamp}{i:07d}"[:20], "request_key": None,
                                                                "status": "DRAFT", "seller_organization_id": noise[i % 20].id})
     with counting(Order) as big:
-        after, t1 = _timed(lambda: os_.visible_orders(fresh(db), ctx, buyer))
+        after, t1 = _timed(lambda: measured(db, lambda s: os_.visible_orders(s, ctx, buyer)))
     assert [x.id for x in after] == [x.id for x in before] == [order.id]
     assert big["rows"] == base["rows"] == 1                             # only the caller's order is loaded, not 1,500 others
     assert big["statements"] == base["statements"]
     with counting(MarketplaceListing) as lc:
-        visible, t2 = _timed(lambda: ms.listings(fresh(db), ctx, buyer))
+        visible, t2 = _timed(lambda: measured(db, lambda s: ms.listings(s, ctx, buyer)))
     assert [x.id for x in visible] == [listing.id] and lc["rows"] == 1   # DRAFT listings of other sellers are never loaded
     record_property("orders_list_seconds_baseline", round(t0, 4))
     record_property(f"orders_list_seconds_with_{NOISE}_foreign_rows", round(t1, 4))
@@ -168,7 +177,7 @@ def test_paging_is_disjoint_ordered_and_complete(client: TestClient, db: Session
     assert pages == full and len(set(pages)) == len(pages) >= 231
     scoped = load_principal(db, m.fin.user, None)                          # organization-scoped: none of the 230 synthetic projects
     with counting(Project) as c:
-        mine = fs.visible_projects(fresh(db), scoped)
+        mine = measured(db, lambda s: fs.visible_projects(s, scoped))
     assert {x.organization_id for x in mine} == {m.seller.id} and c["rows"] == len(mine)
 
 
@@ -186,3 +195,71 @@ def test_lazy_expiry_still_runs_on_the_read_path(client: TestClient, db: Session
     assert [x.status for x in rows if str(x.id) == o.json()["id"]] == ["EXPIRED"]
     placed = os_.visible_orders(db, RequestContext(request_id="perf"), load_principal(db, m.buyer.user, None), "PLACED")
     assert o.json()["id"] not in {str(x.id) for x in placed}
+
+
+# ---------------------------------------------------------------- Phase 12B-III operational volumes (baselines, no SLA — D31)
+def _report(name: str, seconds: float, record_property: Any, **extra: Any) -> None:
+    """Records a measurement; with PERF_REPORT=<file> set, appends it there as a JSON line (used for the phase report)."""
+    import json
+    import os
+    record_property(name, round(seconds, 4))
+    path = os.environ.get("PERF_REPORT")
+    if path:
+        with open(path, "a", encoding="utf-8") as f:
+            f.write(json.dumps({"measurement": name, "seconds": round(seconds, 4), **extra}) + "\n")
+
+
+def test_operational_volume_baselines(client: TestClient, db: Session, scenario: M, record_property: Any) -> None:
+    from app.models import AuditLog, BackgroundJob, Document, DocumentVersion
+    from app.models.jobs import SYSTEM_ACTOR_IDS
+    from app.services import document_service
+    from app.workers import job_service
+    from tests.conftest import login
+    m = scenario
+    stamp = uuid.uuid4().hex[:6].upper()
+    # ---- 200 organizations, 2,000 projects: finance list scoped vs platform-wide
+    project = db.scalars(select(Project).where(Project.organization_id == m.seller.id)).first()
+    assert project is not None
+    orgs = _orgs(db, 200)
+    _clone(db, Project, project, 2000, lambda i: {"project_code": f"OPS-{stamp}-{i:05d}", "organization_id": orgs[i % 200].id})
+    scoped = load_principal(db, m.fin.user, None)
+    with counting(Project) as c:
+        mine, t = _timed(lambda: measured(db, lambda s: fs.visible_projects(s, scoped)))
+    assert c["rows"] == len(mine) <= 5
+    _report("finance_projects_scoped_2000_foreign", t, record_property, rows=len(mine), statements=c["statements"])
+    platform = load_principal(db, make_user(db, roles=[("FINANCE_MANAGER", None)]), None)
+    page, t = _timed(lambda: measured(db, lambda s: fs.visible_projects(s, platform, limit=100, offset=1000)))
+    assert len(page) == 100
+    _report("finance_projects_platform_page_100_of_2000", t, record_property)
+    # ---- audit-heavy: 5,000 audit rows, paged admin listing
+    db.execute(insert(AuditLog), [{"action": "PERF_SYNTHETIC", "entity_type": "perf", "entity_id": f"{stamp}-{i}", "occurred_at": utcnow()}
+                                  for i in range(5000)])
+    db.flush()
+    admin = make_user(db, roles=[("PLATFORM_ADMIN", None)])
+    h = login(client, admin)
+    r, t = _timed(lambda: client.get("/api/v1/admin/audit-logs", headers=h, params={"action": "PERF_SYNTHETIC", "page": 3, "page_size": 50}))
+    assert r.status_code == 200 and len(r.json()["items"]) == 50 and r.json()["total"] >= 5000
+    _report("audit_logs_page_50_of_5000", t, record_property)
+    # ---- background job queue: 2,000 queued jobs, operations listing (bounded)
+    ctx = RequestContext(request_id="perf", user_id=SYSTEM_ACTOR_IDS["LIVE"])
+    tmpl, _ = job_service.enqueue(db, ctx, "RETENTION_PURGE", environment="LIVE", trigger_type="SERVICE", created_by=SYSTEM_ACTOR_IDS["LIVE"])
+    db.flush()
+    _clone(db, BackgroundJob, tmpl, 2000, lambda i: {"job_code": f"JP{stamp}{i:06d}"[:20], "idempotency_key": None})
+    jr, t = _timed(lambda: client.get("/api/v1/jobs", headers=h, params={"limit": 100}))
+    assert jr.status_code == 200 and len(jr.json()) == 100
+    _report("jobs_list_100_of_2000_queued", t, record_property)
+    # ---- document metadata: 300 documents on one entity, eager-loaded list
+    doc = Document(entity_type="farmer", entity_id=uuid.uuid4(), organization_id=m.seller.id, category="OTHER", title="perf",
+                   environment="LIVE")
+    db.add(doc)
+    db.flush()
+    v = DocumentVersion(document_id=doc.id, version=1, file_name="p.pdf", storage_key=f"live/2026/10/{uuid.uuid4().hex}",
+                        mime_type="application/pdf", size_bytes=1, checksum_sha256="0" * 64, scan_status="NOT_SCANNED")
+    db.add(v)
+    db.flush()
+    eid = uuid.uuid4()
+    _clone(db, Document, doc, 300, lambda i: {"entity_id": eid})
+    with counting(Document) as c:
+        docs, t = _timed(lambda: measured(db, lambda s: document_service.list_for(s, "farmer", eid)))
+    assert len(docs) == 300 and c["statements"] <= 6          # list + 2 eager loads (+ session transaction statements), not 300+
+    _report("documents_list_300_on_one_entity", t, record_property, statements=c["statements"])

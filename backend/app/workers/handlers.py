@@ -252,12 +252,79 @@ def rescan_documents(db: Session, ctx: RequestContext, job: BackgroundJob, deadl
 # A retention rule may be added here ONLY with a formally approved retention policy. None exists (Phases 1–11 define no retention
 # period), so this list is empty and the job purges nothing. Audit, workflow, security, ledger, financial, calculation, laboratory,
 # verification and issuance records are never eligible.
-RETENTION_POLICIES: tuple[Any, ...] = ()
+# Phase 12B-III D48: operational retention (OPERATIONAL_RETENTION_DAYS, 60). Only operational, mutable records are purged. Never purged
+# (append-only / immutable by design, or legally / architecturally required): audit_logs, workflow_events, security_events, login_audit,
+# background_jobs / background_job_attempts (12A append-only), document_scans, documents and versions, credit ledger, registry,
+# verification, calculation, methodology, finance / payout records. Backups expire in the backup store (object lock + lifecycle),
+# never through this job; logs and metrics expire in the monitoring platform.
+RETENTION_POLICIES: tuple[str, ...] = ("API_ACCESS_LOGS", "READ_NOTIFICATIONS", "WORKER_HEARTBEATS", "TEMP_UPLOAD_FILES")
+RETENTION_EXCLUDED: tuple[str, ...] = (
+    "audit_logs", "workflow_events", "security_events", "login_audit", "background_jobs", "background_job_attempts", "document_scans",
+    "documents", "document_versions", "credit ledger", "registry", "verification", "calculation", "methodology", "finance / payouts")
+_PURGE_BATCH = 1000
+
+
+def _purge_rows(db: Session, model: Any, where: Any, deadline: float) -> tuple[int, bool]:
+    """Delete matching rows in bounded batches (each its own short transaction). Returns (deleted, complete)."""
+    from sqlalchemy import delete
+    total = 0
+    while True:
+        if time.monotonic() >= deadline:
+            return total, False
+        ids = list(db.scalars(select(model.id).where(where).limit(_PURGE_BATCH)).all())
+        if not ids:
+            db.commit()
+            return total, True
+        db.execute(delete(model).where(model.id.in_(ids)).execution_options(synchronize_session=False))
+        db.commit()
+        total += len(ids)
+
+
+def _purge_temp_files(cutoff: datetime) -> int:
+    """Local backend only: `*.part` files left by interrupted writes, older than the grace period. Nothing else is touched."""
+    from app.integrations.storage import LocalFileStorage
+    st = get_storage()
+    if not isinstance(st, LocalFileStorage):
+        return 0
+    n = 0
+    for p in st.root.rglob("*.part"):
+        if p.is_file() and datetime.utcfromtimestamp(p.stat().st_mtime) < cutoff:
+            p.unlink()
+            n += 1
+    return n
 
 
 def retention_purge(db: Session, ctx: RequestContext, job: BackgroundJob, deadline: float) -> dict[str, Any]:
-    if not RETENTION_POLICIES:
-        joblog.event("retention_not_configured", job_id=job.id, job_code=job.job_code, environment=job.environment,
-                     reason="No retention policy is configured; nothing was purged.")
-        return {"policies_configured": 0, "purged": 0, "message": "No retention policy is configured; nothing was purged."}
-    raise AssertionError("retention policies require an approved policy and an implementation review")   # pragma: no cover
+    """Environment-aware: user-linked rows are purged by the job of the user's environment; platform-wide operational data (anonymous
+    access-log rows, worker heartbeats, temporary files) only by the LIVE job. Idempotent; each policy's deletions are audited."""
+    from app.models import ApiAccessLog, BackgroundWorkerHeartbeat, Notification, User
+    s = get_settings()
+    cutoff = utcnow() - timedelta(days=s.OPERATIONAL_RETENTION_DAYS)
+    env_users = select(User.id).where(User.environment == job.environment)
+    platform = job.environment == "LIVE"
+    access_scope = or_(ApiAccessLog.user_id.in_(env_users), ApiAccessLog.user_id.is_(None)) if platform \
+        else ApiAccessLog.user_id.in_(env_users)
+    by_policy: dict[str, int] = {}
+    complete = True
+    for name, model, where in (
+            ("API_ACCESS_LOGS", ApiAccessLog, and_(ApiAccessLog.occurred_at < cutoff, access_scope)),
+            ("READ_NOTIFICATIONS", Notification, and_(Notification.read_at.is_not(None), Notification.read_at < cutoff,
+                                                      Notification.recipient_user_id.in_(env_users))),
+            ("WORKER_HEARTBEATS", BackgroundWorkerHeartbeat, or_(BackgroundWorkerHeartbeat.stopped_at < cutoff,
+                                                                  BackgroundWorkerHeartbeat.last_heartbeat_at < cutoff) if platform else None)):
+        if where is None:
+            continue
+        n, done = _purge_rows(db, model, where, deadline)
+        by_policy[name] = n
+        complete = complete and done
+    if platform:
+        by_policy["TEMP_UPLOAD_FILES"] = _purge_temp_files(utcnow() - timedelta(hours=s.JOB_ORPHAN_GRACE_HOURS))
+    for name, n in by_policy.items():
+        if n:
+            record(db, ctx, "RETENTION_PURGED", "retention_policy", name, None,
+                   {"policy": name, "deleted": n, "cutoff": cutoff, "retention_days": s.OPERATIONAL_RETENTION_DAYS,
+                    "environment": job.environment, "job_code": job.job_code})
+            metrics.inc("retention_purged_total", {"policy": name}, n)
+    db.commit()
+    return {"policies_configured": len(RETENTION_POLICIES), "retention_days": s.OPERATIONAL_RETENTION_DAYS, "cutoff": cutoff.isoformat(),
+            "purged": sum(by_policy.values()), "by_policy": by_policy, "complete": complete, "never_purged": list(RETENTION_EXCLUDED)}

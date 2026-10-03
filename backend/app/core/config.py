@@ -6,6 +6,7 @@ all, and a secret supplied as a plain environment variable is refused at start-u
 """
 import ipaddress
 import os
+import re
 from functools import lru_cache
 from pathlib import Path
 from typing import Annotated, Any
@@ -20,6 +21,7 @@ SECRET_SETTINGS = ("SECRET_KEY", "JWT_SECRET", "JWT_PREVIOUS_KEYS", "DATA_ENCRYP
                    "DATABASE_URL", "SQL_SERVER_PASSWORD", "REDIS_URL", "RATE_LIMIT_REDIS_URL", "OBJECT_STORAGE_SECRET_KEY",
                    "OBJECT_STORAGE_DELETE_SECRET_KEY", "ANTIVIRUS_API_KEY", "SMTP_PASSWORD", "METRICS_TOKEN",
                    "BOOTSTRAP_ADMIN_PASSWORD", "DEMO_USER_PASSWORD")
+_SQL_NAME = re.compile(r"[A-Za-z_][A-Za-z0-9_]{0,127}")
 # Provider names that denote a simulated / test implementation (D38): never acceptable in production.
 MOCK_PROVIDER_NAMES = frozenset({"mock", "fake", "test", "stub", "dummy", "simulated", "simulator", "demo"})
 
@@ -181,7 +183,7 @@ class Settings(BaseSettings):
     JOB_EXPIRY_INTERVAL: int = 600            # reservation / order / listing expiry sweeps (10 min)
     JOB_ORPHAN_SCAN_INTERVAL: int = 86400     # orphan stored-file scan (daily)
     JOB_ORPHAN_GRACE_HOURS: int = 24          # a file younger than this is never an orphan candidate (uploads in flight)
-    JOB_RETENTION_INTERVAL: int = 86400       # retention purge infrastructure (daily; purges nothing until a policy exists)
+    JOB_RETENTION_INTERVAL: int = 86400       # retention purge (daily): Phase 12B-III operational-retention policies
     JOB_RECOVERY_INTERVAL: int = 60           # recovery tick: republish unpublished jobs, requeue due retries, recover stale leases
     JOB_HEARTBEAT_SECONDS: int = 30           # worker heartbeat into SQL Server
     JOB_RESCAN_INTERVAL: int = 86400          # Phase 12B D15: background rescan of documents not yet scanned CLEAN by a real scanner
@@ -194,6 +196,18 @@ class Settings(BaseSettings):
     # Phase 12B D39 / D41 / D42: SMTP is the selected FUTURE external channel. Delivery is DEFERRED: the only accepted value is
     # "disabled". SMTP settings are configuration for the boundary only; nothing is sent.
     NOTIFICATION_EXTERNAL_DELIVERY: str = "disabled"
+
+    # Phase 12B-III operations. D48: operational records (access logs, read notifications, stopped worker heartbeats, temporary
+    # files) are purged after this many days; append-only / financial / credit / audit / verification records are never purged.
+    OPERATIONAL_RETENTION_DAYS: int = 60
+    # Disk-space safety (operational defaults, not business SLAs): below WARN readiness is degraded; below CRITICAL readiness fails,
+    # local uploads and local backup / restore drills are refused before they can exhaust the disk.
+    DISK_WARN_FREE_MB: int = 2048
+    DISK_CRITICAL_FREE_MB: int = 1024
+    # D26: production SQL Server backups go off-host (BACKUP TO URL, S3-compatible bucket with object lock) and are encrypted with a
+    # server certificate. Names only — the credential and certificate live in SQL Server / the secret store.
+    BACKUP_URL: str | None = None                     # e.g. s3://backup-store.internal/carbon-sql-backups (no host invented)
+    BACKUP_ENCRYPTION_CERT: str | None = None         # name of the server certificate in master
     SMTP_HOST: str | None = None
     SMTP_PORT: int = 587
     SMTP_USERNAME: str | None = None
@@ -286,6 +300,12 @@ class Settings(BaseSettings):
             raise ValueError("LOG_FORMAT must be 'json' or 'text'")
         if self.NOTIFICATION_EXTERNAL_DELIVERY != "disabled":
             raise ValueError("External notification delivery is deferred (D39 / D41): NOTIFICATION_EXTERNAL_DELIVERY must be 'disabled'")
+        if self.OPERATIONAL_RETENTION_DAYS < 1 or not 0 < self.DISK_CRITICAL_FREE_MB < self.DISK_WARN_FREE_MB:
+            raise ValueError("OPERATIONAL_RETENTION_DAYS must be >= 1 and 0 < DISK_CRITICAL_FREE_MB < DISK_WARN_FREE_MB")
+        if self.BACKUP_ENCRYPTION_CERT and not _SQL_NAME.fullmatch(self.BACKUP_ENCRYPTION_CERT):
+            raise ValueError("BACKUP_ENCRYPTION_CERT must be a plain SQL Server certificate name")
+        if self.BACKUP_URL and not self.BACKUP_URL.startswith("s3://"):
+            raise ValueError("BACKUP_URL must be an s3:// URL (SQL Server 2022 BACKUP TO URL, S3-compatible object storage)")
         if self.SECRETS_DIR and not Path(self.SECRETS_DIR).is_dir():
             raise ValueError("SECRETS_DIR does not exist or is not a directory")
         if not self.is_production:
@@ -310,6 +330,8 @@ class Settings(BaseSettings):
                              " - provide them as files under SECRETS_DIR")
         if self.METRICS_TOKEN is not None and len(self.METRICS_TOKEN) < 32:
             raise ValueError("METRICS_TOKEN must be at least 32 characters")
+        if self.OPERATIONAL_RETENTION_DAYS < 60:
+            raise ValueError("Production operational retention is at least 60 days (D48)")
 
     @property
     def is_production(self) -> bool:

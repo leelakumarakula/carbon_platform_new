@@ -78,7 +78,12 @@ class LocalFileStorage:
         return p
 
     def put(self, key: str, data: bytes, content_type: str) -> None:
+        from app.ops.disk import DiskSpaceLow, ensure_headroom
         p = self._path(validate_key(key))
+        try:
+            ensure_headroom(self.root, len(data) // (1024 * 1024) + 1)     # Phase 12B-III: never write into the last free space
+        except DiskSpaceLow as e:
+            raise StorageError("DISK_SPACE_LOW", str(e)) from None
         p.parent.mkdir(parents=True, exist_ok=True)
         tmp = p.with_suffix(".part")
         tmp.write_bytes(data)

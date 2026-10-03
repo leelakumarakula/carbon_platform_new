@@ -41,7 +41,34 @@ def _gauges() -> dict[str, float]:
     except Exception:
         metrics.inc("db_failures_total", {"probe": "metrics"})
         g["database_up"] = 0.0
+    try:
+        from app.ops.disk import status as disk_status
+        for name, mb in disk_status()[1].items():
+            g[f"disk_free_mb_{name}"] = float(mb)
+    except Exception:
+        metrics.inc("disk_probe_failures_total")
+    g.update(_backup_ages())
     return g
+
+
+def _backup_ages() -> dict[str, float]:
+    """Seconds since the last FULL / DIFF / LOG backup of the application database (msdb). -1 = none recorded / not visible to this
+    login. The LOG age is the measurable signal for the 15-minute RPO (D25)."""
+    from urllib.parse import urlsplit
+
+    from app.ops.sqlserver import backup_freshness, master_engine
+    s = get_settings()
+    name = (urlsplit(s.DATABASE_URL).path.lstrip("/") if s.DATABASE_URL else "") or s.SQL_SERVER_DATABASE
+    try:
+        eng = master_engine()
+        try:
+            ages = backup_freshness(eng, name)
+        finally:
+            eng.dispose()
+    except Exception:
+        ages = {}
+    return {f"db_last_{k}_backup_age_seconds": (v if v is not None else -1.0) for k, v in
+            {**{"full": None, "diff": None, "log": None}, **ages}.items()}
 
 
 @router.get("/metrics")

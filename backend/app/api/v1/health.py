@@ -140,6 +140,17 @@ def redis_status(url: str | None, *, production: bool) -> tuple[str, str]:
     return (FAILED, "; ".join(problems)) if problems else (OK, "reachable, noeviction, AOF on")
 
 
+def _disk() -> tuple[str, str]:
+    """Phase 12B-III: below DISK_WARN_FREE_MB degraded, below DISK_CRITICAL_FREE_MB failed (writes would risk corruption)."""
+    from app.ops.disk import status
+    try:
+        state, free = status()
+    except Exception as e:
+        return DEGRADED, f"disk usage unreadable ({type(e).__name__})"
+    detail = ", ".join(f"{k} {v} MB free" for k, v in free.items())
+    return {"ok": OK, "warn": DEGRADED, "critical": FAILED}[state], detail
+
+
 def _rate_limiter() -> tuple[str, str]:
     s = get_settings()
     if s.RATE_LIMIT_BACKEND == "memory":
@@ -160,6 +171,7 @@ def ready(db: DB, response: Response) -> Ready:
         "antivirus": _scanner(),
         "broker": redis_status(s.REDIS_URL, production=s.is_production),
         "rate_limiter": _rate_limiter(),
+        "disk": _disk(),
     }
     checks = {k: v[0] for k, v in results.items()}
     if s.is_production and checks["broker"] == NOT_CONFIGURED:

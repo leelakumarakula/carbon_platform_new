@@ -507,3 +507,38 @@ def test_9_finance_triggers(world: World) -> None:
         _refused(w, "UPDATE dbo.payouts SET status = 'PAID' WHERE id = :i", {"i": paid.id}, "paid_evidence")       # PAID needs reference
     _allowed(w, "UPDATE dbo.settlement_revenue_items SET active = 0 WHERE id = :i", {"i": link.id})   # 1 → 0 only (rolled back)
     invariants(w)
+
+
+def test_10_verify_restore_and_tamper_detection_on_the_finance_world(world: World) -> None:
+    """Phase 12B-III D27: on the committed Phase 9B-11 world (ledger batches, settlement runs, payouts), verify-restore passes; a real
+    COPY_ONLY backup restored into a scratch database verifies with identical row counts; tampering with the scratch copy is detected."""
+    from app.ops import sqlserver as sq
+    from app.ops.verify_restore import verify_restore
+    live = verify_restore(get_settings().SQL_SERVER_DATABASE)
+    checks = {c["name"]: c for c in live.checks}
+    assert live.ok, [c for c in live.checks if not c["ok"]]
+    assert checks["ledger_conservation"]["detail"]["batches_checked"] >= 1
+    assert checks["settlement_reproducibility"]["detail"]["runs_checked"] >= 1
+    scratch = f"{get_settings().SQL_SERVER_DATABASE}_finance{sq.SCRATCH_SUFFIX}"
+    eng = sq.master_engine()
+    b = sq.backup(get_settings().SQL_SERVER_DATABASE, "full", copy_only=True, verify=True)
+    try:
+        sq.restore_to_scratch(eng, b.destination, scratch)
+        restored = verify_restore(scratch, compare_with=get_settings().SQL_SERVER_DATABASE)
+        assert restored.ok, [c for c in restored.checks if not c["ok"]]
+        teng = sq.database_engine(scratch)
+        try:
+            with teng.connect() as c:                                     # tamper with the SCRATCH copy only
+                assert c.execute(text("SELECT DB_NAME()")).scalar() == scratch
+                c.execute(text("DISABLE TRIGGER trg_settlement_runs_guard ON dbo.settlement_runs"))
+                c.execute(text("UPDATE dbo.settlement_runs SET farmer_total = farmer_total + 1 WHERE input_snapshot IS NOT NULL"))
+        finally:
+            teng.dispose()
+        bad = {c["name"]: c for c in verify_restore(scratch).checks}
+        assert not bad["triggers_enabled"]["ok"] and "trg_settlement_runs_guard" in bad["triggers_enabled"]["detail"]["disabled"]
+        assert not bad["settlement_reproducibility"]["ok"]
+    finally:
+        sq.drop_scratch(eng, scratch)
+        sq.delete_backup_file(eng, b.destination)
+        assert not sq.exists(eng, scratch)
+        eng.dispose()

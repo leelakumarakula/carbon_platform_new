@@ -27,6 +27,7 @@ HELP = {
     "db_failures_total": "Database failures observed by probes",
     "readiness_failures_total": "Readiness probe failures by component",
     "orphan_objects_deleted_total": "Orphan storage objects deleted by the cleanup job",
+    "retention_purged_total": "Operational records purged by the retention job, by policy (D48)",
 }
 
 

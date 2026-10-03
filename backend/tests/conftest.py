@@ -35,6 +35,14 @@ PASSWORD = "Correct-Horse-42"
 _HASH = hash_password(PASSWORD)
 
 
+def pytest_sessionstart(session: pytest.Session) -> None:
+    """Phase 12B-III disk safety: the suite creates database snapshots and files; refuse to start below 1 GB free (a full disk once
+    truncated a source file during a write)."""
+    free = shutil.disk_usage(tempfile.gettempdir()).free // (1024 * 1024)
+    if free < 1024:
+        pytest.exit(f"Refusing to run the test suite: only {free} MB free on the temp volume (need >= 1024 MB).", returncode=3)
+
+
 @pytest.fixture(scope="session", autouse=True)
 def _database() -> Iterator[None]:
     from alembic import command

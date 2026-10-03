@@ -762,6 +762,22 @@ Backend
 Tests
 - `tests/test_runtime_hardening.py`, `tests/test_performance.py` (synthetic harness, no SLA assertions); E2E: Phase 12B-II block.
 
+## Phase 12B-III — delivered
+
+**Operations.** Runbooks: [operations-runbook.md](operations-runbook.md), [object-storage-recovery.md](object-storage-recovery.md),
+[production-readiness.md](production-readiness.md). Decisions D25–D29, D31, D43–D45, D48, D50, D51. No migration.
+
+- `manage.py backup` (CHECKSUM, COMPRESSION, VERIFYONLY; production: encrypted + off-host or refused), `restore-drill` (COPY_ONLY backup →
+  verify → restore into `*_restoretest` → verify-restore → drop), `verify-restore` (schema manifest, triggers, append-only probe, ledger
+  conservation, settlement reproducibility, report hashes, scoping, objects, row counts, CHECKDB), `schema-manifest`.
+- Deployment templates: SQL Agent backup jobs (LOG 5 min, DIFF 6 h, FULL weekly, 60-day history), MinIO object-locked backup bucket,
+  replication and version lifecycle.
+- `RETENTION_PURGE` now applies 60-day operational policies (access logs, read notifications, worker heartbeats, temporary files);
+  append-only / financial / credit / audit / verification records are never purged.
+- Disk safety: readiness `disk` check, gauges, upload / drill / backup headroom checks, test-suite guard. Backup-age and disk gauges on
+  `/metrics`. Alert catalogue and 16 runbooks for Platform / DevOps.
+- Tests: `tests/test_operations.py`; finance-world verify-restore + tamper detection; operational-volume performance baselines.
+
 ## Known limitations and open items
 
 - Rate limiting uses Redis in production (Phase 12B-II); a Redis outage fails open (D20). Real Redis, secret store, monitoring and

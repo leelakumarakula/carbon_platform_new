@@ -10,6 +10,14 @@
   python manage.py rotate-data-key [--dry-run]
                                       re-encrypt stored bank account numbers with DATA_ENCRYPTION_KEY (old keys listed in
                                       DATA_ENCRYPTION_PREVIOUS_KEYS); run after a key rotation, then remove the old keys
+  python manage.py verify-restore --database NAME [--compare-with NAME] [--objects N] [--checkdb] [--report FILE]
+                                      read-only checks of a restored database (schema, triggers, ledger, settlements, scoping, ...)
+  python manage.py restore-drill --source NAME [--scratch NAME_restoretest] [--from-backup PATH] [--keep-backup] [--objects N]
+                                      backup -> verify -> restore into a scratch database -> verify-restore -> drop (never production)
+  python manage.py backup --database NAME --type full|diff|log [--to PATH_OR_S3_URL] [--copy-only] [--no-verify]
+                                      SQL Server backup WITH CHECKSUM, COMPRESSION; production: encrypted + off-host or refused
+  python manage.py schema-manifest --database NAME
+                                      regenerate app/ops/schema_manifest.json from a database at the migration head
   python manage.py storage-migrate [--dry-run]
                                       copy every document object from LOCAL_STORAGE_ROOT into the configured object store
                                       (STORAGE_BACKEND=s3), verifying SHA-256; local originals are never deleted
@@ -131,6 +139,66 @@ def rotate_data_key(dry_run: bool = False) -> None:
         sys.exit(1)
 
 
+def _emit(result: dict, ok: bool, report_file: str | None = None) -> None:
+    import json
+    import logging
+    text_out = json.dumps(result, indent=2, default=str)
+    print(text_out)
+    if report_file:
+        with open(report_file, "w", encoding="utf-8") as f:
+            f.write(text_out)
+    logging.getLogger("app.ops").log(logging.INFO if ok else logging.ERROR, "operation result",
+                                     extra={"fields": {"ok": ok, "operation": sys.argv[1] if len(sys.argv) > 1 else None}})
+    if not ok:
+        sys.exit(1)
+
+
+def verify_restore_cmd(args: argparse.Namespace) -> None:
+    """Runbook (Phase 12B-III D27): exit code 1 when any check fails; --report writes the JSON result for the drill record."""
+    from app.ops.verify_restore import verify_restore
+    if not args.database:
+        sys.exit("verify-restore needs --database (the restored database to check; nothing is assumed)")
+    rep = verify_restore(args.database, compare_with=args.compare_with, objects=args.objects, checkdb=args.checkdb)
+    _emit(rep.as_dict(), rep.ok, args.report)
+
+
+def restore_drill_cmd(args: argparse.Namespace) -> None:
+    from app.ops.drill import restore_drill
+    if not args.source:
+        sys.exit("restore-drill needs --source (the database to back up and restore into a scratch copy)")
+    out = restore_drill(args.source, args.scratch, from_backup=args.from_backup, keep_backup=args.keep_backup, objects=args.objects)
+    _emit(out, bool(out.get("ok")), args.report)
+
+
+def backup_cmd(args: argparse.Namespace) -> None:
+    from app.ops.sqlserver import backup
+    if not args.database or not args.type:
+        sys.exit("backup needs --database and --type full|diff|log")
+    res = backup(args.database, args.type, destination=args.to, copy_only=args.copy_only, verify=not args.no_verify)
+    _emit(res.as_dict(), True, args.report)
+
+
+def schema_manifest_cmd(args: argparse.Namespace) -> None:
+    import json
+
+    from app.ops.sqlserver import database_engine
+    from app.ops.verify_restore import MANIFEST, build_manifest, code_head
+    if not args.database:
+        sys.exit("schema-manifest needs --database (a database at the migration head, e.g. the test database)")
+    eng = database_engine(args.database)
+    try:
+        with eng.connect() as c:
+            from sqlalchemy import text as _t
+            version = c.execute(_t("SELECT version_num FROM dbo.alembic_version")).scalar()
+            if version != code_head():
+                sys.exit(f"{args.database} is at {version}, the code head is {code_head()}: migrate it first")
+            manifest = {"head": version, **build_manifest(c)}
+    finally:
+        eng.dispose()
+    MANIFEST.write_text(json.dumps(manifest, indent=1, sort_keys=True) + "\n", encoding="utf-8")
+    print(f"wrote {MANIFEST} ({len(manifest['tables'])} tables, {len(manifest['triggers'])} triggers)")
+
+
 def setup() -> None:
     create_db()
     migrate()
@@ -139,14 +207,30 @@ def setup() -> None:
 
 def main() -> None:
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("command", choices=["bootstrap-admin", "create-db", "jobs-recover", "migrate", "rotate-data-key", "seed-demo",
-                                       "seed-reference", "setup", "storage-migrate"])
+    p.add_argument("command", choices=["backup", "bootstrap-admin", "create-db", "jobs-recover", "migrate", "restore-drill",
+                                       "rotate-data-key", "schema-manifest", "seed-demo", "seed-reference", "setup", "storage-migrate",
+                                       "verify-restore"])
     p.add_argument("--dry-run", action="store_true", help="storage-migrate / rotate-data-key: check and count, write nothing")
+    p.add_argument("--database", help="verify-restore / backup / schema-manifest: the target database (always explicit)")
+    p.add_argument("--compare-with", help="verify-restore: compare row counts with this source database")
+    p.add_argument("--objects", type=int, default=0, help="verify-restore / restore-drill: verify N document objects in storage")
+    p.add_argument("--checkdb", action="store_true", help="verify-restore: also run DBCC CHECKDB")
+    p.add_argument("--report", help="write the JSON result to this file")
+    p.add_argument("--source", help="restore-drill: database to back up")
+    p.add_argument("--scratch", help="restore-drill: scratch database name (must end with _restoretest)")
+    p.add_argument("--from-backup", help="restore-drill: restore this existing backup instead of taking one")
+    p.add_argument("--keep-backup", action="store_true", help="restore-drill: keep the drill's backup file")
+    p.add_argument("--type", choices=["full", "diff", "log"], help="backup: backup type")
+    p.add_argument("--to", help="backup: destination file path or s3:// URL (default: BACKUP_URL, else the instance backup directory)")
+    p.add_argument("--copy-only", action="store_true", help="backup: COPY_ONLY (does not affect the backup chain)")
+    p.add_argument("--no-verify", action="store_true", help="backup: skip RESTORE VERIFYONLY")
     args = p.parse_args()
     cmds: dict[str, Callable[[], None]] = {
         "create-db": create_db, "migrate": migrate, "seed-reference": seed_reference, "bootstrap-admin": bootstrap_admin,
         "seed-demo": seed_demo, "setup": setup, "jobs-recover": jobs_recover, "storage-migrate": lambda: storage_migrate(args.dry_run),
-        "rotate-data-key": lambda: rotate_data_key(args.dry_run)}
+        "rotate-data-key": lambda: rotate_data_key(args.dry_run), "verify-restore": lambda: verify_restore_cmd(args),
+        "restore-drill": lambda: restore_drill_cmd(args), "backup": lambda: backup_cmd(args),
+        "schema-manifest": lambda: schema_manifest_cmd(args)}
     cmds[args.command]()
 
 

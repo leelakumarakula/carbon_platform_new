@@ -49,6 +49,7 @@ const phase11 = { financeNav: false, demoNote: false, revenueEmpty: false, confi
   noFakeData: false };
 const phase12 = { jobsNav: false, statusPanel: false, demoNote: false, brokerHonest: false, registry: 0, triggered: '', replay: false,
   cancelledUi: false, arbitraryRefused: '', retryRefused: '', outsidersBlocked: false, noFinanceTasks: false, audit: [] };
+const phase12d = { retentionRegistered: false, triggered: '', outsiderRefused: 0, diskCheck: false };
 const phase12c = { live: '', ready: '', readyChecks: '', compat: false, tooLarge: '', paged: false, pageRejected: 0,
   refreshLimited: '' };
 const phase12b = { scanState: '', eicarRefused: '', quarantined: '', quarantineNav: false, quarantinePage: false, historyUi: false,
@@ -1202,6 +1203,18 @@ ${EICAR}`) } } }));
   const pg = await json(await api.get(`${BASE}/api/v1/orders?limit=1&offset=0`, { headers: buyer12c }));
   phase12c.paged = Array.isArray(pg.orders) && pg.orders.length <= 1;
   phase12c.pageRejected = (await api.get(`${BASE}/api/v1/orders?limit=0`, { headers: buyer12c })).status();
+
+  // ---- Phase 12B-III: operations. The retention job applies the 60-day operational policies (append-only records are never
+  // purged); a Platform admin can trigger it (DEMO here: it stays QUEUED without a broker); readiness reports disk space.
+  const reg12d = await json(await api.get(`${JOBS}/registry`, { headers: adH }));
+  const ret = reg12d.find((t) => t.job_type === 'RETENTION_PURGE');
+  phase12d.retentionRegistered = !!ret && /Operational retention/.test(ret.description) && /never purged/.test(ret.description);
+  const trig12d = await api.post(`${JOBS}/trigger`, { headers: { ...adH, 'Idempotency-Key': `e2e-${require('crypto').randomUUID()}` },
+    data: { job_type: 'RETENTION_PURGE' } });
+  const job12d = await json(trig12d);
+  phase12d.triggered = `${trig12d.status()} ${job12d.environment} ${job12d.job_type}`;
+  phase12d.outsiderRefused = (await api.post(`${JOBS}/trigger`, { headers: await as('finance'), data: { job_type: 'RETENTION_PURGE' } })).status();
+  phase12d.diskCheck = ['ok', 'degraded'].includes(rdj.checks.disk);
   await api.dispose();
 
   // ---- Phase 3: buyer has no project access
@@ -1270,6 +1283,7 @@ ${EICAR}`) } } }));
   phase12c.refreshLimited = first429 > 0 && refreshCodes.slice(0, first429).every((c) => c === 401)
     && refreshCodes.slice(first429).every((c) => c === 429) ? `${first429}x401 then ${101 - first429}x429` : refreshCodes.join(',');
   console.log('phase 12B-II:', JSON.stringify(phase12c));
+  console.log('phase 12B-III:', JSON.stringify(phase12d));
 
   await browser.close();
   // One 401 per session is expected: the silent session-restore attempt before sign-in.
@@ -1337,16 +1351,18 @@ ${EICAR}`) } } }));
     && phase12.noFinanceTasks && phase12.audit.includes('JOB_CREATED')
     && (after12.status === 'CANCELLED' ? phase12.audit.includes('JOB_CANCELLED') : phase12.audit.includes('JOB_SUCCEEDED'));
   const p12cok = phase12c.live === 'alive' && /^200 (ready|degraded)$/.test(phase12c.ready)
-    && phase12c.readyChecks === 'antivirus,broker,database,rate_limiter,storage db=ok' && phase12c.compat
+    && phase12c.readyChecks === 'antivirus,broker,database,disk,rate_limiter,storage db=ok' && phase12c.compat
     && phase12c.tooLarge === '413 PAYLOAD_TOO_LARGE' && phase12c.paged && phase12c.pageRejected === 422
     && /^\d+x401 then \d+x429$/.test(phase12c.refreshLimited);
+  const p12dok = phase12d.retentionRegistered && phase12d.triggered === '201 DEMO RETENTION_PURGE' && phase12d.outsiderRefused === 403
+    && phase12d.diskCheck;
   const p12bok = phase12b.scanState === 'NOT_SCANNED' && phase12b.eicarRefused === '422 MALWARE_DETECTED' && phase12b.quarantined === '200 QUARANTINED'
     && phase12b.downloadBlocked === '409 DOCUMENT_QUARANTINED' && phase12b.quarantineNav && phase12b.quarantinePage && phase12b.historyUi
     && phase12b.releaseRefused === '409 DOCUMENT_RELEASE_REFUSED' && phase12b.stillQuarantined && phase12b.outsidersBlocked
     && phase12b.adminNoManage === '200 403'
     && ['DOCUMENT_QUARANTINED', 'DOCUMENT_RELEASE_REFUSED', 'DOCUMENT_RESCANNED', 'DOCUMENT_UPLOADED'].every((a) => phase12b.audit.includes(a));
   if (!stillIn || real.length || navItems.length !== 5 || !p2ok || !p3ok || !p4ok || !p5ok || !p6ok || !p7ok || !p8ok || !p8bok || !p9ok
-    || !p9bok || !p10ok || !p11ok || !p12ok || !p12bok || !p12cok) process.exitCode = 1;
+    || !p9bok || !p10ok || !p11ok || !p12ok || !p12bok || !p12cok || !p12dok) process.exitCode = 1;
 })().catch(async (e) => {
   console.error('DRIVER FAILED:', e.message);
   if (lastPage) {
