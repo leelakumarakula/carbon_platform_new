@@ -111,10 +111,32 @@ class Settings(BaseSettings):
     REGISTRY_PROVIDER: str = "manual"
     PAYMENT_PROVIDER: str = "manual"   # Phase 10 D15 / D33: manual until a contracted provider exists; no mock provider at all
 
+    # Phase 12A background jobs. SQL Server is the system of record; REDIS_URL is only the Celery broker (transport). Without it,
+    # jobs stay QUEUED in SQL Server (publication is retried by the recovery tick) and lazy expiry keeps the platform correct.
+    # Intervals are operational defaults (seconds), not business rules; retention is NOT configured here (no policy exists).
+    JOB_ENVIRONMENTS: Annotated[list[str], NoDecode] = ["LIVE", "DEMO"]   # data environments scheduled jobs run for
+    JOB_MAX_RETRIES: int = 3                  # bounded retries of transient failures (non-retryable errors fail at once)
+    JOB_RETRY_BACKOFF_SECONDS: int = 60       # deterministic exponential backoff base: 60, 120, 240 … (capped at 1 h)
+    JOB_STALE_AFTER_SECONDS: int = 1800       # lease: a CLAIMED / RUNNING job older than this is recovered (> every task time limit)
+    JOB_BATCH_SIZE: int = 200                 # rows per sweep batch (each row in its own short transaction)
+    JOB_EXPIRY_INTERVAL: int = 600            # reservation / order / listing expiry sweeps (10 min)
+    JOB_ORPHAN_SCAN_INTERVAL: int = 86400     # orphan stored-file scan (daily)
+    JOB_ORPHAN_GRACE_HOURS: int = 24          # a file younger than this is never an orphan candidate (uploads in flight)
+    JOB_RETENTION_INTERVAL: int = 86400       # retention purge infrastructure (daily; purges nothing until a policy exists)
+    JOB_RECOVERY_INTERVAL: int = 60           # recovery tick: republish unpublished jobs, requeue due retries, recover stale leases
+    JOB_HEARTBEAT_SECONDS: int = 30           # worker heartbeat into SQL Server
+
     @field_validator("SQL_SERVER_PORT", mode="before")
     @classmethod
     def _empty_port(cls, v: object) -> object:
         return None if v == "" else v
+
+    @field_validator("JOB_ENVIRONMENTS", mode="before")
+    @classmethod
+    def _split_environments(cls, v: object) -> object:
+        if isinstance(v, str) and not v.strip().startswith("["):
+            return [e.strip().upper() for e in v.split(",") if e.strip()]
+        return v
 
     @field_validator("CORS_ORIGINS", mode="before")
     @classmethod
@@ -130,6 +152,15 @@ class Settings(BaseSettings):
                 raise ValueError("REFRESH_COOKIE_SECURE must be true in production")
             if self.SECRET_KEY == self.JWT_SECRET:
                 raise ValueError("SECRET_KEY and JWT_SECRET must differ in production")
+        if not set(self.JOB_ENVIRONMENTS) <= {"LIVE", "DEMO"}:
+            raise ValueError("JOB_ENVIRONMENTS may contain only LIVE and DEMO")
+        intervals = (self.JOB_EXPIRY_INTERVAL, self.JOB_ORPHAN_SCAN_INTERVAL, self.JOB_RETENTION_INTERVAL, self.JOB_RECOVERY_INTERVAL,
+                     self.JOB_HEARTBEAT_SECONDS)
+        floors = (self.JOB_MAX_RETRIES, self.JOB_BATCH_SIZE - 1, self.JOB_RETRY_BACKOFF_SECONDS, self.JOB_ORPHAN_GRACE_HOURS)
+        if min(floors) < 0 or min(intervals) < 30:
+            raise ValueError("Job settings out of range (intervals are at least 30 s; batch size at least 1)")
+        if self.JOB_STALE_AFTER_SECONDS < 900:
+            raise ValueError("JOB_STALE_AFTER_SECONDS must exceed every task time limit (at least 900 s)")
         return self
 
     @property

@@ -125,6 +125,9 @@ class P:
     SHARING_APPROVE = "sharing.approve"      # approve / return them — never the author
     COSTS_MANAGE = "costs.manage"            # record project costs with evidence
     COSTS_APPROVE = "costs.approve"          # approve / reject costs — never the recorder
+    # Phase 12A — background job operations (platform only). No permission lets anyone run an arbitrary task.
+    JOBS_READ = "jobs.read"                  # background jobs, attempts, worker / broker status of the caller's environment
+    JOBS_MANAGE = "jobs.manage"              # cancel queued jobs, requeue failed jobs, trigger allow-listed maintenance tasks
 
 
 PERMISSIONS: tuple[PermissionDef, ...] = (
@@ -271,6 +274,10 @@ PERMISSIONS: tuple[PermissionDef, ...] = (
     PermissionDef(P.SHARING_APPROVE, "finance", "Approve revenue sharing", "Approve or return revenue-share versions and farm allocations (never your own)."),
     PermissionDef(P.COSTS_MANAGE, "finance", "Record project costs", "Record project costs actually incurred, with evidence."),
     PermissionDef(P.COSTS_APPROVE, "finance", "Approve project costs", "Approve or reject recorded project costs (never one you recorded)."),
+    PermissionDef(P.JOBS_READ, "operations", "View background jobs",
+                  "View background jobs, their attempts and the worker / broker status of your environment."),
+    PermissionDef(P.JOBS_MANAGE, "operations", "Manage background jobs",
+                  "Cancel queued jobs, requeue failed jobs and trigger allow-listed maintenance tasks (never an arbitrary task)."),
     PermissionDef(P.CALCULATION_APPROVE, "calculation", "Approve calculations",
                   "Approve or reject a calculation run after QA PASS (never your own run). Calculated is not verified or issued."),
     PermissionDef(P.CONSENTS_CONFIGURE, "admin", "Configure consent types",
@@ -359,7 +366,8 @@ SYSTEM_ROLES: tuple[RoleDef, ...] = (
     _r("PLATFORM_ADMIN", "Platform Admin", PLATFORM, "Manages users, roles, organizations, master data and configuration; views audit logs.",
        P.USERS_READ, P.USERS_MANAGE, P.USERS_ASSIGN_ROLES, P.ROLES_READ, P.ROLES_MANAGE,
        P.ORGANIZATIONS_READ, P.ORGANIZATIONS_MANAGE, P.ORGANIZATIONS_MANAGE_MEMBERS, P.AUDIT_READ, P.SECURITY_READ,
-       P.CONSENTS_CONFIGURE, P.FARMERS_READ, P.FARMS_READ, P.PROJECTS_READ, P.STANDARDS_MANAGE, P.METHODOLOGIES_READ, P.MRV_READ),
+       P.CONSENTS_CONFIGURE, P.FARMERS_READ, P.FARMS_READ, P.PROJECTS_READ, P.STANDARDS_MANAGE, P.METHODOLOGIES_READ, P.MRV_READ,
+       P.JOBS_READ, P.JOBS_MANAGE),
     _r("SECURITY_ADMIN", "Security Admin", PLATFORM,
        "Manages access policies, MFA, integration secrets, security events and access reviews.",
        P.USERS_READ, P.ROLES_READ, P.ORGANIZATIONS_READ, P.AUDIT_READ, P.SECURITY_READ, P.SECURITY_MANAGE),

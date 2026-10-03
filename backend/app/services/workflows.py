@@ -378,3 +378,12 @@ PAYOUT_MACHINE = StateMachine.build(
 PAYOUT_ADJUSTMENT_MACHINE = StateMachine.build(
     "payout_adjustment", initial="OPEN", transitions={"OPEN": {"CLOSED"}}, terminal={"CLOSED"},
 )
+
+
+# ---------------------------------------------------------------- Phase 12A — background jobs (SQL Server is the system of record)
+BACKGROUND_JOB_MACHINE = StateMachine.build(
+    "background_job", initial="QUEUED",
+    transitions={"QUEUED": {"CLAIMED", "CANCELLED"}, "CLAIMED": {"RUNNING", "QUEUED"},
+                 "RUNNING": {"SUCCEEDED", "RETRY_WAITING", "FAILED"}, "RETRY_WAITING": {"QUEUED"}, "FAILED": {"QUEUED"}},
+    terminal={"SUCCEEDED", "CANCELLED"},
+)

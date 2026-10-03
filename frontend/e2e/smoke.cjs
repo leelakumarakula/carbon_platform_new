@@ -47,6 +47,8 @@ const phase10 = { buyerNav: false, demoNote: false, noListings: false, kyc: '', 
 const phase11 = { financeNav: false, demoNote: false, revenueEmpty: false, configRequired: false, payoutsEmpty: false, sharingRefused: '',
   costRefused: '', settlementRefused: '', amountRejected: '', farmerNav: false, farmerEmpty: false, outsidersBlocked: false, farmerBlocked: false,
   noFakeData: false };
+const phase12 = { jobsNav: false, statusPanel: false, demoNote: false, brokerHonest: false, registry: 0, triggered: '', replay: false,
+  cancelledUi: false, arbitraryRefused: '', retryRefused: '', outsidersBlocked: false, noFinanceTasks: false, audit: [] };
 const REQUIRED_AUDIT_P6 = ['LAB_ENGAGEMENT_PROPOSED', 'LAB_ENGAGEMENT_ACCEPTED', 'LAB_ENGAGEMENT_ENDED', 'LAB_SAMPLE_REGISTERED', 'LAB_CUSTODY_SEALED',
   'LAB_TEST_CREATED', 'LAB_SHIPMENT_CREATED', 'LAB_SHIPMENT_DISPATCHED', 'LAB_SHIPMENT_RECEIPT_RECORDED', 'LAB_TEST_STARTED', 'LAB_RESULT_CREATED',
   'LAB_REPORT_ATTACHED', 'LAB_RESULT_SUBMITTED', 'LAB_QA_STARTED', 'LAB_RESULT_APPROVED', 'LAB_RETEST_REQUESTED', 'LAB_RESULT_SUPERSEDED'];
@@ -1079,6 +1081,60 @@ const REQUIRED_AUDIT = ['PROJECT_CREATED', 'PROJECT_STATUS_CHANGED', 'PROJECT_FA
   phase11.outsidersBlocked = out11 === 3;
   phase11.farmerBlocked = (await api.get(`${FIN}/payouts`, { headers: await as('farmer') })).status() === 403;
   phase11.noFakeData = phase11.revenueEmpty && phase11.payoutsEmpty && phase11.farmerEmpty;
+
+  // ---- Phase 12A: background jobs — operations view for the Platform Administrator. SQL Server is the record; without Redis / a worker
+  // (this development machine) a triggered job stays QUEUED with its publication error and lazy expiry keeps every workflow correct.
+  // Only allow-listed maintenance tasks exist; nothing financial is ever a job; DEMO jobs act only on DEMO records.
+  const JOBS = `${BASE}/api/v1/jobs`;
+  const ad = await signIn('admin');
+  const AD = ad.page;
+  lastPage = AD;
+  phase12.jobsNav = (await AD.locator('nav a', { hasText: 'Background jobs' }).count()) > 0;
+  await AD.goto(`${BASE}/admin/jobs`);
+  await AD.getByTestId('jobs-status').waitFor();
+  phase12.statusPanel = true;
+  phase12.demoNote = (await AD.getByTestId('jobs-demo-note').innerText()).startsWith('DEMO');
+  const adH = await as('admin');
+  const st12 = await json(await api.get(`${JOBS}/status`, { headers: adH }));
+  phase12.brokerHonest = ['NOT_CONFIGURED', 'UNREACHABLE', 'REACHABLE'].includes(st12.broker)
+    && (await AD.getByTestId('jobs-worker').innerText()).includes(st12.worker_alive ? 'Heartbeat' : 'No heartbeat');
+  const reg = await json(await api.get(`${JOBS}/registry`, { headers: adH }));
+  phase12.registry = reg.length;
+  phase12.noFinanceTasks = reg.every((t) => !/revenue|settle|payout|payment|refund|approve|reconcil|issu|retire|transfer/i.test(`${t.job_type} ${t.task_name}`));
+  const key12 = `e2e-${require('crypto').randomUUID()}`;
+  const trig = await api.post(`${JOBS}/trigger`, { headers: { ...adH, 'Idempotency-Key': key12 }, data: { job_type: 'EXPIRY_MARKETPLACE_OBJECTS' } });
+  const job12 = await json(trig);
+  phase12.triggered = `${trig.status()} ${job12.environment} ${job12.status}`;
+  phase12.replay = (await json(await api.post(`${JOBS}/trigger`, { headers: { ...adH, 'Idempotency-Key': key12 },
+    data: { job_type: 'EXPIRY_MARKETPLACE_OBJECTS' } }))).id === job12.id;
+  await AD.goto(`${BASE}/admin/jobs`);
+  const row12 = AD.locator(`[data-job="${job12.job_code}"]`);
+  await row12.waitFor();
+  await shot(AD, '9e-admin-background-jobs');
+  if ((await json(await api.get(`${JOBS}/${job12.id}`, { headers: adH }))).status === 'QUEUED') {
+    await row12.getByRole('button', { name: 'Cancel' }).click();
+    await confirmReason(AD, 'Cancel job', 'E2E: demonstration job not needed');
+    await row12.getByText('Cancelled').waitFor();
+  }
+  const after12 = await json(await api.get(`${JOBS}/${job12.id}`, { headers: adH }));
+  phase12.cancelledUi = ['CANCELLED', 'SUCCEEDED'].includes(after12.status);
+  await AD.locator('[data-testid="jobs"] a', { hasText: job12.job_code }).click();
+  await AD.getByTestId('job-detail').waitFor();
+  await shot(AD, '9f-admin-background-job-detail');
+  await ad.ctx.close();
+  phase12.arbitraryRefused = await errCode(await api.post(`${JOBS}/trigger`, { headers: adH, data: { job_type: 'os.system' } }));
+  phase12.retryRefused = await errCode(await api.post(`${JOBS}/${job12.id}/retry`, { headers: adH, data: { reason: 'E2E: not failed' } }));
+  let out12 = 0;
+  for (const who of ['pm', 'finance', 'farmer', 'buyer', 'vvb']) {
+    const h = await as(who);
+    const codes = [];
+    for (const url of [JOBS, `${JOBS}/status`, `${JOBS}/registry`, `${JOBS}/${job12.id}`]) codes.push((await api.get(url, { headers: h })).status());
+    codes.push((await api.post(`${JOBS}/trigger`, { headers: h, data: { job_type: 'RETENTION_PURGE' } })).status());
+    if (codes.every((c) => c === 403)) out12++;
+  }
+  phase12.outsidersBlocked = out12 === 5;
+  const aud12 = await json(await api.get(`${BASE}/api/v1/admin/audit-logs?entity_type=background_job&entity_id=${job12.id}`, { headers: adH }));
+  phase12.audit = [...new Set(aud12.items.map((a) => a.action))].sort();
   for (const x of [mrv, qa, sup, fieldS]) await x.ctx.close();
   await api.dispose();
 
@@ -1137,6 +1193,7 @@ const REQUIRED_AUDIT = ['PROJECT_CREATED', 'PROJECT_STATUS_CHANGED', 'PROJECT_FA
   console.log('phase 9B:', JSON.stringify(phase9b));
   console.log('phase 10:', JSON.stringify(phase10));
   console.log('phase 11:', JSON.stringify(phase11));
+  console.log('phase 12A:', JSON.stringify(phase12));
 
   await browser.close();
   // One 401 per session is expected: the silent session-restore attempt before sign-in.
@@ -1198,8 +1255,13 @@ const REQUIRED_AUDIT = ['PROJECT_CREATED', 'PROJECT_STATUS_CHANGED', 'PROJECT_FA
     && phase11.sharingRefused === '409 DEMO_FINANCE_NOT_ALLOWED' && phase11.costRefused === '409 DEMO_FINANCE_NOT_ALLOWED'
     && phase11.settlementRefused === '409 DEMO_FINANCE_NOT_ALLOWED' && phase11.amountRejected.startsWith('422') && phase11.farmerNav
     && phase11.farmerEmpty && phase11.outsidersBlocked && phase11.farmerBlocked && phase11.noFakeData;
+  const p12ok = phase12.jobsNav && phase12.statusPanel && phase12.demoNote && phase12.brokerHonest && phase12.registry === 4
+    && /^201 DEMO (QUEUED|CLAIMED|RUNNING|SUCCEEDED)$/.test(phase12.triggered) && phase12.replay && phase12.cancelledUi
+    && phase12.arbitraryRefused === '422 TASK_NOT_TRIGGERABLE' && phase12.retryRefused === '409 JOB_NOT_RETRYABLE' && phase12.outsidersBlocked
+    && phase12.noFinanceTasks && phase12.audit.includes('JOB_CREATED')
+    && (after12.status === 'CANCELLED' ? phase12.audit.includes('JOB_CANCELLED') : phase12.audit.includes('JOB_SUCCEEDED'));
   if (!stillIn || real.length || navItems.length !== 5 || !p2ok || !p3ok || !p4ok || !p5ok || !p6ok || !p7ok || !p8ok || !p8bok || !p9ok
-    || !p9bok || !p10ok || !p11ok) process.exitCode = 1;
+    || !p9bok || !p10ok || !p11ok || !p12ok) process.exitCode = 1;
 })().catch(async (e) => {
   console.error('DRIVER FAILED:', e.message);
   if (lastPage) {

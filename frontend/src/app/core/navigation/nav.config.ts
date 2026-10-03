@@ -102,6 +102,7 @@ export const NAVIGATION: readonly NavSection[] = [
       { label: 'Roles & permissions', icon: 'admin_panel_settings', route: '/admin/roles', permissions: [P.ROLES_READ] },
       { label: 'Consent types', icon: 'fact_check', route: '/admin/consents', permissions: [P.CONSENTS_CONFIGURE] },
       { label: 'Audit log', icon: 'history', route: '/admin/audit', permissions: [P.AUDIT_READ] },
+      { label: 'Background jobs', icon: 'pending_actions', route: '/admin/jobs', permissions: [P.JOBS_READ] },
     ],
   },
   {

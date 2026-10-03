@@ -23,7 +23,8 @@ services:
 
   redis:
     image: redis:7-alpine
-    ports: ["6379:6379"]
+    command: redis-server --appendonly yes --maxmemory-policy noeviction
+    ports: ["127.0.0.1:6379:6379"]   # local only: never publish an unauthenticated broker
 
   minio:
     image: minio/minio:latest
@@ -50,6 +51,36 @@ services:
       sqlserver: { condition: service_healthy }
       redis: { condition: service_started }
     ports: ["8000:8000"]
+
+  # Phase 12A: same image as the API. SQL Server is the job record; Redis only transports job ids.
+  worker:
+    build: { context: ., dockerfile: docker/backend.Dockerfile }
+    command: celery -A app.workers.celery_app:celery_app worker -Q default,maintenance -l info --concurrency 2
+    env_file: .env
+    environment:
+      SQL_SERVER_HOST: sqlserver
+      SQL_SERVER_PORT: "1433"
+      SQL_SERVER_USERNAME: sa
+      SQL_SERVER_DRIVER: ODBC Driver 18 for SQL Server
+      SQL_SERVER_TRUSTED_CONNECTION: "false"
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      sqlserver: { condition: service_healthy }
+      redis: { condition: service_started }
+
+  beat:   # exactly ONE beat per environment (duplicate slots are still harmless: per-slot idempotency keys)
+    build: { context: ., dockerfile: docker/backend.Dockerfile }
+    command: celery -A app.workers.celery_app:celery_app beat -l info --schedule /tmp/celerybeat-schedule
+    env_file: .env
+    environment:
+      SQL_SERVER_HOST: sqlserver
+      SQL_SERVER_PORT: "1433"
+      SQL_SERVER_USERNAME: sa
+      SQL_SERVER_DRIVER: ODBC Driver 18 for SQL Server
+      SQL_SERVER_TRUSTED_CONNECTION: "false"
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      redis: { condition: service_started }
 
   frontend:
     build: { context: ., dockerfile: docker/frontend.Dockerfile }

@@ -261,6 +261,17 @@ Every configuration, cost, run and payout row carries a filtered unique `request
 FAL / PCS / SET / PYT / ADJ sequences and the COST_EVIDENCE, PAYOUT_EVIDENCE and RECONCILIATION_EVIDENCE document categories (PDF
 only). Its downgrade refuses to run while any Phase 11 row or financial document exists. No earlier table changes.
 
+## Phase 12A tables (background jobs) — migration 0017
+
+| Table | Key columns / rules |
+|---|---|
+| `background_jobs` | `job_code` (JOB-); `job_type` (registry key) + `task_name` + `queue_name`; status QUEUED / CLAIMED / RUNNING / SUCCEEDED / RETRY_WAITING / FAILED / CANCELLED; `environment`; `trigger_type` SCHEDULE / MANUAL / SERVICE; optional organization / entity; `idempotency_key` (filtered unique); `payload` (JSON identifiers, `ISJSON`) + `payload_hash`; `result` (JSON counts); `scheduled_at`, `available_at`; claim / lease (`claimed_by`, `lease_expires_at`); started / completed / failed / cancelled; `retry_count` / `max_retries`; sanitized `error_code` / `error_message`; publication bookkeeping (`published_at`, `publish_attempts`, `last_publish_error`); `created_by` (requester or SYSTEM actor). Trigger: identity and payload fixed; SUCCEEDED / CANCELLED final; FAILED only requeued; never deleted |
+| `background_job_attempts` | append-only: one row per execution (`attempt_number` unique per job), worker identity, task, SYSTEM actor, status RUNNING → SUCCEEDED / RETRYABLE_ERROR / FAILED / ABANDONED (completed once), duration, sanitized error. Trigger: identity fixed; no change after completion; never deleted |
+| `background_worker_heartbeats` | worker identity (unique), host, pid, queues, started / last heartbeat / stopped — operational visibility only |
+
+0017 also widens `users.status` with `SYSTEM` and inserts the two non-login SYSTEM actors (fixed ids …a001 LIVE, …a002 DEMO). Its
+downgrade refuses while job rows exist or ledger entries reference the SYSTEM actors.
+
 ## Migrations
 
 `backend/alembic/versions/20261002_0001_phase1_identity_access_audit.py` and
@@ -286,7 +297,9 @@ seven triggers; downgrade refused while Phase 9B rows exist) and
 `20261003_0015_phase10_marketplace.py` (9 marketplace tables, LST / ORD / PAY / RFD sequences, five marketplace document categories, nine
 triggers; downgrade refused while Phase 10 rows exist) and
 `20261003_0016_phase11_financials.py` (13 finance tables, RVN / RSH / FAL / PCS / SET / PYT / ADJ sequences, three financial document
-categories, thirteen triggers; downgrade refused while Phase 11 rows exist). Spatial
+categories, thirteen triggers; downgrade refused while Phase 11 rows exist) and
+`20261003_0017_phase12_background_jobs.py` (3 job tables, JOB- sequence, SYSTEM user status + actors, two triggers; downgrade refused
+while job rows exist). Spatial
 indexes (`six_*`) are hand-written SQL and excluded from autogenerate by `include_object` in `alembic/env.py`. Generate new revisions with
 `alembic revision --autogenerate`, review them, and add raw SQL (triggers, spatial indexes) by hand.
 `alembic check` must report no drift before a phase is closed.

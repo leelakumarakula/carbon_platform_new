@@ -30,6 +30,7 @@ class UserStatus(str, Enum):
     ACTIVE = "ACTIVE"
     SUSPENDED = "SUSPENDED"
     DEACTIVATED = "DEACTIVATED"
+    SYSTEM = "SYSTEM"            # Phase 12A: non-login background-job actor (audit attribution only; no role, no password)
 
 
 class RoleScope(str, Enum):

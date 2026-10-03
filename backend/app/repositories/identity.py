@@ -39,7 +39,7 @@ def user_in_orgs(user_id_col: Any, org_ids: Iterable[uuid.UUID]) -> ColumnElemen
 def list_users(db: Session, params: PageParams, *, scope: frozenset[uuid.UUID] | None, search: str | None,
                status: str | None, organization_id: uuid.UUID | None, role_code: str | None,
                environment: str | None) -> tuple[list[User], int]:
-    stmt: Select[tuple[User]] = select(User).options(*_user_loader())
+    stmt: Select[tuple[User]] = select(User).options(*_user_loader()).where(User.status != "SYSTEM")   # Phase 12A: never listed
     if scope is not None:
         stmt = stmt.where(user_in_orgs(User.id, scope))
     if search:

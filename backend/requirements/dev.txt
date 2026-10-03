@@ -3,3 +3,4 @@ pytest==8.3.5
 httpx==0.28.1
 ruff==0.11.8
 mypy==1.15.0
+fakeredis==2.39.0     # TEST ONLY: Redis-protocol TCP server for the broker integration test when no real Redis is available

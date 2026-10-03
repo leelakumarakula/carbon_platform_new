@@ -57,6 +57,11 @@ from app.models.identity import (
     UserSession,
     UserStatus,
 )
+from app.models.jobs import (
+    BackgroundJob,
+    BackgroundJobAttempt,
+    BackgroundWorkerHeartbeat,
+)
 from app.models.lab import (
     LabResult,
     LabResultQaReview,
@@ -161,6 +166,9 @@ __all__ = [
     "Activity",
     "ApiAccessLog",
     "AuditLog",
+    "BackgroundJob",
+    "BackgroundJobAttempt",
+    "BackgroundWorkerHeartbeat",
     "BankAccountStatus",
     "Base",
     "BuyerKycReview",

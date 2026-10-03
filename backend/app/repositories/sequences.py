@@ -25,7 +25,8 @@ SEQUENCES = {"farmer": ("seq_farmer_code", "FRM"), "farm": ("seq_farm_code", "FA
              "refund": ("seq_refund_code", "RFD"),
              "revenue": ("seq_revenue_code", "RVN"), "revenue_share": ("seq_revenue_share_code", "RSH"),
              "allocation": ("seq_allocation_code", "FAL"), "cost": ("seq_cost_code", "PCS"), "settlement": ("seq_settlement_code", "SET"),
-             "payout": ("seq_payout_code", "PYT"), "adjustment": ("seq_adjustment_code", "ADJ")}
+             "payout": ("seq_payout_code", "PYT"), "adjustment": ("seq_adjustment_code", "ADJ"),
+             "job": ("seq_job_code", "JOB")}
 
 
 def next_code(db: Session, kind: str, year: int) -> str:

@@ -6,6 +6,7 @@
   python manage.py bootstrap-admin    first Platform Admin from BOOTSTRAP_ADMIN_EMAIL / BOOTSTRAP_ADMIN_PASSWORD
   python manage.py seed-demo          DEMO organizations + one user per role (password from DEMO_USER_PASSWORD)
   python manage.py setup              create-db + migrate + seed-reference
+  python manage.py jobs-recover       one background-job recovery pass (requeue stale / due jobs, republish unpublished ones)
 """
 import argparse
 import os
@@ -83,6 +84,15 @@ def seed_demo() -> None:
         print("demo laboratory (manual DEMO flow, DEMO placeholder values; no calculations or credits):", seed_demo_lab(db))
 
 
+def jobs_recover() -> None:
+    """Runbook (Phase 12A): run one recovery pass — requeue stale claims, recover lost runs, requeue due retries and republish QUEUED
+    jobs whose publication failed (e.g. after a Redis outage). Executes no job and performs no business work itself."""
+    from app.core.database import get_session_factory
+    from app.workers import job_service
+    with get_session_factory()() as db:
+        print("job recovery:", job_service.recover(db))
+
+
 def setup() -> None:
     create_db()
     migrate()
@@ -92,7 +102,7 @@ def setup() -> None:
 def main() -> None:
     cmds = {"create-db": create_db, "migrate": migrate, "seed-reference": seed_reference,
             "bootstrap-admin": bootstrap_admin, "seed-demo": seed_demo,
-            "setup": setup}
+            "setup": setup, "jobs-recover": jobs_recover}
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("command", choices=sorted(cmds))
     cmds[p.parse_args().command]()

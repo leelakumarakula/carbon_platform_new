@@ -28,7 +28,7 @@ def _visible(principal: Principal, user: User, code: str) -> bool:
 
 def get_visible_user(db: Session, principal: Principal, user_id: uuid.UUID, code: str = P.USERS_READ) -> User:
     user = repo.get_user(db, user_id)
-    if user is None or not _visible(principal, user, code):
+    if user is None or user.status == "SYSTEM" or not _visible(principal, user, code):   # Phase 12A: the job actor is not a user
         # Same response for "missing" and "outside your organisations" to avoid leaking existence.
         raise NotFound("User not found.", error_code="USER_NOT_FOUND")
     return user

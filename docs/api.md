@@ -206,6 +206,22 @@ No request body can carry a calculated value (unknown fields are refused with 42
 | GET/POST | `/calculations/qa/{run_id}` · POST `/start` · `/complete` | calculation.read / calculation.review (not the run's creator, freezer, executor or submitter) |
 | POST | `/runs/{id}/approve` · `/reject` | calculation.approve (same separation of duties; approval needs QA PASS) |
 
+## Endpoints (Phase 12A) — background jobs (operations)
+
+Details: [background-jobs.md](background-jobs.md). Platform Administrator only. Every view is limited to the caller's environment. No
+endpoint runs an arbitrary task.
+
+| Method | Path | Permission |
+|---|---|---|
+| GET | `/jobs` (`status`, `job_type`, `limit`) · `/jobs/{id}` · `/jobs/{id}/attempts` · `/jobs/registry` · `/jobs/status` | jobs.read |
+| POST | `/jobs/{id}/cancel` (QUEUED only) · `/jobs/{id}/retry` (FAILED only) — reason required, audited | jobs.manage |
+| POST | `/jobs/trigger` `{job_type}` — allow-listed, manually-triggerable maintenance task only; `Idempotency-Key` | jobs.manage |
+
+Error codes: `TASK_NOT_TRIGGERABLE`, `UNKNOWN_JOB_TYPE`, `INVALID_ENVIRONMENT`, `INVALID_PAYLOAD`, `IDEMPOTENCY_KEY_REUSED`,
+`JOB_NOT_CANCELLABLE`, `JOB_NOT_RETRYABLE`, `JOB_NOT_FOUND` (404). Job outcomes (not HTTP errors): `ENVIRONMENT_MISMATCH`,
+`SYSTEM_ACTOR_MISSING`, `UNKNOWN_TASK`, `SWEEP_ITEM_ERRORS`, `DATABASE_UNAVAILABLE`, `TRANSIENT_NETWORK`, `TIME_LIMIT`, `WORKER_LOST`,
+`UNEXPECTED_ERROR`.
+
 ## Endpoints (Phase 11) — revenue, sharing, costs, settlements, payouts
 
 Details: [payout-workflow.md](payout-workflow.md). Every POST accepts an `Idempotency-Key`; extra fields are rejected with 422. No request

@@ -161,6 +161,15 @@ Phase 11 adds revenue, farmer entitlements and payouts:
 - On DEMO data the **Finance** pages show "DEMO — no registry-issued credits; no revenue, cost, entitlement or payout exists in DEMO", and
   every DEMO financial write is refused.
 
+Phase 12A adds background jobs:
+- Celery workers, with Redis as the broker only. SQL Server keeps every job and attempt.
+- Scheduled, proactive expiry of reservations, orders and listings. Lazy expiry still guarantees correctness without workers.
+- An orphan-file scan (report only) and retention-purge infrastructure (no policy, so nothing is purged).
+- **Administration → Background jobs** for the Platform Administrator.
+
+The API, tests and E2E run without Redis. To run a worker, see [docs/background-jobs.md](docs/background-jobs.md); it covers Windows,
+WSL2 and Docker.
+
 Demo and live records cannot be mixed; the API rejects it with `ENVIRONMENT_MISMATCH`.
 
 ## Tests and checks (exit gate after every phase)
@@ -182,7 +191,7 @@ npm run e2e:smoke                       # E2E smoke (API + ng serve running, DEM
 
 The 19 roles in spec §4 (plus Platform GIS Specialist, decision D5) are defined in `backend/app/security/permissions.py`. See
 [docs/roles-permissions.md](docs/roles-permissions.md). Phase 2 added the farmer and farm permissions to the
-field, project, GIS, QA, MRV and finance roles, and `farmers.self` to Farmer. Phase 3 added `projects.*` and `standards.manage`; Phase 4 added `methodologies.*`; Phase 5 added `mrv.*` and `sampling.*`; Phase 6 added `lab.*`; Phase 7 added `calculation.*`; Phase 8B added `verification.*`; Phase 9A added `registry.*` and `credits.read`; Phase 9B added `credits.manage`, `credits.confirm`, `credits.holder_read` and `credits.holder_retire`; Phase 10 added `marketplace.read`, `listings.*`, `orders.*`, `payments.*`, `refunds.*`, `buyers.kyc_submit` and `buyers.kyc_verify` (new Marketplace Compliance Officer role); Phase 11 added `revenue.*`, `settlement.*`, `payouts.*`, `sharing.*` and `costs.*` (no new role). Each later phase adds its module's permissions.
+field, project, GIS, QA, MRV and finance roles, and `farmers.self` to Farmer. Phase 3 added `projects.*` and `standards.manage`; Phase 4 added `methodologies.*`; Phase 5 added `mrv.*` and `sampling.*`; Phase 6 added `lab.*`; Phase 7 added `calculation.*`; Phase 8B added `verification.*`; Phase 9A added `registry.*` and `credits.read`; Phase 9B added `credits.manage`, `credits.confirm`, `credits.holder_read` and `credits.holder_retire`; Phase 10 added `marketplace.read`, `listings.*`, `orders.*`, `payments.*`, `refunds.*`, `buyers.kyc_submit` and `buyers.kyc_verify` (new Marketplace Compliance Officer role); Phase 11 added `revenue.*`, `settlement.*`, `payouts.*`, `sharing.*` and `costs.*` (no new role); Phase 12A added `jobs.read` and `jobs.manage` (Platform Admin; no new role). Each later phase adds its module's permissions.
 
 ## Workflow
 

@@ -95,6 +95,9 @@ export const P = {
   SHARING_APPROVE: 'sharing.approve',
   COSTS_MANAGE: 'costs.manage',
   COSTS_APPROVE: 'costs.approve',
+  // Phase 12A — background job operations (Platform Administrator)
+  JOBS_READ: 'jobs.read',
+  JOBS_MANAGE: 'jobs.manage',
 } as const;
 
 export type PermissionCode = (typeof P)[keyof typeof P];

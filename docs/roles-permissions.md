@@ -129,6 +129,16 @@ access in Phase 7. No new role was added.
 VVB/ACVA, methodology specialists (platform-wide), farmers, buyers, laboratory roles and finance have no Phase 8A access (the VVB sees
 the Phase 8A finding summaries only inside a submitted Phase 8B manifest).
 
+## Phase 12A — background jobs (no new role)
+
+| Role | Permissions | Actions |
+|---|---|---|
+| Platform Admin | jobs.read, jobs.manage | view jobs, attempts, registry and worker / broker status of the own environment; cancel QUEUED jobs; requeue FAILED jobs; trigger an allow-listed maintenance task (all audited, reason required) |
+| SYSTEM actor (non-login, per environment) | **none** | attributes the system-owned transitions a job performs (deadline expiry); cannot sign in, holds no role, hidden from user administration |
+
+No organization role can see or manage background jobs. No permission allows running an arbitrary task. No worker performs an
+approval or other separation-of-duties step.
+
 ## Phase 11 — revenue, sharing, settlements, payouts (no new role)
 
 | Role | Phase 11 permissions | Actions | Separation of duties |

@@ -15,7 +15,8 @@
 | 9B | Credit ledger: ownership, reservation, transfer, retirement (no marketplace, price or payment) | **Done** |
 | 10 | Marketplace: buyer KYC, listings, orders, manual payments, refunds (no fee, tax, commission or payout) | **Done** |
 | 11 | Revenue, farmer entitlement, payouts & reconciliation (configurable sharing; no tax, fee or payout provider) | **Done** |
-| 12 | Production hardening | — |
+| 12A | Background job infrastructure (Celery + Redis transport, SQL Server job record, scheduled expiry sweeps, orphan scan, retention infrastructure) | **Done** |
+| 12B | Remaining production hardening (S3, antivirus, monitoring stack, Redis rate limiter, backup / restore, performance) | — |
 
 ## Phase 1 — delivered
 
@@ -643,6 +644,62 @@ Tests
 - `finance.spec.ts`.
 - E2E: Phase 11 DEMO-honest block.
 
+## Phase 12A — delivered
+
+**Background job infrastructure and safe scheduled operational work. SQL Server is the system of record and Redis only transports job
+ids; no business semantics changed.** Details: [background-jobs.md](background-jobs.md). Design and decisions:
+[phase-12-discovery.md](phase-12-discovery.md), [phase-12-decision-lock.md](phase-12-decision-lock.md) (lock record).
+
+Backend
+- Migration `0017`:
+  - `background_jobs`, `background_job_attempts` (append-only), `background_worker_heartbeats`;
+  - JOB- sequence;
+  - user status `SYSTEM` plus two non-login SYSTEM actors (LIVE, DEMO);
+  - two triggers;
+  - downgrade guard.
+- Celery application (`app/workers`):
+  - JSON only, no result backend, late acknowledgement, reject on worker lost, prefetch 1;
+  - queues `default` / `maintenance`;
+  - beat schedule: expiry sweeps, orphan scan, retention, recovery tick;
+  - worker heartbeat.
+- Job service:
+  - transactional enqueue (outbox) and publication after commit;
+  - SQL claim under row locks, with a lease;
+  - append-only attempts;
+  - retry classification and deterministic exponential backoff;
+  - stale-lease recovery and republication;
+  - environment validation;
+  - audit (`JOB_*`) and workflow events;
+  - structured JSON logs;
+  - `manage.py jobs-recover`.
+- Allow-listed registry:
+  - reservation expiry and order + listing expiry, through the existing 9B / 10 functions; lazy expiry is unchanged;
+  - orphan-file scan (detection only);
+  - retention purge (no policy, so it purges nothing).
+- `/api/v1/jobs`: list / get / attempts / registry / status / cancel / retry / allow-listed trigger. Permissions `jobs.read` /
+  `jobs.manage` (Platform Administrator).
+
+Frontend
+- Administration → **Background jobs**: status panel (database, broker, worker heartbeat, counts), job list, detail with attempts,
+  audited cancel / retry, read-only registry, DEMO note.
+
+Tests
+- `tests/test_jobs.py`:
+  - registry allow-list and financial boundary;
+  - SYSTEM actor;
+  - enqueue / idempotency / outbox;
+  - lifecycle; retries and exhaustion; non-retryable errors;
+  - stale-lease recovery; environment isolation;
+  - API RBAC;
+  - reservation, marketplace and pending-payment sweeps;
+  - orphan scan; retention; schedule slots.
+- `tests/test_jobs_concurrency.py`:
+  - database snapshot; duplicate delivery; two sweeps on the same rows;
+  - worker crash after partial progress; rollback after claim;
+  - a real Celery worker over the Redis protocol: publication, duplicate message, sweep, Redis outage → cleared broker → republish.
+- `jobs.spec.ts`.
+- E2E: Phase 12A block.
+
 ## Known limitations and open items
 
 - The rate limiter is in-memory (single API process). Redis is required before scaling out (Phase 12).
@@ -757,4 +814,13 @@ Tests
   - DEMO has no revenue, so every financial workflow is exercised only in the rolled-back TEST database. DEMO shows the DEMO note and
     empty / configuration-required states.
   - No scheduled reconciliation or payout job exists (Phase 12).
+- Phase 12A:
+  - This development machine has no Docker / WSL / Redis. The API, unit tests and E2E run without a broker (jobs stay QUEUED). The
+    real-worker test uses the test-only `fakeredis` TCP server unless `REDIS_TEST_URL` points at a real Redis.
+  - Windows workers use the solo pool, which does not enforce Celery hard time limits (cooperative budgets and SQL leases still bound
+    jobs). Production workers are Linux.
+  - Orphan files are detected and reported, never deleted (the storage abstraction has no delete).
+  - No retention period exists, so the purge job purges nothing and job history is kept.
+  - Calculation / report execution, provider polling, notification delivery, the Redis rate limiter, alerting and monitoring are not
+    in 12A.
 - The browser logs one expected 401 at start-up: the silent session-restore attempt when nobody is signed in.

@@ -101,4 +101,15 @@ on the server. The client only mirrors them (state machines, password policy) fo
   - `finance_mappers`.
   - Routers: `/revenue`, `/revenue-share`, `/allocations`, `/costs`, `/settlements` (`api/v1/finance.py`) and `/payouts` (`api/v1/payouts.py`).
   - Frontend: `/finance/revenue`, `/finance/sharing`, `/finance/settlements`, `/finance/payouts`, `/me/payouts`.
+- **Background jobs (12A)**:
+  - `models/jobs.py`: jobs, append-only attempts, worker heartbeats, SYSTEM actor ids.
+  - `workers/registry.py`: allow-list.
+  - `workers/job_service.py`: outbox enqueue / publish, SQL claim + lease, execute, retry classification, recovery, operator actions.
+  - `workers/handlers.py`: thin adapters to the 9B / 10 expiry functions, orphan scan, retention infrastructure.
+  - `workers/celery_app.py`: JSON, late ack, beat schedule.
+  - `workers/tasks/*`: one-line task adapters.
+  - `workers/operations.py`: read side and status.
+  - `workers/heartbeat.py`, `workers/joblog.py`: structured JSON logs.
+  - Router: `/jobs`. Frontend: `/admin/jobs`.
+  - Processes: API, `celery worker`, exactly one `celery beat`. SQL Server is the record; Redis is transport.
 - **Time**: stored as naive UTC `datetime2`, emitted as ISO-8601 with `Z`.

@@ -6,6 +6,9 @@
   rather than silently storing files somewhere else.
 """
 import os
+from collections.abc import Iterator
+from dataclasses import dataclass
+from datetime import datetime, timezone
 from functools import lru_cache
 from pathlib import Path
 from typing import Protocol
@@ -17,6 +20,18 @@ class ObjectStorage(Protocol):
     def put(self, key: str, data: bytes, content_type: str) -> None: ...
     def get(self, key: str) -> bytes: ...
     def exists(self, key: str) -> bool: ...
+
+
+@dataclass(frozen=True)
+class StoredObject:
+    key: str
+    size_bytes: int
+    modified_at: datetime          # naive UTC
+
+
+class ListableStorage(Protocol):
+    """Optional capability (Phase 12A orphan scan): enumerate stored objects under a key prefix. Read-only — no adapter deletes."""
+    def iter_objects(self, prefix: str) -> Iterator[StoredObject]: ...
 
 
 class LocalFileStorage:
@@ -42,6 +57,16 @@ class LocalFileStorage:
 
     def exists(self, key: str) -> bool:
         return self._path(key).exists()
+
+    def iter_objects(self, prefix: str) -> Iterator[StoredObject]:
+        base = self._path(prefix) if prefix else self.root
+        if not base.is_dir():
+            return
+        for p in base.rglob("*"):
+            if p.is_file():
+                st = p.stat()
+                yield StoredObject(p.relative_to(self.root).as_posix(), st.st_size,
+                                   datetime.fromtimestamp(st.st_mtime, timezone.utc).replace(tzinfo=None))
 
 
 @lru_cache

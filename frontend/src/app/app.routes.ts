@@ -372,6 +372,13 @@ export const routes: Routes = [
             data: { permissions: [P.SECURITY_READ] },
             loadComponent: () => import('./admin/security/security-page').then((m) => m.SecurityPage),
           },
+          {
+            path: 'jobs',
+            title: 'Background jobs',
+            canActivate: [permissionGuard],
+            data: { permissions: [P.JOBS_READ] },
+            loadComponent: () => import('./admin/jobs/jobs-page').then((m) => m.JobsPage),
+          },
         ],
       },
       { path: 'forbidden', title: 'No access', component: ForbiddenPage },

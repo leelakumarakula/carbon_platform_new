@@ -19,6 +19,9 @@ frontend/dist/
 frontend/.angular/
 coverage/
 
+# celery beat local schedule state
+celerybeat-schedule*
+
 # local storage
 storage/local-dev/*
 !storage/local-dev/.gitkeep
