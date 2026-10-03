@@ -144,6 +144,17 @@ Shared services added in Phase 2:
 0009 also widens `documents.category` with `LAB_REPORT` and `CUSTODY_DOCUMENT` (PDF only, enforced by the document service);
 its downgrade refuses to run while documents of those categories exist. No Phase 5 table changes.
 
+## Phase 7 tables (§7.10 calculations) — migration 0010
+
+| Table | Key columns / rules |
+|---|---|
+| `calculation_runs` | `run_code` unique (`seq_calculation_run_code`, CALC-); project, reporting `monitoring_period_id`, optional `crediting_period_id`, `mrv_dataset_id` (bound at freeze); methodology, version, `project_methodology_id`, frozen `calculation_rules_version` / `monitoring_rules_version`; `module_code`, `module_version`, `module_readiness`, `engine_version`; `input_snapshot` (canonical JSON) + `input_sha256`; `output_sha256`; `net_result` (exact decimal text) + `net_unit`; `blockers` JSON; 9 statuses; `recalculation_of_run_id` + reason; `superseded_by_run_id` / `superseded_at`; created / frozen / executed / submitted / approved / closed by and at; `environment`. Filtered unique: one open run (DRAFT … QA_REVIEW) and one APPROVED run per reporting period. Trigger `trg_calculation_runs_immutable` |
+| `calculation_inputs` | append-only; unique (run, seq); variable; `source_type` (LAB_RESULT / MONITORING_RECORD / STRATUM_AREA / SAMPLING_DESIGN_PARAMETER / MODULE_CONSTANT); `source_id` + `source_version` (indexed for reverse lineage); exact value + kind; unit; level; stratum / farm / point / field collection / sample / root sample / monitoring rule / plan measurement; `requirement_source`; `source_reference`; `source_sha256` |
+| `calculation_outputs` | append-only; unique (run, seq); step; output code; `calculation_rule_id` (FK to the locked version's rule) + rule code + equation reference; exact value; unit; level + entity; `input_refs` JSON (input and output seq numbers); filtered unique: one `is_final` per run |
+| `calculation_qa_reviews` | started / completed by and at, checks JSON (`ISJSON`), result PASS / FAIL, notes; a completed review is immutable (trigger) |
+
+No earlier table changes (the project statuses CALCULATION_READY / CALCULATED already existed in the status check).
+
 ## Migrations
 
 `backend/alembic/versions/20261002_0001_phase1_identity_access_audit.py` and
@@ -156,7 +167,8 @@ its downgrade refuses to run while documents of those categories exist. No Phase
 `checklist_version` and `gps_tolerance_m` on field records; existing rows backfilled with the defaults in force then) and
 `20261003_0008_methodology_measurement_source.py` (decision V2-A: `methodology_monitoring_rules.measurement_source`; DEMO rule DM1 →
 LABORATORY, other existing rows → UNCLASSIFIED; one methodology change-history entry per backfilled row) and
-`20261003_0009_phase6_laboratory.py` (9 laboratory tables, the SMP- / SHP- / LT- sequences, three triggers, document categories). Spatial
+`20261003_0009_phase6_laboratory.py` (9 laboratory tables, the SMP- / SHP- / LT- sequences, three triggers, document categories) and
+`20261003_0010_phase7_carbon_calculation.py` (4 calculation tables, the CALC- sequence, four triggers; downgrade refused while runs exist). Spatial
 indexes (`six_*`) are hand-written SQL and excluded from autogenerate by `include_object` in `alembic/env.py`. Generate new revisions with
 `alembic revision --autogenerate`, review them, and add raw SQL (triggers, spatial indexes) by hand.
 `alembic check` must report no drift before a phase is closed.

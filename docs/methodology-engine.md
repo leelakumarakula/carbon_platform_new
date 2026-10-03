@@ -159,8 +159,9 @@ Measurement provenance is explicitly defined by the methodology monitoring rule.
   specialist from the authoritative, versioned source, then approved by a second person.
 - The DEMO methodologies (`DEMO-ALM-SOC`, `DEMO-CCTS-SOIL`) are **illustrative**. Their rules were invented to
   demonstrate the engine; they are flagged `is_demo_illustrative` and labelled in the UI.
-- Calculation readiness stays NOT_PRODUCTION_READY until Phase 7 implements and verifies a methodology module
-  against the authoritative equations, with reference tests.
+- Calculation readiness stays NOT_PRODUCTION_READY until a methodology module is implemented and verified against the
+  authoritative equations, with reference tests. Phase 7 built the framework and registry (docs/calculation-workflow.md); no
+  module is registered, so calculations are blocked with CONFIGURATION_REQUIRED — NO_CALCULATION_MODULE.
 
 ## Assumptions (to confirm)
 

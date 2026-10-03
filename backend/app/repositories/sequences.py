@@ -6,7 +6,8 @@ SEQUENCES = {"farmer": ("seq_farmer_code", "FRM"), "farm": ("seq_farm_code", "FA
              "project": ("seq_project_code", "PRJ"),
              "sampling_point": ("seq_sampling_point_code", "SP"),
              "field_collection": ("seq_field_collection_code", "FIELD"),
-             "lab_sample": ("seq_sample_code", "SMP"), "lab_shipment": ("seq_shipment_code", "SHP"), "lab_test": ("seq_lab_test_code", "LT")}
+             "lab_sample": ("seq_sample_code", "SMP"), "lab_shipment": ("seq_shipment_code", "SHP"), "lab_test": ("seq_lab_test_code", "LT"),
+             "calculation_run": ("seq_calculation_run_code", "CALC")}
 
 
 def next_code(db: Session, kind: str, year: int) -> str:

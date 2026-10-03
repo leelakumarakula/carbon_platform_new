@@ -192,6 +192,20 @@ checklists, `can_manage` / `can_review` / `can_review_boundary` and `is_editable
 | POST | `/laboratory/results/{id}/retest` | lab.retest_request |
 | GET/POST | `/laboratory/qa` · `/laboratory/qa/{id}` · POST `/{id}/start` · `/{id}/decision` | lab.qa (never on your own work) |
 
+## Endpoints (Phase 7) — prefix `/calculations`
+
+No request body can carry a calculated value (unknown fields are refused with 422); every value comes from the registered module.
+
+| Method | Path | Permission |
+|---|---|---|
+| GET | `/calculations/modules` (registered modules — none in Phase 7) · `/calculations/projects` (projects in monitoring or later, with periods) | calculation.read |
+| GET | `/calculations/projects/{id}/readiness?monitoring_period_id&crediting_period_id` | calculation.read |
+| GET/POST | `/calculations/runs?project_id&monitoring_period_id` · GET `/calculations/runs/{id}` | calculation.read / calculation.manage |
+| POST | `/runs/{id}/freeze` (BLOCKED with the blockers when not ready) · `/execute` · `/submit` · `/cancel` · `/recalculate` | calculation.manage |
+| GET | `/runs/{id}/inputs` · `/outputs` · `/lineage` · `/compare/{other_id}` | calculation.read |
+| GET/POST | `/calculations/qa/{run_id}` · POST `/start` · `/complete` | calculation.read / calculation.review (not the run's creator, freezer, executor or submitter) |
+| POST | `/runs/{id}/approve` · `/reject` | calculation.approve (same separation of duties; approval needs QA PASS) |
+
 ## Notable error codes
 
 `INVALID_CREDENTIALS`, `TOKEN_EXPIRED`, `SESSION_REVOKED`, `REFRESH_REUSED`, `ACCOUNT_INACTIVE`,
@@ -233,3 +247,10 @@ Phase 6: `ENGAGEMENT_NOT_ACTIVE`, `ENGAGEMENT_ENDED`, `ENGAGEMENT_PENDING`, `ENG
 `NOT_ANALYST`, `ONE_VALUE_REQUIRED`, `RESULT_NOT_IN_QA`, `QA_CHECKS_FAILED`, `CONFIGURATION_REQUIRED` (with `PRODUCTION_BLOCK` when not acknowledgeable),
 `SEPARATION_OF_DUTIES` (403; details list the reasons), `AUTHORITATIVE_RESULT_EXISTS`, `RESULT_NOT_APPROVED`, `RESULT_NOT_RETESTABLE`,
 `INVALID_RETEST_SAMPLE`, `RETEST_OPEN`, `UNSUPPORTED_FILE_TYPE` (laboratory documents are PDF only), `LAB_NOT_FOUND` (404).
+
+Phase 7: `CONFIGURATION_REQUIRED` (details.reason `NO_CALCULATION_MODULE`, `STEP_NOT_CONFIGURED`, `STEP_NOT_INCLUDED`,
+`STEP_NOT_IMPLEMENTED`, `NO_FINAL_NET_OUTPUT`), `CALCULATION_RULE_NOT_CONFIGURED`, `NOT_PRODUCTION_READY`, `DATASET_NOT_APPROVED`,
+`SNAPSHOT_MISMATCH`, `OUTSIDE_CREDITING_PERIOD`, `MISSING_APPROVED_LAB_RESULT`, `MISSING_REQUIRED_INPUT`, `INPUT_NOT_NUMERIC`, `UNIT_MISMATCH`,
+`INPUT_TOO_LARGE`, `INPUT_SNAPSHOT_MISMATCH`, `INPUTS_OUT_OF_DATE`, `CALCULATION_ERROR` (a module produced an invalid output),
+`OPEN_RUN_EXISTS`, `RUN_NOT_EDITABLE`, `RUN_NOT_IN_QA`, `QA_IN_PROGRESS`, `QA_NOT_STARTED`, `QA_CHECKS_FAILED`, `QA_NOT_PASSED`,
+`SEPARATION_OF_DUTIES`, `RUNS_NOT_COMPARABLE`, `CALCULATION_RUN_NOT_FOUND` (404).

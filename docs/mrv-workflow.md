@@ -20,7 +20,7 @@ Stratification, sampling design, sampling points and field collection are descri
 |---|---|
 | The project has a LOCKED `project_methodologies` row and `methodology_status = CONFIRMED`. | `METHODOLOGY_NOT_LOCKED` |
 | The locked version is APPROVED or SUPERSEDED. A version that was superseded after locking stays valid for the project. | `METHODOLOGY_VERSION_INVALID` |
-| The project is in METHODOLOGY_CONFIRMED, MRV_PLANNED or MONITORING. | `PROJECT_NOT_IN_MRV` |
+| The project is in METHODOLOGY_CONFIRMED, MRV_PLANNED or MONITORING — or, since Phase 7, CALCULATION_READY / CALCULATED (later periods and data corrections continue). | `PROJECT_NOT_IN_MRV` |
 
 The methodology cannot be unlocked once the project is MRV_PLANNED or later (Phase 4 unlock requires
 METHODOLOGY_CONFIRMED).

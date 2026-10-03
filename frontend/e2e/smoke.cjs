@@ -30,6 +30,8 @@ const PNG = Buffer.from('89504e470d0a1a0a0000000d4948445200000001000000010806000
 const phase4 = { catalog: false, approvedReadOnly: false, demoLock: '', candidates: 0, recommended: false, locked: '', audit: [] };
 const phase6 = { engagement: '', scope: '', sample: '', tests: 0, shipment: '', unitPrefilled: '', qaFails: -1, approved: '', lineage: false,
   analysisStatus: '', labRestricted: false, buyerFarmerBlocked: false, sod: '', retest: '', windDown: {}, audit: [] };
+const phase7 = { readinessBlocker: false, labels: false, runBlocked: false, runLabel: false, runCode: '', runStatus: '', netResult: 'x',
+  modules: -1, projectStatus: '', qaCanRead: false, valueRefused: false, outsidersBlocked: false, audit: [] };
 const REQUIRED_AUDIT_P6 = ['LAB_ENGAGEMENT_PROPOSED', 'LAB_ENGAGEMENT_ACCEPTED', 'LAB_ENGAGEMENT_ENDED', 'LAB_SAMPLE_REGISTERED', 'LAB_CUSTODY_SEALED',
   'LAB_TEST_CREATED', 'LAB_SHIPMENT_CREATED', 'LAB_SHIPMENT_DISPATCHED', 'LAB_SHIPMENT_RECEIPT_RECORDED', 'LAB_TEST_STARTED', 'LAB_RESULT_CREATED',
   'LAB_REPORT_ATTACHED', 'LAB_RESULT_SUBMITTED', 'LAB_QA_STARTED', 'LAB_RESULT_APPROVED', 'LAB_RETEST_REQUESTED', 'LAB_RESULT_SUPERSEDED'];
@@ -44,7 +46,7 @@ const REQUIRED_AUDIT = ['PROJECT_CREATED', 'PROJECT_STATUS_CHANGED', 'PROJECT_FA
     const ctx = await browser.newContext({ viewport });
     const page = await ctx.newPage();
     lastPage = page;
-    page.on('console', (m) => m.type() === 'error' && problems.push(`[${email}] console: ${m.text()}`));
+    page.on('console', (m) => m.type() === 'error' && problems.push(`[${email}] console: ${m.text()} @ ${m.location()?.url ?? ''}`));
     page.on('pageerror', (e) => problems.push(`[${email}] pageerror: ${e.message}`));
     page.on('response', (r) => r.url().includes('/api/') && r.status() >= 500 && problems.push(`[${email}] ${r.status()} ${r.url()}`));
     await page.goto(`${BASE}/login`);
@@ -377,7 +379,7 @@ const REQUIRED_AUDIT = ['PROJECT_CREATED', 'PROJECT_STATUS_CHANGED', 'PROJECT_FA
   await json(await api.post(`${MRV}/sampling-designs/${design.id}/versions/${design.current.id}/approve`, { headers: gisH, data: { reason: 'E2E design ok' } }));
   await M.reload();
   await M.getByTestId('generate-points').click();
-  await M.getByText('Points generated').waitFor();
+  await M.getByText('Points generated (SQL Server validated).').waitFor();
   await shot(M, '44-mrv-design');
   // supervisor assigns the points to the collector (UI)
   const sup = await signIn('supervisor');
@@ -536,9 +538,9 @@ const REQUIRED_AUDIT = ['PROJECT_CREATED', 'PROJECT_STATUS_CHANGED', 'PROJECT_FA
   await T.getByTestId('receive').click();
   await T.getByText('Receipt recorded.').waitFor();
   await T.getByRole('tab', { name: 'Samples' }).click();
-  await T.getByTestId(`accession-${smp.sample_code}`).fill('E2E-ACC-0001');
-  await T.getByRole('button', { name: 'Register', exact: true }).click();
-  await T.getByText('E2E-ACC-0001').waitFor();
+  await T.getByTestId(`accession-${smp.sample_code}`).fill(`ACC-${smp.sample_code}`);
+  await T.locator('tr', { hasText: smp.sample_code }).getByRole('button', { name: 'Register', exact: true }).click();  // other runs' samples may wait too
+  await T.getByText(`ACC-${smp.sample_code}`).waitFor();
   await shot(T, '63-lab-samples');
   // 6–7. technician analyses, enters the result with the rule's exact unit, attaches the PDF report and submits (UI)
   await T.getByRole('tab', { name: 'Worklist' }).click();
@@ -645,6 +647,50 @@ const REQUIRED_AUDIT = ['PROJECT_CREATED', 'PROJECT_STATUS_CHANGED', 'PROJECT_FA
   }
   phase6.audit = [...actions].sort();
   for (const x of [lm, lt, lq]) await x.ctx.close();
+
+  // ---- Phase 7: calculation — the E2E project's locked DEMO methodology has no registered calculation module, so the analyst sees
+  // the real blocker (CONFIGURATION_REQUIRED — NO_CALCULATION_MODULE), the run becomes BLOCKED and the project stays MONITORING.
+  const CALCV = `${BASE}/api/v1/calculations`;
+  const p7Start = new Date(Date.now() - 2000).toISOString();
+  const an = await signIn('analyst');
+  const A = an.page;
+  lastPage = A;
+  await A.goto(`${BASE}/calculations?project=${projectId}`);   // needs only calculation.read (the analyst has no projects.read)
+  await A.getByTestId('calc-blockers').waitFor();
+  phase7.readinessBlocker = (await A.getByTestId('calc-blockers').innerText()).includes('CONFIGURATION_REQUIRED — NO_CALCULATION_MODULE');
+  phase7.labels = (await A.getByText('Calculated tCO2e — not verified, not issued').count()) > 0
+    && (await A.getByTestId('demo-label').innerText()).includes('DEMO — not carbon accounting');
+  await shot(A, '70-calc-readiness');
+  await A.getByTestId('create-run').click();
+  await A.locator('[data-run^="CALC-"]').first().waitFor();
+  await A.locator('[data-run^="CALC-"]').first().click();
+  await A.getByTestId('freeze').click();
+  await A.getByTestId('run-blockers').waitFor();
+  phase7.runBlocked = (await A.getByTestId('run-status').innerText()).trim() === 'Blocked'
+    && (await A.getByTestId('run-blockers').innerText()).includes('NO_CALCULATION_MODULE');
+  phase7.runLabel = (await A.getByTestId('calc-label').innerText()).includes('not verified, not issued');
+  await shot(A, '71-calc-run-blocked');
+  const anH = await as('analyst');
+  const calcRuns = await json(await api.get(`${CALCV}/runs?project_id=${projectId}`, { headers: anH }));
+  phase7.runCode = calcRuns[0].run_code;
+  phase7.runStatus = calcRuns[0].status;
+  phase7.netResult = calcRuns[0].net_result;
+  phase7.modules = (await json(await api.get(`${CALCV}/modules`, { headers: anH }))).length;
+  phase7.projectStatus = (await json(await api.get(`${BASE}/api/v1/projects/${projectId}`, { headers: pmH }))).status;
+  phase7.qaCanRead = (await api.get(`${CALCV}/runs/${calcRuns[0].id}`, { headers: qaH })).ok();
+  phase7.valueRefused = (await api.post(`${CALCV}/runs`, { headers: anH, data: { project_id: projectId, monitoring_period_id: period.id,
+    net_result: '999' } })).status() === 422;
+  let outside7 = 0;
+  for (const who of ['buyer', 'farmer', 'labtech']) {
+    if ([403, 404].includes((await api.get(`${CALCV}/runs?project_id=${projectId}`, { headers: await as(who) })).status())) outside7++;
+  }
+  phase7.outsidersBlocked = outside7 === 3;
+  const calcAudit = new Set();
+  const pg7 = await json(await api.get(`${BASE}/api/v1/admin/audit-logs?entity_type=calculation_run&from=${encodeURIComponent(p7Start)}&page_size=100`,
+    { headers: await as('admin') }));
+  pg7.items.forEach((x) => calcAudit.add(x.action));
+  phase7.audit = [...calcAudit].sort();
+  await an.ctx.close();
   for (const x of [mrv, qa, sup, fieldS]) await x.ctx.close();
   await api.dispose();
 
@@ -696,10 +742,12 @@ const REQUIRED_AUDIT = ['PROJECT_CREATED', 'PROJECT_STATUS_CHANGED', 'PROJECT_FA
   console.log('phase 4:', JSON.stringify(phase4));
   console.log('phase 5:', JSON.stringify(phase5));
   console.log('phase 6:', JSON.stringify(phase6));
+  console.log('phase 7:', JSON.stringify(phase7));
 
   await browser.close();
   // One 401 per session is expected: the silent session-restore attempt before sign-in.
-  const real = problems.filter((p) => !p.includes('status of 401'));
+  // Expected: one 401 per session (silent session restore), and the 409 of the deliberately blocked Phase 7 freeze.
+  const real = problems.filter((p) => !p.includes('status of 401') && !(p.includes('status of 409') && p.includes('/freeze')));
   console.log(real.length ? 'PROBLEMS:\n' + real.join('\n') : 'OK: no unexpected console errors or 5xx responses');
   const p2ok = phase2.pmPolygon > 0 && phase2.overlapFlag && /ha/.test(phase2.drawnArea) && phase2.farmerFarms >= 2;
   const missingAudit = REQUIRED_AUDIT.filter((a) => !phase3.audit.includes(a));
@@ -725,7 +773,11 @@ const REQUIRED_AUDIT = ['PROJECT_CREATED', 'PROJECT_STATUS_CHANGED', 'PROJECT_FA
     && phase6.sod === '403 SEPARATION_OF_DUTIES' && phase6.retest === 'SUPERSEDED/APPROVED'
     && w.receiptAllowed && w.newShipment === '409 ENGAGEMENT_NOT_ACTIVE' && w.retest === '409 ENGAGEMENT_NOT_ACTIVE'
     && w.newTestStart === '409 ENGAGEMENT_NOT_ACTIVE' && w.endAgain === '409 ENGAGEMENT_ENDED' && w.approvedStillVisible && !missingP6.length;
-  if (!stillIn || real.length || navItems.length !== 4 || !p2ok || !p3ok || !p4ok || !p5ok || !p6ok) process.exitCode = 1;
+  const p7ok = phase7.readinessBlocker && phase7.labels && phase7.runBlocked && phase7.runLabel && /^CALC-\d{4}-\d{6}$/.test(phase7.runCode)
+    && phase7.runStatus === 'BLOCKED' && phase7.netResult === null && phase7.modules === 0 && phase7.projectStatus === 'MONITORING'
+    && phase7.qaCanRead && phase7.valueRefused && phase7.outsidersBlocked
+    && ['CALCULATION_RUN_CREATED', 'CALCULATION_BLOCKED'].every((a) => phase7.audit.includes(a));
+  if (!stillIn || real.length || navItems.length !== 4 || !p2ok || !p3ok || !p4ok || !p5ok || !p6ok || !p7ok) process.exitCode = 1;
 })().catch(async (e) => {
   console.error('DRIVER FAILED:', e.message);
   if (lastPage) {

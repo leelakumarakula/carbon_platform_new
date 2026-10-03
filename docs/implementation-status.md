@@ -8,8 +8,8 @@
 | 4 | Standard / activity / methodology | **Done** |
 | 5 | MRV / GIS / sampling | **Done** |
 | 6 | Sample / lab | **Done** |
-| 7 | Calculation | Next (awaiting approval) |
-| 8 | VVB / ACVA | — |
+| 7 | Calculation | **Done** |
+| 8 | VVB / ACVA | Next (awaiting approval) |
 | 9 | Registry / credits | — |
 | 10 | Marketplace | — |
 | 11 | Revenue / payout | — |
@@ -347,6 +347,42 @@ Verification (exit gate, 3 Oct 2026)
   engagement ended, receipt of an in-transit shipment was allowed and new shipments, retests and test starts returned
   ENGAGEMENT_NOT_ACTIVE; all required laboratory audit events present; no console errors.
 
+## Phase 7 — delivered
+
+**Readiness → frozen inputs → methodology-module execution (Decimal) → calculation QA → approval → recalculation / supersession,
+with full lineage.** Details are in [calculation-workflow.md](calculation-workflow.md). Calculated tCO2e is labelled
+"Calculated tCO2e — not verified, not issued"; no credit, serial, registry, verification, issuance, transfer, retirement, marketplace
+or payout exists.
+
+Backend
+- Migration `0010`: `calculation_runs`, `calculation_inputs`, `calculation_outputs`, `calculation_qa_reviews`, sequence `CALC-`,
+  filtered unique indexes (one open and one APPROVED run per reporting period, one final output per run), append-only inputs / outputs,
+  completed-QA immutability and the run immutability trigger (no deletes; APPROVED → SUPERSEDED only). No earlier table changed.
+- `app/calculation/`: framework (engine `calc-framework-1.0`, spec §18 methods, no default formula), application registry —
+  **no module is registered** (no real methodology, no approved DEMO equations), so every project, including the DEMO Niphad project,
+  is blocked with CONFIGURATION_REQUIRED — NO_CALCULATION_MODULE.
+- Deterministic readiness (blocker list), input freeze into a canonical snapshot + SHA-256 + normalized input rows (APPROVED dataset and
+  APPROVED laboratory results only; no substitution; exact units; text refused for numeric variables; input-size guard), currency
+  re-check before execution (INPUTS_OUT_OF_DATE), synchronous Decimal execution with output SHA-256, 14 calculation QA checks
+  (including reproducibility), approval with separation of duties, recalculation as a new run, comparison and lineage.
+- Project status MONITORING → CALCULATION_READY (first successful freeze) → CALCULATED (first approved run); MRV stays possible in both.
+- 4 permissions (`calculation.read/manage/review/approve`) on existing roles; all actions audited with hashes, versions and the result.
+
+Frontend
+- **Calculations** page (`/calculations`, `calculation.read`): project + period, readiness with the actual blockers, runs. The same panel
+  is a "Calculations" tab in the MRV workspace. Run page (`/calculations/runs/:id`): actions, Inputs, Results (by step), QA, Lineage,
+  History / Compare; labels "Calculated tCO2e — not verified, not issued" and, for DEMO, "DEMO — not carbon accounting".
+
+Verification (exit gate, 3 Oct 2026)
+- Backend: **262 pytest tests passed** (Phase 7: 10 calculation tests, using a TEST-only non-carbon fixture module that is never
+  registered). ruff clean. mypy clean (137 files). `alembic check`: no drift. Migration 0010 tested upgrade → downgrade (to 0009) →
+  upgrade (twice) on the test database; its downgrade is refused while calculation runs exist (verified).
+- Frontend: **81 Vitest tests passed** (12 files). Production build OK (initial bundle 742 kB, 174 kB transferred).
+- E2E passed (Phases 1–7): the analyst opened Calculations for the E2E project (approved dataset and laboratory results, DEMO methodology)
+  and saw CONFIGURATION_REQUIRED — NO_CALCULATION_MODULE with the labels; the created run was BLOCKED on freeze with no value; the project
+  stayed MONITORING; no module is registered; the QA officer can read; a request carrying a value is refused (422); buyer, farmer and
+  laboratory users are refused; CALCULATION_RUN_CREATED and CALCULATION_BLOCKED were audited; no unexpected console errors.
+
 ## Known limitations and open items
 
 - The rate limiter is in-memory (single API process). Redis is required before scaling out (Phase 12).
@@ -394,4 +430,13 @@ Verification (exit gate, 3 Oct 2026)
   - Analysis times are entered to the second; laboratory QA compares them with the receipt time at whole-second precision.
   - Each E2E run adds an engagement, two samples, two shipments and laboratory results to its DEMO project in the development
     database.
+- Phase 7:
+  - No calculation module is registered: a real methodology must be entered from its authoritative source and its module implemented
+    and verified with reference tests; illustrative DEMO equations need explicit approval. Until then every calculation is blocked
+    (CONFIGURATION_REQUIRED — NO_CALCULATION_MODULE).
+  - Modules are NOT_PRODUCTION_READY (blocked in production); the production-readiness workflow is deferred.
+  - Execution is synchronous with an input-size guard; background execution (Celery / Redis) is deferred to Phase 12.
+  - Reference / baseline periods for multi-period (remeasurement) modules and `calculation_run_datasets` come with the first module that
+    needs them. Calculation report PDF, findings and farm-level allocation are deferred.
+  - Each E2E run adds a BLOCKED calculation run to its DEMO project in the development database.
 - The browser logs one expected 401 at start-up: the silent session-restore attempt when nobody is signed in.

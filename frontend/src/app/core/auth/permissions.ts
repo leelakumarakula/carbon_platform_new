@@ -50,6 +50,10 @@ export const P = {
   LAB_TEST: 'lab.test',
   LAB_QA: 'lab.qa',
   LAB_RETEST_REQUEST: 'lab.retest_request',
+  CALCULATION_READ: 'calculation.read',
+  CALCULATION_MANAGE: 'calculation.manage',
+  CALCULATION_REVIEW: 'calculation.review',
+  CALCULATION_APPROVE: 'calculation.approve',
 } as const;
 
 export type PermissionCode = (typeof P)[keyof typeof P];

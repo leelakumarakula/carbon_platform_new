@@ -42,8 +42,8 @@ def now_iso(delta_min: int = 0) -> str:
 
 
 def lab_project(db: Session, client: TestClient, lon: float, lat: float, id_number: str, rules: list[dict[str, Any]] | None = None,
-                n_points: int = 2, engage: list[str] | None = None) -> LabCtx:
-    c = locked_project(db, client, lon, lat, id_number, monitoring_rules=rules or [SOC_RULE])
+                n_points: int = 2, engage: list[str] | None = None, calculation_rules: list[dict[str, Any]] | None = None) -> LabCtx:
+    c = locked_project(db, client, lon, lat, id_number, monitoring_rules=rules or [SOC_RULE], calculation_rules=calculation_rules)
     approved_plan(client, c)
     mp = collecting_period(client, c, start=(datetime.now(UTC) - timedelta(days=60)).date().isoformat(),
                            end=(datetime.now(UTC) + timedelta(days=300)).date().isoformat())

@@ -105,6 +105,19 @@ see laboratory drafts. A LAB_MANAGER cannot approve a result they analysed or su
 sealed, whose shipment they created or dispatched, or whose retest they requested (`SEPARATION_OF_DUTIES`). The proposer of an
 engagement can never accept it. Buyers, VVB, finance and farmers have no Phase 6 access.
 
+## Phase 7 permissions (decision A16)
+
+| Code | Meaning | Holders |
+|---|---|---|
+| calculation.read | readiness, runs, frozen inputs, outputs, QA, lineage, comparisons (organization-scoped) | Calculation Analyst, QA Officer, MRV Manager, Project Manager |
+| calculation.manage | create runs, freeze inputs, execute, submit, cancel, recalculate | Calculation Analyst |
+| calculation.review | calculation QA (start / complete) | QA Officer |
+| calculation.approve | approve / reject a run after QA PASS | QA Officer |
+
+The reviewer and the approver are never the run's creator, freezer, executor or submitter (`SEPARATION_OF_DUTIES`); the same QA officer
+may review and approve. Nobody can type a calculated value. Farmers, buyers, laboratory roles, finance and VVB/ACVA have no calculation
+access in Phase 7. No new role was added.
+
 ## Permission-grant matrix (decision D4, approved)
 
 Granting a role needs `users.assign_roles` in the scope of the grant, plus every *privileged* permission the role

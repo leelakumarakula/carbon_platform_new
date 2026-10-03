@@ -76,9 +76,12 @@ PROJECT_MACHINE = StateMachine.build(
         # Unlocking is explicit and audited (never silent); MRV_PLANNED is added in Phase 5.
         "METHODOLOGY_CONFIRMED": {"METHODOLOGY_REVIEW", "MRV_PLANNED", "CLOSED"},
         # Phase 5: first MRV plan approved → MRV_PLANNED; first monitoring period started → MONITORING.
-        # CALCULATION_READY and later are added in Phase 7+.
         "MRV_PLANNED": {"MONITORING", "CLOSED"},
-        "MONITORING": {"CLOSED"},
+        # Phase 7: entered only through the calculation workflow — inputs frozen → CALCULATION_READY; first run approved →
+        # CALCULATED. VALIDATION and later are added in Phase 8+.
+        "MONITORING": {"CALCULATION_READY", "CLOSED"},
+        "CALCULATION_READY": {"CALCULATED", "CLOSED"},
+        "CALCULATED": {"CLOSED"},
     },
     terminal={"CLOSED"},
 )
@@ -177,4 +180,15 @@ LAB_RESULT_MACHINE = StateMachine.build(
     transitions={"DRAFT": {"SUBMITTED", "WITHDRAWN"}, "SUBMITTED": {"QA_REVIEW", "REJECTED", "RETEST_REQUIRED", "WITHDRAWN"},
                  "QA_REVIEW": {"APPROVED", "REJECTED", "RETEST_REQUIRED"}, "APPROVED": {"SUPERSEDED"}},
     terminal={"REJECTED", "RETEST_REQUIRED", "WITHDRAWN", "SUPERSEDED"},
+)
+
+
+# ---------------------------------------------------------------- Phase 7 — carbon calculation
+# Decision A3 (+ C3: DRAFT → BLOCKED when readiness fails at freeze, e.g. NO_CALCULATION_MODULE). Execution is synchronous, so
+# there is no CALCULATING state. BLOCKED / CANCELLED / REJECTED / SUPERSEDED are final; a correction is a new run.
+CALCULATION_RUN_MACHINE = StateMachine.build(
+    "calculation_run", initial="DRAFT",
+    transitions={"DRAFT": {"INPUTS_FROZEN", "BLOCKED", "CANCELLED"}, "INPUTS_FROZEN": {"CALCULATED", "BLOCKED", "CANCELLED"},
+                 "CALCULATED": {"QA_REVIEW"}, "QA_REVIEW": {"APPROVED", "REJECTED"}, "APPROVED": {"SUPERSEDED"}},
+    terminal={"BLOCKED", "CANCELLED", "REJECTED", "SUPERSEDED"},
 )

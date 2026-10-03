@@ -1,6 +1,7 @@
 """All ORM models; importing this package registers every table on Base.metadata (used by Alembic)."""
 from app.models.audit import ApiAccessLog, AuditLog, LoginAudit, SecurityEvent, WorkflowEvent
 from app.models.base import Base, Environment
+from app.models.calculation import CalculationInput, CalculationOutput, CalculationQaReview, CalculationRun
 from app.models.catalog import Activity, Standard, StandardActivity
 from app.models.documents import Document, DocumentCategory, DocumentVersion
 from app.models.farmers import (
@@ -108,6 +109,10 @@ __all__ = [
     "AuditLog",
     "BankAccountStatus",
     "Base",
+    "CalculationInput",
+    "CalculationOutput",
+    "CalculationQaReview",
+    "CalculationRun",
     "ConsentDefinition",
     "Document",
     "DocumentCategory",

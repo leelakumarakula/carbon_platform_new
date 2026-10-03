@@ -406,8 +406,9 @@ def test_no_transitions_into_later_phase_states() -> None:
                 reachable.add(n)
                 frontier.append(n)
     assert reachable == {"DRAFT", "DATA_COLLECTION", "ELIGIBILITY_REVIEW", "STANDARD_SELECTED", "ACTIVITY_SELECTED", "CLOSED",
-                         "METHODOLOGY_REVIEW", "METHODOLOGY_CONFIRMED", "MRV_PLANNED", "MONITORING"}  # Phase 5 boundary
-    assert not reachable & {"CALCULATION_READY", "CALCULATED", "VERIFIED", "ISSUED", "ACTIVE"}  # MRV never leads to calculation
+                         "METHODOLOGY_REVIEW", "METHODOLOGY_CONFIRMED", "MRV_PLANNED", "MONITORING",
+                         "CALCULATION_READY", "CALCULATED"}  # Phase 7 boundary (entered only through the calculation workflow)
+    assert not reachable & {"VALIDATION", "VERIFICATION", "VERIFIED", "ISSUED", "ACTIVE"}  # calculated ≠ verified ≠ issued
 
 
 def test_status_history_is_append_only() -> None:

@@ -73,6 +73,11 @@ class P:
     LAB_TEST = "lab.test"                          # start tests, enter / submit results, attach reports
     LAB_QA = "lab.qa"                              # laboratory QA decisions (never on your own work)
     LAB_RETEST_REQUEST = "lab.retest_request"      # request a retest (with a reason)
+    # Phase 7 — carbon calculation (decision A16: exactly these four)
+    CALCULATION_READ = "calculation.read"          # readiness, runs, inputs, outputs, QA, lineage, compare
+    CALCULATION_MANAGE = "calculation.manage"      # create, freeze inputs, execute, submit, cancel, recalculate
+    CALCULATION_REVIEW = "calculation.review"      # calculation QA (never on a run you created / froze / executed / submitted)
+    CALCULATION_APPROVE = "calculation.approve"    # approve / reject a calculation run (same separation of duties)
 
 
 PERMISSIONS: tuple[PermissionDef, ...] = (
@@ -142,6 +147,13 @@ PERMISSIONS: tuple[PermissionDef, ...] = (
     PermissionDef(P.LAB_TEST, "lab", "Perform tests", "Start requested tests, enter and submit results, attach PDF reports."),
     PermissionDef(P.LAB_QA, "lab", "Laboratory QA", "Approve, reject or require a retest of a laboratory result (never your own work)."),
     PermissionDef(P.LAB_RETEST_REQUEST, "lab", "Request retests", "Request a retest of a laboratory result, with a reason."),
+    PermissionDef(P.CALCULATION_READ, "calculation", "View calculations",
+                  "View calculation readiness, runs, frozen inputs, outputs, QA, lineage and comparisons of the organization's projects."),
+    PermissionDef(P.CALCULATION_MANAGE, "calculation", "Manage calculation runs",
+                  "Create calculation runs, freeze inputs, execute the registered methodology module, submit, cancel, recalculate."),
+    PermissionDef(P.CALCULATION_REVIEW, "calculation", "Calculation QA", "Run and complete calculation QA (never on your own run)."),
+    PermissionDef(P.CALCULATION_APPROVE, "calculation", "Approve calculations",
+                  "Approve or reject a calculation run after QA PASS (never your own run). Calculated is not verified or issued."),
     PermissionDef(P.CONSENTS_CONFIGURE, "admin", "Configure consent types",
                   "Publish versioned consent definitions and choose which are required for farmer activation."),
 )
@@ -182,7 +194,7 @@ SYSTEM_ROLES: tuple[RoleDef, ...] = (
        P.LAB_SHIPMENT_MANAGE),
     _r("PROJECT_MANAGER", "Project Manager / Project Developer", ORG, "Creates projects, selects standard/activity/methodology, manages MRV, VVB and registry workflows.",
        P.FARMERS_READ, P.FARMERS_MANAGE, P.FARMERS_KYC_VERIFY, P.FARMERS_BANK_MANAGE, P.FARMS_READ, P.FARMS_MANAGE,
-       P.PROJECTS_READ, P.PROJECTS_MANAGE, P.METHODOLOGIES_READ, P.MRV_READ, P.MRV_MANAGE, P.LAB_READ, P.LAB_ENGAGE),
+       P.PROJECTS_READ, P.PROJECTS_MANAGE, P.METHODOLOGIES_READ, P.MRV_READ, P.MRV_MANAGE, P.LAB_READ, P.LAB_ENGAGE, P.CALCULATION_READ),
     _r("METHODOLOGY_SPECIALIST", "Methodology Specialist", PLATFORM, "Manages versioned, approval-controlled methodology configuration.",
        P.PROJECTS_READ, P.STANDARDS_MANAGE, P.METHODOLOGIES_READ, P.METHODOLOGIES_MANAGE, P.METHODOLOGIES_APPROVE,
        P.METHODOLOGIES_REVIEW_PROJECT, P.MRV_READ),
@@ -193,16 +205,17 @@ SYSTEM_ROLES: tuple[RoleDef, ...] = (
        P.FARMERS_READ, P.FARMS_READ, P.FARMS_REVIEW_CROSS_ORG, P.PROJECTS_READ, P.MRV_READ),
     _r("MRV_MANAGER", "MRV Manager", ORG, "Manages MRV plans, monitoring periods and approves monitoring datasets.",
        P.FARMERS_READ, P.FARMS_READ, P.PROJECTS_READ, P.METHODOLOGIES_READ, P.MRV_READ, P.MRV_MANAGE, P.MRV_COLLECT, P.MRV_REVIEW,
-       P.SAMPLING_MANAGE, P.SAMPLING_ASSIGN, P.LAB_READ, P.LAB_SAMPLE_REGISTER, P.LAB_SAMPLE_MANAGE, P.LAB_SHIPMENT_MANAGE, P.LAB_ENGAGE),
+       P.SAMPLING_MANAGE, P.SAMPLING_ASSIGN, P.LAB_READ, P.LAB_SAMPLE_REGISTER, P.LAB_SAMPLE_MANAGE, P.LAB_SHIPMENT_MANAGE, P.LAB_ENGAGE,
+       P.CALCULATION_READ),
     _r("LAB_TECHNICIAN", "Lab Technician", ORG, "Receives samples, enters results and uploads lab reports.",
        P.LAB_LAB_READ, P.LAB_RECEIVE, P.LAB_TEST),
     _r("LAB_MANAGER", "Lab Manager / Lab QA", ORG, "Approves or rejects lab results and requests retests.",
        P.LAB_LAB_READ, P.LAB_RECEIVE, P.LAB_TEST, P.LAB_QA, P.LAB_RETEST_REQUEST, P.LAB_ENGAGEMENT_ACCEPT),
     _r("CALCULATION_ANALYST", "Carbon Calculation Analyst", ORG, "Runs approved calculation engines; cannot type a final credit quantity.",
-       P.METHODOLOGIES_READ, P.MRV_READ, P.LAB_READ),
+       P.METHODOLOGIES_READ, P.MRV_READ, P.LAB_READ, P.CALCULATION_READ, P.CALCULATION_MANAGE),
     _r("QA_OFFICER", "Data Quality / QA Officer", ORG, "Reviews anomalies and duplicates; approves or rejects datasets.",
        P.FARMERS_READ, P.FARMERS_KYC_VERIFY, P.FARMS_READ, P.PROJECTS_READ, P.PROJECTS_REVIEW, P.METHODOLOGIES_READ, P.MRV_READ,
-       P.MRV_REVIEW, P.MRV_APPROVE, P.LAB_READ),
+       P.MRV_REVIEW, P.MRV_APPROVE, P.LAB_READ, P.CALCULATION_READ, P.CALCULATION_REVIEW, P.CALCULATION_APPROVE),
     _r("VVB_REVIEWER", "VVB / ACVA Reviewer", ORG, "External verifier: reviews assigned projects, raises findings, submits decisions."),
     _r("REGISTRY_MANAGER", "Registry Manager", ORG, "Manages registry submissions, issuance tracking and serial reconciliation."),
     _r("CREDIT_MANAGER", "Credit Manager", ORG, "Manages issued-credit inventory, reservations, transfers and retirements."),

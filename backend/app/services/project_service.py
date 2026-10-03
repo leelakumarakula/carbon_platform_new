@@ -74,7 +74,9 @@ TRANSITION_PERMISSION = {"DATA_COLLECTION": P.PROJECTS_MANAGE, "ELIGIBILITY_REVI
                          # Phase 4: entered through the methodology endpoints (evaluate / confirm / unlock)
                          "METHODOLOGY_REVIEW": P.PROJECTS_MANAGE, "METHODOLOGY_CONFIRMED": P.PROJECTS_MANAGE,
                          # Phase 5: entered through the MRV endpoints (plan approval / period start)
-                         "MRV_PLANNED": P.MRV_MANAGE, "MONITORING": P.MRV_MANAGE}
+                         "MRV_PLANNED": P.MRV_MANAGE, "MONITORING": P.MRV_MANAGE,
+                         # Phase 7: entered through the calculation endpoints (input freeze / run approval)
+                         "CALCULATION_READY": P.CALCULATION_MANAGE, "CALCULATED": P.CALCULATION_APPROVE}
 
 
 def _not_found() -> NotFound:

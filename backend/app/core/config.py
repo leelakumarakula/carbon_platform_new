@@ -85,6 +85,9 @@ class Settings(BaseSettings):
     GPS_MAX_DISTANCE_M: float = 30.0          # collection GPS further than this from the planned point needs a note
     FIELD_CHECKLIST_VERSION: str = "PLATFORM-DEFAULT-2"   # Phase 6: label with the SMP sample code
     FIELD_MIN_PHOTOS_PER_SAMPLE: int = 1
+    # Phase 7 (decision A18): calculations run synchronously; a run with more frozen input rows than this is BLOCKED
+    # (INPUT_TOO_LARGE) instead of holding an HTTP request open. Background execution is deferred.
+    CALCULATION_MAX_INPUT_ROWS: int = 20000
     # Decision V1 (platform governance, not a methodology rule): approving an MRV plan with CONFIGURATION_REQUIRED gaps is
     # allowed (with an audited acknowledgement) for DEMO projects and outside production only. No production exception exists.
     SAMPLING_MAX_ATTEMPTS_PER_POINT: int = 400  # rejection-sampling attempts per requested point before giving up

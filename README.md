@@ -120,6 +120,10 @@ accepts, `collector@` registers and seals a sample, `supervisor@` ships it, `lab
 DEMO placeholder result with a DEMO PDF, and `labqa@` approves it after laboratory QA (open **Laboratory** as a lab user, or the
 **Samples & laboratory** tab of the MRV workspace). It is not a real analysis; there are no calculations or credits.
 
+Phase 7 adds the calculation framework but **no calculation module** (no real methodology is configured and no illustrative DEMO
+equations were approved). Sign in as `analyst@` and open **Calculations**: the Niphad project shows the real blocker,
+CONFIGURATION_REQUIRED — NO_CALCULATION_MODULE, and a run is BLOCKED on freeze. Calculated tCO2e is never a credit.
+
 Demo and live records cannot be mixed; the API rejects it with `ENVIRONMENT_MISMATCH`.
 
 ## Tests and checks (exit gate after every phase)
@@ -141,7 +145,7 @@ npm run e2e:smoke                       # E2E smoke (API + ng serve running, DEM
 
 The 19 roles in spec §4 (plus Platform GIS Specialist, decision D5) are defined in `backend/app/security/permissions.py`. See
 [docs/roles-permissions.md](docs/roles-permissions.md). Phase 2 added the farmer and farm permissions to the
-field, project, GIS, QA, MRV and finance roles, and `farmers.self` to Farmer. Phase 3 added `projects.*` and `standards.manage`; Phase 4 added `methodologies.*`; Phase 5 added `mrv.*` and `sampling.*`; Phase 6 added `lab.*`. Each later phase adds its module's permissions.
+field, project, GIS, QA, MRV and finance roles, and `farmers.self` to Farmer. Phase 3 added `projects.*` and `standards.manage`; Phase 4 added `methodologies.*`; Phase 5 added `mrv.*` and `sampling.*`; Phase 6 added `lab.*`; Phase 7 added `calculation.*`. Each later phase adds its module's permissions.
 
 ## Workflow
 
@@ -151,7 +155,8 @@ enforced by database triggers. The farmer and farm workflows are described in [d
 workflow in [docs/project-workflow.md](docs/project-workflow.md), methodology selection in
 [docs/methodology-engine.md](docs/methodology-engine.md), MRV in [docs/mrv-workflow.md](docs/mrv-workflow.md) and
 [docs/sampling-workflow.md](docs/sampling-workflow.md), samples and laboratory analysis in
-[docs/laboratory-workflow.md](docs/laboratory-workflow.md), lineage in [docs/data-lineage.md](docs/data-lineage.md).
+[docs/laboratory-workflow.md](docs/laboratory-workflow.md), calculations in [docs/calculation-workflow.md](docs/calculation-workflow.md),
+lineage in [docs/data-lineage.md](docs/data-lineage.md).
 
 ## External integrations
 

@@ -16,7 +16,8 @@ from app.security.principal import Principal
 
 VISIBLE = (P.MRV_READ, P.MRV_MANAGE, P.MRV_COLLECT, P.MRV_REVIEW, P.MRV_APPROVE, P.SAMPLING_MANAGE, P.SAMPLING_ASSIGN, P.SAMPLING_COLLECT,
            P.SAMPLING_REVIEW)
-MRV_STATES = ("METHODOLOGY_CONFIRMED", "MRV_PLANNED", "MONITORING")
+# MRV continues after calculation starts (Phase 7): later periods and data corrections (which lead to a recalculation) stay possible.
+MRV_STATES = ("METHODOLOGY_CONFIRMED", "MRV_PLANNED", "MONITORING", "CALCULATION_READY", "CALCULATED")
 
 
 def not_found() -> NotFound:

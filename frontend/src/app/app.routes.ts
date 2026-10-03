@@ -123,6 +123,20 @@ export const routes: Routes = [
         ],
       },
       {
+        path: 'calculations',
+        title: 'Calculations',
+        canActivate: [permissionGuard],
+        data: { permissions: [P.CALCULATION_READ] },
+        loadComponent: () => import('./calculation/calculations-page').then((m) => m.CalculationsPage),
+      },
+      {
+        path: 'calculations/runs/:id',
+        title: 'Calculation run',
+        canActivate: [permissionGuard],
+        data: { permissions: [P.CALCULATION_READ] },
+        loadComponent: () => import('./calculation/calculation-run-page').then((m) => m.CalculationRunPage),
+      },
+      {
         path: 'laboratory',
         canActivate: [permissionGuard],
         data: { permissions: [P.LAB_LAB_READ] },
