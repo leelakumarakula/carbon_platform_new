@@ -408,9 +408,10 @@ def test_no_transitions_into_later_phase_states() -> None:
     assert reachable == {"DRAFT", "DATA_COLLECTION", "ELIGIBILITY_REVIEW", "STANDARD_SELECTED", "ACTIVITY_SELECTED", "CLOSED",
                          "METHODOLOGY_REVIEW", "METHODOLOGY_CONFIRMED", "MRV_PLANNED", "MONITORING",
                          "CALCULATION_READY", "CALCULATED",          # Phase 7 (entered only through the calculation workflow)
-                         "VERIFICATION", "VERIFIED"}                  # Phase 8B aggregate (entered only through VVB assignments / decisions)
-    # verified ≠ registered ≠ issued: no validation, registry or issuance state is reachable
-    assert not reachable & {"VALIDATION", "REGISTRY_SUBMISSION", "REGISTERED", "ISSUANCE_PENDING", "ISSUED", "ACTIVE"}
+                         "VERIFICATION", "VERIFIED",                 # Phase 8B aggregate (entered only through VVB assignments / decisions)
+                         "ISSUED"}                                   # Phase 9A aggregate (entered only through a confirmed registry issuance)
+    # D13: no validation, registry-submission, registered, issuance-pending or active project state is reachable
+    assert not reachable & {"VALIDATION", "REGISTRY_SUBMISSION", "REGISTERED", "ISSUANCE_PENDING", "ACTIVE"}
 
 
 def test_status_history_is_append_only() -> None:

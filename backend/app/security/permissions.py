@@ -86,6 +86,11 @@ class P:
     VERIFICATION_VVB_READ = "verification.vvb_read"      # assignments of the own VVB, submitted packages (allow-list)
     VERIFICATION_VVB_REVIEW = "verification.vvb_review"  # accept (COI) / decline / terminate, findings, corrective actions
     VERIFICATION_DECIDE = "verification.decide"          # record the VVB decision (report PDF required)
+    # Phase 9A — registry submission & credit issuance (developer side; registries are external counterparties, D2)
+    REGISTRY_READ = "registry.read"          # registry accounts, registrations, submissions, events, issuances of the organization
+    REGISTRY_MANAGE = "registry.manage"      # accounts, registrations, submissions, registry responses, record issuances
+    REGISTRY_CONFIRM = "registry.confirm"    # independently confirm a recorded issuance (never the recorder)
+    CREDITS_READ = "credits.read"            # registry-issued credit batches (read-only in 9A)
 
 
 PERMISSIONS: tuple[PermissionDef, ...] = (
@@ -174,6 +179,15 @@ PERMISSIONS: tuple[PermissionDef, ...] = (
     PermissionDef(P.VERIFICATION_DECIDE, "verification", "VVB: record decision",
                   "VVB organizations only: record the VVB decision (VERIFIED / NOT_VERIFIED) with the VVB report PDF; never the "
                   "VVB user who raised findings on that submission."),
+    PermissionDef(P.REGISTRY_READ, "registry", "View registry records",
+                  "View registry accounts, project registrations, registry submissions and events, and issuance records."),
+    PermissionDef(P.REGISTRY_MANAGE, "registry", "Manage registry workflow",
+                  "Manage registry accounts and project registrations, prepare / freeze / submit registry submissions, record "
+                  "registry responses with evidence and record registry-stated issuances (never confirms them)."),
+    PermissionDef(P.REGISTRY_CONFIRM, "registry", "Confirm issuances",
+                  "Independently confirm a recorded registry issuance against its evidence (never the user who recorded it)."),
+    PermissionDef(P.CREDITS_READ, "credits", "View issued credits",
+                  "View registry-issued credit batches and serial ranges (read-only; no inventory, transfer or retirement)."),
     PermissionDef(P.CALCULATION_APPROVE, "calculation", "Approve calculations",
                   "Approve or reject a calculation run after QA PASS (never your own run). Calculated is not verified or issued."),
     PermissionDef(P.CONSENTS_CONFIGURE, "admin", "Configure consent types",
@@ -217,7 +231,7 @@ SYSTEM_ROLES: tuple[RoleDef, ...] = (
     _r("PROJECT_MANAGER", "Project Manager / Project Developer", ORG, "Creates projects, selects standard/activity/methodology, manages MRV, VVB and registry workflows.",
        P.FARMERS_READ, P.FARMERS_MANAGE, P.FARMERS_KYC_VERIFY, P.FARMERS_BANK_MANAGE, P.FARMS_READ, P.FARMS_MANAGE,
        P.PROJECTS_READ, P.PROJECTS_MANAGE, P.METHODOLOGIES_READ, P.MRV_READ, P.MRV_MANAGE, P.LAB_READ, P.LAB_ENGAGE, P.CALCULATION_READ,
-       P.VERIFICATION_READ, P.VERIFICATION_MANAGE, P.VERIFICATION_RESPOND),
+       P.VERIFICATION_READ, P.VERIFICATION_MANAGE, P.VERIFICATION_RESPOND, P.REGISTRY_READ, P.REGISTRY_MANAGE, P.CREDITS_READ),
     _r("METHODOLOGY_SPECIALIST", "Methodology Specialist", PLATFORM, "Manages versioned, approval-controlled methodology configuration.",
        P.PROJECTS_READ, P.STANDARDS_MANAGE, P.METHODOLOGIES_READ, P.METHODOLOGIES_MANAGE, P.METHODOLOGIES_APPROVE,
        P.METHODOLOGIES_REVIEW_PROJECT, P.MRV_READ),
@@ -229,23 +243,27 @@ SYSTEM_ROLES: tuple[RoleDef, ...] = (
     _r("MRV_MANAGER", "MRV Manager", ORG, "Manages MRV plans, monitoring periods and approves monitoring datasets.",
        P.FARMERS_READ, P.FARMS_READ, P.PROJECTS_READ, P.METHODOLOGIES_READ, P.MRV_READ, P.MRV_MANAGE, P.MRV_COLLECT, P.MRV_REVIEW,
        P.SAMPLING_MANAGE, P.SAMPLING_ASSIGN, P.LAB_READ, P.LAB_SAMPLE_REGISTER, P.LAB_SAMPLE_MANAGE, P.LAB_SHIPMENT_MANAGE, P.LAB_ENGAGE,
-       P.CALCULATION_READ, P.VERIFICATION_READ, P.VERIFICATION_RESPOND),
+       P.CALCULATION_READ, P.VERIFICATION_READ, P.VERIFICATION_RESPOND, P.REGISTRY_READ),
     _r("LAB_TECHNICIAN", "Lab Technician", ORG, "Receives samples, enters results and uploads lab reports.",
        P.LAB_LAB_READ, P.LAB_RECEIVE, P.LAB_TEST),
     _r("LAB_MANAGER", "Lab Manager / Lab QA", ORG, "Approves or rejects lab results and requests retests.",
        P.LAB_LAB_READ, P.LAB_RECEIVE, P.LAB_TEST, P.LAB_QA, P.LAB_RETEST_REQUEST, P.LAB_ENGAGEMENT_ACCEPT),
     _r("CALCULATION_ANALYST", "Carbon Calculation Analyst", ORG, "Runs approved calculation engines; cannot type a final credit quantity.",
-       P.METHODOLOGIES_READ, P.MRV_READ, P.LAB_READ, P.CALCULATION_READ, P.CALCULATION_MANAGE, P.VERIFICATION_READ, P.VERIFICATION_RESPOND),
+       P.METHODOLOGIES_READ, P.MRV_READ, P.LAB_READ, P.CALCULATION_READ, P.CALCULATION_MANAGE, P.VERIFICATION_READ, P.VERIFICATION_RESPOND,
+       P.REGISTRY_READ),
     _r("QA_OFFICER", "Data Quality / QA Officer", ORG, "Reviews anomalies and duplicates; approves or rejects datasets.",
        P.FARMERS_READ, P.FARMERS_KYC_VERIFY, P.FARMS_READ, P.PROJECTS_READ, P.PROJECTS_REVIEW, P.METHODOLOGIES_READ, P.MRV_READ,
-       P.MRV_REVIEW, P.MRV_APPROVE, P.LAB_READ, P.CALCULATION_READ, P.CALCULATION_REVIEW, P.CALCULATION_APPROVE, P.VERIFICATION_READ),
+       P.MRV_REVIEW, P.MRV_APPROVE, P.LAB_READ, P.CALCULATION_READ, P.CALCULATION_REVIEW, P.CALCULATION_APPROVE, P.VERIFICATION_READ,
+       P.REGISTRY_READ, P.REGISTRY_CONFIRM),
     _r("VVB_REVIEWER", "VVB / ACVA Reviewer", ORG, "External verifier: reviews assigned projects, raises findings, submits decisions.",
        P.VERIFICATION_VVB_READ, P.VERIFICATION_VVB_REVIEW, P.VERIFICATION_DECIDE),
-    _r("REGISTRY_MANAGER", "Registry Manager", ORG, "Manages registry submissions, issuance tracking and serial reconciliation."),
-    _r("CREDIT_MANAGER", "Credit Manager", ORG, "Manages issued-credit inventory, reservations, transfers and retirements."),
+    _r("REGISTRY_MANAGER", "Registry Manager", ORG, "Manages registry submissions, issuance tracking and serial reconciliation.",
+       P.REGISTRY_READ, P.REGISTRY_MANAGE, P.CREDITS_READ),
+    _r("CREDIT_MANAGER", "Credit Manager", ORG, "Manages issued-credit inventory, reservations, transfers and retirements.",
+       P.CREDITS_READ),
     _r("BUYER", "Buyer", ORG, "Browses eligible issued credits, orders, pays, requests transfer/retirement."),
     _r("FINANCE_MANAGER", "Finance / Payout Manager", ORG, "Reconciles payments, calculates farmer share per agreement, approves payouts.",
-       P.FARMERS_READ, P.FARMERS_BANK_MANAGE, P.FARMERS_BANK_VERIFY, P.PROJECTS_READ),
+       P.FARMERS_READ, P.FARMERS_BANK_MANAGE, P.FARMERS_BANK_VERIFY, P.PROJECTS_READ, P.CREDITS_READ),
     _r("PLATFORM_ADMIN", "Platform Admin", PLATFORM, "Manages users, roles, organizations, master data and configuration; views audit logs.",
        P.USERS_READ, P.USERS_MANAGE, P.USERS_ASSIGN_ROLES, P.ROLES_READ, P.ROLES_MANAGE,
        P.ORGANIZATIONS_READ, P.ORGANIZATIONS_MANAGE, P.ORGANIZATIONS_MANAGE_MEMBERS, P.AUDIT_READ, P.SECURITY_READ,

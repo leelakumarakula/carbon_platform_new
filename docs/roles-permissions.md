@@ -129,6 +129,19 @@ access in Phase 7. No new role was added.
 VVB/ACVA, methodology specialists (platform-wide), farmers, buyers, laboratory roles and finance have no Phase 8A access (the VVB sees
 the Phase 8A finding summaries only inside a submitted Phase 8B manifest).
 
+## Phase 9A (decision D18) — registry submission & credit issuance
+
+| Role | Permissions | Phase 9A actions | Separation of duties |
+|---|---|---|---|
+| Project Manager, Registry Manager | registry.read, registry.manage, credits.read | registry accounts (unit equivalence, checklist), registrations, submissions (freeze, record submitted / query / response, withdraw, cancel, reconcile), record / void / cancel / correct issuances | never confirms an issuance they recorded (registry.confirm is not granted to them) |
+| QA Officer | registry.read, registry.confirm | independently confirm recorded issuances | confirmer ≠ recorder (also a DB check) |
+| MRV Manager, Calculation Analyst | registry.read | read registry records | — |
+| Credit Manager, Finance Manager | credits.read | read registry-issued credit batches (read-only) | — |
+
+The VVB Reviewer, farmers, buyers, laboratory roles and methodology specialists have no registry or credits permission. Registries are
+external counterparties without users (D2). The Registry Manager reaches the registry panel through the `/registry` page (no project or MRV
+permission is needed).
+
 ## Phase 8B (decisions C17–C19) — VVB / ACVA verification
 
 | Role | Permission | Phase 8B actions | Separation of duties |

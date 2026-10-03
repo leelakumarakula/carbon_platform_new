@@ -183,6 +183,22 @@ document exists.
 CAR / VDEC; its downgrade refuses to run while any Phase 8B row or verification document exists. No earlier table changes (the project
 statuses VERIFICATION / VERIFIED already existed in the status check).
 
+## Phase 9A tables (registry submission & credit issuance) — migration 0013
+
+| Table | Key columns / rules |
+|---|---|
+| `registry_accounts` | owner organization (project developer); registry organization (org_type REGISTRY, counterparty); `external_account_id` (unique per registry); label; `adapter_code` (MANUAL); explicit unit equivalence `credit_unit` + `verified_unit_equivalent` (both or neither, D5); `document_checklist` JSON (D16); ACTIVE / CLOSED. Trigger: identity fixed; CLOSED final |
+| `registry_project_registrations` | `registration_code` (RREG-); project, account, registry; PENDING / REGISTERED / REJECTED; `external_project_id` (unique per registry), registry-stated `registered_on`, evidence document (required when REGISTERED / REJECTED), recorded by / at; filtered unique: one PENDING / REGISTERED per project and registry. Trigger: identity fixed; recorded answers final |
+| `registry_submissions` | `submission_code` (RSUB-); project, period, registration, account, registry, VVB decision, verification submission, previous submission; DRAFT / FROZEN / SUBMITTING / SUBMISSION_UNCONFIRMED / SUBMITTED / ACCEPTED / REJECTED / WITHDRAWN / CANCELLED / INVALIDATED (filtered unique: one open / accepted per monitoring period across registries); `snapshot` (registry-submission-v1 JSON) + `snapshot_sha256` + `idempotency_key` (required once frozen); `external_submission_id` (unique per registry); response document or payload hash; reasons. Trigger: identity, snapshot, hash, key and external reference fixed once set; final states frozen |
+| `registry_events` | append-only: account, registration / submission / issuance; event type (SUBMIT_ATTEMPT, SUBMIT_CONFIRMED, TIMEOUT, STATUS_QUERIED, QUERY_RECEIVED, RESPONSE_RECORDED, ERROR, RECONCILED, MISMATCH, SOURCE_SUPERSEDED, DOCUMENT_ATTACHED, EXTERNAL_REFERENCE_RECORDED); actor; adapter; idempotency key; external reference; payload SHA-256 (no raw payload); outcome; checklist item; note; document |
+| `credit_issuances` | `issuance_code` (ISS-); registry submission, project, period, account, registry, VVB decision; registry-stated `external_issuance_id` (unique per registry among CONFIRMED), date, whole `quantity` (Numeric(28,0) > 0), unit; source MANUAL / API; ISSUANCE_STATEMENT document or API response hash; RECORDED / CONFIRMED / VOIDED / CORRECTED / CANCELLED; recorded / confirmed (check: confirmer ≠ recorder) / voided / cancelled stamps; `corrects_issuance_id` / `corrected_by_issuance_id`. Trigger: recorded data immutable; CONFIRMED → CORRECTED / CANCELLED only; final states frozen |
+| `credit_batches` | `batch_code` (CB-); issuance; project, period, registry, account, VVB decision, methodology version, standard; registry-stated `vintage`; whole quantity; unit; RECORDED / ISSUED / VOIDED / SUPERSEDED / CANCELLED. Trigger: only status changes, along the lifecycle |
+| `credit_serial_ranges` | batch; registry; `serial_start` / `serial_end` verbatim (both or neither); quantity; optional parsed series / bounds (registry-specific parser only); `is_current` (ISSUED / CANCELLED batches); filtered unique: registry + serial start and registry + serial end among current ranges. Trigger: serials never change |
+
+0013 also adds the documents categories `REGISTRY_SUBMISSION`, `REGISTRY_RESPONSE`, `ISSUANCE_STATEMENT` (PDF only) and the sequences RREG /
+RSUB / ISS / CB; its downgrade refuses to run while any Phase 9A row or registry document exists. No earlier table changes (the project
+status ISSUED already existed in the status check).
+
 ## Migrations
 
 `backend/alembic/versions/20261002_0001_phase1_identity_access_audit.py` and
@@ -200,7 +216,9 @@ LABORATORY, other existing rows → UNCLASSIFIED; one methodology change-history
 `20261003_0011_phase8a_internal_pre_verification.py` (findings, finding events, reports, readiness reviews, CFND / CRPT / RDY sequences,
 CALCULATION_REPORT category, four triggers; downgrade refused while Phase 8A rows exist) and
 `20261003_0012_phase8b_vvb_verification.py` (7 verification tables, VAS / VSUB / VFND / CAR / VDEC sequences, VERIFICATION_REPORT /
-VERIFICATION_EVIDENCE categories, seven triggers; downgrade refused while Phase 8B rows exist). Spatial
+VERIFICATION_EVIDENCE categories, seven triggers; downgrade refused while Phase 8B rows exist) and
+`20261003_0013_phase9a_registry_credit_issuance.py` (7 registry / credit tables, RREG / RSUB / ISS / CB sequences, three registry document
+categories, seven triggers; downgrade refused while Phase 9A rows exist). Spatial
 indexes (`six_*`) are hand-written SQL and excluded from autogenerate by `include_object` in `alembic/env.py`. Generate new revisions with
 `alembic revision --autogenerate`, review them, and add raw SQL (triggers, spatial indexes) by hand.
 `alembic check` must report no drift before a phase is closed.

@@ -8,6 +8,7 @@ from app.api.v1 import (
     catalog,
     client_config,
     consents,
+    credits,
     documents,
     farmers,
     farms,
@@ -19,6 +20,7 @@ from app.api.v1 import (
     notifications,
     organizations,
     projects,
+    registry,
     roles,
     users,
     verification,
@@ -27,6 +29,6 @@ from app.api.v1 import (
 
 api_router = APIRouter()
 for module in (health, auth, client_config, users, roles, organizations, audit, consents, farmers, farms, catalog, projects,
-               methodologies, mrv, lab, laboratory, calculations, calculation_preverification, verification, vvb,
+               methodologies, mrv, lab, laboratory, calculations, calculation_preverification, verification, vvb, registry, credits,
                documents, notifications):
     api_router.include_router(module.router)

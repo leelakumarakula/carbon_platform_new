@@ -133,6 +133,12 @@ a VVB organization for a monitoring period (MRV workspace → **Verification** t
 conflict-of-interest declaration in the **VVB workspace**. On DEMO data submission stays blocked (NO_READY_PACKAGE — no period is READY),
 so no VVB decision, report or verified quantity exists; nothing is faked.
 
+Phase 9A adds registry submission and credit issuance (no inventory, transfer or retirement). Registries are external counterparties: the
+project records its registry account, the registry's project registration, a frozen submission snapshot, the registry's response and the
+registry-stated issuance (batches, vintages, serial numbers exactly as supplied), which a second person (QA) confirms. Calculated, VVB-stated
+and registry-issued quantities are never converted into each other. On DEMO data the Registry tab shows "DEMO — no registry issuance" and
+NO_VERIFIED_DECISION; the only DEMO registry record is the fictitious counterparty "Carbon Registry R (DEMO)".
+
 Demo and live records cannot be mixed; the API rejects it with `ENVIRONMENT_MISMATCH`.
 
 ## Tests and checks (exit gate after every phase)
@@ -154,7 +160,7 @@ npm run e2e:smoke                       # E2E smoke (API + ng serve running, DEM
 
 The 19 roles in spec §4 (plus Platform GIS Specialist, decision D5) are defined in `backend/app/security/permissions.py`. See
 [docs/roles-permissions.md](docs/roles-permissions.md). Phase 2 added the farmer and farm permissions to the
-field, project, GIS, QA, MRV and finance roles, and `farmers.self` to Farmer. Phase 3 added `projects.*` and `standards.manage`; Phase 4 added `methodologies.*`; Phase 5 added `mrv.*` and `sampling.*`; Phase 6 added `lab.*`; Phase 7 added `calculation.*`; Phase 8B added `verification.*`. Each later phase adds its module's permissions.
+field, project, GIS, QA, MRV and finance roles, and `farmers.self` to Farmer. Phase 3 added `projects.*` and `standards.manage`; Phase 4 added `methodologies.*`; Phase 5 added `mrv.*` and `sampling.*`; Phase 6 added `lab.*`; Phase 7 added `calculation.*`; Phase 8B added `verification.*`; Phase 9A added `registry.*` and `credits.read`. Each later phase adds its module's permissions.
 
 ## Workflow
 
@@ -167,6 +173,7 @@ workflow in [docs/project-workflow.md](docs/project-workflow.md), methodology se
 [docs/laboratory-workflow.md](docs/laboratory-workflow.md), calculations in [docs/calculation-workflow.md](docs/calculation-workflow.md),
 internal pre-verification in [docs/pre-verification-workflow.md](docs/pre-verification-workflow.md),
 VVB / ACVA verification in [docs/verification-workflow.md](docs/verification-workflow.md),
+registry submission and credit issuance in [docs/registry-workflow.md](docs/registry-workflow.md),
 lineage in [docs/data-lineage.md](docs/data-lineage.md).
 
 ## External integrations

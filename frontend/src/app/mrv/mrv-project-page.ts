@@ -23,6 +23,7 @@ import { MrvEvidencePanel } from './panels/mrv-evidence-panel';
 import { MrvHistoryPanel } from './panels/mrv-history-panel';
 import { MrvCalculationsPanel } from './panels/mrv-calculations-panel';
 import { VerificationPanel } from '../verification/verification-panel';
+import { RegistryPanel } from '../registry/registry-panel';
 import { MrvSamplesPanel } from './panels/mrv-samples-panel';
 import { MrvPeriodsPanel } from './panels/mrv-periods-panel';
 import { MrvPlansPanel } from './panels/mrv-plans-panel';
@@ -30,7 +31,7 @@ import { MrvPointsPanel } from './panels/mrv-points-panel';
 import { MrvRecordsPanel } from './panels/mrv-records-panel';
 import { MrvStrataPanel } from './panels/mrv-strata-panel';
 
-const TABS = ['plans', 'periods', 'strata', 'design', 'points', 'data', 'evidence', 'samples', 'datasets', 'calculations', 'history', 'verification'];
+const TABS = ['plans', 'periods', 'strata', 'design', 'points', 'data', 'evidence', 'samples', 'datasets', 'calculations', 'history', 'verification', 'registry'];
 
 /** MRV workspace of one project (locked methodology). Tabs that work per monitoring period share the period picker. */
 @Component({
@@ -38,7 +39,7 @@ const TABS = ['plans', 'periods', 'strata', 'design', 'points', 'data', 'evidenc
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [FormsModule, MatTabsModule, MatFormFieldModule, MatSelectModule, PageHeader, StateView, StatusBadge, MrvPlansPanel, MrvPeriodsPanel,
     MrvStrataPanel, MrvDesignPanel, MrvPointsPanel, MrvRecordsPanel, MrvEvidencePanel, MrvDatasetsPanel, MrvHistoryPanel, MrvSamplesPanel,
-    MrvCalculationsPanel, VerificationPanel],
+    MrvCalculationsPanel, VerificationPanel, RegistryPanel],
   template: `
     <app-state-view [loading]="loading()" [error]="error()" (retry)="load()" />
     @if (project(); as p) {
@@ -103,6 +104,11 @@ const TABS = ['plans', 'periods', 'strata', 'design', 'points', 'data', 'evidenc
             <app-verification-panel [projectId]="p.id" [periodId]="period()?.id ?? null" />
           </ng-template></mat-tab>
         }
+        @if (canRegistry) {
+          <mat-tab label="Registry"><ng-template matTabContent>
+            <app-registry-panel [projectId]="p.id" [periodId]="period()?.id ?? null" />
+          </ng-template></mat-tab>
+        }
       </mat-tab-group>
     }
   `,
@@ -117,6 +123,7 @@ export class MrvProjectPage implements OnInit {
   readonly id = input.required<string>();
   protected readonly auth = inject(AuthService);
   protected readonly P = P;
+  protected readonly canRegistry = [P.REGISTRY_READ, P.REGISTRY_MANAGE, P.REGISTRY_CONFIRM].some((c) => this.auth.has(c));
   protected readonly canVerify = [P.VERIFICATION_READ, P.VERIFICATION_MANAGE, P.VERIFICATION_RESPOND].some((c) => this.auth.has(c));
   private readonly api = inject(MrvApi);
   private readonly projectsApi = inject(ProjectsApi);

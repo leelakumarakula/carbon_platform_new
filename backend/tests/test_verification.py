@@ -487,8 +487,9 @@ def test_no_validation_registry_or_issuance_surface_exists() -> None:
     v = [p for p in paths if p.startswith(("/api/v1/verification", "/api/v1/vvb"))]
     assert len(v) >= 30
     segments = {seg for p in paths for seg in p.split("/")}
-    for word in ("registry", "registries", "issuance", "issuances", "issue", "credits", "serials", "retirements", "validation", "validations",
-                 "buffer", "payouts", "marketplace"):
+    # registry submission and issuance arrive in Phase 9A under their own prefixes (/registry, /credits); validation, retirement, buffer,
+    # payout and marketplace endpoints still do not exist, and the verification APIs themselves never register or issue
+    for word in ("retirements", "validation", "validations", "buffer", "payouts", "marketplace"):
         assert word not in segments, word
     for p in v:
         assert not any(w in p for w in ("registry", "issu", "credit", "serial", "retire", "valid", "buffer", "payout")), p

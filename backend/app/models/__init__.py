@@ -103,6 +103,15 @@ from app.models.projects import (
     ProjectStatus,
     ProjectStatusHistory,
 )
+from app.models.registry import (
+    CreditBatch,
+    CreditIssuance,
+    CreditSerialRange,
+    RegistryAccount,
+    RegistryEvent,
+    RegistryProjectRegistration,
+    RegistrySubmission,
+)
 from app.models.verification import (
     CorrectiveAction,
     CorrectiveActionEvent,
@@ -130,6 +139,9 @@ __all__ = [
     "ConsentDefinition",
     "CorrectiveAction",
     "CorrectiveActionEvent",
+    "CreditBatch",
+    "CreditIssuance",
+    "CreditSerialRange",
     "Document",
     "DocumentCategory",
     "DocumentVersion",
@@ -201,6 +213,10 @@ __all__ = [
     "ProjectStatusHistory",
     "ProjectStratum",
     "RefreshToken",
+    "RegistryAccount",
+    "RegistryEvent",
+    "RegistryProjectRegistration",
+    "RegistrySubmission",
     "Role",
     "RolePermission",
     "RoleScope",

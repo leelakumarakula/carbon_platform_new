@@ -137,6 +137,20 @@ export const routes: Routes = [
         loadComponent: () => import('./calculation/calculation-run-page').then((m) => m.CalculationRunPage),
       },
       {
+        path: 'registry',
+        title: 'Registry',
+        canActivate: [permissionGuard],
+        data: { permissions: [P.REGISTRY_READ] },
+        loadComponent: () => import('./registry/registry-page').then((m) => m.RegistryPage),
+      },
+      {
+        path: 'credits',
+        title: 'Issued credits',
+        canActivate: [permissionGuard],
+        data: { permissions: [P.CREDITS_READ] },
+        loadComponent: () => import('./registry/credits-page').then((m) => m.CreditsPage),
+      },
+      {
         path: 'vvb',
         canActivate: [permissionGuard],
         data: { permissions: [P.VERIFICATION_VVB_READ] },

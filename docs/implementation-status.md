@@ -11,7 +11,8 @@
 | 7 | Calculation | **Done** |
 | 8A | Internal pre-verification (findings, calculation report, internal readiness) | **Done** |
 | 8B | VVB / ACVA verification (assignments, submission, findings, corrective actions, recorded decision) | **Done** |
-| 9 | Registry / credits | — |
+| 9A | Registry submission & credit issuance (no inventory, ownership, reservation, transfer or retirement) | **Done** |
+| 9B | Credit ledger: inventory, reservation, transfer, retirement | — |
 | 10 | Marketplace | — |
 | 11 | Revenue / payout | — |
 | 12 | Production hardening | — |
@@ -456,6 +457,46 @@ Verification (exit gate, 3 Oct 2026)
   project stayed MONITORING, the VVB user was refused project / calculation / project-side verification / farmer / audit endpoints and saw
   only the VVB workspace, non-VVB users were refused `/vvb`, assignment audit events present, no unexpected console errors.
 
+## Phase 9A — delivered
+
+**Registry submission and credit issuance — no inventory, ownership, reservation, transfer or retirement.** Registries are external
+counterparties; the platform records what a registry states, with evidence. Details: [registry-workflow.md](registry-workflow.md)
+(decisions D1–D18).
+
+Backend
+- Migration `0013`: `registry_accounts`, `registry_project_registrations`, `registry_submissions`, append-only `registry_events`,
+  `credit_issuances`, `credit_batches`, `credit_serial_ranges`; sequences RREG / RSUB / ISS / CB; filtered unique indexes (one open / accepted
+  submission per period across registries; registry + external submission / issuance / project ID; registry + serial start / end of current
+  ranges; idempotency keys); documents categories REGISTRY_SUBMISSION / REGISTRY_RESPONSE / ISSUANCE_STATEMENT (PDF only); seven triggers;
+  downgrade refused while Phase 9A rows exist. No earlier data changed.
+- `app/integrations/registry.py`: RegistryAdapter Protocol + ManualRegistryAdapter (never simulates); selected per registry account. A
+  TEST-only API adapter (`tests/registry_fixture.py`) is injected in tests and never registered.
+- Permissions `registry.read / manage / confirm` and `credits.read` (D18). APIs `/registry` (project side) and read-only `/credits`.
+- Eligibility (CURRENT VERIFIED VVB decision with a stated quantity, REGISTERED registration, active account / registry, environment, one
+  submission per period, configured checklist), frozen registry-submission-v1 snapshot + SHA-256, manual evidence-backed workflow,
+  outbox-style idempotency with SUBMISSION_UNCONFIRMED and reconciliation (no automatic retry), registry rejection / acceptance, issuance
+  with dual confirmation, tranches, issued ≤ VVB-stated only with explicit unit equivalence, whole units, registry serials verbatim
+  (duplicates refused; parser-based length / overlap), correction and cancellation history, SOURCE_SUPERSEDED on recalculation, aggregate
+  project status VERIFIED → ISSUED, batch lineage down to farmer codes.
+
+Frontend
+- MRV workspace **Registry** tab and `/registry` page (registry.read): three separate quantity cards (calculated / VVB-stated / registry-issued),
+  eligibility blockers, accounts and registrations, submission lifecycle with evidence uploads, snapshot, events, documents, issuance
+  recording and second-person confirmation, batches and serial ranges. `/credits` (credits.read): read-only issued batches with lineage.
+  DEMO shows "DEMO — no registry issuance".
+
+Verification (exit gate, 3 Oct 2026)
+- Backend: **293 pytest tests passed** (Phase 9A: 10 test functions covering the 49 listed scenarios). ruff clean. mypy clean (164 files).
+  `alembic check`: no drift (development and test databases). Test database: upgrade base → 0013, downgrade 0013 → base, upgrade base → 0013
+  again. Downgrade guard: refused while Phase 9A rows exist (dedicated test inserting a registry account in a rolled-back transaction); the
+  development database holds no Phase 9A rows and was not downgraded.
+- Frontend: **101 Vitest tests passed** (15 files). Production build OK.
+- E2E passed (Phases 1–9A) after the final code changes: the Registry tab showed "DEMO — no registry issuance", the three labelled
+  quantity cards and NO_VERIFIED_DECISION; creating a registry submission was refused (409 NO_VERIFIED_DECISION) for the E2E project and for
+  Niphad; the Registry Manager saw Registry and Issued credits (no batches); no DEMO credit exists; the only DEMO registry is "Carbon Registry
+  R (DEMO)"; VVB, buyer, farmer and laboratory users were refused the registry and credits APIs; the project stayed MONITORING; no unexpected
+  console errors.
+
 ## Known limitations and open items
 
 - The rate limiter is in-memory (single API process). Redis is required before scaling out (Phase 12).
@@ -526,4 +567,12 @@ Verification (exit gate, 3 Oct 2026)
     only with the TEST-only fixture; DEMO shows assignment and COI only.
   - Findings belong to one submission; a superseded package's findings remain as history (I5).
   - Each E2E run adds a VVB assignment to its DEMO project (and reuses Niphad's open assignment) in the development database.
+- Phase 9A:
+  - No real registry API is integrated (no contract): every registry interaction is manual and evidence-backed. API-mode paths are
+    exercised only with the TEST-only adapter.
+  - No registry-specific serial parser exists in the application, so serial ranges are checked for exact duplicates only (length / overlap
+    checks need a registry parser).
+  - The registry document checklist and the unit equivalence are configuration per registry account; none is invented.
+  - The UI records one serial range per batch (the API accepts several); issuance correction is available through the API only.
+  - Inventory, ownership, reservation, transfer and retirement are Phase 9B; marketplace Phase 10; payouts Phase 11.
 - The browser logs one expected 401 at start-up: the silent session-restore attempt when nobody is signed in.

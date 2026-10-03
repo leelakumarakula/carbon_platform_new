@@ -3,6 +3,9 @@
 Phase 8B records the work and the decision of an **external** verification body (VVB / ACVA) on a monitoring period's Phase 8A
 READY package. The platform records the VVB's decision. It does **not** verify anything itself.
 
+> Phase 9A continues from a VERIFIED decision with a registry submission and registry-stated issuance — see
+> [registry-workflow.md](registry-workflow.md).
+>
 > **Verification only.** Phase 8B adds no validation, registry, issuance, credits, serial numbers, retirement, marketplace, buyer flow,
 > payout, buffer, farm allocation or accreditation engine. A recorded VERIFIED decision is not an issuance.
 > **Calculated tCO2e — not verified, not issued** stays the label of the calculated quantity. A **VVB-stated verified quantity** is

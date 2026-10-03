@@ -78,7 +78,9 @@ TRANSITION_PERMISSION = {"DATA_COLLECTION": P.PROJECTS_MANAGE, "ELIGIBILITY_REVI
                          # Phase 7: entered through the calculation endpoints (input freeze / run approval)
                          "CALCULATION_READY": P.CALCULATION_MANAGE, "CALCULATED": P.CALCULATION_APPROVE,
                          # Phase 8B: entered only through the verification workflow (aggregate project status)
-                         "VERIFICATION": P.VERIFICATION_MANAGE, "VERIFIED": P.VERIFICATION_READ}
+                         "VERIFICATION": P.VERIFICATION_MANAGE, "VERIFIED": P.VERIFICATION_READ,
+                         # Phase 9A: entered only through a confirmed registry issuance (aggregate project status)
+                         "ISSUED": P.REGISTRY_CONFIRM}
 
 
 def _not_found() -> NotFound:

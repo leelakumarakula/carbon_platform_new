@@ -36,6 +36,8 @@ const phase8a = { noReportForBlocked: false, finding: '', category: '', findingS
   readinessBlocked: false, createRefused: '', niphad: '', outsidersBlocked: false, projectStatus: '', audit: [] };
 const phase8b = { labels: false, assignment: '', proposed: '', accepted: '', submitRefused: '', noDecision: false, projectStatus: '', niphad: '',
   vvbIsolated: false, nonVvbBlocked: false, unknownSubmission: 0, vvbNav: false, audit: [] };
+const phase9a = { demoNote: false, cards: false, blocker: false, createRefused: '', niphadRefused: '', registryNav: false, registryPage: false,
+  creditsEmpty: false, noDemoCredits: false, demoRegistry: '', outsidersBlocked: false, vvbNoRegistry: false, projectStatus: '' };
 const REQUIRED_AUDIT_P6 = ['LAB_ENGAGEMENT_PROPOSED', 'LAB_ENGAGEMENT_ACCEPTED', 'LAB_ENGAGEMENT_ENDED', 'LAB_SAMPLE_REGISTERED', 'LAB_CUSTODY_SEALED',
   'LAB_TEST_CREATED', 'LAB_SHIPMENT_CREATED', 'LAB_SHIPMENT_DISPATCHED', 'LAB_SHIPMENT_RECEIPT_RECORDED', 'LAB_TEST_STARTED', 'LAB_RESULT_CREATED',
   'LAB_REPORT_ATTACHED', 'LAB_RESULT_SUBMITTED', 'LAB_QA_STARTED', 'LAB_RESULT_APPROVED', 'LAB_RETEST_REQUESTED', 'LAB_RESULT_SUPERSEDED'];
@@ -816,6 +818,49 @@ const REQUIRED_AUDIT = ['PROJECT_CREATED', 'PROJECT_STATUS_CHANGED', 'PROJECT_FA
   pg8b.items.forEach((x) => a8b.add(x.action));
   phase8b.audit = [...a8b].sort();
   for (const x of [pmS, vvbS]) await x.ctx.close();
+
+  // ---- Phase 9A: registry & issuance — honest DEMO path only. No period is VERIFIED (no calculation module), so nothing can be submitted
+  // to a registry and no credit exists; nothing is fabricated (no account, registration, submission, issuance or serial number is created).
+  const REG = `${BASE}/api/v1/registry`;
+  const CRED = `${BASE}/api/v1/credits`;
+  const pm9 = await signIn('pm');
+  const P9 = pm9.page;
+  lastPage = P9;
+  await P9.goto(`${BASE}/mrv/projects/${projectId}?tab=registry`);
+  await P9.getByTestId('demo-registry').waitFor();
+  phase9a.demoNote = (await P9.getByTestId('demo-registry').innerText()).includes('DEMO — no registry issuance');
+  phase9a.cards = (await P9.getByTestId('qty-calculated').innerText()).includes('Calculated tCO2e — not verified, not issued')
+    && (await P9.getByTestId('qty-verified').innerText()).includes('VVB-stated verified quantity')
+    && (await P9.getByTestId('qty-issued').innerText()).includes('Registry-issued credits');
+  phase9a.blocker = (await P9.getByTestId('registry-blockers').first().innerText()).includes('NO_VERIFIED_DECISION');
+  await shot(P9, '95-registry-demo-blocked');
+  phase9a.createRefused = await errCode(await api.post(`${REG}/projects/${projectId}/submissions`, { headers: pmH,
+    data: { monitoring_period_id: period.id, registry_account_id: require('crypto').randomUUID() } }));
+  phase9a.niphadRefused = await errCode(await api.post(`${REG}/projects/${niphad.id}/submissions`, { headers: pmH,
+    data: { monitoring_period_id: niphad.periods[0].id, registry_account_id: require('crypto').randomUUID() } }));
+  phase9a.demoRegistry = (await json(await api.get(`${REG}/organizations?environment=DEMO`, { headers: pmH }))).map((o) => o.name).join(',');
+  phase9a.projectStatus = (await json(await api.get(`${BASE}/api/v1/projects/${projectId}`, { headers: pmH }))).status;
+  await pm9.ctx.close();
+  const rg = await signIn('registry');
+  const RG = rg.page;
+  lastPage = RG;
+  phase9a.registryNav = (await RG.locator('nav a', { hasText: 'Registry' }).count()) > 0 && (await RG.locator('nav a', { hasText: 'Issued credits' }).count()) > 0;
+  await RG.goto(`${BASE}/registry`);
+  await RG.getByTestId('registry-project').waitFor();
+  phase9a.registryPage = true;
+  await RG.goto(`${BASE}/credits`);
+  await RG.getByTestId('no-credits').waitFor();
+  phase9a.creditsEmpty = true;
+  await shot(RG, '96-credits-none');
+  await rg.ctx.close();
+  phase9a.noDemoCredits = (await json(await api.get(`${CRED}/batches`, { headers: await as('credits') }))).length === 0;
+  let out9 = 0;
+  for (const who of ['vvb', 'buyer', 'farmer', 'labtech']) {
+    const h = await as(who);
+    if ((await api.get(`${REG}/accounts`, { headers: h })).status() === 403 && (await api.get(`${CRED}/batches`, { headers: h })).status() === 403) out9++;
+  }
+  phase9a.outsidersBlocked = out9 === 4;
+  phase9a.vvbNoRegistry = (await api.get(`${REG}/projects/${projectId}/periods/${period.id}`, { headers: await as('vvb') })).status() === 403;
   for (const x of [mrv, qa, sup, fieldS]) await x.ctx.close();
   await api.dispose();
 
@@ -870,6 +915,7 @@ const REQUIRED_AUDIT = ['PROJECT_CREATED', 'PROJECT_STATUS_CHANGED', 'PROJECT_FA
   console.log('phase 7:', JSON.stringify(phase7));
   console.log('phase 8A:', JSON.stringify(phase8a));
   console.log('phase 8B:', JSON.stringify(phase8b));
+  console.log('phase 9A:', JSON.stringify(phase9a));
 
   await browser.close();
   // One 401 per session is expected: the silent session-restore attempt before sign-in.
@@ -915,7 +961,11 @@ const REQUIRED_AUDIT = ['PROJECT_CREATED', 'PROJECT_STATUS_CHANGED', 'PROJECT_FA
     && phase8b.niphad === 'ACCEPTED | 409 NO_READY_PACKAGE' && phase8b.vvbIsolated && phase8b.nonVvbBlocked && phase8b.unknownSubmission === 404
     && phase8b.vvbNav
     && ['VERIFICATION_ASSIGNMENT_PROPOSED', 'VERIFICATION_ASSIGNMENT_ACCEPTED', 'VERIFICATION_COI_DECLARED'].every((a) => phase8b.audit.includes(a));
-  if (!stillIn || real.length || navItems.length !== 4 || !p2ok || !p3ok || !p4ok || !p5ok || !p6ok || !p7ok || !p8ok || !p8bok) process.exitCode = 1;
+  const p9ok = phase9a.demoNote && phase9a.cards && phase9a.blocker && phase9a.createRefused === '409 NO_VERIFIED_DECISION'
+    && phase9a.niphadRefused === '409 NO_VERIFIED_DECISION' && phase9a.registryNav && phase9a.registryPage && phase9a.creditsEmpty
+    && phase9a.noDemoCredits && phase9a.demoRegistry === 'Carbon Registry R (DEMO)' && phase9a.outsidersBlocked && phase9a.vvbNoRegistry
+    && phase9a.projectStatus === 'MONITORING';
+  if (!stillIn || real.length || navItems.length !== 4 || !p2ok || !p3ok || !p4ok || !p5ok || !p6ok || !p7ok || !p8ok || !p8bok || !p9ok) process.exitCode = 1;
 })().catch(async (e) => {
   console.error('DRIVER FAILED:', e.message);
   if (lastPage) {

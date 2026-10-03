@@ -206,6 +206,22 @@ No request body can carry a calculated value (unknown fields are refused with 42
 | GET/POST | `/calculations/qa/{run_id}` · POST `/start` · `/complete` | calculation.read / calculation.review (not the run's creator, freezer, executor or submitter) |
 | POST | `/runs/{id}/approve` · `/reject` | calculation.approve (same separation of duties; approval needs QA PASS) |
 
+## Endpoints (Phase 9A) — registry submission & credit issuance
+
+Prefix `/registry` (project-organization scope; registries are external counterparties — no registry portal):
+
+| Method | Path | Permission |
+|---|---|---|
+| GET | `/organizations?environment` · `/projects` · `/accounts?organization_id` · `/projects/{id}/registrations` · `/projects/{id}/periods/{period_id}` · `/submissions/{id}` · `/submissions/{id}/snapshot` · `/submissions/{id}/events` | registry.read / manage / confirm |
+| POST | `/accounts` · `/accounts/{id}/configure` (unit equivalence, checklist) · `/accounts/{id}/close` | registry.manage |
+| POST | `/projects/{id}/registrations` · `/registrations/{id}/documents` (PDF) · `/registrations/{id}/record-registered` · `/record-rejected` | registry.manage |
+| POST | `/projects/{id}/submissions` (optional `Idempotency-Key`) · `/submissions/{id}/documents` (PDF; category, checklist item) · `/freeze` · `/submit` (API adapters only) · `/record-submitted` · `/record-query` · `/record-response` · `/withdraw` · `/cancel` · `/reconcile` | registry.manage |
+| POST | `/submissions/{id}/issuances` (optional `Idempotency-Key`) · `/issuances/{id}/void` · `/issuances/{id}/cancel` · `/issuances/{id}/correct` | registry.manage |
+| POST | `/issuances/{id}/confirm` | registry.confirm (never the recorder) |
+
+Prefix `/credits` — read-only: GET `/batches?project_id&period_id` · `/batches/{id}` · `/batches/{id}/lineage` (credits.read). No inventory,
+reservation, transfer or retirement endpoint exists; no endpoint takes a calculated or VVB-verified value as an issuance quantity.
+
 ## Endpoints (Phase 8B) — VVB / ACVA verification
 
 Project side, prefix `/verification` (organization-scoped; the project never decides or closes a VVB finding):
@@ -303,3 +319,16 @@ Phase 8B: `NOT_A_VVB`, `OPEN_ASSIGNMENT_EXISTS`, `INVALID_REPLACEMENT`, `ASSIGNM
 `CORRECTIVE_ACTION_CLOSED`, `OPEN_VERIFICATION_FINDINGS`, `SEPARATION_OF_DUTIES`, `INVALID_OUTCOME`, `INVALID_QUANTITY`,
 `QUANTITY_UNIT_REQUIRED`, `QUANTITY_NOT_ALLOWED`, `REPORT_REQUIRED`, `ASSIGNMENT_NOT_FOUND`, `SUBMISSION_NOT_FOUND`,
 `VERIFICATION_FINDING_NOT_FOUND`, `CORRECTIVE_ACTION_NOT_FOUND`, `DECISION_NOT_FOUND` (404).
+
+Phase 9A: `NOT_A_REGISTRY`, `UNKNOWN_ADAPTER`, `REGISTRY_ACCOUNT_EXISTS`, `UNIT_EQUIVALENCE_INCOMPLETE`, `UNIT_CONFIGURATION_LOCKED`,
+`CHECKLIST_INVALID`, `REGISTRY_ACCOUNT_IN_USE`, `REGISTRATION_EXISTS`, `DUPLICATE_EXTERNAL_PROJECT`, `NO_VERIFIED_DECISION`, `DECISION_NOT_VERIFIED`,
+`VERIFICATION_PACKAGE_MISMATCH`, `VERIFIED_QUANTITY_REQUIRED`, `REGISTRATION_REQUIRED`, `REGISTRY_ACCOUNT_INACTIVE`, `REGISTRY_INACTIVE`,
+`ENVIRONMENT_MISMATCH`, `OPEN_REGISTRY_SUBMISSION_EXISTS`, `CHECKLIST_NOT_CONFIGURED`, `CHECKLIST_INCOMPLETE`, `CHECKLIST_ITEM_UNKNOWN`,
+`DEMO_API_NOT_ALLOWED`, `IDEMPOTENCY_KEY_REUSED`, `INVALID_PREVIOUS_SUBMISSION`, `SUBMISSION_NOT_DRAFT`, `SUBMISSION_FROZEN`, `SUBMISSION_NOT_FROZEN`,
+`SUBMISSION_INVALIDATED`, `SNAPSHOT_STALE`, `MANUAL_ACTION_REQUIRED`, `REGISTRY_UNAVAILABLE`, `DUPLICATE_EXTERNAL_SUBMISSION`,
+`SUBMISSION_NOT_SUBMITTED`, `SUBMISSION_ALREADY_SENT`, `EVIDENCE_REQUIRED`, `EXTERNAL_REFERENCE_REQUIRED`, `NOTHING_TO_RECONCILE`,
+`SUBMISSION_NOT_ACCEPTED`, `UNIT_EQUIVALENCE_NOT_CONFIGURED`, `QUANTITY_EXCEEDS_VERIFIED`, `DUPLICATE_EXTERNAL_ISSUANCE`, `BATCH_TOTAL_MISMATCH`,
+`RANGE_TOTAL_MISMATCH`, `SERIAL_RANGE_LENGTH_MISMATCH`, `DUPLICATE_SERIAL`, `SERIAL_OVERLAP`, `ISSUANCE_MISMATCH`, `ISSUANCE_NOT_RECORDED`,
+`ISSUANCE_NOT_CONFIRMED`, `CORRECTION_PENDING`, `DUPLICATE_REGISTRY_REFERENCE`, `DOCUMENT_IMMUTABLE` (403), `SEPARATION_OF_DUTIES` (403), and the
+404s `REGISTRY_ACCOUNT_NOT_FOUND`, `REGISTRY_REGISTRATION_NOT_FOUND`, `REGISTRY_SUBMISSION_NOT_FOUND`, `CREDIT_ISSUANCE_NOT_FOUND`,
+`CREDIT_BATCH_NOT_FOUND`.

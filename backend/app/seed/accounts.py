@@ -66,6 +66,7 @@ DEMO_ORGS = [
     ("DEMO-LAB-B", "Soil Laboratory B (DEMO)", "LABORATORY"),
     ("DEMO-VVB-C", "Verification Body C (DEMO)", "VVB"),
     ("DEMO-BUYER-D", "Buyer D (DEMO)", "BUYER"),
+    ("DEMO-REG-R", "Carbon Registry R (DEMO)", "REGISTRY"),   # Phase 9A counterparty only: no account, registration or issuance seeded
 ]
 
 # (email local part, full name, org code or None for platform-wide, role code)

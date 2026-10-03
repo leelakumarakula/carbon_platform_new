@@ -60,6 +60,10 @@ export const P = {
   VERIFICATION_VVB_READ: 'verification.vvb_read',
   VERIFICATION_VVB_REVIEW: 'verification.vvb_review',
   VERIFICATION_DECIDE: 'verification.decide',
+  REGISTRY_READ: 'registry.read',
+  REGISTRY_MANAGE: 'registry.manage',
+  REGISTRY_CONFIRM: 'registry.confirm',
+  CREDITS_READ: 'credits.read',
 } as const;
 
 export type PermissionCode = (typeof P)[keyof typeof P];

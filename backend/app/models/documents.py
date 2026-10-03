@@ -33,6 +33,9 @@ class DocumentCategory(str, Enum):
     CALCULATION_REPORT = "CALCULATION_REPORT"  # Phase 8A: generated calculation report of an APPROVED run (PDF only)
     VERIFICATION_REPORT = "VERIFICATION_REPORT"  # Phase 8B: the external VVB's verification report (PDF only)
     VERIFICATION_EVIDENCE = "VERIFICATION_EVIDENCE"  # Phase 8B: project evidence answering a VVB finding / corrective action (PDF only)
+    REGISTRY_SUBMISSION = "REGISTRY_SUBMISSION"  # Phase 9A: a document sent to the registry with a submission (PDF only)
+    REGISTRY_RESPONSE = "REGISTRY_RESPONSE"  # Phase 9A: registry receipt / query / acceptance / rejection / registration evidence (PDF)
+    ISSUANCE_STATEMENT = "ISSUANCE_STATEMENT"  # Phase 9A: the registry's issuance statement backing recorded batches / serials (PDF)
     OTHER = "OTHER"
 
 

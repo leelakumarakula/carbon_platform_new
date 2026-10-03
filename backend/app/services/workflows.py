@@ -85,7 +85,10 @@ PROJECT_MACHINE = StateMachine.build(
         # VERIFIED by a VVB → VERIFIED. Period-level verification records stay authoritative. VALIDATION and REGISTRY_* are not used.
         "CALCULATED": {"VERIFICATION", "CLOSED"},
         "VERIFICATION": {"VERIFIED", "CLOSED"},
-        "VERIFIED": {"CLOSED"},
+        # Phase 9A (D13): aggregate only — first CONFIRMED registry issuance of any period → ISSUED. Period-level registry and issuance
+        # records stay authoritative; REGISTRY_SUBMISSION, REGISTERED, ISSUANCE_PENDING and ACTIVE are not used.
+        "VERIFIED": {"ISSUED", "CLOSED"},
+        "ISSUED": {"CLOSED"},
     },
     terminal={"CLOSED"},
 )
@@ -235,4 +238,40 @@ CORRECTIVE_ACTION_MACHINE = StateMachine.build(
     "corrective_action", initial="REQUESTED",
     transitions={"REQUESTED": {"RESPONDED", "CANCELLED"}, "RESPONDED": {"ACCEPTED", "REQUESTED", "CANCELLED"}},
     terminal={"ACCEPTED", "CANCELLED"},
+)
+
+
+# ---------------------------------------------------------------- Phase 9A — registry submission & credit issuance
+REGISTRY_ACCOUNT_MACHINE = StateMachine.build(
+    "registry_account", initial="ACTIVE", transitions={"ACTIVE": {"CLOSED"}}, terminal={"CLOSED"},
+)
+
+REGISTRY_REGISTRATION_MACHINE = StateMachine.build(
+    "registry_registration", initial="PENDING", transitions={"PENDING": {"REGISTERED", "REJECTED"}}, terminal={"REGISTERED", "REJECTED"},
+)
+
+REGISTRY_SUBMISSION_MACHINE = StateMachine.build(
+    "registry_submission", initial="DRAFT",
+    transitions={
+        "DRAFT": {"FROZEN", "CANCELLED", "INVALIDATED"},
+        "FROZEN": {"SUBMITTING", "SUBMITTED", "CANCELLED", "INVALIDATED"},
+        # SUBMITTING → FROZEN only when the registry was certainly not reached (RegistryUnavailable before sending)
+        "SUBMITTING": {"SUBMITTED", "SUBMISSION_UNCONFIRMED", "FROZEN"},
+        # SUBMISSION_UNCONFIRMED → FROZEN only after confirming that the registry has no such submission
+        "SUBMISSION_UNCONFIRMED": {"SUBMITTED", "FROZEN"},
+        "SUBMITTED": {"ACCEPTED", "REJECTED", "WITHDRAWN"},
+    },
+    terminal={"REJECTED", "WITHDRAWN", "CANCELLED", "INVALIDATED"},
+)
+
+CREDIT_ISSUANCE_MACHINE = StateMachine.build(
+    "credit_issuance", initial="RECORDED",
+    transitions={"RECORDED": {"CONFIRMED", "VOIDED"}, "CONFIRMED": {"CORRECTED", "CANCELLED"}},
+    terminal={"VOIDED", "CORRECTED", "CANCELLED"},
+)
+
+CREDIT_BATCH_MACHINE = StateMachine.build(
+    "credit_batch", initial="RECORDED",
+    transitions={"RECORDED": {"ISSUED", "VOIDED"}, "ISSUED": {"SUPERSEDED", "CANCELLED"}},
+    terminal={"VOIDED", "SUPERSEDED", "CANCELLED"},
 )
