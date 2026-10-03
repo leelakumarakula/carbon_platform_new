@@ -5,7 +5,7 @@ Phase 8A adds the internal layer between an approved calculation and any later v
 
 > **Internal readiness — not verification.** READY means "internally approved for submission to verification". It is not a VVB/ACVA
 > decision, not validation, not verification. CALCULATED ≠ VERIFIED ≠ ISSUED. The project status stays CALCULATED (no new project
-> state). Phase 8B (VVB/ACVA) is not implemented.
+> state). Phase 8B submits a READY package to an external VVB — see [verification-workflow.md](verification-workflow.md).
 
 ## Findings (decisions B2–B6)
 

@@ -137,6 +137,19 @@ export const routes: Routes = [
         loadComponent: () => import('./calculation/calculation-run-page').then((m) => m.CalculationRunPage),
       },
       {
+        path: 'vvb',
+        canActivate: [permissionGuard],
+        data: { permissions: [P.VERIFICATION_VVB_READ] },
+        children: [
+          { path: '', title: 'VVB workspace', loadComponent: () => import('./verification/vvb-workspace-page').then((m) => m.VvbWorkspacePage) },
+          {
+            path: 'assignments/:id',
+            title: 'VVB assignment',
+            loadComponent: () => import('./verification/vvb-assignment-page').then((m) => m.VvbAssignmentPage),
+          },
+        ],
+      },
+      {
         path: 'laboratory',
         canActivate: [permissionGuard],
         data: { permissions: [P.LAB_LAB_READ] },

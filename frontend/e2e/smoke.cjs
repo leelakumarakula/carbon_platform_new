@@ -34,6 +34,8 @@ const phase7 = { readinessBlocker: false, labels: false, runBlocked: false, runL
   modules: -1, projectStatus: '', qaCanRead: false, valueRefused: false, outsidersBlocked: false, audit: [] };
 const phase8a = { noReportForBlocked: false, finding: '', category: '', findingStatus: '', reportRefused: '', readinessLabel: false,
   readinessBlocked: false, createRefused: '', niphad: '', outsidersBlocked: false, projectStatus: '', audit: [] };
+const phase8b = { labels: false, assignment: '', proposed: '', accepted: '', submitRefused: '', noDecision: false, projectStatus: '', niphad: '',
+  vvbIsolated: false, nonVvbBlocked: false, unknownSubmission: 0, vvbNav: false, audit: [] };
 const REQUIRED_AUDIT_P6 = ['LAB_ENGAGEMENT_PROPOSED', 'LAB_ENGAGEMENT_ACCEPTED', 'LAB_ENGAGEMENT_ENDED', 'LAB_SAMPLE_REGISTERED', 'LAB_CUSTODY_SEALED',
   'LAB_TEST_CREATED', 'LAB_SHIPMENT_CREATED', 'LAB_SHIPMENT_DISPATCHED', 'LAB_SHIPMENT_RECEIPT_RECORDED', 'LAB_TEST_STARTED', 'LAB_RESULT_CREATED',
   'LAB_REPORT_ATTACHED', 'LAB_RESULT_SUBMITTED', 'LAB_QA_STARTED', 'LAB_RESULT_APPROVED', 'LAB_RETEST_REQUESTED', 'LAB_RESULT_SUPERSEDED'];
@@ -743,6 +745,77 @@ const REQUIRED_AUDIT = ['PROJECT_CREATED', 'PROJECT_STATUS_CHANGED', 'PROJECT_FA
   pg8.items.forEach((x) => a8.add(x.action));
   phase8a.audit = [...a8].sort();
   await qs.ctx.close();
+
+  // ---- Phase 8B: VVB / ACVA — assignment-only DEMO flow. No READY package exists (no calculation module), so nothing is submitted and
+  // no decision, report or verified quantity is recorded (nothing is faked). The PM proposes DEMO-VVB-C for the E2E period (UI), the VVB
+  // accepts with a COI declaration in its own workspace (UI), submission is refused; Niphad likewise; the VVB API is isolated.
+  const VER = `${BASE}/api/v1/verification`;
+  const VVBA = `${BASE}/api/v1/vvb`;
+  const COI = 'E2E: no conflict of interest with the project, its developer or its farmers.';
+  const p8bStart = new Date(Date.now() - 2000).toISOString();
+  const pmS = await signIn('pm');
+  const PM = pmS.page;
+  lastPage = PM;
+  await PM.goto(`${BASE}/mrv/projects/${projectId}?tab=verification`);
+  await PM.getByTestId('calculated-label').waitFor();
+  phase8b.labels = (await PM.getByTestId('calculated-label').innerText()).includes('Calculated tCO2e — not verified, not issued');
+  await pick(PM, 'vvb-org', 'Verification Body C (DEMO)');
+  await PM.getByTestId('propose-assignment').click();
+  await PM.locator('[data-assignment^="VAS-"]').first().waitFor();
+  await shot(PM, '90-verification-proposed');
+  const asg = (await json(await api.get(`${VER}/projects/${projectId}/assignments?period_id=${period.id}`, { headers: pmH })))[0];
+  phase8b.assignment = asg.assignment_code;
+  phase8b.proposed = asg.status;
+  const vvbS = await signIn('vvb');
+  const VV = vvbS.page;
+  lastPage = VV;
+  await VV.goto(`${BASE}/vvb`);
+  await VV.locator(`[data-assignment="${asg.assignment_code}"] a`).click();
+  await VV.getByTestId('coi-input').fill(COI);
+  await VV.getByTestId('accept-assignment').click();
+  await VV.getByTestId('coi').waitFor();
+  await VV.getByTestId('no-package').waitFor();
+  await shot(VV, '91-vvb-assignment-accepted');
+  const vvbH = await as('vvb');
+  const acc = await json(await api.get(`${VVBA}/assignments/${asg.id}`, { headers: vvbH }));
+  phase8b.accepted = `${acc.status} ${acc.coi_declaration === COI ? 'COI' : 'no COI'}`;
+  phase8b.submitRefused = await errCode(await api.post(`${VER}/assignments/${asg.id}/submit`, { headers: pmH }));
+  const pv = await json(await api.get(`${VER}/projects/${projectId}/periods/${period.id}`, { headers: pmH }));
+  phase8b.noDecision = pv.current_decision === null && pv.assignments.every((x) => !x.decisions.length && !x.submissions.length);
+  phase8b.projectStatus = (await json(await api.get(`${BASE}/api/v1/projects/${projectId}`, { headers: pmH }))).status;
+  // Niphad (DEMO): assignment and COI allowed; submission blocked because its package is not READY (idempotent across runs)
+  const nPeriod = niphad.periods[0].id;
+  let nAsg = (await json(await api.get(`${VER}/projects/${niphad.id}/assignments?period_id=${nPeriod}`, { headers: pmH })))
+    .find((x) => ['PROPOSED', 'ACCEPTED'].includes(x.status));
+  if (!nAsg) {
+    const vorg = (await json(await api.get(`${VER}/projects/${niphad.id}/vvb-organizations`, { headers: pmH }))).find((o) => o.code === 'DEMO-VVB-C');
+    nAsg = await json(await api.post(`${VER}/projects/${niphad.id}/assignments`, { headers: pmH,
+      data: { monitoring_period_id: nPeriod, vvb_organization_id: vorg.id } }));
+  }
+  if (nAsg.status === 'PROPOSED') nAsg = await json(await api.post(`${VVBA}/assignments/${nAsg.id}/accept`, { headers: vvbH, data: { coi_declaration: COI } }));
+  phase8b.niphad = `${nAsg.status} | ${await errCode(await api.post(`${VER}/assignments/${nAsg.id}/submit`, { headers: pmH }))}`;
+  // isolation: the VVB user gets no generic project / calculation / project-side verification / farmer / audit access
+  let iso = 0;
+  for (const url of [`${BASE}/api/v1/projects/${projectId}`, `${CALCV}/runs?project_id=${projectId}`, `${VER}/projects/${projectId}/assignments`,
+    `${BASE}/api/v1/farmers`, `${BASE}/api/v1/admin/audit-logs`]) {
+    if ([403, 404].includes((await api.get(url, { headers: vvbH })).status())) iso++;
+  }
+  phase8b.vvbIsolated = iso === 5;
+  let notVvb = 0;
+  for (const who of ['pm', 'analyst', 'buyer', 'farmer', 'labtech']) {
+    if ((await api.get(`${VVBA}/assignments`, { headers: await as(who) })).status() === 403) notVvb++;
+  }
+  phase8b.nonVvbBlocked = notVvb === 5;
+  phase8b.unknownSubmission = (await api.get(`${VVBA}/submissions/${require('crypto').randomUUID()}/package`, { headers: vvbH })).status();
+  await VV.goto(`${BASE}/projects`);
+  await VV.getByText("You don't have access to this page").waitFor();
+  phase8b.vvbNav = (await VV.locator('nav a', { hasText: 'VVB workspace' }).count()) > 0 && !(await VV.locator('nav a', { hasText: 'Projects' }).count());
+  const a8b = new Set();
+  const pg8b = await json(await api.get(`${BASE}/api/v1/admin/audit-logs?entity_type=verification_assignment&from=${encodeURIComponent(p8bStart)}&page_size=100`,
+    { headers: await as('admin') }));
+  pg8b.items.forEach((x) => a8b.add(x.action));
+  phase8b.audit = [...a8b].sort();
+  for (const x of [pmS, vvbS]) await x.ctx.close();
   for (const x of [mrv, qa, sup, fieldS]) await x.ctx.close();
   await api.dispose();
 
@@ -796,6 +869,7 @@ const REQUIRED_AUDIT = ['PROJECT_CREATED', 'PROJECT_STATUS_CHANGED', 'PROJECT_FA
   console.log('phase 6:', JSON.stringify(phase6));
   console.log('phase 7:', JSON.stringify(phase7));
   console.log('phase 8A:', JSON.stringify(phase8a));
+  console.log('phase 8B:', JSON.stringify(phase8b));
 
   await browser.close();
   // One 401 per session is expected: the silent session-restore attempt before sign-in.
@@ -836,7 +910,12 @@ const REQUIRED_AUDIT = ['PROJECT_CREATED', 'PROJECT_STATUS_CHANGED', 'PROJECT_FA
     && phase8a.niphad === 'NO_APPROVED_CALCULATION | CONFIGURATION_REQUIRED NO_CALCULATION_MODULE'
     && phase8a.outsidersBlocked && phase8a.projectStatus === 'MONITORING'
     && ['CALCULATION_FINDING_RAISED', 'CALCULATION_FINDING_RESPONDED', 'CALCULATION_FINDING_RESOLVED'].every((a) => phase8a.audit.includes(a));
-  if (!stillIn || real.length || navItems.length !== 4 || !p2ok || !p3ok || !p4ok || !p5ok || !p6ok || !p7ok || !p8ok) process.exitCode = 1;
+  const p8bok = phase8b.labels && /^VAS-\d{4}-\d{6}$/.test(phase8b.assignment) && phase8b.proposed === 'PROPOSED' && phase8b.accepted === 'ACCEPTED COI'
+    && phase8b.submitRefused === '409 NO_READY_PACKAGE' && phase8b.noDecision && phase8b.projectStatus === 'MONITORING'
+    && phase8b.niphad === 'ACCEPTED | 409 NO_READY_PACKAGE' && phase8b.vvbIsolated && phase8b.nonVvbBlocked && phase8b.unknownSubmission === 404
+    && phase8b.vvbNav
+    && ['VERIFICATION_ASSIGNMENT_PROPOSED', 'VERIFICATION_ASSIGNMENT_ACCEPTED', 'VERIFICATION_COI_DECLARED'].every((a) => phase8b.audit.includes(a));
+  if (!stillIn || real.length || navItems.length !== 4 || !p2ok || !p3ok || !p4ok || !p5ok || !p6ok || !p7ok || !p8ok || !p8bok) process.exitCode = 1;
 })().catch(async (e) => {
   console.error('DRIVER FAILED:', e.message);
   if (lastPage) {

@@ -119,7 +119,8 @@ while DRAFT, its outputs only while INPUTS_FROZEN, final states never change, AP
 Filtered unique indexes: one open run and one APPROVED run per reporting period; one final output per run.
 
 Phase 8A builds on approved runs: findings, the official report and internal verification readiness — see
-[pre-verification-workflow.md](pre-verification-workflow.md).
+[pre-verification-workflow.md](pre-verification-workflow.md); Phase 8B the VVB / ACVA verification of a READY package — see
+[verification-workflow.md](verification-workflow.md).
 
 ## DEMO and tests
 

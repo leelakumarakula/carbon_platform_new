@@ -126,7 +126,12 @@ CONFIGURATION_REQUIRED — NO_CALCULATION_MODULE, and a run is BLOCKED on freeze
 
 Phase 8A adds internal pre-verification (findings, the calculation report of an approved run, and internal verification readiness —
 "Internal readiness — not verification"). On DEMO data only the honest blocked path is visible: findings can be raised on the blocked
-run; there is no report and readiness shows NO_APPROVED_CALCULATION. VVB/ACVA is not implemented.
+run; there is no report and readiness shows NO_APPROVED_CALCULATION.
+
+Phase 8B adds VVB / ACVA verification (verification only — no validation, registry, issuance or credits). The project manager proposes
+a VVB organization for a monitoring period (MRV workspace → **Verification** tab); the VVB reviewer (`vvb@`) accepts it with a
+conflict-of-interest declaration in the **VVB workspace**. On DEMO data submission stays blocked (NO_READY_PACKAGE — no period is READY),
+so no VVB decision, report or verified quantity exists; nothing is faked.
 
 Demo and live records cannot be mixed; the API rejects it with `ENVIRONMENT_MISMATCH`.
 
@@ -149,7 +154,7 @@ npm run e2e:smoke                       # E2E smoke (API + ng serve running, DEM
 
 The 19 roles in spec §4 (plus Platform GIS Specialist, decision D5) are defined in `backend/app/security/permissions.py`. See
 [docs/roles-permissions.md](docs/roles-permissions.md). Phase 2 added the farmer and farm permissions to the
-field, project, GIS, QA, MRV and finance roles, and `farmers.self` to Farmer. Phase 3 added `projects.*` and `standards.manage`; Phase 4 added `methodologies.*`; Phase 5 added `mrv.*` and `sampling.*`; Phase 6 added `lab.*`; Phase 7 added `calculation.*`. Each later phase adds its module's permissions.
+field, project, GIS, QA, MRV and finance roles, and `farmers.self` to Farmer. Phase 3 added `projects.*` and `standards.manage`; Phase 4 added `methodologies.*`; Phase 5 added `mrv.*` and `sampling.*`; Phase 6 added `lab.*`; Phase 7 added `calculation.*`; Phase 8B added `verification.*`. Each later phase adds its module's permissions.
 
 ## Workflow
 
@@ -161,6 +166,7 @@ workflow in [docs/project-workflow.md](docs/project-workflow.md), methodology se
 [docs/sampling-workflow.md](docs/sampling-workflow.md), samples and laboratory analysis in
 [docs/laboratory-workflow.md](docs/laboratory-workflow.md), calculations in [docs/calculation-workflow.md](docs/calculation-workflow.md),
 internal pre-verification in [docs/pre-verification-workflow.md](docs/pre-verification-workflow.md),
+VVB / ACVA verification in [docs/verification-workflow.md](docs/verification-workflow.md),
 lineage in [docs/data-lineage.md](docs/data-lineage.md).
 
 ## External integrations

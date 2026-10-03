@@ -22,6 +22,7 @@ import { MrvDesignPanel } from './panels/mrv-design-panel';
 import { MrvEvidencePanel } from './panels/mrv-evidence-panel';
 import { MrvHistoryPanel } from './panels/mrv-history-panel';
 import { MrvCalculationsPanel } from './panels/mrv-calculations-panel';
+import { VerificationPanel } from '../verification/verification-panel';
 import { MrvSamplesPanel } from './panels/mrv-samples-panel';
 import { MrvPeriodsPanel } from './panels/mrv-periods-panel';
 import { MrvPlansPanel } from './panels/mrv-plans-panel';
@@ -29,7 +30,7 @@ import { MrvPointsPanel } from './panels/mrv-points-panel';
 import { MrvRecordsPanel } from './panels/mrv-records-panel';
 import { MrvStrataPanel } from './panels/mrv-strata-panel';
 
-const TABS = ['plans', 'periods', 'strata', 'design', 'points', 'data', 'evidence', 'samples', 'datasets', 'calculations', 'history'];
+const TABS = ['plans', 'periods', 'strata', 'design', 'points', 'data', 'evidence', 'samples', 'datasets', 'calculations', 'history', 'verification'];
 
 /** MRV workspace of one project (locked methodology). Tabs that work per monitoring period share the period picker. */
 @Component({
@@ -37,7 +38,7 @@ const TABS = ['plans', 'periods', 'strata', 'design', 'points', 'data', 'evidenc
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [FormsModule, MatTabsModule, MatFormFieldModule, MatSelectModule, PageHeader, StateView, StatusBadge, MrvPlansPanel, MrvPeriodsPanel,
     MrvStrataPanel, MrvDesignPanel, MrvPointsPanel, MrvRecordsPanel, MrvEvidencePanel, MrvDatasetsPanel, MrvHistoryPanel, MrvSamplesPanel,
-    MrvCalculationsPanel],
+    MrvCalculationsPanel, VerificationPanel],
   template: `
     <app-state-view [loading]="loading()" [error]="error()" (retry)="load()" />
     @if (project(); as p) {
@@ -97,6 +98,11 @@ const TABS = ['plans', 'periods', 'strata', 'design', 'points', 'data', 'evidenc
         <mat-tab label="MRV history"><ng-template matTabContent>
           <app-mrv-history-panel [projectId]="p.id" />
         </ng-template></mat-tab>
+        @if (canVerify) {
+          <mat-tab label="Verification"><ng-template matTabContent>
+            <app-verification-panel [projectId]="p.id" [periodId]="period()?.id ?? null" />
+          </ng-template></mat-tab>
+        }
       </mat-tab-group>
     }
   `,
@@ -111,6 +117,7 @@ export class MrvProjectPage implements OnInit {
   readonly id = input.required<string>();
   protected readonly auth = inject(AuthService);
   protected readonly P = P;
+  protected readonly canVerify = [P.VERIFICATION_READ, P.VERIFICATION_MANAGE, P.VERIFICATION_RESPOND].some((c) => this.auth.has(c));
   private readonly api = inject(MrvApi);
   private readonly projectsApi = inject(ProjectsApi);
   private readonly route = inject(ActivatedRoute);

@@ -126,7 +126,20 @@ access in Phase 7. No new role was added.
 | QA Officer | calculation.read, calculation.review, calculation.approve | raise / return / resolve / reopen findings; withdraw own findings; approve / reject readiness | resolver ≠ responder; readiness approver ≠ submitter and ≠ the run's creator, freezer, executor, submitter |
 | MRV Manager, Project Manager | calculation.read | read findings, reports, readiness, manifests | — |
 
-VVB/ACVA, methodology specialists (platform-wide), farmers, buyers, laboratory roles and finance have no Phase 8A access.
+VVB/ACVA, methodology specialists (platform-wide), farmers, buyers, laboratory roles and finance have no Phase 8A access (the VVB sees
+the Phase 8A finding summaries only inside a submitted Phase 8B manifest).
+
+## Phase 8B (decisions C17–C19) — VVB / ACVA verification
+
+| Role | Permission | Phase 8B actions | Separation of duties |
+|---|---|---|---|
+| Project Manager | verification.read, verification.manage, verification.respond | propose / withdraw / terminate assignments, submit the READY package, respond | never closes a VVB finding, never decides |
+| MRV Manager, Calculation Analyst | verification.read, verification.respond | respond to findings and corrective actions, upload response evidence (PDF) | — |
+| QA Officer | verification.read | read assignments, submissions, findings, decisions, lineage | — |
+| VVB / ACVA Reviewer (VVB organization) | verification.vvb_read, verification.vvb_review, verification.decide — and nothing else | accept (COI) / decline / terminate, read the allow-list package and manifest documents, raise / close / return / reopen findings, request / accept / reject / cancel corrective actions, record the decision with the report PDF | the decider never raised a finding on that submission |
+
+VVB users get no project, MRV, calculation, laboratory, farmer / KYC, bank, audit or registry permission. Farmers, buyers, laboratory roles
+and finance have no Phase 8B access.
 
 ## Permission-grant matrix (decision D4, approved)
 

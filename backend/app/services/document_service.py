@@ -61,6 +61,9 @@ def _validate(data: bytes, category: str) -> str:
         raise ValidationFailed("Boundary files must be GeoJSON or KML.", error_code="UNSUPPORTED_FILE_TYPE")
     if category != DocumentCategory.GEOSPATIAL_FILE.value and mime in GEOSPATIAL_TYPES:
         raise ValidationFailed("GeoJSON/KML files can only be uploaded as boundary files.", error_code="UNSUPPORTED_FILE_TYPE")
+    if category in (DocumentCategory.VERIFICATION_REPORT.value, DocumentCategory.VERIFICATION_EVIDENCE.value) and mime != "application/pdf":
+        # Phase 8B: documents exchanged with an external VVB are PDF only (no images that may carry EXIF / GPS)
+        raise ValidationFailed("Verification documents must be PDF files.", error_code="UNSUPPORTED_FILE_TYPE")
     if category == DocumentCategory.CALCULATION_REPORT.value and mime != "application/pdf":
         raise ValidationFailed("Calculation reports are PDF files.", error_code="UNSUPPORTED_FILE_TYPE")
     if category in (DocumentCategory.LAB_REPORT.value, DocumentCategory.CUSTODY_DOCUMENT.value) and mime != "application/pdf":
@@ -136,6 +139,15 @@ def get_document(db: Session, principal: Principal, document_id: uuid.UUID, kind
 def download(db: Session, ctx: RequestContext, principal: Principal, document_id: uuid.UUID,
              version: int | None = None) -> tuple[DocumentVersion, bytes]:
     doc = get_document(db, principal, document_id)
+    v, data = read_verified(db, ctx, doc, version)
+    record(db, ctx, "DOCUMENT_DOWNLOADED", doc.entity_type, doc.entity_id, None,
+           {"document_id": doc.id, "version": v.version, "category": doc.category}, organization_id=doc.organization_id)
+    db.commit()
+    return v, data
+
+
+def read_verified(db: Session, ctx: RequestContext, doc: Document, version: int | None = None) -> tuple[DocumentVersion, bytes]:
+    """The stored bytes after the integrity re-hash. No permission check and no audit: the caller does both (e.g. the VVB allow-list)."""
     if doc.status == "QUARANTINED":
         raise Conflict("This document is quarantined and cannot be downloaded.", error_code="DOCUMENT_QUARANTINED")
     wanted = version or doc.current_version
@@ -147,9 +159,6 @@ def download(db: Session, ctx: RequestContext, principal: Principal, document_id
         security_event(db, ctx, "DOCUMENT_INTEGRITY_FAILURE", "CRITICAL", details={"document_id": str(doc.id), "version": v.version})
         db.commit()
         raise Conflict("The stored file failed its integrity check. It has been reported.", error_code="DOCUMENT_INTEGRITY_FAILURE")
-    record(db, ctx, "DOCUMENT_DOWNLOADED", doc.entity_type, doc.entity_id, None,
-           {"document_id": doc.id, "version": v.version, "category": doc.category}, organization_id=doc.organization_id)
-    db.commit()
     return v, data
 
 

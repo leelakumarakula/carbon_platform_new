@@ -41,6 +41,10 @@ export const NAVIGATION: readonly NavSection[] = [
     ],
   },
   {
+    title: 'Verification',
+    items: [{ label: 'VVB workspace', icon: 'verified', route: '/vvb', permissions: [P.VERIFICATION_VVB_READ] }],
+  },
+  {
     title: 'Laboratory',
     items: [{ label: 'Laboratory', icon: 'science', route: '/laboratory', permissions: [P.LAB_LAB_READ] }],
   },

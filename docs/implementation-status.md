@@ -10,7 +10,7 @@
 | 6 | Sample / lab | **Done** |
 | 7 | Calculation | **Done** |
 | 8A | Internal pre-verification (findings, calculation report, internal readiness) | **Done** |
-| 8B | VVB / ACVA | Next (awaiting approval) |
+| 8B | VVB / ACVA verification (assignments, submission, findings, corrective actions, recorded decision) | **Done** |
 | 9 | Registry / credits | — |
 | 10 | Marketplace | — |
 | 11 | Revenue / payout | — |
@@ -420,6 +420,42 @@ Verification (exit gate, 3 Oct 2026)
   NO_CALCULATION_MODULE; VVB, buyer, farmer and laboratory users refused; the project stayed MONITORING; finding audit events present; no
   unexpected console errors.
 
+## Phase 8B — delivered
+
+**VVB / ACVA verification only — no validation, registry, issuance or credits.** The platform records an external VVB's decision; it
+never verifies. Details: [verification-workflow.md](verification-workflow.md) (decisions C1–C20, interpretations I1–I6).
+
+Backend
+- Migration `0012`: `verification_assignments`, `verification_submissions`, `verification_findings` + append-only events, `corrective_actions`
+  + append-only events, `verification_decisions`; sequences VAS / VSUB / VFND / CAR / VDEC; filtered unique indexes (one open assignment per
+  period, one SUBMITTED submission per assignment, one CURRENT decision per period); documents categories `VERIFICATION_REPORT` /
+  `VERIFICATION_EVIDENCE` (PDF only); seven triggers; downgrade refused while Phase 8B rows exist. No earlier data changed.
+- Permissions `verification.read / manage / respond` (project roles) and `verification.vvb_read / vvb_review / decide` (VVB / ACVA Reviewer
+  only — no other grant).
+- Two APIs as for laboratories: `/verification` (project side) and `/vvb` (allow-list workspace, scoped per assignment of the caller's
+  ACTIVE, same-environment VVB organization). Every action audited in both organizations.
+- Assignment lifecycle with COI on acceptance and replacement lineage; submission only of the period's currently valid Phase 8A READY
+  package (re-checked; lazily INVALIDATED / SUPERSEDED, never mutated); findings and corrective actions (VVB raises / closes, project
+  responds); decision with the VVB report PDF, separation of duties against finding raisers, optional "VVB-stated verified quantity" kept
+  apart from the calculated quantity; recalculation supersedes a recorded decision; aggregate project status CALCULATED → VERIFICATION →
+  VERIFIED; decision lineage down to farms.
+
+Frontend
+- MRV workspace **Verification** tab (per period): calculated label, VVB assignments (propose, withdraw, terminate, submit), submissions,
+  findings with responses and evidence, decisions with the VVB-stated quantity, report download and lineage.
+- **VVB workspace** (`/vvb`, `verification.vvb_read`): assignment list; assignment page with COI acceptance / decline, package (farms with
+  farmer codes, points, laboratory results, calculation), manifest documents, findings / corrective actions and the decision form.
+
+Verification (exit gate, 3 Oct 2026)
+- Backend: **283 pytest tests passed** (Phase 8B: 13 tests). ruff clean. mypy clean (155 files). `alembic check`: no drift. Test database:
+  upgrade base → 0012, downgrade 0012 → base, upgrade base → 0012 again. Development database: the 0012 downgrade is refused while Phase 8B
+  rows exist.
+- Frontend: **94 Vitest tests passed** (14 files). Production build OK.
+- E2E passed (Phases 1–8B): the PM proposed DEMO-VVB-C in the Verification tab, the VVB reviewer accepted it with a COI declaration in the
+  VVB workspace, submission was refused (409 NO_READY_PACKAGE) for the E2E project and for Niphad, no submission or decision exists, the
+  project stayed MONITORING, the VVB user was refused project / calculation / project-side verification / farmer / audit endpoints and saw
+  only the VVB workspace, non-VVB users were refused `/vvb`, assignment audit events present, no unexpected console errors.
+
 ## Known limitations and open items
 
 - The rate limiter is in-memory (single API process). Redis is required before scaling out (Phase 12).
@@ -483,4 +519,11 @@ Verification (exit gate, 3 Oct 2026)
     the TEST-only fixture; DEMO shows the blocked path.
   - Report generation is synchronous (size-guarded); background generation is deferred to Phase 12. The PDF is text-only.
   - Cross-module automated checks (duplicate farm, overlaps, double counting) are not part of readiness.
+- Phase 8B:
+  - Verification only: validation, registry submission, issuance, credits, serials, buffer and allocation are not implemented; a
+    recorded VERIFIED decision is not an issuance. No accreditation is modelled (C4).
+  - Without a registered calculation module no period reaches READY outside tests, so submission, findings and decisions are exercised
+    only with the TEST-only fixture; DEMO shows assignment and COI only.
+  - Findings belong to one submission; a superseded package's findings remain as history (I5).
+  - Each E2E run adds a VVB assignment to its DEMO project (and reuses Niphad's open assignment) in the development database.
 - The browser logs one expected 401 at start-up: the silent session-restore attempt when nobody is signed in.

@@ -43,7 +43,8 @@ from app.models import (
     SamplingDesignVersion,
 )
 
-CALC_PROJECT_STATES = ("MONITORING", "CALCULATION_READY", "CALCULATED")
+# later monitoring periods are calculated while the project is in (aggregate) verification (Phase 8B, C2)
+CALC_PROJECT_STATES = ("MONITORING", "CALCULATION_READY", "CALCULATED", "VERIFICATION", "VERIFIED")
 STEP_LABELS = {fw.IMPLEMENTED: "Implemented", fw.NOT_INCLUDED_DEMO: "Not included — DEMO", "NOT_CONFIGURED": "CONFIGURATION_REQUIRED"}
 
 

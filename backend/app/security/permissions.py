@@ -78,6 +78,14 @@ class P:
     CALCULATION_MANAGE = "calculation.manage"      # create, freeze inputs, execute, submit, cancel, recalculate
     CALCULATION_REVIEW = "calculation.review"      # calculation QA (never on a run you created / froze / executed / submitted)
     CALCULATION_APPROVE = "calculation.approve"    # approve / reject a calculation run (same separation of duties)
+    # Phase 8B — VVB / ACVA verification (C19). Project side:
+    VERIFICATION_READ = "verification.read"        # assignments, submissions, VVB findings / corrective actions, decisions
+    VERIFICATION_MANAGE = "verification.manage"    # propose / withdraw / terminate assignments, submit READY packages
+    VERIFICATION_RESPOND = "verification.respond"  # respond to VVB findings and corrective actions (never closes them)
+    # VVB side — granted only in an organization of type VVB:
+    VERIFICATION_VVB_READ = "verification.vvb_read"      # assignments of the own VVB, submitted packages (allow-list)
+    VERIFICATION_VVB_REVIEW = "verification.vvb_review"  # accept (COI) / decline / terminate, findings, corrective actions
+    VERIFICATION_DECIDE = "verification.decide"          # record the VVB decision (report PDF required)
 
 
 PERMISSIONS: tuple[PermissionDef, ...] = (
@@ -152,6 +160,20 @@ PERMISSIONS: tuple[PermissionDef, ...] = (
     PermissionDef(P.CALCULATION_MANAGE, "calculation", "Manage calculation runs",
                   "Create calculation runs, freeze inputs, execute the registered methodology module, submit, cancel, recalculate."),
     PermissionDef(P.CALCULATION_REVIEW, "calculation", "Calculation QA", "Run and complete calculation QA (never on your own run)."),
+    PermissionDef(P.VERIFICATION_READ, "verification", "View verification",
+                  "View VVB assignments, verification submissions, VVB findings, corrective actions and decisions of the organization's projects."),
+    PermissionDef(P.VERIFICATION_MANAGE, "verification", "Manage verification",
+                  "Propose, withdraw or terminate VVB assignments and submit READY packages for verification."),
+    PermissionDef(P.VERIFICATION_RESPOND, "verification", "Respond to VVB",
+                  "Respond to VVB findings and corrective actions with text and evidence (only the VVB closes or accepts them)."),
+    PermissionDef(P.VERIFICATION_VVB_READ, "verification", "VVB: view assignments",
+                  "VVB organizations only: view own assignments and the submitted verification package (allow-listed data)."),
+    PermissionDef(P.VERIFICATION_VVB_REVIEW, "verification", "VVB: review",
+                  "VVB organizations only: accept (with a conflict-of-interest declaration) or decline assignments, raise and close "
+                  "findings, request and review corrective actions."),
+    PermissionDef(P.VERIFICATION_DECIDE, "verification", "VVB: record decision",
+                  "VVB organizations only: record the VVB decision (VERIFIED / NOT_VERIFIED) with the VVB report PDF; never the "
+                  "VVB user who raised findings on that submission."),
     PermissionDef(P.CALCULATION_APPROVE, "calculation", "Approve calculations",
                   "Approve or reject a calculation run after QA PASS (never your own run). Calculated is not verified or issued."),
     PermissionDef(P.CONSENTS_CONFIGURE, "admin", "Configure consent types",
@@ -194,7 +216,8 @@ SYSTEM_ROLES: tuple[RoleDef, ...] = (
        P.LAB_SHIPMENT_MANAGE),
     _r("PROJECT_MANAGER", "Project Manager / Project Developer", ORG, "Creates projects, selects standard/activity/methodology, manages MRV, VVB and registry workflows.",
        P.FARMERS_READ, P.FARMERS_MANAGE, P.FARMERS_KYC_VERIFY, P.FARMERS_BANK_MANAGE, P.FARMS_READ, P.FARMS_MANAGE,
-       P.PROJECTS_READ, P.PROJECTS_MANAGE, P.METHODOLOGIES_READ, P.MRV_READ, P.MRV_MANAGE, P.LAB_READ, P.LAB_ENGAGE, P.CALCULATION_READ),
+       P.PROJECTS_READ, P.PROJECTS_MANAGE, P.METHODOLOGIES_READ, P.MRV_READ, P.MRV_MANAGE, P.LAB_READ, P.LAB_ENGAGE, P.CALCULATION_READ,
+       P.VERIFICATION_READ, P.VERIFICATION_MANAGE, P.VERIFICATION_RESPOND),
     _r("METHODOLOGY_SPECIALIST", "Methodology Specialist", PLATFORM, "Manages versioned, approval-controlled methodology configuration.",
        P.PROJECTS_READ, P.STANDARDS_MANAGE, P.METHODOLOGIES_READ, P.METHODOLOGIES_MANAGE, P.METHODOLOGIES_APPROVE,
        P.METHODOLOGIES_REVIEW_PROJECT, P.MRV_READ),
@@ -206,17 +229,18 @@ SYSTEM_ROLES: tuple[RoleDef, ...] = (
     _r("MRV_MANAGER", "MRV Manager", ORG, "Manages MRV plans, monitoring periods and approves monitoring datasets.",
        P.FARMERS_READ, P.FARMS_READ, P.PROJECTS_READ, P.METHODOLOGIES_READ, P.MRV_READ, P.MRV_MANAGE, P.MRV_COLLECT, P.MRV_REVIEW,
        P.SAMPLING_MANAGE, P.SAMPLING_ASSIGN, P.LAB_READ, P.LAB_SAMPLE_REGISTER, P.LAB_SAMPLE_MANAGE, P.LAB_SHIPMENT_MANAGE, P.LAB_ENGAGE,
-       P.CALCULATION_READ),
+       P.CALCULATION_READ, P.VERIFICATION_READ, P.VERIFICATION_RESPOND),
     _r("LAB_TECHNICIAN", "Lab Technician", ORG, "Receives samples, enters results and uploads lab reports.",
        P.LAB_LAB_READ, P.LAB_RECEIVE, P.LAB_TEST),
     _r("LAB_MANAGER", "Lab Manager / Lab QA", ORG, "Approves or rejects lab results and requests retests.",
        P.LAB_LAB_READ, P.LAB_RECEIVE, P.LAB_TEST, P.LAB_QA, P.LAB_RETEST_REQUEST, P.LAB_ENGAGEMENT_ACCEPT),
     _r("CALCULATION_ANALYST", "Carbon Calculation Analyst", ORG, "Runs approved calculation engines; cannot type a final credit quantity.",
-       P.METHODOLOGIES_READ, P.MRV_READ, P.LAB_READ, P.CALCULATION_READ, P.CALCULATION_MANAGE),
+       P.METHODOLOGIES_READ, P.MRV_READ, P.LAB_READ, P.CALCULATION_READ, P.CALCULATION_MANAGE, P.VERIFICATION_READ, P.VERIFICATION_RESPOND),
     _r("QA_OFFICER", "Data Quality / QA Officer", ORG, "Reviews anomalies and duplicates; approves or rejects datasets.",
        P.FARMERS_READ, P.FARMERS_KYC_VERIFY, P.FARMS_READ, P.PROJECTS_READ, P.PROJECTS_REVIEW, P.METHODOLOGIES_READ, P.MRV_READ,
-       P.MRV_REVIEW, P.MRV_APPROVE, P.LAB_READ, P.CALCULATION_READ, P.CALCULATION_REVIEW, P.CALCULATION_APPROVE),
-    _r("VVB_REVIEWER", "VVB / ACVA Reviewer", ORG, "External verifier: reviews assigned projects, raises findings, submits decisions."),
+       P.MRV_REVIEW, P.MRV_APPROVE, P.LAB_READ, P.CALCULATION_READ, P.CALCULATION_REVIEW, P.CALCULATION_APPROVE, P.VERIFICATION_READ),
+    _r("VVB_REVIEWER", "VVB / ACVA Reviewer", ORG, "External verifier: reviews assigned projects, raises findings, submits decisions.",
+       P.VERIFICATION_VVB_READ, P.VERIFICATION_VVB_REVIEW, P.VERIFICATION_DECIDE),
     _r("REGISTRY_MANAGER", "Registry Manager", ORG, "Manages registry submissions, issuance tracking and serial reconciliation."),
     _r("CREDIT_MANAGER", "Credit Manager", ORG, "Manages issued-credit inventory, reservations, transfers and retirements."),
     _r("BUYER", "Buyer", ORG, "Browses eligible issued credits, orders, pays, requests transfer/retirement."),

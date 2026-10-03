@@ -54,6 +54,12 @@ export const P = {
   CALCULATION_MANAGE: 'calculation.manage',
   CALCULATION_REVIEW: 'calculation.review',
   CALCULATION_APPROVE: 'calculation.approve',
+  VERIFICATION_READ: 'verification.read',
+  VERIFICATION_MANAGE: 'verification.manage',
+  VERIFICATION_RESPOND: 'verification.respond',
+  VERIFICATION_VVB_READ: 'verification.vvb_read',
+  VERIFICATION_VVB_REVIEW: 'verification.vvb_review',
+  VERIFICATION_DECIDE: 'verification.decide',
 } as const;
 
 export type PermissionCode = (typeof P)[keyof typeof P];

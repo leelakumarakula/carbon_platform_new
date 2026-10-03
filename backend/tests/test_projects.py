@@ -407,8 +407,10 @@ def test_no_transitions_into_later_phase_states() -> None:
                 frontier.append(n)
     assert reachable == {"DRAFT", "DATA_COLLECTION", "ELIGIBILITY_REVIEW", "STANDARD_SELECTED", "ACTIVITY_SELECTED", "CLOSED",
                          "METHODOLOGY_REVIEW", "METHODOLOGY_CONFIRMED", "MRV_PLANNED", "MONITORING",
-                         "CALCULATION_READY", "CALCULATED"}  # Phase 7 boundary (entered only through the calculation workflow)
-    assert not reachable & {"VALIDATION", "VERIFICATION", "VERIFIED", "ISSUED", "ACTIVE"}  # calculated ≠ verified ≠ issued
+                         "CALCULATION_READY", "CALCULATED",          # Phase 7 (entered only through the calculation workflow)
+                         "VERIFICATION", "VERIFIED"}                  # Phase 8B aggregate (entered only through VVB assignments / decisions)
+    # verified ≠ registered ≠ issued: no validation, registry or issuance state is reachable
+    assert not reachable & {"VALIDATION", "REGISTRY_SUBMISSION", "REGISTERED", "ISSUANCE_PENDING", "ISSUED", "ACTIVE"}
 
 
 def test_status_history_is_append_only() -> None:

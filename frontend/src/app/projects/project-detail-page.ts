@@ -33,7 +33,7 @@ import { ProjectsApi } from './projects.api';
 const TABS = ['overview', 'farms', 'team', 'boundary', 'standard', 'methodology', 'periods', 'rights', 'documents', 'history'];
 /** Entered and left through the Methodology tab (evaluate / confirm / unlock), not the header buttons. */
 // entered only through their workflows (methodology, MRV, calculation) — never offered as a generic status button
-const TAB_ONLY: ProjectStatus[] = ['METHODOLOGY_REVIEW', 'METHODOLOGY_CONFIRMED', 'MRV_PLANNED', 'MONITORING', 'CALCULATION_READY', 'CALCULATED'];
+const TAB_ONLY: ProjectStatus[] = ['METHODOLOGY_REVIEW', 'METHODOLOGY_CONFIRMED', 'MRV_PLANNED', 'MONITORING', 'CALCULATION_READY', 'CALCULATED', 'VERIFICATION', 'VERIFIED'];
 
 @Component({
   selector: 'app-project-detail-page',

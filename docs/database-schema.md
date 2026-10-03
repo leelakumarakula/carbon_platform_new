@@ -167,6 +167,22 @@ No earlier table changes (the project statuses CALCULATION_READY / CALCULATED al
 0011 also adds the documents category `CALCULATION_REPORT` (PDF only); its downgrade refuses to run while any Phase 8A row or report
 document exists.
 
+## Phase 8B tables (VVB / ACVA verification) — migration 0012
+
+| Table | Key columns / rules |
+|---|---|
+| `verification_assignments` | `assignment_code` (VAS-); project, monitoring period, VVB organization; PROPOSED / ACCEPTED / COMPLETED / DECLINED / WITHDRAWN / TERMINATED (filtered unique: one PROPOSED/ACCEPTED per period); `previous_assignment_id` (replacement lineage); proposed / accepted stamps; COI declaration + declared by / at (required once ACCEPTED); completed at; closed by / at / side / reason (required when declined, withdrawn or terminated). Trigger: identity and COI fixed; closed assignments final; no delete |
+| `verification_submissions` | `submission_code` (VSUB-); assignment + seq (unique); project, period; Phase 8A readiness review, calculation run, calculation report, `manifest_sha256`; SUBMITTED / SUPERSEDED / INVALIDATED (filtered unique: one SUBMITTED per assignment); closed at / reason, superseded by. Trigger: the package references never change; closed submissions final |
+| `verification_findings` | `finding_code` (VFND-); assignment, submission; category (6 specification values); `blocking`; title, description; `target_type` (SUBMISSION, MONITORING_PERIOD, CALCULATION_RUN, INPUT, OUTPUT, LAB_RESULT, MRV_EVIDENCE, DATASET, CALCULATION_REPORT, METHODOLOGY, DOCUMENT) + `target_ref`; OPEN / RESPONDED / CLOSED; raised / responded / closed stamps, response (+ document), closure note. Trigger: identity, category, target and original text immutable; no delete |
+| `verification_finding_events` | append-only; unique (finding, seq); action, from / to status, actor, actor organization, actor side, time, note, document |
+| `corrective_actions` | `action_code` (CAR-); finding, submission, assignment; description, `due_date` (overdue derived); REQUESTED / RESPONDED / ACCEPTED / CANCELLED; requested / responded / reviewed stamps, response (+ document), review note. Trigger: request immutable; ACCEPTED / CANCELLED final |
+| `corrective_action_events` | append-only; same shape as finding events |
+| `verification_decisions` | `decision_code` (VDEC-); assignment, submission (unique), project, period, VVB organization; outcome VERIFIED / NOT_VERIFIED; `verified_quantity` + `verified_quantity_unit` ("VVB-stated verified quantity", both or neither — never a credit); rationale; `report_document_id` (VERIFICATION_REPORT PDF) + `report_sha256`; `manifest_sha256`; decided by / at; CURRENT / SUPERSEDED (filtered unique: one CURRENT per period) + superseded at / reason. Trigger: immutable except CURRENT → SUPERSEDED |
+
+0012 also adds the documents categories `VERIFICATION_REPORT` and `VERIFICATION_EVIDENCE` (PDF only) and the sequences VAS / VSUB / VFND /
+CAR / VDEC; its downgrade refuses to run while any Phase 8B row or verification document exists. No earlier table changes (the project
+statuses VERIFICATION / VERIFIED already existed in the status check).
+
 ## Migrations
 
 `backend/alembic/versions/20261002_0001_phase1_identity_access_audit.py` and
@@ -182,7 +198,9 @@ LABORATORY, other existing rows → UNCLASSIFIED; one methodology change-history
 `20261003_0009_phase6_laboratory.py` (9 laboratory tables, the SMP- / SHP- / LT- sequences, three triggers, document categories) and
 `20261003_0010_phase7_carbon_calculation.py` (4 calculation tables, the CALC- sequence, four triggers; downgrade refused while runs exist) and
 `20261003_0011_phase8a_internal_pre_verification.py` (findings, finding events, reports, readiness reviews, CFND / CRPT / RDY sequences,
-CALCULATION_REPORT category, four triggers; downgrade refused while Phase 8A rows exist). Spatial
+CALCULATION_REPORT category, four triggers; downgrade refused while Phase 8A rows exist) and
+`20261003_0012_phase8b_vvb_verification.py` (7 verification tables, VAS / VSUB / VFND / CAR / VDEC sequences, VERIFICATION_REPORT /
+VERIFICATION_EVIDENCE categories, seven triggers; downgrade refused while Phase 8B rows exist). Spatial
 indexes (`six_*`) are hand-written SQL and excluded from autogenerate by `include_object` in `alembic/env.py`. Generate new revisions with
 `alembic revision --autogenerate`, review them, and add raw SQL (triggers, spatial indexes) by hand.
 `alembic check` must report no drift before a phase is closed.

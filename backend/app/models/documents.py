@@ -31,6 +31,8 @@ class DocumentCategory(str, Enum):
     LAB_REPORT = "LAB_REPORT"                # Phase 6: laboratory report for a result (PDF only)
     CUSTODY_DOCUMENT = "CUSTODY_DOCUMENT"    # Phase 6: chain-of-custody form for a shipment (PDF only)
     CALCULATION_REPORT = "CALCULATION_REPORT"  # Phase 8A: generated calculation report of an APPROVED run (PDF only)
+    VERIFICATION_REPORT = "VERIFICATION_REPORT"  # Phase 8B: the external VVB's verification report (PDF only)
+    VERIFICATION_EVIDENCE = "VERIFICATION_EVIDENCE"  # Phase 8B: project evidence answering a VVB finding / corrective action (PDF only)
     OTHER = "OTHER"
 
 

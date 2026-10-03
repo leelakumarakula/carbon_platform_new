@@ -78,10 +78,14 @@ PROJECT_MACHINE = StateMachine.build(
         # Phase 5: first MRV plan approved → MRV_PLANNED; first monitoring period started → MONITORING.
         "MRV_PLANNED": {"MONITORING", "CLOSED"},
         # Phase 7: entered only through the calculation workflow — inputs frozen → CALCULATION_READY; first run approved →
-        # CALCULATED. VALIDATION and later are added in Phase 8+.
+        # CALCULATED.
         "MONITORING": {"CALCULATION_READY", "CLOSED"},
         "CALCULATION_READY": {"CALCULATED", "CLOSED"},
-        "CALCULATED": {"CLOSED"},
+        # Phase 8B (C2): aggregate only — first accepted VVB assignment (with an approved calculation) → VERIFICATION; first period
+        # VERIFIED by a VVB → VERIFIED. Period-level verification records stay authoritative. VALIDATION and REGISTRY_* are not used.
+        "CALCULATED": {"VERIFICATION", "CLOSED"},
+        "VERIFICATION": {"VERIFIED", "CLOSED"},
+        "VERIFIED": {"CLOSED"},
     },
     terminal={"CLOSED"},
 )
@@ -206,4 +210,29 @@ CALCULATION_READINESS_MACHINE = StateMachine.build(
     "calculation_readiness", initial="DRAFT",
     transitions={"DRAFT": {"SUBMITTED", "WITHDRAWN"}, "SUBMITTED": {"READY", "REJECTED", "WITHDRAWN"}, "READY": {"INVALIDATED"}},
     terminal={"REJECTED", "WITHDRAWN", "INVALIDATED"},
+)
+
+
+# ---------------------------------------------------------------- Phase 8B — VVB / ACVA verification (C5, C14, C15)
+VERIFICATION_ASSIGNMENT_MACHINE = StateMachine.build(
+    "verification_assignment", initial="PROPOSED",
+    transitions={"PROPOSED": {"ACCEPTED", "DECLINED", "WITHDRAWN"}, "ACCEPTED": {"COMPLETED", "TERMINATED"}},
+    terminal={"COMPLETED", "DECLINED", "WITHDRAWN", "TERMINATED"},
+)
+
+VERIFICATION_SUBMISSION_MACHINE = StateMachine.build(
+    "verification_submission", initial="SUBMITTED",
+    transitions={"SUBMITTED": {"SUPERSEDED", "INVALIDATED"}},
+    terminal={"SUPERSEDED", "INVALIDATED"},
+)
+
+VERIFICATION_FINDING_MACHINE = StateMachine.build(
+    "verification_finding", initial="OPEN",
+    transitions={"OPEN": {"RESPONDED"}, "RESPONDED": {"CLOSED", "OPEN"}, "CLOSED": {"OPEN"}},
+)
+
+CORRECTIVE_ACTION_MACHINE = StateMachine.build(
+    "corrective_action", initial="REQUESTED",
+    transitions={"REQUESTED": {"RESPONDED", "CANCELLED"}, "RESPONDED": {"ACCEPTED", "REQUESTED", "CANCELLED"}},
+    terminal={"ACCEPTED", "CANCELLED"},
 )

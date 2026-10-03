@@ -103,6 +103,15 @@ from app.models.projects import (
     ProjectStatus,
     ProjectStatusHistory,
 )
+from app.models.verification import (
+    CorrectiveAction,
+    CorrectiveActionEvent,
+    VerificationAssignment,
+    VerificationDecision,
+    VerificationFinding,
+    VerificationFindingEvent,
+    VerificationSubmission,
+)
 
 __all__ = [
     "Activity",
@@ -119,6 +128,8 @@ __all__ = [
     "CalculationReport",
     "CalculationRun",
     "ConsentDefinition",
+    "CorrectiveAction",
+    "CorrectiveActionEvent",
     "Document",
     "DocumentCategory",
     "DocumentVersion",
@@ -209,5 +220,10 @@ __all__ = [
     "UserRole",
     "UserSession",
     "UserStatus",
+    "VerificationAssignment",
+    "VerificationDecision",
+    "VerificationFinding",
+    "VerificationFindingEvent",
+    "VerificationSubmission",
     "WorkflowEvent",
 ]

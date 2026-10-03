@@ -206,6 +206,27 @@ No request body can carry a calculated value (unknown fields are refused with 42
 | GET/POST | `/calculations/qa/{run_id}` · POST `/start` · `/complete` | calculation.read / calculation.review (not the run's creator, freezer, executor or submitter) |
 | POST | `/runs/{id}/approve` · `/reject` | calculation.approve (same separation of duties; approval needs QA PASS) |
 
+## Endpoints (Phase 8B) — VVB / ACVA verification
+
+Project side, prefix `/verification` (organization-scoped; the project never decides or closes a VVB finding):
+
+| Method | Path | Permission |
+|---|---|---|
+| GET | `/projects/{id}/vvb-organizations` · `/projects/{id}/assignments?period_id` · `/projects/{id}/periods/{period_id}` · `/assignments/{id}` · `/assignments/{id}/submissions` · `/submissions/{id}` · `/submissions/{id}/findings` | verification.read / manage / respond |
+| POST | `/projects/{id}/assignments` (propose) · `/assignments/{id}/withdraw` · `/assignments/{id}/terminate` · `/assignments/{id}/submit` | verification.manage |
+| POST | `/submissions/{id}/evidence` (PDF) · `/findings/{id}/respond` · `/corrective-actions/{id}/respond` | verification.respond |
+| GET | `/decisions/{id}/lineage` · `/decisions/{id}/report` (PDF, audited) | verification.read / manage / respond |
+
+VVB side, prefix `/vvb` (allow-list API; assignments of the caller's own ACTIVE, same-environment VVB organization only):
+
+| Method | Path | Permission |
+|---|---|---|
+| GET | `/assignments` · `/assignments/{id}` · `/submissions/{id}/package` · `/submissions/{id}/documents` · `/submissions/{id}/documents/{document_id}` (manifest-scoped, integrity-checked, audited) · `/submissions/{id}/findings` · `/decisions/{id}/report` | verification.vvb_read / vvb_review / decide |
+| POST | `/assignments/{id}/accept` (COI declaration) · `/decline` · `/terminate` · `/submissions/{id}/findings` · `/findings/{id}/close` · `/return` · `/reopen` · `/findings/{id}/corrective-actions` · `/corrective-actions/{id}/accept` · `/reject` · `/cancel` | verification.vvb_review |
+| POST | `/submissions/{id}/decision` (multipart: outcome, rationale, report PDF, optional VVB-stated quantity + unit) | verification.decide (never a finding raiser on the submission) |
+
+No endpoint validates, registers, issues, serializes, retires or prices anything.
+
 ## Endpoints (Phase 8A) — internal pre-verification, prefix `/calculations`
 
 | Method | Path | Permission |
@@ -275,3 +296,10 @@ Phase 8A: `FINDING_RUN_DRAFT`, `INVALID_FINDING_TARGET`, `FINDING_NOT_OPEN`, `FI
 `SEPARATION_OF_DUTIES`, `RUN_NOT_APPROVED`, `REPORT_UNCHANGED`, `REPORT_TOO_LARGE`, `NO_APPROVED_CALCULATION`, `REPORT_MISSING`,
 `REPORT_INTEGRITY_FAILED`, `REPORT_STALE`, `OPEN_BLOCKING_FINDINGS`, `READINESS_EXISTS`, `READINESS_NOT_DRAFT`, `READINESS_NOT_SUBMITTED`,
 `READINESS_NOT_OPEN`, `FINDING_NOT_FOUND`, `CALCULATION_REPORT_NOT_FOUND`, `READINESS_NOT_FOUND` (404).
+
+Phase 8B: `NOT_A_VVB`, `OPEN_ASSIGNMENT_EXISTS`, `INVALID_REPLACEMENT`, `ASSIGNMENT_NOT_PROPOSED`, `ASSIGNMENT_NOT_ACCEPTED`, `NO_READY_PACKAGE`,
+`READINESS_NOT_VALID`, `SUBMISSION_EXISTS`, `SUBMISSION_NOT_CURRENT`, `TARGET_NOT_IN_PACKAGE`, `FINDING_NOT_OPEN`, `FINDING_NOT_RESPONDED`,
+`FINDING_NOT_CLOSED`, `FINDING_CLOSED`, `OPEN_CORRECTIVE_ACTIONS`, `CORRECTIVE_ACTION_NOT_REQUESTED`, `CORRECTIVE_ACTION_NOT_RESPONDED`,
+`CORRECTIVE_ACTION_CLOSED`, `OPEN_VERIFICATION_FINDINGS`, `SEPARATION_OF_DUTIES`, `INVALID_OUTCOME`, `INVALID_QUANTITY`,
+`QUANTITY_UNIT_REQUIRED`, `QUANTITY_NOT_ALLOWED`, `REPORT_REQUIRED`, `ASSIGNMENT_NOT_FOUND`, `SUBMISSION_NOT_FOUND`,
+`VERIFICATION_FINDING_NOT_FOUND`, `CORRECTIVE_ACTION_NOT_FOUND`, `DECISION_NOT_FOUND` (404).
