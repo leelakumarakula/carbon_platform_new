@@ -135,7 +135,8 @@ def reservation_out(db: Session, r: CreditReservation) -> ReservationOut:
     return ReservationOut(id=r.id, reservation_code=r.reservation_code, batch_id=r.batch_id, batch_code=_code(db, r.batch_id),
                           owner_organization_id=r.owner_organization_id, recipient_organization_id=r.recipient_organization_id, purpose=r.purpose,
                           purpose_reference=r.purpose_reference, quantity=int(r.quantity), expires_at=r.expires_at, status=r.status,
-                          created_by_name=names.get(r.created_by), created_at=r.created_at, release_reason=r.release_reason, closed_at=r.closed_at)
+                          created_by_name=names.get(r.created_by), created_at=r.created_at, release_reason=r.release_reason, closed_at=r.closed_at,
+                          order_code=ls.linked_owner(db, "reservation", r.id))
 
 
 def transfer_out(db: Session, principal: Principal, t: CreditTransfer) -> TransferOut:
@@ -154,7 +155,8 @@ def transfer_out(db: Session, principal: Principal, t: CreditTransfer) -> Transf
                        registry_transfer_reference=t.registry_transfer_reference, evidence_document_id=t.evidence_document_id,
                        close_reason=t.close_reason, can_complete=can,
                        completion_entry_id=db.scalar(select(CreditLedgerEntry.id).where(CreditLedgerEntry.transfer_id == t.id,
-                                                                                        CreditLedgerEntry.entry_type == "TRANSFER_COMPLETE")))
+                                                                                        CreditLedgerEntry.entry_type == "TRANSFER_COMPLETE")),
+                       order_code=ls.linked_owner(db, "transfer", t.id))
 
 
 def retirement_out(db: Session, principal: Principal, r: CreditRetirement) -> RetirementOut:

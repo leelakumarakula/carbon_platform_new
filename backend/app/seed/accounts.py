@@ -93,6 +93,7 @@ DEMO_USERS = [
     ("labqa", "Demo Lab QA Manager", "DEMO-LAB-B", "LAB_MANAGER"),     # second manager: lab QA independent of retest requests
     ("vvb", "Demo VVB Reviewer", "DEMO-VVB-C", "VVB_REVIEWER"),
     ("buyer", "Demo Buyer", "DEMO-BUYER-D", "BUYER"),
+    ("compliance", "Demo Marketplace Compliance Officer", None, "MARKETPLACE_COMPLIANCE"),   # Phase 10: buyer KYC reviewer (platform)
 ]
 DEMO_DOMAIN = "demo.carbon.example"
 

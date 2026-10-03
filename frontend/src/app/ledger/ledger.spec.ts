@@ -70,7 +70,7 @@ describe('Ledger helpers', () => {
     expect(labels(['credits.holder_read'])).not.toContain('Credit ledger');
     expect(labels(['verification.vvb_read', 'lab.lab_read'])).not.toContain('Credit ledger');
     const all = NAVIGATION.flatMap((s) => s.items.map((i) => `${i.label} ${i.route}`.toLowerCase())).join(' ');
-    for (const word of ['marketplace', 'order', 'checkout', 'payment', 'price']) expect(all).not.toContain(word);
+    for (const word of ['checkout', 'payout', 'price', 'invoice']) expect(all).not.toContain(word);   // Phase 10 adds the marketplace only
   });
 });
 

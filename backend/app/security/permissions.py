@@ -1,7 +1,8 @@
 """Permission catalog and system roles (spec section 4).
 
 This module is the single source of truth for permissions and for the baseline
-permissions of the system roles (the 19 roles of spec section 4 plus Platform GIS Specialist, decision D5). `python -m app.seed.reference` syncs it to the
+permissions of the system roles (the 19 roles of spec section 4 plus Platform GIS Specialist, decision D5, and the Phase 10 Marketplace
+Compliance Officer, decision D28). `python -m app.seed.reference` syncs it to the
 database. Each later phase adds its module's permissions here and grants them to roles.
 Custom (non-system) roles are managed by Platform Admins through the API.
 """
@@ -96,6 +97,19 @@ class P:
     CREDITS_CONFIRM = "credits.confirm"      # second person: confirm openings, complete transfers / retirements, apply reversals
     CREDITS_HOLDER_READ = "credits.holder_read"      # holders (e.g. buyers): own positions only, through the holder view
     CREDITS_HOLDER_RETIRE = "credits.holder_retire"  # holders: request retirement of own positions
+    # Phase 10 — marketplace (D27). No fee, revenue or payout permission exists (Phase 11).
+    MARKETPLACE_READ = "marketplace.read"    # browse ACTIVE listings (allow-listed disclosure)
+    LISTINGS_MANAGE = "listings.manage"      # seller: create / submit / pause / resume / close own listings
+    LISTINGS_APPROVE = "listings.approve"    # seller: approve (publish) a listing — never the creator
+    ORDERS_PLACE = "orders.place"            # buyer: place / cancel own orders, upload payment evidence
+    ORDERS_READ = "orders.read"              # buyer: own orders; seller: orders against own listings
+    ORDERS_MANAGE = "orders.manage"          # seller: cancel PLACED orders, resolve ATTENTION_REQUIRED (re-reserve + re-request transfer)
+    PAYMENTS_RECORD = "payments.record"      # buyer: record a payment with evidence
+    PAYMENTS_CONFIRM = "payments.confirm"    # seller finance (payee): confirm / reject / reconcile payments — never the recorder
+    REFUNDS_REQUEST = "refunds.request"      # seller finance: request a refund
+    REFUNDS_APPROVE = "refunds.approve"      # seller finance: approve / complete / reject — never the requester
+    BUYERS_KYC_SUBMIT = "buyers.kyc_submit"  # buyer: maintain and submit the organization's buyer profile and KYC documents
+    BUYERS_KYC_VERIFY = "buyers.kyc_verify"  # platform: verify / return / suspend buyer KYC — never the submitter
 
 
 PERMISSIONS: tuple[PermissionDef, ...] = (
@@ -203,6 +217,27 @@ PERMISSIONS: tuple[PermissionDef, ...] = (
                   "Credit holders: view the organization's own positions (project, period, vintage, methodology, registry, serial range)."),
     PermissionDef(P.CREDITS_HOLDER_RETIRE, "credits", "Request retirement of own credits",
                   "Credit holders: request retirement of the organization's own available credits (completed only with registry evidence)."),
+    PermissionDef(P.MARKETPLACE_READ, "marketplace", "Browse marketplace",
+                  "View active listings of registry-issued credits (allow-listed project, vintage, methodology, registry and price data)."),
+    PermissionDef(P.LISTINGS_MANAGE, "marketplace", "Manage listings",
+                  "Create, submit, pause, resume and close the organization's listings of its AVAILABLE ledger credits."),
+    PermissionDef(P.LISTINGS_APPROVE, "marketplace", "Approve listings",
+                  "Approve (publish) a submitted listing and its fixed price (never a listing you created)."),
+    PermissionDef(P.ORDERS_PLACE, "marketplace", "Place orders",
+                  "Buyers (KYC verified): place and cancel the organization's orders; attach payment evidence."),
+    PermissionDef(P.ORDERS_READ, "marketplace", "View orders", "View the organization's orders (as buyer or as seller)."),
+    PermissionDef(P.ORDERS_MANAGE, "marketplace", "Manage orders",
+                  "Sellers: cancel unpaid orders and resolve orders that need attention (re-reserve and re-request the ledger transfer)."),
+    PermissionDef(P.PAYMENTS_RECORD, "marketplace", "Record payments", "Buyers: record a payment made for an order, with evidence."),
+    PermissionDef(P.PAYMENTS_CONFIRM, "marketplace", "Confirm payments",
+                  "Seller finance (payee): confirm or reject recorded payments and reconcile them (never a payment you recorded)."),
+    PermissionDef(P.REFUNDS_REQUEST, "marketplace", "Request refunds", "Seller finance: request a refund of a payment (money only)."),
+    PermissionDef(P.REFUNDS_APPROVE, "marketplace", "Approve refunds",
+                  "Seller finance: approve, complete (with evidence) or reject a refund (never one you requested)."),
+    PermissionDef(P.BUYERS_KYC_SUBMIT, "marketplace", "Submit buyer KYC",
+                  "Buyers: maintain the organization's buyer profile and submit KYC documents for review."),
+    PermissionDef(P.BUYERS_KYC_VERIFY, "marketplace", "Verify buyer KYC",
+                  "Platform compliance: verify, return or suspend a buyer organization's KYC (never one you submitted)."),
     PermissionDef(P.CALCULATION_APPROVE, "calculation", "Approve calculations",
                   "Approve or reject a calculation run after QA PASS (never your own run). Calculated is not verified or issued."),
     PermissionDef(P.CONSENTS_CONFIGURE, "admin", "Configure consent types",
@@ -246,7 +281,8 @@ SYSTEM_ROLES: tuple[RoleDef, ...] = (
     _r("PROJECT_MANAGER", "Project Manager / Project Developer", ORG, "Creates projects, selects standard/activity/methodology, manages MRV, VVB and registry workflows.",
        P.FARMERS_READ, P.FARMERS_MANAGE, P.FARMERS_KYC_VERIFY, P.FARMERS_BANK_MANAGE, P.FARMS_READ, P.FARMS_MANAGE,
        P.PROJECTS_READ, P.PROJECTS_MANAGE, P.METHODOLOGIES_READ, P.MRV_READ, P.MRV_MANAGE, P.LAB_READ, P.LAB_ENGAGE, P.CALCULATION_READ,
-       P.VERIFICATION_READ, P.VERIFICATION_MANAGE, P.VERIFICATION_RESPOND, P.REGISTRY_READ, P.REGISTRY_MANAGE, P.CREDITS_READ),
+       P.VERIFICATION_READ, P.VERIFICATION_MANAGE, P.VERIFICATION_RESPOND, P.REGISTRY_READ, P.REGISTRY_MANAGE, P.CREDITS_READ,
+       P.MARKETPLACE_READ, P.ORDERS_READ),
     _r("METHODOLOGY_SPECIALIST", "Methodology Specialist", PLATFORM, "Manages versioned, approval-controlled methodology configuration.",
        P.PROJECTS_READ, P.STANDARDS_MANAGE, P.METHODOLOGIES_READ, P.METHODOLOGIES_MANAGE, P.METHODOLOGIES_APPROVE,
        P.METHODOLOGIES_REVIEW_PROJECT, P.MRV_READ),
@@ -275,11 +311,16 @@ SYSTEM_ROLES: tuple[RoleDef, ...] = (
     _r("REGISTRY_MANAGER", "Registry Manager", ORG, "Manages registry submissions, issuance tracking and serial reconciliation.",
        P.REGISTRY_READ, P.REGISTRY_MANAGE, P.CREDITS_READ),
     _r("CREDIT_MANAGER", "Credit Manager", ORG, "Manages issued-credit inventory, reservations, transfers and retirements.",
-       P.CREDITS_READ, P.CREDITS_MANAGE),
+       P.CREDITS_READ, P.CREDITS_MANAGE, P.MARKETPLACE_READ, P.LISTINGS_MANAGE, P.ORDERS_READ, P.ORDERS_MANAGE),
     _r("BUYER", "Buyer", ORG, "Browses eligible issued credits, orders, pays, requests transfer/retirement.",
-       P.CREDITS_HOLDER_READ, P.CREDITS_HOLDER_RETIRE),
+       P.CREDITS_HOLDER_READ, P.CREDITS_HOLDER_RETIRE, P.MARKETPLACE_READ, P.ORDERS_PLACE, P.ORDERS_READ, P.PAYMENTS_RECORD,
+       P.BUYERS_KYC_SUBMIT),
     _r("FINANCE_MANAGER", "Finance / Payout Manager", ORG, "Reconciles payments, calculates farmer share per agreement, approves payouts.",
-       P.FARMERS_READ, P.FARMERS_BANK_MANAGE, P.FARMERS_BANK_VERIFY, P.PROJECTS_READ, P.CREDITS_READ),
+       P.FARMERS_READ, P.FARMERS_BANK_MANAGE, P.FARMERS_BANK_VERIFY, P.PROJECTS_READ, P.CREDITS_READ, P.MARKETPLACE_READ,
+       P.LISTINGS_APPROVE, P.ORDERS_READ, P.PAYMENTS_CONFIRM, P.REFUNDS_REQUEST, P.REFUNDS_APPROVE),
+    _r("MARKETPLACE_COMPLIANCE", "Marketplace Compliance Officer", PLATFORM,
+       "Platform compliance (D28): reviews buyer organizations' KYC submissions — verifies, returns or suspends; never one they submitted.",
+       P.BUYERS_KYC_VERIFY),
     _r("PLATFORM_ADMIN", "Platform Admin", PLATFORM, "Manages users, roles, organizations, master data and configuration; views audit logs.",
        P.USERS_READ, P.USERS_MANAGE, P.USERS_ASSIGN_ROLES, P.ROLES_READ, P.ROLES_MANAGE,
        P.ORGANIZATIONS_READ, P.ORGANIZATIONS_MANAGE, P.ORGANIZATIONS_MANAGE_MEMBERS, P.AUDIT_READ, P.SECURITY_READ,

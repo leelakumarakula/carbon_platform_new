@@ -217,6 +217,28 @@ Workflow details: [credit-ledger-workflow.md](credit-ledger-workflow.md).
 `REGISTRY_TRANSFER_EVIDENCE` (PDF only). The five entry → workflow foreign keys are created after the tables (cyclic references). Its
 downgrade refuses to run while any Phase 9B row or ledger document exists. No earlier table changes.
 
+## Phase 10 tables (marketplace) — migration 0015
+
+Workflow details: [marketplace.md](marketplace.md). No table stores a credit quantity that could act as a balance: order items reference the
+Phase 9B batch / serial range / reservation / transfer only (D24). Money is `Numeric(19,4)` with an ISO-4217 currency; carbon is whole credits.
+
+| Table | Key columns / rules |
+|---|---|
+| `buyer_profiles` | one per BUYER organization; DRAFT / KYC_SUBMITTED / KYC_VERIFIED / KYC_RETURNED / SUSPENDED; legal name, registration number, country, contact; optional identifier stored as type + last 4 + keyed fingerprint (never in clear); submitted / verified by and at (check verifier ≠ submitter); return / suspension reasons. Trigger: organization, creator, environment fixed; never deleted |
+| `buyer_kyc_reviews` | append-only (trigger): SUBMITTED / VERIFIED / RETURNED / SUSPENDED / REINSTATED, actor, note, the reviewed document ids |
+| `marketplace_listings` | `listing_code` (LST-); seller organization; ONE 9B batch (+ optional serial range); title; immutable cap `listed_quantity`; `unit_price` + `currency`; min / max order; `payment_window_hours`; `valid_until`; seller co-benefit text; allow-listed `disclosure` JSON + SHA-256; DRAFT / PENDING_APPROVAL / ACTIVE / PAUSED / CLOSED / EXPIRED / CANCELLED; approver ≠ creator (check); filtered unique: one ACTIVE / PAUSED listing per seller + batch + range. Trigger: identity fixed; price, quantity, terms and disclosure frozen once approved; final states frozen; never deleted |
+| `listing_documents` | append-only links of seller-published LISTING_DOCUMENT PDFs |
+| `orders` | `order_code` (ORD-); buyer and seller organizations (check distinct); currency; subtotal = total (no fee, no tax); transfer kind INTERNAL / REGISTRY (+ the buyer's registry account); `expires_at` (payment deadline = the item reservations' expiry); status (D11); attention / close reasons. Trigger: parties, currency, amounts, kind and deadline fixed; COMPLETED / CANCELLED / EXPIRED / REFUNDED final |
+| `order_items` | `item_code`; order; listing; batch; optional serial range; quantity; `unit_price`; `line_total` (check = price × quantity); the current 9B `reservation_id` and `transfer_id` (filtered unique); RESERVED / TRANSFER_PENDING / DELIVERED / FAILED / RELEASED / EXPIRED. Trigger: price and quantity immutable; DELIVERED / RELEASED / EXPIRED final |
+| `payments` | `payment_code` (PAY-); order; payee (seller) / payer organizations; adapter (MANUAL at runtime); amount + currency; status; external reference (unique per adapter); PAYMENT_EVIDENCE document; recorded / confirmed (check ≠) / rejected; filtered unique: one open payment per order. Trigger: order, parties, adapter and amount fixed; REJECTED / FAILED / REFUNDED final |
+| `payment_events` | append-only (trigger); provider; external event id (unique per provider); event type; payload SHA-256 only; outcome APPLIED / UNMATCHED / IGNORED |
+| `refunds` | `refund_code` (RFD-); payment; order; amount (the whole payment); `after_transfer`; reason; REQUESTED / APPROVED / COMPLETED / REJECTED; requested / approved (check ≠) / completed (reference + evidence required); filtered unique: one open / completed refund per payment. Trigger: payment and amount fixed; COMPLETED / REJECTED final |
+
+Every Phase 10 table carries a filtered unique `request_key` and an `action_key` (the Idempotency-Key of the last state change, for
+replays). 0015 adds the sequences LST / ORD / PAY / RFD and the documents categories BUYER_KYC_DOCUMENT (restricted), PAYMENT_EVIDENCE,
+REFUND_EVIDENCE, ORDER_CONFIRMATION, LISTING_DOCUMENT (PDF only). No invoice table and no INV sequence (tax / invoice rules undefined — D10).
+Its downgrade refuses to run while any Phase 10 row or marketplace document exists. No earlier table changes.
+
 ## Migrations
 
 `backend/alembic/versions/20261002_0001_phase1_identity_access_audit.py` and
@@ -238,7 +260,9 @@ VERIFICATION_EVIDENCE categories, seven triggers; downgrade refused while Phase 
 `20261003_0013_phase9a_registry_credit_issuance.py` (7 registry / credit tables, RREG / RSUB / ISS / CB sequences, three registry document
 categories, seven triggers; downgrade refused while Phase 9A rows exist) and
 `20261003_0014_phase9b_credit_ledger.py` (7 ledger tables, LEDG / OPN / RSV / TRF / RET / REV sequences, two ledger document categories,
-seven triggers; downgrade refused while Phase 9B rows exist). Spatial
+seven triggers; downgrade refused while Phase 9B rows exist) and
+`20261003_0015_phase10_marketplace.py` (9 marketplace tables, LST / ORD / PAY / RFD sequences, five marketplace document categories, nine
+triggers; downgrade refused while Phase 10 rows exist). Spatial
 indexes (`six_*`) are hand-written SQL and excluded from autogenerate by `include_object` in `alembic/env.py`. Generate new revisions with
 `alembic revision --autogenerate`, review them, and add raw SQL (triggers, spatial indexes) by hand.
 `alembic check` must report no drift before a phase is closed.

@@ -145,6 +145,13 @@ and evidence PDF) and retired (only with the registry's retirement certificate),
 double spending. Buyers see their own holdings under **My credits** and may request retirement. On DEMO data the **Credit ledger** and
 **My credits** pages show "DEMO — no registry-issued credits"; nothing is opened, transferred or retired.
 
+Phase 10 adds the marketplace on top of the ledger: buyer organizations complete KYC (reviewed by the platform's marketplace compliance
+officer, `compliance@demo.carbon.example`), sellers list AVAILABLE ledger credits at a fixed price per credit (approved by a second person),
+KYC-verified buyers place orders that reserve the credits in the ledger, pay manually with evidence, and receive the credits when the seller's
+finance confirms the payment and the custodian completes the ledger transfer. No fee, commission, tax, payout or real payment gateway
+exists. On DEMO data the **Marketplace** shows "DEMO — no registry-issued credits; nothing is listed"; only the KYC workflow can be
+demonstrated.
+
 Demo and live records cannot be mixed; the API rejects it with `ENVIRONMENT_MISMATCH`.
 
 ## Tests and checks (exit gate after every phase)
@@ -166,7 +173,7 @@ npm run e2e:smoke                       # E2E smoke (API + ng serve running, DEM
 
 The 19 roles in spec §4 (plus Platform GIS Specialist, decision D5) are defined in `backend/app/security/permissions.py`. See
 [docs/roles-permissions.md](docs/roles-permissions.md). Phase 2 added the farmer and farm permissions to the
-field, project, GIS, QA, MRV and finance roles, and `farmers.self` to Farmer. Phase 3 added `projects.*` and `standards.manage`; Phase 4 added `methodologies.*`; Phase 5 added `mrv.*` and `sampling.*`; Phase 6 added `lab.*`; Phase 7 added `calculation.*`; Phase 8B added `verification.*`; Phase 9A added `registry.*` and `credits.read`; Phase 9B added `credits.manage`, `credits.confirm`, `credits.holder_read` and `credits.holder_retire`. Each later phase adds its module's permissions.
+field, project, GIS, QA, MRV and finance roles, and `farmers.self` to Farmer. Phase 3 added `projects.*` and `standards.manage`; Phase 4 added `methodologies.*`; Phase 5 added `mrv.*` and `sampling.*`; Phase 6 added `lab.*`; Phase 7 added `calculation.*`; Phase 8B added `verification.*`; Phase 9A added `registry.*` and `credits.read`; Phase 9B added `credits.manage`, `credits.confirm`, `credits.holder_read` and `credits.holder_retire`; Phase 10 added `marketplace.read`, `listings.*`, `orders.*`, `payments.*`, `refunds.*`, `buyers.kyc_submit` and `buyers.kyc_verify` (new Marketplace Compliance Officer role). Each later phase adds its module's permissions.
 
 ## Workflow
 

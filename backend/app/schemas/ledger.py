@@ -192,6 +192,7 @@ class ReservationOut(BaseModel):
     created_at: UtcDatetime
     release_reason: str | None
     closed_at: UtcDatetime | None
+    order_code: str | None = None               # Phase 10: an order-linked reservation is released through the order
 
 
 class TransferOut(BaseModel):
@@ -219,6 +220,7 @@ class TransferOut(BaseModel):
     close_reason: str | None
     completion_entry_id: uuid.UUID | None
     can_complete: bool
+    order_code: str | None = None               # Phase 10: an order-linked transfer is completed / rejected through the order
 
 
 class RetirementOut(BaseModel):

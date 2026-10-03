@@ -116,9 +116,12 @@ def test_permission_grants_surface_and_registry_boundary(db: Session) -> None:
     for role in ("VVB_REVIEWER", "LAB_TECHNICIAN", "LAB_MANAGER", "FARMER", "METHODOLOGY_SPECIALIST", "FIELD_AGENT"):
         assert perms(role) == set(), role
     from app.main import app
-    segments = {seg for r in app.routes for seg in getattr(r, "path", "").split("/")}
-    for word in ("marketplace", "listings", "orders", "checkout", "payments", "invoices", "payouts", "offers", "prices", "pricing"):
+    paths = [getattr(r, "path", "") for r in app.routes]
+    segments = {seg for p in paths for seg in p.split("/")}
+    for word in ("checkout", "invoices", "payouts", "offers", "prices", "pricing"):      # Phase 10 adds no checkout, invoice, offer or payout
         assert word not in segments, word
+    for word, prefix in (("listings", "/api/v1/marketplace"), ("orders", "/api/v1/orders"), ("payments", "/api/v1/payments")):
+        assert all(p.startswith(prefix) for p in paths if word in p.split("/")), word     # the marketplace never sits under /credits
     manual = ADAPTERS["MANUAL"]
     ref = AccountRef("R", "A")
     for call in (lambda: manual.transfer_credits(ref, CreditMovement("X", 1), "k"), lambda: manual.retire_credits(ref, CreditMovement("X", 1), "k"),

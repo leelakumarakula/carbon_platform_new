@@ -6,6 +6,8 @@ export interface NavItem {
   route: string;
   /** All are required to see the item. Omit for items every signed-in user can open. */
   permissions?: readonly string[];
+  /** At least one is required (in addition to `permissions`). */
+  anyPermissions?: readonly string[];
 }
 
 export interface NavSection {
@@ -57,6 +59,17 @@ export const NAVIGATION: readonly NavSection[] = [
     items: [{ label: 'My credits', icon: 'wallet', route: '/holdings', permissions: [P.CREDITS_HOLDER_READ] }],
   },
   {
+    title: 'Marketplace',
+    items: [
+      { label: 'Marketplace', icon: 'storefront', route: '/marketplace', permissions: [P.MARKETPLACE_READ] },
+      { label: 'Listings', icon: 'sell', route: '/marketplace/listings', anyPermissions: [P.LISTINGS_MANAGE, P.LISTINGS_APPROVE] },
+      { label: 'Orders', icon: 'receipt_long', route: '/orders', permissions: [P.ORDERS_READ] },
+      { label: 'Payments', icon: 'payments', route: '/payments', anyPermissions: [P.PAYMENTS_CONFIRM, P.REFUNDS_REQUEST, P.REFUNDS_APPROVE] },
+      { label: 'Buyer profile', icon: 'verified_user', route: '/marketplace/profile', permissions: [P.BUYERS_KYC_SUBMIT] },
+      { label: 'KYC review', icon: 'fact_check', route: '/marketplace/kyc-review', permissions: [P.BUYERS_KYC_VERIFY] },
+    ],
+  },
+  {
     title: 'Laboratory',
     items: [{ label: 'Laboratory', icon: 'science', route: '/laboratory', permissions: [P.LAB_LAB_READ] }],
   },
@@ -86,6 +99,6 @@ export const NAVIGATION: readonly NavSection[] = [
 
 export function visibleNavigation(sections: readonly NavSection[], has: (code: string) => boolean): NavSection[] {
   return sections
-    .map((s) => ({ ...s, items: s.items.filter((i) => (i.permissions ?? []).every(has)) }))
+    .map((s) => ({ ...s, items: s.items.filter((i) => (i.permissions ?? []).every(has) && (!i.anyPermissions?.length || i.anyPermissions.some(has))) }))
     .filter((s) => s.items.length > 0);
 }

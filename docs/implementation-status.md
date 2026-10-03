@@ -13,7 +13,7 @@
 | 8B | VVB / ACVA verification (assignments, submission, findings, corrective actions, recorded decision) | **Done** |
 | 9A | Registry submission & credit issuance (no inventory, ownership, reservation, transfer or retirement) | **Done** |
 | 9B | Credit ledger: ownership, reservation, transfer, retirement (no marketplace, price or payment) | **Done** |
-| 10 | Marketplace | — |
+| 10 | Marketplace: buyer KYC, listings, orders, manual payments, refunds (no fee, tax, commission or payout) | **Done** |
 | 11 | Revenue / payout | — |
 | 12 | Production hardening | — |
 
@@ -539,6 +539,55 @@ Verification (exit gate, 3 Oct 2026)
   with the DEMO note and no holdings and was refused the ledger (UI and API); VVB, farmer, laboratory and buyer users were refused the
   inventory and non-holders the holdings API; no unexpected console errors.
 
+## Phase 10 — delivered
+
+**Marketplace — buyer KYC, listings, orders, manual payments, refunds; the Phase 9B ledger stays the only ownership / availability record; no
+fee, tax, commission, revenue or payout.** Details: [marketplace.md](marketplace.md) (locked decisions D1–D36).
+
+Backend
+- Migration `0015`: buyer_profiles, buyer_kyc_reviews (append-only), marketplace_listings, listing_documents (append-only), orders,
+  order_items, payments, payment_events (append-only, unique per provider event), refunds; sequences LST / ORD / PAY / RFD; documents
+  categories BUYER_KYC_DOCUMENT (restricted), PAYMENT_EVIDENCE, REFUND_EVIDENCE, ORDER_CONFIRMATION, LISTING_DOCUMENT (PDF only); nine
+  triggers; downgrade refused while Phase 10 rows exist. No invoice table / INV sequence (tax and invoice rules undefined — D10).
+- Phase 9B refactored into composable `*_in_tx` functions (reserve, release, expire, request / complete / close transfer) with the same
+  locks, guarded consumption, posting checks and triggers; public 9B behaviour unchanged; a link guard makes the public 9B actions refuse
+  order-owned reservations / transfers (ORDER_LINKED).
+- T1 placement (KYC gate → listings locked → derived remaining under the lock → order + items + one 9B reservation per item, all or nothing),
+  T2 manual payment recording, T3 confirmation (reservations consumed into 9B transfer requests, or ATTENTION_REQUIRED when a reservation
+  was lost), T4 order-linked delivery (9B completion / rejection + item + order in one transaction), seller resolution (re-reserve +
+  re-request), lazy listing / order expiry, whole-payment refunds with dual control (before delivery: order REFUNDED; after delivery: money
+  only), deterministic ORDER_CONFIRMATION PDF (not a tax invoice), order lineage into the 9B / 9A chains.
+- `PaymentAdapter` Protocol + `ManualPaymentAdapter` (the only runtime adapter; `PAYMENT_PROVIDER=manual`); provider outbox, events
+  (deduplicated), reconciliation and provider refunds exercised with the TEST-only adapter (`tests/payment_fixture.py`, never registered).
+  No public webhook route.
+- 12 permissions + the platform Marketplace Compliance Officer role (D27, D28); demo account `compliance@demo.carbon.example`.
+
+Frontend
+- Marketplace (authenticated catalogue, allow-listed disclosure, order builder — one seller / one currency), Buyer profile & KYC documents,
+  Orders (buyer: pay with evidence, cancel, confirmation, lineage; seller: cancel, resolve, confirm / reject payments, refunds, delivery
+  completion for credits.confirm holders), Listings (create from the ledger inventory, submit, approve, pause / resume, close, publish PDFs),
+  Payments (finance queue), KYC review (platform). The ledger page routes order-linked transfers through the order. DEMO shows
+  "DEMO — no registry-issued credits; nothing is listed"; navigation is permission-driven (new any-of support).
+
+Verification (exit gate, 3 Oct 2026)
+- Backend: **326 pytest tests passed** — Phase 10: 10 functional test functions (the 44 listed areas) + 10 real-concurrency / trigger
+  tests. Concurrency scenarios A–I run on separate database connections against a committed world restored from a SQL Server database
+  snapshot: A 100 + 100 / 100 and B 60 + 60 / 100 — exactly one order, the other 409; C two fitting orders — both, nothing lost; D
+  confirmation vs expiry — one RESERVATION_EXPIRE entry, ATTENTION_REQUIRED, no transfer; E duplicate event — one APPLIED, one DUPLICATE;
+  F event vs cancellation — consistent either way; G double cancellation — one; H refund vs delivery — delivery always completes, no credit
+  reversed; I delivery failure vs resolution — consistent either way; every scenario checks no double spend, no negative inventory,
+  conservation, no orphan reservation / transfer and no duplicate payment / transfer / refund effect. The 8B / 9A / 9B boundary tests were
+  narrowed deliberately (marketplace / orders / payments only under their own prefixes; payouts, checkout, invoices, offers, pricing still
+  forbidden). ruff clean. mypy clean (178 files). `alembic check`: no drift (development and test databases). Test database: 0015 → base →
+  0015 → base → 0015. Downgrade guard tested. The development database is at 0015 (not downgraded).
+- Frontend: **118 Vitest tests passed** (17 files). Production build OK.
+- E2E passed (Phases 1–10) after the final code changes: the buyer saw Marketplace / Orders / Buyer profile / My credits (no Payments /
+  Listings) and "DEMO — no registry-issued credits; nothing is listed" with no listing; the DEMO buyer's KYC was submitted in the UI (profile,
+  PDF, submission) and verified by the compliance officer in the KYC review queue (later runs find it verified); ordering was refused (404
+  LISTING_NOT_FOUND) and a request carrying a total rejected (422); no DEMO order, payment or listing exists; finance saw Payments and
+  Listings; a DEMO listing of a non-existent batch was refused (404 CREDIT_BATCH_NOT_FOUND); VVB, farmer and laboratory users were refused
+  the marketplace, orders, payments and KYC APIs; no unexpected console errors or 5xx responses.
+
 ## Known limitations and open items
 
 - The rate limiter is in-memory (single API process). Redis is required before scaling out (Phase 12).
@@ -630,4 +679,14 @@ Verification (exit gate, 3 Oct 2026)
   - The UI has no reconciliation screen (API only) and records at most one registry-stated retired serial range per retirement (the API
     accepts several).
   - DEMO has no registry-issued batch, so every ledger workflow is exercised only in the rolled-back TEST database.
+- Phase 10:
+  - No payment provider is contracted: LIVE payments are manual (evidence + seller-finance confirmation); provider paths (outbox, events,
+    reconciliation, provider refunds) are exercised only with the TEST adapter. There is no public webhook route.
+  - Buyer KYC is document-driven: no legal document list is configured or invented; the platform reviewer decides.
+  - Tax / invoice rules are undefined: only a deterministic ORDER_CONFIRMATION (not a tax invoice) exists; no invoice table, no INV sequence.
+  - Refunds are whole-payment only (no partial / item-level refunds); a refund after delivery is money only — returning credits is a manual
+    9B reversal (INTERNAL, untouched outputs only); a REGISTRY transfer is never reversed.
+  - Listing and order expiry are lazy (on read / before writes); scheduled expiry and payment reconciliation jobs are Phase 12.
+  - Every DEMO run leaves DEMO-BUYER-D's buyer profile KYC_VERIFIED in the development database (KYC demonstration); no listing, order or
+    payment is created.
 - The browser logs one expected 401 at start-up: the silent session-restore attempt when nobody is signed in.

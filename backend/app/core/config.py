@@ -109,7 +109,7 @@ class Settings(BaseSettings):
     SATELLITE_PROVIDER: str = "mock"
     LAB_PROVIDER: str = "mock"
     REGISTRY_PROVIDER: str = "manual"
-    PAYMENT_PROVIDER: str = "mock"
+    PAYMENT_PROVIDER: str = "manual"   # Phase 10 D15 / D33: manual until a contracted provider exists; no mock provider at all
 
     @field_validator("SQL_SERVER_PORT", mode="before")
     @classmethod

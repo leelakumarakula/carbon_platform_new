@@ -68,7 +68,7 @@ def test_cannot_add_member_to_suspended_org(client: TestClient, db: Session, adm
 def test_roles_catalog_and_system_roles_read_only(client: TestClient, admin: Actor) -> None:
     roles = client.get(ROLES, headers=admin.headers).json()
     system = [r for r in roles if r["is_system"]]
-    assert len(system) == 20  # 19 spec roles + PLATFORM_GIS_SPECIALIST (decision D5)
+    assert len(system) == 21  # 19 spec roles + PLATFORM_GIS_SPECIALIST (D5) + MARKETPLACE_COMPLIANCE (Phase 10 D28)
     pa = next(r for r in roles if r["code"] == "PLATFORM_ADMIN")
     assert "users.manage" in pa["permissions"] and pa["assignment_count"] >= 1
     r = client.put(f"{ROLES}/{pa['id']}/permissions", headers=admin.headers, json={"permissions": []})

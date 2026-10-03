@@ -68,6 +68,18 @@ export const P = {
   CREDITS_CONFIRM: 'credits.confirm',
   CREDITS_HOLDER_READ: 'credits.holder_read',
   CREDITS_HOLDER_RETIRE: 'credits.holder_retire',
+  MARKETPLACE_READ: 'marketplace.read',
+  LISTINGS_MANAGE: 'listings.manage',
+  LISTINGS_APPROVE: 'listings.approve',
+  ORDERS_PLACE: 'orders.place',
+  ORDERS_READ: 'orders.read',
+  ORDERS_MANAGE: 'orders.manage',
+  PAYMENTS_RECORD: 'payments.record',
+  PAYMENTS_CONFIRM: 'payments.confirm',
+  REFUNDS_REQUEST: 'refunds.request',
+  REFUNDS_APPROVE: 'refunds.approve',
+  BUYERS_KYC_SUBMIT: 'buyers.kyc_submit',
+  BUYERS_KYC_VERIFY: 'buyers.kyc_verify',
 } as const;
 
 export type PermissionCode = (typeof P)[keyof typeof P];

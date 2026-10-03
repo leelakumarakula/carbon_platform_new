@@ -42,6 +42,9 @@ export class LedgerApi {
   applyReversal = (id: string, note: string): Observable<Reversal> => this.api.post(`${this.b}/reversals/${id}/apply`, { note });
   rejectReversal = (id: string, note: string): Observable<Reversal> => this.api.post(`${this.b}/reversals/${id}/reject`, { note });
   holdings = (): Observable<Holdings> => this.api.get(`${this.b}/holdings`);
+  completeOrderTransfer = (id: string, body: Body, key?: string): Observable<unknown> =>
+    this.api.post(`/orders/transfers/${id}/complete`, body, key);
+  rejectOrderTransfer = (id: string, reason: string): Observable<unknown> => this.api.post(`/orders/transfers/${id}/reject`, { reason });
   recipients = (environment: string): Observable<Recipient[]> => this.api.get(`${this.b}/recipients`, { environment });
 }
 

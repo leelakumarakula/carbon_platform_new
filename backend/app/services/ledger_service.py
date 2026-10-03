@@ -145,6 +145,35 @@ def workflow(db: Session, ctx: RequestContext, entity_type: str, entity_id: Any,
                          request_id=ctx.request_id))
 
 
+# ---------------------------------------------------------------- links owned by later phases (Phase 10 marketplace orders)
+LinkGuard = Callable[[Session, str, uuid.UUID], str | None]
+_LINK_GUARDS: list[LinkGuard] = []
+
+
+def register_link_guard(fn: LinkGuard) -> None:
+    """A later phase that owns some reservations / transfers (an order) registers who owns them; the public ledger actions below then
+    refuse to act on them directly, so the owning record and the ledger can never diverge."""
+    if fn not in _LINK_GUARDS:
+        _LINK_GUARDS.append(fn)
+
+
+def linked_owner(db: Session, kind: str, entity_id: uuid.UUID | None) -> str | None:
+    """The owning record's code (e.g. a marketplace order) of a reservation / transfer, if any."""
+    if entity_id is None:
+        return None
+    return next((owner for fn in _LINK_GUARDS if (owner := fn(db, kind, entity_id))), None)
+
+
+def guard_unlinked(db: Session, kind: str, entity_id: uuid.UUID | None) -> None:
+    if entity_id is None:
+        return
+    for fn in _LINK_GUARDS:
+        owner = fn(db, kind, entity_id)
+        if owner:
+            raise Conflict(f"This {kind} belongs to marketplace order {owner}; act on it through the order.", error_code="ORDER_LINKED",
+                           details={"order_code": owner})
+
+
 # ---------------------------------------------------------------- transaction runner
 def _is_deadlock(e: DBAPIError) -> bool:
     return "1205" in str(e.orig) or "deadlock" in str(e.orig).lower()
@@ -152,7 +181,8 @@ def _is_deadlock(e: DBAPIError) -> bool:
 
 def run(db: Session, ctx: RequestContext, op: Callable[[], T], *, conflict_org: uuid.UUID | None = None, batch_id: uuid.UUID | None = None,
         attempts: int = 3) -> T:
-    """One transaction per attempt; deadlock victims are retried; an insufficient balance is audited as a double-spend conflict."""
+    """One transaction per attempt; deadlock victims are retried; an insufficient balance is audited as a double-spend conflict.
+    Phase 10 orchestrates its own operations through this runner and composes the *_in_tx functions below inside `op`."""
     for attempt in range(attempts):
         try:
             result = op()
@@ -161,8 +191,8 @@ def run(db: Session, ctx: RequestContext, op: Callable[[], T], *, conflict_org: 
         except InsufficientAvailable as e:
             db.rollback()
             if conflict_org is not None:
-                record(db, ctx, "CREDIT_DOUBLE_SPEND_CONFLICT", "credit_batch", batch_id, None, {**e.details, "message": e.message},
-                       organization_id=conflict_org)
+                record(db, ctx, "CREDIT_DOUBLE_SPEND_CONFLICT", "credit_batch", batch_id or e.details.get("batch_id"), None,
+                       {**e.details, "message": e.message}, organization_id=conflict_org)
                 db.commit()
             raise
         except DBAPIError as e:
@@ -442,27 +472,56 @@ def create_reservation(db: Session, ctx: RequestContext, principal: Principal, d
     if expires_at <= utcnow():
         raise ValidationFailed("A reservation must expire in the future.", error_code="EXPIRY_IN_PAST")
     expire_due(db, ctx, batch_ids=[b.id])
-    qty = Decimal(data.quantity)
+    return run(db, ctx, lambda: reserve_in_tx(db, ctx, batch=b, owner_id=data.owner_organization_id, quantity=Decimal(data.quantity),
+                                              actor_id=principal.user_id, purpose=data.purpose, purpose_reference=data.purpose_reference,
+                                              recipient_id=data.recipient_organization_id, serial_range_id=data.serial_range_id,
+                                              expires_at=expires_at, key=key),
+               conflict_org=data.owner_organization_id, batch_id=b.id)
 
-    def op() -> CreditReservation:
-        r = CreditReservation(reservation_code=next_code(db, "credit_reservation", utcnow().year), batch_id=b.id,
-                              serial_range_id=data.serial_range_id, owner_organization_id=data.owner_organization_id,
-                              recipient_organization_id=data.recipient_organization_id, purpose=data.purpose,
-                              purpose_reference=data.purpose_reference, quantity=qty, expires_at=expires_at, status="ACTIVE",
-                              created_by=principal.user_id, request_key=key, environment=b.environment)
-        db.add(r)
-        db.flush()
-        alloc = take(lock_positions(db, b.id, owner_id=data.owner_organization_id, state="AVAILABLE", serial_range_id=data.serial_range_id), qty)
-        e = begin(db, ctx, "RESERVE", b, data.owner_organization_id, principal.user_id, qty, counterparty=data.recipient_organization_id,
-                  reservation_id=r.id)
-        move(db, e, alloc, "RESERVED", reservation_id=r.id)
-        post(db, e)
-        workflow(db, ctx, "credit_reservation", r.id, None, "ACTIVE", data.purpose)
-        audit(db, ctx, "CREDIT_RESERVATION_CREATED", "credit_reservation", r.id, [r.owner_organization_id],
-              {"reservation_code": r.reservation_code, "batch_code": b.batch_code, "quantity": str(qty), "purpose": r.purpose,
-               "purpose_reference": r.purpose_reference, "expires_at": r.expires_at, "entry_code": e.entry_code})
-        return r
-    return run(db, ctx, op, conflict_org=data.owner_organization_id, batch_id=b.id)
+
+def reserve_in_tx(db: Session, ctx: RequestContext, *, batch: CreditBatch, owner_id: uuid.UUID, quantity: Decimal, actor_id: uuid.UUID,
+                  purpose: str, purpose_reference: str | None, recipient_id: uuid.UUID | None, serial_range_id: uuid.UUID | None,
+                  expires_at: datetime, key: str | None = None) -> CreditReservation:
+    """AVAILABLE → RESERVED inside the caller's transaction (no commit). The caller has authorized the action and validated its inputs;
+    locking, guarded consumption and the posting checks are exactly those of every other ledger movement."""
+    b = batch
+    r = CreditReservation(reservation_code=next_code(db, "credit_reservation", utcnow().year), batch_id=b.id, serial_range_id=serial_range_id,
+                          owner_organization_id=owner_id, recipient_organization_id=recipient_id, purpose=purpose,
+                          purpose_reference=purpose_reference, quantity=quantity, expires_at=expires_at, status="ACTIVE", created_by=actor_id,
+                          request_key=key, environment=b.environment)
+    db.add(r)
+    db.flush()
+    try:
+        alloc = take(lock_positions(db, b.id, owner_id=owner_id, state="AVAILABLE", serial_range_id=serial_range_id), quantity)
+    except InsufficientAvailable as ex:
+        ex.details = {**ex.details, "batch_id": str(b.id)}
+        raise
+    e = begin(db, ctx, "RESERVE", b, owner_id, actor_id, quantity, counterparty=recipient_id, reservation_id=r.id)
+    move(db, e, alloc, "RESERVED", reservation_id=r.id)
+    post(db, e)
+    workflow(db, ctx, "credit_reservation", r.id, None, "ACTIVE", purpose)
+    audit(db, ctx, "CREDIT_RESERVATION_CREATED", "credit_reservation", r.id, [r.owner_organization_id],
+          {"reservation_code": r.reservation_code, "batch_code": b.batch_code, "quantity": str(quantity), "purpose": r.purpose,
+           "purpose_reference": r.purpose_reference, "expires_at": r.expires_at, "entry_code": e.entry_code})
+    return r
+
+
+def lock_reservation(db: Session, reservation_id: uuid.UUID) -> CreditReservation | None:
+    return db.scalars(select(CreditReservation).with_hint(CreditReservation, LOCK_HINT, "mssql").where(CreditReservation.id == reservation_id)
+                      .execution_options(populate_existing=True)).first()
+
+
+def expire_reservation_in_tx(db: Session, ctx: RequestContext, r: CreditReservation, actor_id: uuid.UUID) -> None:
+    """The lazy expiry of one locked, due reservation inside the caller's transaction (same entry as `expire_due`)."""
+    _close_reservation(db, ctx, r, "EXPIRED", "RESERVATION_EXPIRE", actor_id, "Reservation expired")
+
+
+def release_in_tx(db: Session, ctx: RequestContext, r: CreditReservation, actor_id: uuid.UUID, reason: str, key: str | None = None) -> None:
+    """RESERVED → AVAILABLE for one locked ACTIVE reservation inside the caller's transaction."""
+    if r.status != "ACTIVE":
+        raise Conflict(f"The reservation is {r.status}.", error_code="RESERVATION_NOT_ACTIVE")
+    r.released_by, r.released_at, r.release_reason = actor_id, utcnow(), reason
+    _close_reservation(db, ctx, r, "RELEASED", "RESERVATION_RELEASE", actor_id, reason, key)
 
 
 def _reservation(db: Session, principal: Principal, reservation_id: uuid.UUID) -> CreditReservation:
@@ -478,22 +537,19 @@ def release_reservation(db: Session, ctx: RequestContext, principal: Principal, 
     if entry_replay(db, key, "RESERVATION_RELEASE", reservation_id=r.id) is not None:
         return r
     require_in_org(principal, r.owner_organization_id, P.CREDITS_MANAGE)
+    guard_unlinked(db, "reservation", r.id)
     expire_due(db, ctx, batch_ids=[r.batch_id])
 
     def op() -> CreditReservation:
         db.refresh(r)
-        if r.status != "ACTIVE":
-            raise Conflict(f"The reservation is {r.status}.", error_code="RESERVATION_NOT_ACTIVE")
-        r.released_by, r.released_at, r.release_reason = principal.user_id, utcnow(), reason
-        _close_reservation(db, ctx, r, "RELEASED", "RESERVATION_RELEASE", principal.user_id, reason, key)
+        release_in_tx(db, ctx, r, principal.user_id, reason, key)
         return r
     return run(db, ctx, op)
 
 
-def _from_reservation(db: Session, ctx: RequestContext, principal: Principal, reservation_id: uuid.UUID, owner_id: uuid.UUID,
+def _from_reservation(db: Session, ctx: RequestContext, reservation_id: uuid.UUID, owner_id: uuid.UUID,
                       batch: CreditBatch) -> tuple[CreditReservation, list[tuple[CreditPosition, Decimal]]]:
-    r = db.scalars(select(CreditReservation).with_hint(CreditReservation, LOCK_HINT, "mssql").where(CreditReservation.id == reservation_id)
-                   .execution_options(populate_existing=True)).first()
+    r = lock_reservation(db, reservation_id)
     if r is None or r.batch_id != batch.id or r.owner_organization_id != owner_id:
         raise NotFound("Reservation not found.", error_code="CREDIT_RESERVATION_NOT_FOUND")
     if r.status != "ACTIVE":
@@ -521,34 +577,49 @@ def request_transfer(db: Session, ctx: RequestContext, principal: Principal, dat
         raise ValidationFailed("A registry transfer needs the recipient's registry account.", error_code="RECIPIENT_ACCOUNT_REQUIRED")
     if data.reservation_id is None and data.quantity is None:
         raise ValidationFailed("Give a quantity or a reservation.", error_code="QUANTITY_REQUIRED")
+    guard_unlinked(db, "reservation", data.reservation_id)
     expire_due(db, ctx, batch_ids=[b.id])
+    return run(db, ctx, lambda: request_transfer_in_tx(
+        db, ctx, batch=b, kind=data.kind, sender_id=data.sender_organization_id, recipient_id=data.recipient_organization_id,
+        actor_id=principal.user_id, quantity=Decimal(data.quantity) if data.quantity is not None else None, reservation_id=data.reservation_id,
+        serial_range_id=data.serial_range_id, recipient_external_account_id=data.recipient_external_account_id, purpose=data.purpose,
+        purpose_reference=data.purpose_reference, key=key), conflict_org=data.sender_organization_id, batch_id=b.id)
 
-    def op() -> CreditTransfer:
-        t = CreditTransfer(transfer_code=next_code(db, "credit_transfer", utcnow().year), kind=data.kind, batch_id=b.id,
-                           serial_range_id=data.serial_range_id, reservation_id=data.reservation_id,
-                           registry_organization_id=b.registry_organization_id,
-                           sender_organization_id=data.sender_organization_id, recipient_organization_id=data.recipient_organization_id,
-                           recipient_external_account_id=data.recipient_external_account_id if data.kind == "REGISTRY" else None,
-                           quantity=Decimal(data.quantity or 1), purpose=data.purpose, purpose_reference=data.purpose_reference, status="REQUESTED",
-                           requested_by=principal.user_id, request_key=key, environment=b.environment)
-        if data.reservation_id is not None:
-            _, alloc = _from_reservation(db, ctx, principal, data.reservation_id, data.sender_organization_id, b)
-            t.quantity = sum((q for _, q in alloc), Decimal(0))
-        else:
-            alloc = take(lock_positions(db, b.id, owner_id=data.sender_organization_id, state="AVAILABLE", serial_range_id=data.serial_range_id),
-                         Decimal(data.quantity))
-        db.add(t)
-        db.flush()
-        e = begin(db, ctx, "TRANSFER_REQUEST", b, data.sender_organization_id, principal.user_id, t.quantity,
-                  counterparty=data.recipient_organization_id, transfer_id=t.id, reservation_id=data.reservation_id)
-        move(db, e, alloc, "TRANSFER_PENDING", transfer_id=t.id)
-        post(db, e)
-        workflow(db, ctx, "credit_transfer", t.id, None, "REQUESTED", data.purpose)
-        audit(db, ctx, "CREDIT_TRANSFER_REQUESTED", "credit_transfer", t.id, [t.sender_organization_id, t.recipient_organization_id],
-              {"transfer_code": t.transfer_code, "kind": t.kind, "batch_code": b.batch_code, "quantity": str(t.quantity),
-               "recipient_organization_id": t.recipient_organization_id, "entry_code": e.entry_code})
-        return t
-    return run(db, ctx, op, conflict_org=data.sender_organization_id, batch_id=b.id)
+
+def request_transfer_in_tx(db: Session, ctx: RequestContext, *, batch: CreditBatch, kind: str, sender_id: uuid.UUID, recipient_id: uuid.UUID,
+                           actor_id: uuid.UUID, quantity: Decimal | None = None, reservation_id: uuid.UUID | None = None,
+                           serial_range_id: uuid.UUID | None = None, recipient_external_account_id: str | None = None,
+                           purpose: str | None = None, purpose_reference: str | None = None, key: str | None = None) -> CreditTransfer:
+    """AVAILABLE (or a whole ACTIVE reservation, which becomes CONSUMED) → TRANSFER_PENDING inside the caller's transaction (no commit).
+    The caller has authorized the action and validated the parties."""
+    b = batch
+    t = CreditTransfer(transfer_code=next_code(db, "credit_transfer", utcnow().year), kind=kind, batch_id=b.id, serial_range_id=serial_range_id,
+                       reservation_id=reservation_id, registry_organization_id=b.registry_organization_id, sender_organization_id=sender_id,
+                       recipient_organization_id=recipient_id,
+                       recipient_external_account_id=recipient_external_account_id if kind == "REGISTRY" else None,
+                       quantity=quantity or Decimal(1), purpose=purpose, purpose_reference=purpose_reference, status="REQUESTED",
+                       requested_by=actor_id, request_key=key, environment=b.environment)
+    if reservation_id is not None:
+        _, alloc = _from_reservation(db, ctx, reservation_id, sender_id, b)
+        t.quantity = sum((q for _, q in alloc), Decimal(0))
+    else:
+        assert quantity is not None
+        try:
+            alloc = take(lock_positions(db, b.id, owner_id=sender_id, state="AVAILABLE", serial_range_id=serial_range_id), quantity)
+        except InsufficientAvailable as ex:
+            ex.details = {**ex.details, "batch_id": str(b.id)}
+            raise
+    db.add(t)
+    db.flush()
+    e = begin(db, ctx, "TRANSFER_REQUEST", b, sender_id, actor_id, t.quantity, counterparty=recipient_id, transfer_id=t.id,
+              reservation_id=reservation_id)
+    move(db, e, alloc, "TRANSFER_PENDING", transfer_id=t.id)
+    post(db, e)
+    workflow(db, ctx, "credit_transfer", t.id, None, "REQUESTED", purpose)
+    audit(db, ctx, "CREDIT_TRANSFER_REQUESTED", "credit_transfer", t.id, [t.sender_organization_id, t.recipient_organization_id],
+          {"transfer_code": t.transfer_code, "kind": t.kind, "batch_code": b.batch_code, "quantity": str(t.quantity),
+           "recipient_organization_id": t.recipient_organization_id, "entry_code": e.entry_code})
+    return t
 
 
 def _transfer(db: Session, principal: Principal, transfer_id: uuid.UUID) -> CreditTransfer:
@@ -580,7 +651,19 @@ def complete_transfer(db: Session, ctx: RequestContext, principal: Principal, tr
     t = _transfer(db, principal, transfer_id)
     if entry_replay(db, key, "TRANSFER_COMPLETE", transfer_id=t.id) is not None:
         return t
+    guard_unlinked(db, "transfer", t.id)
+    check_completion(db, principal, t, data)
     b = get_batch(db, t.batch_id)
+
+    def op() -> CreditTransfer:
+        db.refresh(t)
+        complete_transfer_in_tx(db, ctx, t, batch=b, confirmer_id=principal.user_id, data=data, key=key)
+        return t
+    return run(db, ctx, op)
+
+
+def check_completion(db: Session, principal: Principal, t: CreditTransfer, data: Any) -> None:
+    """Who may complete (credits.confirm in every custodian organization, never the requester) and the REGISTRY evidence rules."""
     pending = list(db.scalars(select(CreditPosition).where(CreditPosition.transfer_id == t.id, CreditPosition.status == "OPEN",
                                                            CreditPosition.state == "TRANSFER_PENDING")).all())
     _require_confirmer(principal, _pending_custodians(db, pending) or {t.sender_organization_id}, t.requested_by)
@@ -594,32 +677,49 @@ def complete_transfer(db: Session, ctx: RequestContext, principal: Principal, tr
                                                    CreditTransfer.id != t.id)).first():
             raise Conflict("This registry transfer reference is already recorded.", error_code="DUPLICATE_REGISTRY_REFERENCE")
 
-    def op() -> CreditTransfer:
-        db.refresh(t)
-        if t.status != "REQUESTED":
-            raise Conflict(f"The transfer is {t.status}.", error_code="TRANSFER_NOT_REQUESTED")
-        positions = lock_positions(db, b.id, transfer_id=t.id, state="TRANSFER_PENDING")
-        e = begin(db, ctx, "TRANSFER_COMPLETE", b, t.sender_organization_id, t.requested_by, t.quantity, counterparty=t.recipient_organization_id,
-                  confirmed_by=principal.user_id, key=key, transfer_id=t.id)
-        for p in positions:
-            consume(db, e, p)
-            if t.kind == "INTERNAL":
-                create(db, e, p, p.quantity, "AVAILABLE", owner=t.recipient_organization_id)
-            else:
-                create(db, e, p, p.quantity, "AVAILABLE", owner=t.recipient_organization_id, holding_account=None,
-                       holding_external=t.recipient_external_account_id)
-        post(db, e)
-        CREDIT_TRANSFER_MACHINE.assert_transition(t.status, "COMPLETED")
-        t.status, t.completed_by, t.completed_at = "COMPLETED", principal.user_id, utcnow()
-        if t.kind == "REGISTRY":
-            t.registry_transfer_reference, t.evidence_document_id = data.registry_transfer_reference, data.document_id
-        workflow(db, ctx, "credit_transfer", t.id, "REQUESTED", "COMPLETED", None)
-        audit(db, ctx, "CREDIT_TRANSFER_COMPLETED", "credit_transfer", t.id, [t.sender_organization_id, t.recipient_organization_id],
-              {"transfer_code": t.transfer_code, "kind": t.kind, "quantity": str(t.quantity), "entry_code": e.entry_code,
-               "registry_transfer_reference": t.registry_transfer_reference, "evidence_document_id": t.evidence_document_id},
-              None, {"status": "REQUESTED"})
-        return t
-    return run(db, ctx, op)
+
+def lock_transfer(db: Session, transfer_id: uuid.UUID) -> CreditTransfer | None:
+    return db.scalars(select(CreditTransfer).with_hint(CreditTransfer, LOCK_HINT, "mssql").where(CreditTransfer.id == transfer_id)
+                      .execution_options(populate_existing=True)).first()
+
+
+def complete_transfer_in_tx(db: Session, ctx: RequestContext, t: CreditTransfer, *, batch: CreditBatch, confirmer_id: uuid.UUID, data: Any,
+                            key: str | None = None) -> CreditLedgerEntry:
+    """TRANSFER_PENDING → the recipient's AVAILABLE positions inside the caller's transaction (no commit). The caller has run
+    `check_completion` for the confirming principal."""
+    b = batch
+    if t.status != "REQUESTED":
+        raise Conflict(f"The transfer is {t.status}.", error_code="TRANSFER_NOT_REQUESTED")
+    positions = lock_positions(db, b.id, transfer_id=t.id, state="TRANSFER_PENDING")
+    e = begin(db, ctx, "TRANSFER_COMPLETE", b, t.sender_organization_id, t.requested_by, t.quantity, counterparty=t.recipient_organization_id,
+              confirmed_by=confirmer_id, key=key, transfer_id=t.id)
+    for p in positions:
+        consume(db, e, p)
+        if t.kind == "INTERNAL":
+            create(db, e, p, p.quantity, "AVAILABLE", owner=t.recipient_organization_id)
+        else:
+            create(db, e, p, p.quantity, "AVAILABLE", owner=t.recipient_organization_id, holding_account=None,
+                   holding_external=t.recipient_external_account_id)
+    post(db, e)
+    CREDIT_TRANSFER_MACHINE.assert_transition(t.status, "COMPLETED")
+    t.status, t.completed_by, t.completed_at = "COMPLETED", confirmer_id, utcnow()
+    if t.kind == "REGISTRY":
+        t.registry_transfer_reference, t.evidence_document_id = data.registry_transfer_reference, data.document_id
+    workflow(db, ctx, "credit_transfer", t.id, "REQUESTED", "COMPLETED", None)
+    audit(db, ctx, "CREDIT_TRANSFER_COMPLETED", "credit_transfer", t.id, [t.sender_organization_id, t.recipient_organization_id],
+          {"transfer_code": t.transfer_code, "kind": t.kind, "quantity": str(t.quantity), "entry_code": e.entry_code,
+           "registry_transfer_reference": t.registry_transfer_reference, "evidence_document_id": t.evidence_document_id},
+          None, {"status": "REQUESTED"})
+    return e
+
+
+def check_close(db: Session, principal: Principal, t: CreditTransfer, to: str) -> None:
+    """CANCELLED: the sender's credits.manage; REJECTED: a custodian credits.confirm user other than the requester."""
+    if to == "CANCELLED":
+        require_in_org(principal, t.sender_organization_id, P.CREDITS_MANAGE)
+    else:
+        pending = list(db.scalars(select(CreditPosition).where(CreditPosition.transfer_id == t.id, CreditPosition.status == "OPEN")).all())
+        _require_confirmer(principal, _pending_custodians(db, pending) or {t.sender_organization_id}, t.requested_by)
 
 
 def close_transfer(db: Session, ctx: RequestContext, principal: Principal, transfer_id: uuid.UUID, to: str, reason: str,
@@ -629,30 +729,35 @@ def close_transfer(db: Session, ctx: RequestContext, principal: Principal, trans
     entry_type = "TRANSFER_CANCEL" if to == "CANCELLED" else "TRANSFER_REJECT"
     if entry_replay(db, key, entry_type, transfer_id=t.id) is not None:
         return t
+    guard_unlinked(db, "transfer", t.id)
     b = get_batch(db, t.batch_id)
-    if to == "CANCELLED":
-        require_in_org(principal, t.sender_organization_id, P.CREDITS_MANAGE)
-    else:
-        pending = list(db.scalars(select(CreditPosition).where(CreditPosition.transfer_id == t.id, CreditPosition.status == "OPEN")).all())
-        _require_confirmer(principal, _pending_custodians(db, pending) or {t.sender_organization_id}, t.requested_by)
+    check_close(db, principal, t, to)
 
     def op() -> CreditTransfer:
         db.refresh(t)
-        if t.status != "REQUESTED":
-            raise Conflict(f"The transfer is {t.status}.", error_code="TRANSFER_NOT_REQUESTED")
-        positions = lock_positions(db, b.id, transfer_id=t.id, state="TRANSFER_PENDING")
-        e = begin(db, ctx, entry_type, b, t.sender_organization_id, principal.user_id, t.quantity, reason=reason, key=key, transfer_id=t.id)
-        for p in positions:
-            consume(db, e, p)
-            create(db, e, p, p.quantity, "AVAILABLE")
-        post(db, e)
-        CREDIT_TRANSFER_MACHINE.assert_transition(t.status, to)
-        t.status, t.closed_by, t.closed_at, t.close_reason = to, principal.user_id, utcnow(), reason
-        workflow(db, ctx, "credit_transfer", t.id, "REQUESTED", to, reason)
-        audit(db, ctx, f"CREDIT_TRANSFER_{to}", "credit_transfer", t.id, [t.sender_organization_id, t.recipient_organization_id],
-              {"transfer_code": t.transfer_code, "status": to, "entry_code": e.entry_code}, reason, {"status": "REQUESTED"})
+        close_transfer_in_tx(db, ctx, t, batch=b, to=to, actor_id=principal.user_id, reason=reason, key=key)
         return t
     return run(db, ctx, op)
+
+
+def close_transfer_in_tx(db: Session, ctx: RequestContext, t: CreditTransfer, *, batch: CreditBatch, to: str, actor_id: uuid.UUID, reason: str,
+                         key: str | None = None) -> None:
+    """TRANSFER_PENDING → the sender's AVAILABLE positions (CANCELLED / REJECTED) inside the caller's transaction (no commit)."""
+    b = batch
+    entry_type = "TRANSFER_CANCEL" if to == "CANCELLED" else "TRANSFER_REJECT"
+    if t.status != "REQUESTED":
+        raise Conflict(f"The transfer is {t.status}.", error_code="TRANSFER_NOT_REQUESTED")
+    positions = lock_positions(db, b.id, transfer_id=t.id, state="TRANSFER_PENDING")
+    e = begin(db, ctx, entry_type, b, t.sender_organization_id, actor_id, t.quantity, reason=reason, key=key, transfer_id=t.id)
+    for p in positions:
+        consume(db, e, p)
+        create(db, e, p, p.quantity, "AVAILABLE")
+    post(db, e)
+    CREDIT_TRANSFER_MACHINE.assert_transition(t.status, to)
+    t.status, t.closed_by, t.closed_at, t.close_reason = to, actor_id, utcnow(), reason
+    workflow(db, ctx, "credit_transfer", t.id, "REQUESTED", to, reason)
+    audit(db, ctx, f"CREDIT_TRANSFER_{to}", "credit_transfer", t.id, [t.sender_organization_id, t.recipient_organization_id],
+          {"transfer_code": t.transfer_code, "status": to, "entry_code": e.entry_code}, reason, {"status": "REQUESTED"})
 
 
 # ---------------------------------------------------------------- retirements (D9, X1)
@@ -667,6 +772,7 @@ def request_retirement(db: Session, ctx: RequestContext, principal: Principal, d
     _source(db, b, data.serial_range_id)
     if data.reservation_id is None and data.quantity is None:
         raise ValidationFailed("Give a quantity or a reservation.", error_code="QUANTITY_REQUIRED")
+    guard_unlinked(db, "reservation", data.reservation_id)
     expire_due(db, ctx, batch_ids=[b.id])
 
     def op() -> CreditRetirement:
@@ -675,7 +781,7 @@ def request_retirement(db: Session, ctx: RequestContext, principal: Principal, d
                              quantity=Decimal(data.quantity or 1), beneficiary=data.beneficiary, reason=data.reason, status="REQUESTED",
                              requested_by=principal.user_id, request_key=key, environment=b.environment)
         if data.reservation_id is not None:
-            _, alloc = _from_reservation(db, ctx, principal, data.reservation_id, owner, b)
+            _, alloc = _from_reservation(db, ctx, data.reservation_id, owner, b)
             r.quantity = sum((q for _, q in alloc), Decimal(0))
         else:
             alloc = take(lock_positions(db, b.id, owner_id=owner, state="AVAILABLE", serial_range_id=data.serial_range_id), Decimal(data.quantity))

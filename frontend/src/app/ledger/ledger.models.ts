@@ -93,6 +93,7 @@ export interface Reservation {
   created_at: string;
   release_reason: string | null;
   closed_at: string | null;
+  order_code?: string | null;
 }
 
 export interface Transfer {
@@ -120,6 +121,7 @@ export interface Transfer {
   close_reason: string | null;
   completion_entry_id: string | null;
   can_complete: boolean;
+  order_code?: string | null;
 }
 
 export interface Retirement {

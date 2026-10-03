@@ -165,6 +165,53 @@ export const routes: Routes = [
         loadComponent: () => import('./ledger/holdings-page').then((m) => m.HoldingsPage),
       },
       {
+        path: 'marketplace',
+        children: [
+          {
+            path: '',
+            title: 'Marketplace',
+            canActivate: [permissionGuard],
+            data: { permissions: [P.MARKETPLACE_READ] },
+            loadComponent: () => import('./marketplace/marketplace-page').then((m) => m.MarketplacePage),
+          },
+          {
+            path: 'listings',
+            title: 'Listings',
+            canActivate: [permissionGuard],
+            data: { anyPermissions: [P.LISTINGS_MANAGE, P.LISTINGS_APPROVE] },
+            loadComponent: () => import('./marketplace/listings-page').then((m) => m.ListingsPage),
+          },
+          {
+            path: 'profile',
+            title: 'Buyer profile',
+            canActivate: [permissionGuard],
+            data: { permissions: [P.BUYERS_KYC_SUBMIT] },
+            loadComponent: () => import('./marketplace/buyer-profile-page').then((m) => m.BuyerProfilePage),
+          },
+          {
+            path: 'kyc-review',
+            title: 'KYC review',
+            canActivate: [permissionGuard],
+            data: { permissions: [P.BUYERS_KYC_VERIFY] },
+            loadComponent: () => import('./marketplace/kyc-review-page').then((m) => m.KycReviewPage),
+          },
+        ],
+      },
+      {
+        path: 'orders',
+        title: 'Orders',
+        canActivate: [permissionGuard],
+        data: { anyPermissions: [P.ORDERS_READ, P.ORDERS_PLACE] },
+        loadComponent: () => import('./marketplace/orders-page').then((m) => m.OrdersPage),
+      },
+      {
+        path: 'payments',
+        title: 'Payments',
+        canActivate: [permissionGuard],
+        data: { anyPermissions: [P.PAYMENTS_CONFIRM, P.REFUNDS_REQUEST, P.REFUNDS_APPROVE] },
+        loadComponent: () => import('./marketplace/payments-page').then((m) => m.PaymentsPage),
+      },
+      {
         path: 'vvb',
         canActivate: [permissionGuard],
         data: { permissions: [P.VERIFICATION_VVB_READ] },

@@ -161,7 +161,8 @@ interface RangeOption { id: string; text: string }
           <tbody>@for (r of reservations(); track r.id) {
             <tr><td>{{ r.reservation_code }}</td><td>{{ r.quantity }}</td><td>{{ r.purpose }}@if (r.purpose_reference) { · {{ r.purpose_reference }} }</td>
               <td>{{ r.expires_at | date: 'medium' }}</td><td><app-status-badge [status]="badge(r.status)" [text]="label(r.status)" /></td>
-              <td>@if (r.status === 'ACTIVE' && canManage) { <button mat-button type="button" [disabled]="busy()" (click)="release(r)">Release</button> }</td></tr>
+              <td>@if (r.order_code) { <span class="small">order {{ r.order_code }}</span> }
+                @else if (r.status === 'ACTIVE' && canManage) { <button mat-button type="button" [disabled]="busy()" (click)="release(r)">Release</button> }</td></tr>
           } @empty { <tr><td colspan="6" class="muted">No reservation.</td></tr> }</tbody>
         </table></div>
 
@@ -169,7 +170,8 @@ interface RangeOption { id: string; text: string }
         <div class="table-wrap"><table class="table" data-testid="ledger-transfers">
           <thead><tr><th>Code</th><th>Kind</th><th>From → to</th><th>Quantity</th><th>Status</th><th>Second-person action</th></tr></thead>
           <tbody>@for (t of transfers(); track t.id) {
-            <tr [attr.data-transfer]="t.transfer_code"><td>{{ t.transfer_code }}<div class="small muted">by {{ t.requested_by_name }}</div></td>
+            <tr [attr.data-transfer]="t.transfer_code"><td>{{ t.transfer_code }}<div class="small muted">by {{ t.requested_by_name }}</div>
+              @if (t.order_code) { <div class="small">marketplace order {{ t.order_code }}</div> }</td>
               <td>{{ label(t.kind) }}</td><td>{{ t.sender_name }} → {{ t.recipient_name }}
                 @if (t.recipient_external_account_id) { <div class="small mono">{{ t.recipient_external_account_id }}</div> }</td>
               <td>{{ t.quantity }}</td>
@@ -186,7 +188,7 @@ interface RangeOption { id: string; text: string }
                     <button mat-flat-button type="button" [disabled]="busy() || !canComplete(t)" (click)="complete(t)">Complete</button>
                     <button mat-button type="button" [disabled]="busy()" (click)="closeTransfer(t, 'reject')">Reject</button>
                   }
-                  @if (canManage) { <button mat-button type="button" [disabled]="busy()" (click)="closeTransfer(t, 'cancel')">Cancel</button> }
+                  @if (canManage && !t.order_code) { <button mat-button type="button" [disabled]="busy()" (click)="closeTransfer(t, 'cancel')">Cancel</button> }
                 }
                 @if (t.status === 'COMPLETED' && t.kind === 'INTERNAL' && t.completion_entry_id && canManage) {
                   <button mat-button type="button" [disabled]="busy()" (click)="reverse(t)">Request reversal</button>
@@ -407,6 +409,19 @@ export class LedgerPage implements OnInit {
 
   protected complete(t: Transfer): void {
     const name = 'tc-' + t.id;
+    if (t.order_code) {                                               // Phase 10: order-linked deliveries go through the order (atomic)
+      const body = t.kind === 'INTERNAL' ? {} : null;
+      if (body) {
+        this.act(this.api.completeOrderTransfer(t.id, body, this.key(name)), `Delivery of order ${t.order_code} completed.`, name);
+        return;
+      }
+      const file = this.files['tdoc-' + t.id];
+      if (!file) return;
+      this.act(this.api.transferDoc(t.id, file).pipe(switchMap((d) => this.api.completeOrderTransfer(t.id, {
+        registry_transfer_reference: (this.text['tref-' + t.id] ?? '').trim(), document_id: d.document_id }, this.key(name)))),
+      `Registry delivery of order ${t.order_code} completed.`, name);
+      return;
+    }
     if (t.kind === 'INTERNAL') {
       this.act(this.api.completeTransfer(t.id, {}, this.key(name)), 'Transfer completed.', name);
       return;
@@ -421,7 +436,12 @@ export class LedgerPage implements OnInit {
   protected closeTransfer(t: Transfer, how: 'cancel' | 'reject'): void {
     askReason(this.dialog, { title: `${how === 'cancel' ? 'Cancel' : 'Reject'} ${t.transfer_code}?`, confirmLabel: how === 'cancel' ? 'Cancel transfer' : 'Reject',
       danger: true }).subscribe((x) => {
-      if (x) this.act(how === 'cancel' ? this.api.cancelTransfer(t.id, x.reason) : this.api.rejectTransfer(t.id, x.reason), how === 'cancel' ? 'Transfer cancelled.' : 'Transfer rejected.');
+      if (!x) return;
+      if (t.order_code) {
+        this.act(this.api.rejectOrderTransfer(t.id, x.reason), `Delivery of order ${t.order_code} rejected — the order needs attention.`);
+        return;
+      }
+      this.act(how === 'cancel' ? this.api.cancelTransfer(t.id, x.reason) : this.api.rejectTransfer(t.id, x.reason), how === 'cancel' ? 'Transfer cancelled.' : 'Transfer rejected.');
     });
   }
 

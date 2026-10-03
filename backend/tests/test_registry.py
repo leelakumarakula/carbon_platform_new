@@ -166,10 +166,12 @@ def test_permission_grants_and_api_surface(db: Session) -> None:
     paths = [r.path for r in app.routes if hasattr(r, "path")]
     assert not any(p.startswith("/api/v1/registry-portal") for p in paths)
     segments = {seg for p in paths for seg in p.split("/")}
-    # Phase 9B adds the credit ledger under /credits (reservations, transfers, retirements); marketplace, orders and payouts stay absent,
-    # and the 9A registry API itself never transfers, reserves or retires credits
-    for word in ("marketplace", "orders", "payouts", "checkout", "payments"):
+    # Phase 9B adds the credit ledger under /credits; Phase 10 adds the marketplace only under /marketplace, /orders and /payments
+    # (+ /refunds); payouts and checkout stay absent, and the 9A registry API itself never transfers, reserves or retires credits
+    for word in ("payouts", "checkout"):
         assert word not in segments, word
+    for word, prefix in (("marketplace", "/api/v1/marketplace"), ("orders", "/api/v1/orders"), ("payments", "/api/v1/payments")):
+        assert all(p.startswith(prefix) for p in paths if word in p.split("/")), word
     assert not any(w in p for p in paths if p.startswith("/api/v1/registry") for w in ("transfer", "retire", "reserv", "inventory"))
     assert [p for p in paths if p.startswith("/api/v1/credits/batches")]                                      # 9A read-only batch views remain
     # the TEST adapter is never part of the application runtime

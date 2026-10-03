@@ -300,3 +300,49 @@ CREDIT_RETIREMENT_MACHINE = StateMachine.build(
 CREDIT_REVERSAL_MACHINE = StateMachine.build(
     "credit_reversal", initial="REQUESTED", transitions={"REQUESTED": {"APPLIED", "REJECTED"}}, terminal={"APPLIED", "REJECTED"},
 )
+
+
+# ---------------------------------------------------------------- Phase 10 — marketplace (D2, D11, D15, D19)
+BUYER_PROFILE_MACHINE = StateMachine.build(
+    "buyer_profile", initial="DRAFT",
+    transitions={"DRAFT": {"KYC_SUBMITTED"}, "KYC_SUBMITTED": {"KYC_VERIFIED", "KYC_RETURNED"}, "KYC_RETURNED": {"KYC_SUBMITTED"},
+                 "KYC_VERIFIED": {"SUSPENDED"}, "SUSPENDED": {"KYC_VERIFIED"}},   # reinstatement by a reviewer (assumption, documented)
+    terminal=set(),
+)
+
+LISTING_MACHINE = StateMachine.build(
+    "marketplace_listing", initial="DRAFT",
+    transitions={"DRAFT": {"PENDING_APPROVAL", "CANCELLED"}, "PENDING_APPROVAL": {"ACTIVE", "CANCELLED"},
+                 "ACTIVE": {"PAUSED", "CLOSED", "EXPIRED"}, "PAUSED": {"ACTIVE", "CLOSED", "EXPIRED"}},
+    terminal={"CLOSED", "EXPIRED", "CANCELLED"},
+)
+
+ORDER_MACHINE = StateMachine.build(
+    "order", initial="PLACED",
+    transitions={"PLACED": {"PAID", "CANCELLED", "EXPIRED"}, "PAID": {"TRANSFER_PENDING", "ATTENTION_REQUIRED", "REFUND_PENDING"},
+                 "TRANSFER_PENDING": {"COMPLETED", "ATTENTION_REQUIRED"},
+                 "ATTENTION_REQUIRED": {"TRANSFER_PENDING", "REFUND_PENDING"},
+                 "REFUND_PENDING": {"REFUNDED", "ATTENTION_REQUIRED"}},    # a rejected refund returns the order to attention (documented)
+    terminal={"COMPLETED", "CANCELLED", "EXPIRED", "REFUNDED"},
+)
+
+ORDER_ITEM_MACHINE = StateMachine.build(
+    "order_item", initial="RESERVED",
+    transitions={"RESERVED": {"TRANSFER_PENDING", "RELEASED", "EXPIRED", "FAILED"}, "TRANSFER_PENDING": {"DELIVERED", "FAILED"},
+                 "FAILED": {"TRANSFER_PENDING", "RELEASED"}},
+    terminal={"DELIVERED", "RELEASED", "EXPIRED"},
+)
+
+PAYMENT_MACHINE = StateMachine.build(
+    "payment", initial="PENDING_CONFIRMATION",
+    transitions={"CREATED": {"PENDING", "UNCONFIRMED", "FAILED"}, "PENDING": {"PENDING_CONFIRMATION", "FAILED", "UNMATCHED", "UNCONFIRMED"},
+                 "UNCONFIRMED": {"PENDING", "PENDING_CONFIRMATION", "FAILED", "UNMATCHED"},
+                 "PENDING_CONFIRMATION": {"CONFIRMED", "REJECTED", "UNMATCHED"}, "CONFIRMED": {"REFUNDED"}, "UNMATCHED": {"REFUNDED"}},
+    terminal={"REJECTED", "FAILED", "REFUNDED"},
+)
+
+REFUND_MACHINE = StateMachine.build(
+    "refund", initial="REQUESTED",
+    transitions={"REQUESTED": {"APPROVED", "REJECTED"}, "APPROVED": {"COMPLETED", "REJECTED"}},
+    terminal={"COMPLETED", "REJECTED"},
+)

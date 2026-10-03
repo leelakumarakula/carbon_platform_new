@@ -41,6 +41,9 @@ const phase9a = { demoNote: false, cards: false, blocker: false, createRefused: 
 const phase9b = { ledgerNav: false, demoNote: false, columns: false, ledgerEmpty: false, inventoryEmpty: false, openRefused: '', reserveRefused: '',
   transferRefused: '', retireRefused: '', balanceRejected: '', holderNav: false, holderDemoNote: false, holderEmpty: false, holderNoLedger: false,
   outsidersBlocked: false, nonHoldersBlocked: false };
+const phase10 = { buyerNav: false, demoNote: false, noListings: false, kyc: '', kycUi: false, orderRefused: '', balanceRejected: '',
+  noOrders: false, financeNav: false, noPayments: false, listingRefused: '', sellerEmpty: false, complianceNav: false, outsidersBlocked: false,
+  noFakeData: false };
 const REQUIRED_AUDIT_P6 = ['LAB_ENGAGEMENT_PROPOSED', 'LAB_ENGAGEMENT_ACCEPTED', 'LAB_ENGAGEMENT_ENDED', 'LAB_SAMPLE_REGISTERED', 'LAB_CUSTODY_SEALED',
   'LAB_TEST_CREATED', 'LAB_SHIPMENT_CREATED', 'LAB_SHIPMENT_DISPATCHED', 'LAB_SHIPMENT_RECEIPT_RECORDED', 'LAB_TEST_STARTED', 'LAB_RESULT_CREATED',
   'LAB_REPORT_ATTACHED', 'LAB_RESULT_SUBMITTED', 'LAB_QA_STARTED', 'LAB_RESULT_APPROVED', 'LAB_RETEST_REQUESTED', 'LAB_RESULT_SUPERSEDED'];
@@ -919,6 +922,92 @@ const REQUIRED_AUDIT = ['PROJECT_CREATED', 'PROJECT_STATUS_CHANGED', 'PROJECT_FA
     if ((await api.get(`${CRED}/holdings`, { headers: await as(who) })).status() === 403) nh9b++;
   }
   phase9b.nonHoldersBlocked = nh9b === 4;
+
+  // ---- Phase 10: marketplace — honest DEMO path. DEMO has no registry-issued credits, so nothing is listed, ordered or paid (no fake
+  // listing, order, payment or purchase success). The buyer KYC workflow — which claims no external confirmation — is demonstrated on
+  // DEMO-BUYER-D (the profile persists in the development database, so later runs find it already verified).
+  const MKT = `${BASE}/api/v1/marketplace`;
+  const MKT_DEMO = 'DEMO — no registry-issued credits; nothing is listed';
+  const KYC_PDF = Buffer.from('%PDF-1.4\n%E2E DEMO buyer KYC document\n%%EOF\n');
+  const bu = await signIn('buyer');
+  const BU = bu.page;
+  lastPage = BU;
+  const buyerNav = (await BU.locator('nav a').allInnerTexts()).map((x) => x.replace(/\s+/g, ' ').trim());
+  phase10.buyerNav = ['Marketplace', 'Orders', 'Buyer profile', 'My credits'].every((n) => buyerNav.some((x) => x.endsWith(n)))
+    && !buyerNav.some((x) => x.endsWith('Payments') || x.endsWith('Listings') || x.endsWith('KYC review'));
+  await BU.goto(`${BASE}/marketplace`);
+  await BU.getByTestId('market-demo-note').waitFor();
+  phase10.demoNote = (await BU.getByTestId('market-demo-note').innerText()).includes(MKT_DEMO);
+  phase10.noListings = (await BU.getByTestId('no-listings').count()) === 1;
+  await shot(BU, '99-marketplace-demo');
+  const buyerH = await as('buyer');
+  let prof = await json(await api.get(`${MKT}/buyer-profile`, { headers: buyerH }));
+  if (!prof.profile || ['DRAFT', 'KYC_RETURNED'].includes(prof.profile.status)) {
+    await BU.goto(`${BASE}/marketplace/profile`);
+    await BU.getByTestId('buyer-profile-form').waitFor();
+    await BU.getByLabel('Legal name').fill('Buyer D (DEMO)');
+    await BU.getByTestId('save-profile').click();
+    await BU.getByTestId('kyc-file').waitFor();
+    await BU.getByTestId('kyc-file').setInputFiles({ name: 'kyc.pdf', mimeType: 'application/pdf', buffer: KYC_PDF });
+    await BU.getByRole('button', { name: 'Upload', exact: true }).click();
+    await BU.getByText('Buyer KYC document').first().waitFor();
+    await BU.getByTestId('submit-kyc').click();
+    await BU.getByTestId('kyc-status').getByText('KYC submitted').waitFor();
+    await shot(BU, '99a-buyer-kyc-submitted');
+    prof = await json(await api.get(`${MKT}/buyer-profile`, { headers: buyerH }));
+  }
+  await bu.ctx.close();
+  const cp = await signIn('compliance');
+  const CP = cp.page;
+  lastPage = CP;
+  phase10.complianceNav = (await CP.locator('nav a', { hasText: 'KYC review' }).count()) > 0;
+  await CP.goto(`${BASE}/marketplace/kyc-review`);
+  await CP.getByTestId('kyc-queue').waitFor();
+  if (prof.profile.status === 'KYC_SUBMITTED') {
+    await CP.locator('[data-org="DEMO-BUYER-D"]').getByRole('button', { name: 'Verify' }).click();
+    await confirmReason(CP, 'Verify', 'E2E: DEMO buyer documents checked');
+    phase10.kycUi = true;
+  } else {
+    phase10.kycUi = prof.profile.status === 'KYC_VERIFIED';
+  }
+  await CP.locator('[data-org="DEMO-BUYER-D"]').getByText('KYC verified').waitFor();
+  await shot(CP, '99b-kyc-review');
+  await cp.ctx.close();
+  prof = await json(await api.get(`${MKT}/buyer-profile`, { headers: buyerH }));
+  phase10.kyc = prof.profile.status;
+  // a verified DEMO buyer still cannot buy anything: there is no listing; a request carrying a total / balance is rejected
+  phase10.orderRefused = await errCode(await api.post(`${BASE}/api/v1/orders`, { headers: buyerH,
+    data: { buyer_organization_id: prof.organization_id, items: [{ listing_id: require('crypto').randomUUID(), quantity: 1 }] } }));
+  phase10.balanceRejected = await errCode(await api.post(`${BASE}/api/v1/orders`, { headers: buyerH,
+    data: { buyer_organization_id: prof.organization_id, items: [{ listing_id: require('crypto').randomUUID(), quantity: 1 }], total: '1.00' } }));
+  const bo = await json(await api.get(`${BASE}/api/v1/orders`, { headers: buyerH }));
+  phase10.noOrders = bo.orders.length === 0 && bo.demo_note === MKT_DEMO;
+  const fi = await signIn('finance');
+  const FI = fi.page;
+  lastPage = FI;
+  phase10.financeNav = (await FI.locator('nav a', { hasText: 'Payments' }).count()) > 0 && (await FI.locator('nav a', { hasText: 'Listings' }).count()) > 0;
+  await FI.goto(`${BASE}/payments`);
+  await FI.getByTestId('no-payments').waitFor();
+  phase10.noPayments = (await json(await api.get(`${BASE}/api/v1/payments`, { headers: await as('finance') }))).length === 0;
+  await shot(FI, '99c-payments-none');
+  await fi.ctx.close();
+  const cm10H = await as('credits');
+  const devOrg = (await json(await api.get(`${BASE}/api/v1/projects/${projectId}`, { headers: pmH }))).organization_id;
+  phase10.listingRefused = await errCode(await api.post(`${MKT}/listings`, { headers: cm10H, data: { seller_organization_id: devOrg,
+    batch_id: require('crypto').randomUUID(), title: 'E2E', listed_quantity: 1, unit_price: '1.00', currency: 'INR', payment_window_hours: 1 } }));
+  const mine = await json(await api.get(`${MKT}/listings?mine=true`, { headers: cm10H }));
+  phase10.sellerEmpty = mine.listings.length === 0 && mine.demo_note === MKT_DEMO;
+  let out10 = 0;
+  for (const who of ['vvb', 'farmer', 'labtech']) {
+    const h = await as(who);
+    const codes = [];
+    for (const url of [`${MKT}/listings`, `${BASE}/api/v1/orders`, `${BASE}/api/v1/payments`, `${MKT}/buyer-profiles`]) {
+      codes.push((await api.get(url, { headers: h })).status());
+    }
+    if (codes.every((c) => c === 403)) out10++;
+  }
+  phase10.outsidersBlocked = out10 === 3;
+  phase10.noFakeData = phase10.noOrders && phase10.noPayments && phase10.sellerEmpty && phase10.noListings;
   for (const x of [mrv, qa, sup, fieldS]) await x.ctx.close();
   await api.dispose();
 
@@ -975,6 +1064,7 @@ const REQUIRED_AUDIT = ['PROJECT_CREATED', 'PROJECT_STATUS_CHANGED', 'PROJECT_FA
   console.log('phase 8B:', JSON.stringify(phase8b));
   console.log('phase 9A:', JSON.stringify(phase9a));
   console.log('phase 9B:', JSON.stringify(phase9b));
+  console.log('phase 10:', JSON.stringify(phase10));
 
   await browser.close();
   // One 401 per session is expected: the silent session-restore attempt before sign-in.
@@ -1028,8 +1118,12 @@ const REQUIRED_AUDIT = ['PROJECT_CREATED', 'PROJECT_STATUS_CHANGED', 'PROJECT_FA
     && phase9b.openRefused.startsWith('404') && phase9b.reserveRefused.startsWith('404') && phase9b.transferRefused.startsWith('404')
     && phase9b.retireRefused.startsWith('404') && phase9b.balanceRejected.startsWith('422') && phase9b.holderNav && phase9b.holderDemoNote
     && phase9b.holderEmpty && phase9b.holderNoLedger && phase9b.outsidersBlocked && phase9b.nonHoldersBlocked;
+  const p10ok = phase10.buyerNav && phase10.demoNote && phase10.noListings && phase10.kyc === 'KYC_VERIFIED' && phase10.kycUi
+    && phase10.orderRefused === '404 LISTING_NOT_FOUND' && phase10.balanceRejected.startsWith('422') && phase10.noOrders && phase10.financeNav
+    && phase10.noPayments && phase10.listingRefused === '404 CREDIT_BATCH_NOT_FOUND' && phase10.sellerEmpty && phase10.complianceNav && phase10.outsidersBlocked
+    && phase10.noFakeData;
   if (!stillIn || real.length || navItems.length !== 4 || !p2ok || !p3ok || !p4ok || !p5ok || !p6ok || !p7ok || !p8ok || !p8bok || !p9ok
-    || !p9bok) process.exitCode = 1;
+    || !p9bok || !p10ok) process.exitCode = 1;
 })().catch(async (e) => {
   console.error('DRIVER FAILED:', e.message);
   if (lastPage) {

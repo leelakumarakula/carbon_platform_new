@@ -206,6 +206,30 @@ No request body can carry a calculated value (unknown fields are refused with 42
 | GET/POST | `/calculations/qa/{run_id}` · POST `/start` · `/complete` | calculation.read / calculation.review (not the run's creator, freezer, executor or submitter) |
 | POST | `/runs/{id}/approve` · `/reject` | calculation.approve (same separation of duties; approval needs QA PASS) |
 
+## Endpoints (Phase 10) — marketplace
+
+Details: [marketplace.md](marketplace.md). Authenticated only (no public catalogue). Every POST accepts an `Idempotency-Key`. Bodies carry
+whole-credit quantities and Decimal money only — never a balance, fee or tax (extra fields → 422). There is no checkout, invoice, offer,
+payout or webhook endpoint.
+
+| Method | Path | Permission |
+|---|---|---|
+| GET / POST | `/marketplace/buyer-profile` · POST `/marketplace/buyer-profile/documents` (PDF, restricted) · `/marketplace/buyer-profile/submit-kyc` | buyers.kyc_submit (own BUYER organization) |
+| GET / POST | `/marketplace/buyer-profiles?status` · `/{id}` · `/{id}/verify` (or reinstate) · `/{id}/return` · `/{id}/suspend` | buyers.kyc_verify (platform), never the submitter |
+| GET | `/marketplace/listings?mine&status` · `/marketplace/listings/{id}` | marketplace.read (ACTIVE listings) / seller side (own) |
+| POST | `/marketplace/listings` · `/{id}/documents` (PDF) · `/{id}/submit` · `/{id}/pause` · `/{id}/resume` · `/{id}/close` | listings.manage (seller) |
+| POST | `/marketplace/listings/{id}/approve` | listings.approve, never the creator |
+| POST | `/orders` (T1: listings locked, items, one 9B reservation per item) | orders.place, KYC-verified buyer |
+| GET | `/orders?status` · `/orders/{id}` · `/orders/{id}/lineage` · POST `/orders/{id}/confirmation` (deterministic PDF, not a tax invoice) | orders.read (buyer or seller side) |
+| POST | `/orders/{id}/cancel` (PLACED, no payment awaiting confirmation) | orders.place (buyer) / orders.manage (seller) |
+| POST | `/orders/{id}/documents` (PAYMENT_EVIDENCE, PDF) | payments.record / orders.place (buyer) |
+| POST | `/orders/{id}/retry-transfer` (ATTENTION_REQUIRED: re-reserve + re-request the 9B transfer) | orders.manage (seller) |
+| POST | `/orders/transfers/{transfer_id}/complete` · `/reject` (the Phase 10 wrapper around the composable 9B functions) | credits.confirm in the custodian organization, never the transfer requester |
+| POST / GET | `/payments` (manual, exact total, evidence) · `/payments` · `/payments/{id}` | payments.record (buyer) / readers |
+| POST | `/payments/{id}/confirm` (T3: requests the 9B transfers) · `/reject` · `/reconcile` | payments.confirm (payee), never the recorder |
+| POST | `/payments/{id}/refunds` | refunds.request (payee) |
+| GET / POST | `/refunds` · `/refunds/{id}/documents` · `/approve` · `/complete` · `/reject` | refunds.approve (≠ requester) / refunds.request |
+
 ## Endpoints (Phase 9B) — credit ledger
 
 Prefix `/credits` (details: [credit-ledger-workflow.md](credit-ledger-workflow.md)). Every POST accepts an optional `Idempotency-Key`
@@ -360,6 +384,17 @@ Phase 9A: `NOT_A_REGISTRY`, `UNKNOWN_ADAPTER`, `REGISTRY_ACCOUNT_EXISTS`, `UNIT_
 `ISSUANCE_NOT_CONFIRMED`, `CORRECTION_PENDING`, `DUPLICATE_REGISTRY_REFERENCE`, `DOCUMENT_IMMUTABLE` (403), `SEPARATION_OF_DUTIES` (403), and the
 404s `REGISTRY_ACCOUNT_NOT_FOUND`, `REGISTRY_REGISTRATION_NOT_FOUND`, `REGISTRY_SUBMISSION_NOT_FOUND`, `CREDIT_ISSUANCE_NOT_FOUND`,
 `CREDIT_BATCH_NOT_FOUND`.
+
+Phase 10: `NOT_A_BUYER`, `ORGANIZATION_REQUIRED`, `ORGANIZATION_INACTIVE`, `BUYER_PROFILE_LOCKED`, `IDENTIFIER_TYPE_REQUIRED`,
+`KYC_DOCUMENT_REQUIRED`, `REASON_REQUIRED`, `BUYER_KYC_REQUIRED`, `NOT_A_SELLER`, `NO_AVAILABLE_CREDITS`, `LISTED_QUANTITY_EXCEEDS_AVAILABLE`,
+`UNSUPPORTED_CURRENCY`, `INVALID_AMOUNT`, `QUANTITY_RANGE_INVALID`, `VALID_UNTIL_IN_PAST`, `LISTING_NOT_PENDING`, `LISTING_EXPIRED`,
+`LISTING_EXISTS`, `LISTING_LOCKED`, `LISTING_NOT_ACTIVE`, `DUPLICATE_LISTING`, `SINGLE_SELLER_REQUIRED`, `SINGLE_CURRENCY_REQUIRED`,
+`QUANTITY_OUT_OF_RANGE`, `LISTING_QUANTITY_EXCEEDED`, `RECIPIENT_ACCOUNT_REQUIRED`, `ORDER_NOT_CANCELLABLE`, `PAYMENT_IN_PROGRESS`,
+`ORDER_NOT_PAYABLE`, `PAYMENT_AMOUNT_MISMATCH`, `PAYMENT_NOT_PENDING`, `ORDER_NOT_DELIVERABLE`, `ORDER_NOT_IN_ATTENTION`, `ORDER_NOT_PAID`,
+`NOTHING_TO_RECONCILE`, `MANUAL_ACTION_REQUIRED`, `PAYMENT_PROVIDER_UNAVAILABLE`, `UNKNOWN_PAYMENT_ADAPTER`, `REFUND_NOT_ALLOWED`, `REFUND_EXISTS`,
+`REFUND_EVIDENCE_REQUIRED`, `ORDER_LINKED` (409 from the 9B endpoints for order-owned reservations / transfers), `INSUFFICIENT_AVAILABLE`
+(9B), `SEPARATION_OF_DUTIES` (403), and the 404s `LISTING_NOT_FOUND`, `ORDER_NOT_FOUND`, `ORDER_TRANSFER_NOT_FOUND`, `PAYMENT_NOT_FOUND`,
+`REFUND_NOT_FOUND`, `BUYER_PROFILE_NOT_FOUND`.
 
 Phase 9B: `INSUFFICIENT_AVAILABLE` (409; the loser of a race — a `CREDIT_DOUBLE_SPEND_CONFLICT` audit is recorded), `BATCH_NOT_ISSUED`,
 `OPENING_EXISTS`, `OPENING_NOT_REQUESTED`, `RESERVATION_NOT_ACTIVE`, `EXPIRY_IN_PAST`, `QUANTITY_REQUIRED`, `SERIAL_RANGE_NOT_FOUND`,

@@ -59,12 +59,12 @@ describe('Verification helpers', () => {
     expect(assignmentBadge('COMPLETED')).toBe('ACTIVE');
   });
 
-  it('shows the VVB workspace only to VVB users; no marketplace, transfer or retirement navigation exists', () => {
+  it('shows the VVB workspace only to VVB users; no transfer, retirement or payout navigation exists (the Phase 10 marketplace has its own section)', () => {
     const labels = (perms: string[]) => visibleNavigation(NAVIGATION, (c) => perms.includes(c)).flatMap((s) => s.items.map((i) => i.label));
     expect(labels(['verification.vvb_read'])).toContain('VVB workspace');
     expect(labels(['verification.read', 'verification.manage', 'calculation.read'])).not.toContain('VVB workspace');
     const all = NAVIGATION.flatMap((s) => s.items.map((i) => `${i.label} ${i.route}`.toLowerCase())).join(' ');
-    for (const word of ['marketplace', 'transfer', 'retire', 'reservation', 'inventory', 'payout']) expect(all).not.toContain(word);
+    for (const word of ['transfer', 'retire', 'reservation', 'inventory', 'payout']) expect(all).not.toContain(word);
   });
 });
 

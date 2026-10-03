@@ -75,7 +75,7 @@ describe('Registry helpers', () => {
     expect(labels(['credits.read'])).toEqual(expect.arrayContaining(['Issued credits']));
     expect(labels(['verification.vvb_read'])).not.toContain('Registry');
     const all = NAVIGATION.flatMap((s) => s.items.map((i) => `${i.label} ${i.route}`.toLowerCase())).join(' ');
-    for (const word of ['marketplace', 'transfer', 'retire', 'reservation', 'inventory']) expect(all).not.toContain(word);
+    for (const word of ['transfer', 'retire', 'reservation', 'inventory', 'payout']) expect(all).not.toContain(word);
   });
 });
 

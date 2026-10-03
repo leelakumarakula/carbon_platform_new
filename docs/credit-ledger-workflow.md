@@ -162,6 +162,17 @@ A cross-organization transfer is audited in both the sender's and the recipient'
 - DEMO shows "DEMO — no registry-issued credits".
 - There is no marketplace UI.
 
+## Phase 10 integration
+
+The Phase 10 marketplace drives the ledger without a second balance ([marketplace.md](marketplace.md)):
+- placing an order calls `reserve_in_tx` per item inside the order's transaction;
+- confirming a payment consumes those reservations through `request_transfer_in_tx`;
+- delivery is `complete_transfer_in_tx` / `close_transfer_in_tx` behind `POST /orders/transfers/{id}/complete|reject` — the same locks,
+  posting checks, triggers and second-person rule.
+
+Reservations and transfers owned by an order are refused by the public release / transfer / retirement actions with 409 `ORDER_LINKED`, and
+the ledger outputs show the order code. The public `/credits` endpoints behave exactly as before for everything else.
+
 ## Deferred
 
 - Phase 10: buyer KYC and onboarding, marketplace, orders, pricing, payment and settlement.

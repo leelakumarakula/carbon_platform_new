@@ -129,6 +129,20 @@ access in Phase 7. No new role was added.
 VVB/ACVA, methodology specialists (platform-wide), farmers, buyers, laboratory roles and finance have no Phase 8A access (the VVB sees
 the Phase 8A finding summaries only inside a submitted Phase 8B manifest).
 
+## Phase 10 (decisions D27, D28) — marketplace
+
+| Role | Permissions | Phase 10 actions | Separation of duties |
+|---|---|---|---|
+| Buyer | marketplace.read, orders.place, orders.read, payments.record, buyers.kyc_submit (+ 9B holder permissions) | buyer profile and KYC documents; browse; place / cancel own orders (KYC verified); record payments with evidence; order confirmation; retire purchased credits (9B) | never confirms a payment; KYC reviewed by the platform |
+| Credit Manager | marketplace.read, listings.manage, orders.read, orders.manage | create / submit / pause / resume / close listings of the organization's AVAILABLE credits; cancel unpaid orders; resolve orders that need attention | never approves a listing it created |
+| Finance / Payout Manager | marketplace.read, listings.approve, orders.read, payments.confirm, refunds.request, refunds.approve | approve listings (price); confirm / reject / reconcile payments to the organization (payee); request / approve / complete / reject refunds | listing approver ≠ creator; confirmer ≠ recorder; refund approver ≠ requester (DB checks) |
+| Project Manager | marketplace.read, orders.read | read listings and the organization's orders | — |
+| Marketplace Compliance Officer (new, platform) | buyers.kyc_verify | verify / return / suspend / reinstate buyer KYC | reviewer ≠ submitter |
+| QA Officer | — (existing credits.confirm) | complete / reject order-linked deliveries in the custodian organization | transfer completer ≠ requester (9B DB check) |
+
+VVB, laboratory, farmer and methodology roles have no marketplace permission. Order, payment and refund records are visible to the buyer
+organization and to the seller organization only (404 otherwise); restricted KYC documents to the buyer and the platform reviewer only.
+
 ## Phase 9B (decision D16) — credit ledger
 
 | Role | Permissions | Phase 9B actions | Separation of duties |
