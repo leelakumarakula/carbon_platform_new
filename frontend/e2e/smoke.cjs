@@ -32,6 +32,8 @@ const phase6 = { engagement: '', scope: '', sample: '', tests: 0, shipment: '', 
   analysisStatus: '', labRestricted: false, buyerFarmerBlocked: false, sod: '', retest: '', windDown: {}, audit: [] };
 const phase7 = { readinessBlocker: false, labels: false, runBlocked: false, runLabel: false, runCode: '', runStatus: '', netResult: 'x',
   modules: -1, projectStatus: '', qaCanRead: false, valueRefused: false, outsidersBlocked: false, audit: [] };
+const phase8a = { noReportForBlocked: false, finding: '', category: '', findingStatus: '', reportRefused: '', readinessLabel: false,
+  readinessBlocked: false, createRefused: '', niphad: '', outsidersBlocked: false, projectStatus: '', audit: [] };
 const REQUIRED_AUDIT_P6 = ['LAB_ENGAGEMENT_PROPOSED', 'LAB_ENGAGEMENT_ACCEPTED', 'LAB_ENGAGEMENT_ENDED', 'LAB_SAMPLE_REGISTERED', 'LAB_CUSTODY_SEALED',
   'LAB_TEST_CREATED', 'LAB_SHIPMENT_CREATED', 'LAB_SHIPMENT_DISPATCHED', 'LAB_SHIPMENT_RECEIPT_RECORDED', 'LAB_TEST_STARTED', 'LAB_RESULT_CREATED',
   'LAB_REPORT_ATTACHED', 'LAB_RESULT_SUBMITTED', 'LAB_QA_STARTED', 'LAB_RESULT_APPROVED', 'LAB_RETEST_REQUESTED', 'LAB_RESULT_SUPERSEDED'];
@@ -172,6 +174,7 @@ const REQUIRED_AUDIT = ['PROJECT_CREATED', 'PROJECT_STATUS_CHANGED', 'PROJECT_FA
   await P.getByRole('button', { name: 'Sign in' }).click();
   await P.getByText('Welcome,').waitFor();
   await P.goto(`${BASE}/projects`);
+  await P.getByLabel('Search code, name, region').fill('(DEMO)');   // each E2E run adds a project; the seeded ones may be past page 1
   await P.getByText('Nashik soil health pilot (DEMO)').first().waitFor();
   phase3.demoProjects = await P.getByText(/\(DEMO\)$/).count();
   await shot(P, '20-projects');
@@ -306,6 +309,7 @@ const REQUIRED_AUDIT = ['PROJECT_CREATED', 'PROJECT_STATUS_CHANGED', 'PROJECT_FA
   await shot(pm2.page, '33-methodology-locked');
   // the seeded DEMO project B is locked too
   await pm2.page.goto(`${BASE}/projects`);
+  await pm2.page.getByLabel('Search code, name, region').fill('Niphad');
   await pm2.page.getByText('Niphad residue retention programme (DEMO)').first().click();
   await pm2.page.getByRole('tab', { name: 'Methodology' }).click();
   await pm2.page.locator('.locked').waitFor();
@@ -691,6 +695,54 @@ const REQUIRED_AUDIT = ['PROJECT_CREATED', 'PROJECT_STATUS_CHANGED', 'PROJECT_FA
   pg7.items.forEach((x) => calcAudit.add(x.action));
   phase7.audit = [...calcAudit].sort();
   await an.ctx.close();
+
+  // ---- Phase 8A: internal pre-verification on the honest (blocked) path — a finding on the BLOCKED run (QA raises in the UI,
+  // the analyst responds, QA resolves), no report for a non-APPROVED run, readiness blocked (no approved calculation), Niphad blocked.
+  const p8Start = new Date(Date.now() - 2000).toISOString();
+  const qs = await signIn('qa');
+  const Q = qs.page;
+  lastPage = Q;
+  await Q.goto(`${BASE}/calculations/runs/${calcRuns[0].id}`);
+  await Q.getByTestId('report-not-available').waitFor();
+  phase8a.noReportForBlocked = true;
+  await Q.getByRole('tab', { name: 'Findings' }).click();
+  await pick(Q, 'finding-category', 'Methodology Issue');
+  await Q.getByTestId('finding-title').fill('No calculation module registered');
+  await Q.getByTestId('finding-description').fill('E2E: the locked DEMO methodology has no registered calculation module.');
+  await Q.getByTestId('raise-finding').click();
+  await Q.locator('[data-finding^="CFND-"]').first().waitFor();
+  await shot(Q, '80-calc-finding');
+  const fnd = (await json(await api.get(`${CALCV}/findings?project_id=${projectId}`, { headers: qaH })))[0];
+  phase8a.finding = fnd.finding_code;
+  phase8a.category = fnd.category_label;
+  await json(await api.post(`${CALCV}/findings/${fnd.id}/respond`, { headers: anH, data: { response: 'E2E: a module needs an approved methodology.' } }));
+  phase8a.findingStatus = (await json(await api.post(`${CALCV}/findings/${fnd.id}/resolve`, { headers: qaH,
+    data: { note: 'E2E: acknowledged; stays blocked until a module exists' } }))).status;
+  phase8a.reportRefused = await errCode(await api.post(`${CALCV}/runs/${calcRuns[0].id}/reports`, { headers: anH }));
+  await Q.goto(`${BASE}/calculations?project=${projectId}`);
+  await Q.getByTestId('readiness-blockers').waitFor();
+  phase8a.readinessLabel = (await Q.getByTestId('readiness-label').innerText()).includes('Internal readiness — not verification');
+  phase8a.readinessBlocked = (await Q.getByTestId('readiness-blockers').innerText()).includes('NO_APPROVED_CALCULATION');
+  await shot(Q, '81-calc-readiness');
+  phase8a.createRefused = await errCode(await api.post(`${CALCV}/projects/${projectId}/verification-readiness`, { headers: anH,
+    data: { monitoring_period_id: period.id } }));
+  const calcProjects = await json(await api.get(`${CALCV}/projects`, { headers: anH }));
+  const niphad = calcProjects.find((x) => x.name.startsWith('Niphad'));
+  const nv = await json(await api.get(`${CALCV}/projects/${niphad.id}/verification-readiness?monitoring_period_id=${niphad.periods[0].id}`,
+    { headers: anH }));
+  phase8a.niphad = `${nv.blockers.map((b) => b.code).join(',')} | ${nv.calculation_blockers[0].code} ${nv.calculation_blockers[0].reason}`;
+  let outside8 = 0;
+  for (const who of ['vvb', 'buyer', 'farmer', 'labtech']) {
+    if ([403, 404].includes((await api.get(`${CALCV}/findings?project_id=${projectId}`, { headers: await as(who) })).status())) outside8++;
+  }
+  phase8a.outsidersBlocked = outside8 === 4;
+  phase8a.projectStatus = (await json(await api.get(`${BASE}/api/v1/projects/${projectId}`, { headers: pmH }))).status;
+  const a8 = new Set();
+  const pg8 = await json(await api.get(`${BASE}/api/v1/admin/audit-logs?entity_type=calculation_finding&from=${encodeURIComponent(p8Start)}&page_size=100`,
+    { headers: await as('admin') }));
+  pg8.items.forEach((x) => a8.add(x.action));
+  phase8a.audit = [...a8].sort();
+  await qs.ctx.close();
   for (const x of [mrv, qa, sup, fieldS]) await x.ctx.close();
   await api.dispose();
 
@@ -743,6 +795,7 @@ const REQUIRED_AUDIT = ['PROJECT_CREATED', 'PROJECT_STATUS_CHANGED', 'PROJECT_FA
   console.log('phase 5:', JSON.stringify(phase5));
   console.log('phase 6:', JSON.stringify(phase6));
   console.log('phase 7:', JSON.stringify(phase7));
+  console.log('phase 8A:', JSON.stringify(phase8a));
 
   await browser.close();
   // One 401 per session is expected: the silent session-restore attempt before sign-in.
@@ -777,7 +830,13 @@ const REQUIRED_AUDIT = ['PROJECT_CREATED', 'PROJECT_STATUS_CHANGED', 'PROJECT_FA
     && phase7.runStatus === 'BLOCKED' && phase7.netResult === null && phase7.modules === 0 && phase7.projectStatus === 'MONITORING'
     && phase7.qaCanRead && phase7.valueRefused && phase7.outsidersBlocked
     && ['CALCULATION_RUN_CREATED', 'CALCULATION_BLOCKED'].every((a) => phase7.audit.includes(a));
-  if (!stillIn || real.length || navItems.length !== 4 || !p2ok || !p3ok || !p4ok || !p5ok || !p6ok || !p7ok) process.exitCode = 1;
+  const p8ok = phase8a.noReportForBlocked && /^CFND-\d{4}-\d{6}$/.test(phase8a.finding) && phase8a.category === 'Methodology Issue'
+    && phase8a.findingStatus === 'RESOLVED' && phase8a.reportRefused === '409 RUN_NOT_APPROVED' && phase8a.readinessLabel && phase8a.readinessBlocked
+    && phase8a.createRefused === '409 NO_APPROVED_CALCULATION'
+    && phase8a.niphad === 'NO_APPROVED_CALCULATION | CONFIGURATION_REQUIRED NO_CALCULATION_MODULE'
+    && phase8a.outsidersBlocked && phase8a.projectStatus === 'MONITORING'
+    && ['CALCULATION_FINDING_RAISED', 'CALCULATION_FINDING_RESPONDED', 'CALCULATION_FINDING_RESOLVED'].every((a) => phase8a.audit.includes(a));
+  if (!stillIn || real.length || navItems.length !== 4 || !p2ok || !p3ok || !p4ok || !p5ok || !p6ok || !p7ok || !p8ok) process.exitCode = 1;
 })().catch(async (e) => {
   console.error('DRIVER FAILED:', e.message);
   if (lastPage) {

@@ -18,6 +18,8 @@ import { runAction } from '../shared/run-action';
 import { StateView } from '../shared/state-view';
 import { StatusBadge } from '../shared/status-badge';
 import { CalculationApi } from './calculation.api';
+import { RunFindings } from './run-findings';
+import { RunReports } from './run-reports';
 import {
   CALCULATED_LABEL,
   CalcCompare,
@@ -36,7 +38,7 @@ import {
   selector: 'app-calculation-run-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [DatePipe, JsonPipe, FormsModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatTabsModule,
-    PageHeader, StateView, StatusBadge],
+    PageHeader, StateView, StatusBadge, RunFindings, RunReports],
   template: `
     <app-state-view [loading]="loading()" [error]="error()" (retry)="load()" />
     @if (run(); as r) {
@@ -66,6 +68,7 @@ import {
         @if (r.can_approve) { <button mat-button type="button" (click)="decide('Reject')">Reject</button> }
         @if (r.can_recalculate) { <button mat-stroked-button type="button" (click)="recalculate(r)" data-testid="recalculate">Recalculate (new run)</button> }
       </div>
+      <app-run-reports [run]="r" />
       <mat-tab-group animationDuration="0ms" mat-stretch-tabs="false">
         <mat-tab label="Inputs"><div class="tab-body">
           <p class="small mono">Input SHA-256 {{ r.input_sha256 ?? '— (not frozen)' }}</p>
@@ -116,11 +119,18 @@ import {
             @empty { <p class="muted small">No review yet.</p> }
           }
         </div></mat-tab>
+        <mat-tab label="Findings"><div class="tab-body">
+          <app-run-findings [run]="r" />
+        </div></mat-tab>
         <mat-tab label="Lineage"><div class="tab-body" data-testid="calc-lineage">
           @if (lineage(); as l) {
             <p class="small">{{ l.methodology.label }} · calculation rules v{{ l.methodology.calculation_rules_version }}
               · dataset {{ l.dataset?.code ?? '—' }} <span class="mono">{{ l.dataset?.snapshot_sha256?.slice(0, 16) }}</span></p>
             @if (l.final) { <p><strong>{{ l.final.output_code }}</strong> = {{ value(l.final.value) }} {{ l.final.unit }} ← rule {{ l.final.rule['rule_code'] }}</p> }
+            <h3>Internal pre-verification</h3>
+            <div class="small">Findings: @for (f of l.findings; track f.id) { {{ f.code }} ({{ f.category_label }}, {{ f.status }}){{ $last ? '' : '; ' }} } @empty { none }</div>
+            <div class="small">Reports: @for (x of l.reports; track x.id) { {{ x.report_code }} v{{ x.version }} {{ x.status }} <span class="mono">{{ x.content_sha256.slice(0, 12) }}</span>{{ $last ? '' : '; ' }} } @empty { none }</div>
+            <div class="small">Readiness: @for (x of l.readiness; track x.id) { {{ x.readiness_code }} {{ x.status }}{{ x.manifest_sha256 ? ' · manifest ' + x.manifest_sha256.slice(0, 12) : '' }}{{ $last ? '' : '; ' }} } @empty { none }</div>
             <h3>Inputs and their sources</h3>
             @for (i of l.inputs; track i.seq) {
               <div class="small lin">#{{ i.seq }} {{ i.variable_code }} = {{ i.value }} {{ i.unit }} ← <span class="mono">{{ i.chain | json }}</span></div>

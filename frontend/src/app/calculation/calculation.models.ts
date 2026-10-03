@@ -195,6 +195,9 @@ export interface CalcLineage {
   inputs: { seq: number; variable_code: string; source_type: string; value: string; unit: string | null; chain: Record<string, unknown> }[];
   qa_reviews: CalcQaReview[];
   history: { from_status: string | null; to_status: string | null; user_name: string | null; at: string; reason: string | null }[];
+  findings: { id: string; code: string; category_label: string; blocking: boolean; status: string; title: string }[];
+  reports: { id: string; report_code: string; version: number; status: string; content_sha256: string; pdf_sha256: string }[];
+  readiness: { id: string; readiness_code: string; status: string; manifest_sha256: string | null }[];
 }
 
 export interface CalcCompare {

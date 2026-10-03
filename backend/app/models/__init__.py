@@ -88,6 +88,7 @@ from app.models.mrv import (
     StratumFarm,
 )
 from app.models.notifications import Notification
+from app.models.preverification import CalculationFinding, CalculationFindingEvent, CalculationReadinessReview, CalculationReport
 from app.models.projects import (
     Project,
     ProjectActivity,
@@ -109,9 +110,13 @@ __all__ = [
     "AuditLog",
     "BankAccountStatus",
     "Base",
+    "CalculationFinding",
+    "CalculationFindingEvent",
     "CalculationInput",
     "CalculationOutput",
     "CalculationQaReview",
+    "CalculationReadinessReview",
+    "CalculationReport",
     "CalculationRun",
     "ConsentDefinition",
     "Document",

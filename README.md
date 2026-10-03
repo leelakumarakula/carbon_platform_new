@@ -124,6 +124,10 @@ Phase 7 adds the calculation framework but **no calculation module** (no real me
 equations were approved). Sign in as `analyst@` and open **Calculations**: the Niphad project shows the real blocker,
 CONFIGURATION_REQUIRED — NO_CALCULATION_MODULE, and a run is BLOCKED on freeze. Calculated tCO2e is never a credit.
 
+Phase 8A adds internal pre-verification (findings, the calculation report of an approved run, and internal verification readiness —
+"Internal readiness — not verification"). On DEMO data only the honest blocked path is visible: findings can be raised on the blocked
+run; there is no report and readiness shows NO_APPROVED_CALCULATION. VVB/ACVA is not implemented.
+
 Demo and live records cannot be mixed; the API rejects it with `ENVIRONMENT_MISMATCH`.
 
 ## Tests and checks (exit gate after every phase)
@@ -156,6 +160,7 @@ workflow in [docs/project-workflow.md](docs/project-workflow.md), methodology se
 [docs/methodology-engine.md](docs/methodology-engine.md), MRV in [docs/mrv-workflow.md](docs/mrv-workflow.md) and
 [docs/sampling-workflow.md](docs/sampling-workflow.md), samples and laboratory analysis in
 [docs/laboratory-workflow.md](docs/laboratory-workflow.md), calculations in [docs/calculation-workflow.md](docs/calculation-workflow.md),
+internal pre-verification in [docs/pre-verification-workflow.md](docs/pre-verification-workflow.md),
 lineage in [docs/data-lineage.md](docs/data-lineage.md).
 
 ## External integrations

@@ -61,6 +61,8 @@ def _validate(data: bytes, category: str) -> str:
         raise ValidationFailed("Boundary files must be GeoJSON or KML.", error_code="UNSUPPORTED_FILE_TYPE")
     if category != DocumentCategory.GEOSPATIAL_FILE.value and mime in GEOSPATIAL_TYPES:
         raise ValidationFailed("GeoJSON/KML files can only be uploaded as boundary files.", error_code="UNSUPPORTED_FILE_TYPE")
+    if category == DocumentCategory.CALCULATION_REPORT.value and mime != "application/pdf":
+        raise ValidationFailed("Calculation reports are PDF files.", error_code="UNSUPPORTED_FILE_TYPE")
     if category in (DocumentCategory.LAB_REPORT.value, DocumentCategory.CUSTODY_DOCUMENT.value) and mime != "application/pdf":
         # Phase 6 decision 16: laboratory-visible documents are PDF only (no images that may carry EXIF / GPS)
         raise ValidationFailed("Laboratory reports and custody documents must be PDF files.", error_code="UNSUPPORTED_FILE_TYPE")

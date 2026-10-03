@@ -118,6 +118,16 @@ The reviewer and the approver are never the run's creator, freezer, executor or 
 may review and approve. Nobody can type a calculated value. Farmers, buyers, laboratory roles, finance and VVB/ACVA have no calculation
 access in Phase 7. No new role was added.
 
+## Phase 8A (decision B10) — no new permission or role
+
+| Role | Permission | Phase 8A actions | Separation of duties |
+|---|---|---|---|
+| Calculation Analyst | calculation.read, calculation.manage | respond to findings, upload run evidence, generate reports, create / submit / withdraw readiness | never resolves a finding they answered; never approves readiness |
+| QA Officer | calculation.read, calculation.review, calculation.approve | raise / return / resolve / reopen findings; withdraw own findings; approve / reject readiness | resolver ≠ responder; readiness approver ≠ submitter and ≠ the run's creator, freezer, executor, submitter |
+| MRV Manager, Project Manager | calculation.read | read findings, reports, readiness, manifests | — |
+
+VVB/ACVA, methodology specialists (platform-wide), farmers, buyers, laboratory roles and finance have no Phase 8A access.
+
 ## Permission-grant matrix (decision D4, approved)
 
 Granting a role needs `users.assign_roles` in the scope of the grant, plus every *privileged* permission the role

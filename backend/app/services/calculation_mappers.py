@@ -233,7 +233,8 @@ def lineage(db: Session, principal: Principal, run: CalculationRun) -> LineageOu
              "at": e.occurred_at.isoformat() + "Z", "reason": e.reason} for e in cs.history(db, run.id)]
     meth = snapshot.get("methodology") or {}
     label, demo = _label(db, run)
-    return LineageOut(run=run_out(db, principal, run),
+    from app.services import preverification_mappers as pvm
+    return LineageOut(**pvm.lineage_extras(db, run), run=run_out(db, principal, run),
                       methodology={"label": label, "is_demo_illustrative": demo, "version_id": str(run.methodology_version_id),
                                    "calculation_rules_version": run.calculation_rules_version, "rules": meth.get("calculation_rules", [])},
                       dataset=snapshot.get("dataset"), final=next((o for o in outs if o.is_final), None), outputs=outs, inputs=inputs,

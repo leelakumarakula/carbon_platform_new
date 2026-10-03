@@ -192,3 +192,18 @@ CALCULATION_RUN_MACHINE = StateMachine.build(
                  "CALCULATED": {"QA_REVIEW"}, "QA_REVIEW": {"APPROVED", "REJECTED"}, "APPROVED": {"SUPERSEDED"}},
     terminal={"BLOCKED", "CANCELLED", "REJECTED", "SUPERSEDED"},
 )
+
+
+# ---------------------------------------------------------------- Phase 8A — internal pre-verification (not VVB / ACVA)
+CALCULATION_FINDING_MACHINE = StateMachine.build(
+    "calculation_finding", initial="OPEN",
+    transitions={"OPEN": {"RESPONDED", "WITHDRAWN"}, "RESPONDED": {"RESOLVED", "OPEN", "WITHDRAWN"}, "RESOLVED": {"OPEN"}},
+    terminal={"WITHDRAWN"},
+)
+
+# B9: READY = "internally approved for submission to verification" — it is NOT verification.
+CALCULATION_READINESS_MACHINE = StateMachine.build(
+    "calculation_readiness", initial="DRAFT",
+    transitions={"DRAFT": {"SUBMITTED", "WITHDRAWN"}, "SUBMITTED": {"READY", "REJECTED", "WITHDRAWN"}, "READY": {"INVALIDATED"}},
+    terminal={"REJECTED", "WITHDRAWN", "INVALIDATED"},
+)

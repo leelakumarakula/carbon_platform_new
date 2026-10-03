@@ -7,7 +7,9 @@ SEQUENCES = {"farmer": ("seq_farmer_code", "FRM"), "farm": ("seq_farm_code", "FA
              "sampling_point": ("seq_sampling_point_code", "SP"),
              "field_collection": ("seq_field_collection_code", "FIELD"),
              "lab_sample": ("seq_sample_code", "SMP"), "lab_shipment": ("seq_shipment_code", "SHP"), "lab_test": ("seq_lab_test_code", "LT"),
-             "calculation_run": ("seq_calculation_run_code", "CALC")}
+             "calculation_run": ("seq_calculation_run_code", "CALC"),
+             "calculation_finding": ("seq_calculation_finding_code", "CFND"), "calculation_report": ("seq_calculation_report_code", "CRPT"),
+             "calculation_readiness": ("seq_calculation_readiness_code", "RDY")}
 
 
 def next_code(db: Session, kind: str, year: int) -> str:

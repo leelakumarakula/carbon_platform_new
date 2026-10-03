@@ -155,6 +155,18 @@ its downgrade refuses to run while documents of those categories exist. No Phase
 
 No earlier table changes (the project statuses CALCULATION_READY / CALCULATED already existed in the status check).
 
+## Phase 8A tables (internal pre-verification) — migration 0011
+
+| Table | Key columns / rules |
+|---|---|
+| `calculation_findings` | `finding_code` (CFND-); project, period, run; category (6 specification values); `blocking`; title, description; optional targets (input seq, output seq, calculation rule, source type + id, evidence document); status OPEN / RESPONDED / RESOLVED / WITHDRAWN; raised / responded / resolved / withdrawn stamps, response, resolution note, `resolved_by_run_id`, withdraw reason; environment. Trigger: identity, target and original text immutable; WITHDRAWN final; no delete |
+| `calculation_finding_events` | append-only; unique (finding, seq); action, from / to status, actor, time, note, document, run |
+| `calculation_reports` | `report_code` (CRPT-); run, project, period; version (unique per run); `generator_version`; canonical JSON `content` + `content_sha256`; `document_id` (CALCULATION_REPORT PDF) + `pdf_sha256`; CURRENT / SUPERSEDED (filtered unique: one CURRENT per run); superseded by / at. Trigger: immutable except CURRENT → SUPERSEDED |
+| `calculation_readiness_reviews` | `readiness_code` (RDY-); project, period, run, report; DRAFT / SUBMITTED / READY / REJECTED / WITHDRAWN / INVALIDATED (filtered unique: one open and one READY per period); checks JSON; `manifest` + `manifest_sha256` (required when READY); created / submitted / decided / withdrawn / invalidated stamps. Trigger: identity fixed, decided reviews frozen, READY → INVALIDATED only |
+
+0011 also adds the documents category `CALCULATION_REPORT` (PDF only); its downgrade refuses to run while any Phase 8A row or report
+document exists.
+
 ## Migrations
 
 `backend/alembic/versions/20261002_0001_phase1_identity_access_audit.py` and
@@ -168,7 +180,9 @@ No earlier table changes (the project statuses CALCULATION_READY / CALCULATED al
 `20261003_0008_methodology_measurement_source.py` (decision V2-A: `methodology_monitoring_rules.measurement_source`; DEMO rule DM1 →
 LABORATORY, other existing rows → UNCLASSIFIED; one methodology change-history entry per backfilled row) and
 `20261003_0009_phase6_laboratory.py` (9 laboratory tables, the SMP- / SHP- / LT- sequences, three triggers, document categories) and
-`20261003_0010_phase7_carbon_calculation.py` (4 calculation tables, the CALC- sequence, four triggers; downgrade refused while runs exist). Spatial
+`20261003_0010_phase7_carbon_calculation.py` (4 calculation tables, the CALC- sequence, four triggers; downgrade refused while runs exist) and
+`20261003_0011_phase8a_internal_pre_verification.py` (findings, finding events, reports, readiness reviews, CFND / CRPT / RDY sequences,
+CALCULATION_REPORT category, four triggers; downgrade refused while Phase 8A rows exist). Spatial
 indexes (`six_*`) are hand-written SQL and excluded from autogenerate by `include_object` in `alembic/env.py`. Generate new revisions with
 `alembic revision --autogenerate`, review them, and add raw SQL (triggers, spatial indexes) by hand.
 `alembic check` must report no drift before a phase is closed.

@@ -33,6 +33,7 @@ models; no module reaches into another's tables except through its service.
 | `rules/` | Pure functions: geometry parsing (GeoJSON/KML to WKT), file-type sniffing, the deterministic methodology applicability engine, seeded sampling-point candidate generation (SQL Server decides containment) |
 | `integrations/` | Adapters: `ObjectStorage` (local; S3 pending), `MalwareScanner` (signature; real AV pending), `LimsAdapter` (interface only; `NoLimsAdapter`) |
 | `calculation/` | Calculation framework (Decimal, deterministic, spec §18 methods) and the methodology-module registry (no module in Phase 7) |
+| `reports/` | Deterministic, dependency-free text-only PDF writer (Phase 8A) |
 | `seed/` | Reference data sync, bootstrap admin, DEMO data (accounts, farmers, farms) |
 
 Rules followed: routes contain no DB logic; services take an explicit `RequestContext` so every audit row
@@ -77,4 +78,5 @@ on the server. The client only mirrors them (state machines, password policy) fo
   engine output is stored as an append-only evaluation; people review, confirm and lock.
 - **Laboratory**: `lab_service` (project side: engagements, samples, custody, shipments, read model) and `laboratory_service` (laboratory side: receipt, tests, results, QA, retests). Two routers: `/lab` (project) and `/laboratory` (allow-list `*LabView` schemas built in `lab_mappers`). Custody, QA reviews and approved results are protected by DB triggers.
 - **Calculation**: `calculation_inputs` (readiness + frozen snapshot), `calculation_service` (workflow), `calculation_qa` (checks) and `calculation_mappers`; the engine reads only the frozen snapshot. Services accept an explicit module resolver (tests pass a TEST-only fixture); the API always uses the application registry.
+- **Internal pre-verification (8A)**: `calculation_findings`, `calculation_report`, `calculation_readiness`, `preverification_mappers`; router `calculation_preverification` under `/calculations`. Readiness is re-checked when read and invalidated automatically.
 - **Time**: stored as naive UTC `datetime2`, emitted as ISO-8601 with `Z`.

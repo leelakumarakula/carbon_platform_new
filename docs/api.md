@@ -206,6 +206,22 @@ No request body can carry a calculated value (unknown fields are refused with 42
 | GET/POST | `/calculations/qa/{run_id}` · POST `/start` · `/complete` | calculation.read / calculation.review (not the run's creator, freezer, executor or submitter) |
 | POST | `/runs/{id}/approve` · `/reject` | calculation.approve (same separation of duties; approval needs QA PASS) |
 
+## Endpoints (Phase 8A) — internal pre-verification, prefix `/calculations`
+
+| Method | Path | Permission |
+|---|---|---|
+| GET | `/calculations/findings?project_id&monitoring_period_id&run_id&finding_status` · `/findings/{id}` · `/findings/{id}/history` | calculation.read |
+| POST | `/runs/{id}/findings` (non-DRAFT run) | calculation.review |
+| POST | `/findings/{id}/respond` | calculation.manage |
+| POST | `/findings/{id}/resolve` (not the responder) · `/return` · `/reopen` · `/withdraw` (raiser only) | calculation.review |
+| POST | `/runs/{id}/evidence` (PDF / image attached to the run) | calculation.manage or calculation.review |
+| GET/POST | `/runs/{id}/reports` (generate: APPROVED runs only) | calculation.read / calculation.manage |
+| GET | `/reports/{id}` (content) · `/reports/{id}/pdf` · `/reports/{id}/verify` | calculation.read |
+| GET/POST | `/projects/{id}/verification-readiness?monitoring_period_id` (create: body `monitoring_period_id`) | calculation.read / calculation.manage |
+| GET | `/readiness/{id}` · `/readiness/{id}/package` | calculation.read |
+| POST | `/readiness/{id}/submit` · `/withdraw` | calculation.manage |
+| POST | `/readiness/{id}/approve` · `/reject` (not the submitter or the run's handlers) | calculation.approve |
+
 ## Notable error codes
 
 `INVALID_CREDENTIALS`, `TOKEN_EXPIRED`, `SESSION_REVOKED`, `REFRESH_REUSED`, `ACCOUNT_INACTIVE`,
@@ -254,3 +270,8 @@ Phase 7: `CONFIGURATION_REQUIRED` (details.reason `NO_CALCULATION_MODULE`, `STEP
 `INPUT_TOO_LARGE`, `INPUT_SNAPSHOT_MISMATCH`, `INPUTS_OUT_OF_DATE`, `CALCULATION_ERROR` (a module produced an invalid output),
 `OPEN_RUN_EXISTS`, `RUN_NOT_EDITABLE`, `RUN_NOT_IN_QA`, `QA_IN_PROGRESS`, `QA_NOT_STARTED`, `QA_CHECKS_FAILED`, `QA_NOT_PASSED`,
 `SEPARATION_OF_DUTIES`, `RUNS_NOT_COMPARABLE`, `CALCULATION_RUN_NOT_FOUND` (404).
+
+Phase 8A: `FINDING_RUN_DRAFT`, `INVALID_FINDING_TARGET`, `FINDING_NOT_OPEN`, `FINDING_NOT_RESPONDED`, `FINDING_NOT_RESOLVED`, `NOT_RAISER`,
+`SEPARATION_OF_DUTIES`, `RUN_NOT_APPROVED`, `REPORT_UNCHANGED`, `REPORT_TOO_LARGE`, `NO_APPROVED_CALCULATION`, `REPORT_MISSING`,
+`REPORT_INTEGRITY_FAILED`, `REPORT_STALE`, `OPEN_BLOCKING_FINDINGS`, `READINESS_EXISTS`, `READINESS_NOT_DRAFT`, `READINESS_NOT_SUBMITTED`,
+`READINESS_NOT_OPEN`, `FINDING_NOT_FOUND`, `CALCULATION_REPORT_NOT_FOUND`, `READINESS_NOT_FOUND` (404).

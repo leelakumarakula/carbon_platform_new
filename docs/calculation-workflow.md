@@ -118,6 +118,9 @@ Triggers: inputs and outputs append-only; a completed QA review is immutable; a 
 while DRAFT, its outputs only while INPUTS_FROZEN, final states never change, APPROVED → SUPERSEDED only, and runs are never deleted.
 Filtered unique indexes: one open run and one APPROVED run per reporting period; one final output per run.
 
+Phase 8A builds on approved runs: findings, the official report and internal verification readiness — see
+[pre-verification-workflow.md](pre-verification-workflow.md).
+
 ## DEMO and tests
 
 The DEMO methodologies have one placeholder calculation rule (`DC1`, NOT_IMPLEMENTED) and no approved equations, and the Niphad DEMO

@@ -9,7 +9,8 @@
 | 5 | MRV / GIS / sampling | **Done** |
 | 6 | Sample / lab | **Done** |
 | 7 | Calculation | **Done** |
-| 8 | VVB / ACVA | Next (awaiting approval) |
+| 8A | Internal pre-verification (findings, calculation report, internal readiness) | **Done** |
+| 8B | VVB / ACVA | Next (awaiting approval) |
 | 9 | Registry / credits | — |
 | 10 | Marketplace | — |
 | 11 | Revenue / payout | — |
@@ -383,6 +384,42 @@ Verification (exit gate, 3 Oct 2026)
   stayed MONITORING; no module is registered; the QA officer can read; a request carrying a value is refused (422); buyer, farmer and
   laboratory users are refused; CALCULATION_RUN_CREATED and CALCULATION_BLOCKED were audited; no unexpected console errors.
 
+## Phase 8A — delivered
+
+**Internal pre-verification — not VVB/ACVA, not verification.** Details are in [pre-verification-workflow.md](pre-verification-workflow.md).
+Phase 8 was split (decision B1): 8A internal pre-verification (this), 8B VVB/ACVA (not started).
+
+Backend
+- Migration `0011`: `calculation_findings` + append-only `calculation_finding_events`, `calculation_reports`, `calculation_readiness_reviews`,
+  sequences CFND / CRPT / RDY, filtered unique indexes (one CURRENT report per run; one open and one READY readiness per period), documents
+  category `CALCULATION_REPORT`, immutability triggers; downgrade refused while Phase 8A rows or report documents exist. No Phase 1–7
+  data changed, no backfill.
+- Findings: the six specification categories, `blocking` flag only, targets validated within the run, OPEN / RESPONDED / RESOLVED /
+  WITHDRAWN with return and reopen, QA raises / resolves, analyst responds, resolver ≠ responder, withdraw by the raiser with a reason,
+  append-only history, evidence attached to the run. Findings never change Phase 7 approval.
+- Calculation report for APPROVED runs only: canonical JSON from frozen records + SHA-256, deterministic in-house text-only PDF (no new
+  dependency) + SHA-256, generator version, tamper detection, immutability, supersession when the content changes, synchronous with a
+  size guard.
+- Internal verification readiness per monitoring period (no new project state; the project stays CALCULATED): deterministic
+  prerequisites, analyst submits, independent QA officer approves or rejects, frozen package manifest + SHA-256, automatic invalidation.
+- Lineage extended with findings, reports and readiness. No new permission or role; no VVB access.
+
+Frontend
+- Run page: **Calculation report** section (generate, download, verify) and **Findings** tab (raise, respond, return, resolve, reopen,
+  withdraw, history); Lineage tab lists findings, reports and readiness. Calculations page / MRV tab: **Verification readiness** panel per
+  period with "Internal readiness — not verification", blockers, reviews, approval and the package manifest view.
+
+Verification (exit gate, 3 Oct 2026)
+- Backend: **270 pytest tests passed** (Phase 8A: 8 tests — PDF writer, findings, reports, readiness, RBAC / isolation, DEMO, two trigger
+  tests). ruff clean. mypy clean (146 files). `alembic check`: no drift. Migration 0011 upgrade → downgrade (to 0010) → upgrade (twice) on
+  the test database; its downgrade is refused while Phase 8A rows exist (verified on the development database).
+- Frontend: **86 Vitest tests passed** (13 files). Production build OK.
+- E2E passed (Phases 1–8A): the QA officer raised a Methodology Issue finding on the E2E project's BLOCKED run in the UI, the analyst
+  responded and QA resolved it; no report for the blocked run (RUN_NOT_APPROVED); the readiness panel showed "Internal readiness — not
+  verification" and NO_APPROVED_CALCULATION; creating readiness was refused; Niphad: NO_APPROVED_CALCULATION with CONFIGURATION_REQUIRED —
+  NO_CALCULATION_MODULE; VVB, buyer, farmer and laboratory users refused; the project stayed MONITORING; finding audit events present; no
+  unexpected console errors.
+
 ## Known limitations and open items
 
 - The rate limiter is in-memory (single API process). Redis is required before scaling out (Phase 12).
@@ -439,4 +476,11 @@ Verification (exit gate, 3 Oct 2026)
   - Reference / baseline periods for multi-period (remeasurement) modules and `calculation_run_datasets` come with the first module that
     needs them. Calculation report PDF, findings and farm-level allocation are deferred.
   - Each E2E run adds a BLOCKED calculation run to its DEMO project in the development database.
+- Phase 8A:
+  - Internal only: VVB/ACVA organizations, assignment, VVB findings, corrective actions, validation / verification decisions and states
+    are Phase 8B (not started). READY is "internally approved for submission to verification", not verification.
+  - Without a registered calculation module no run reaches APPROVED outside tests, so reports and READY readiness are exercised only with
+    the TEST-only fixture; DEMO shows the blocked path.
+  - Report generation is synchronous (size-guarded); background generation is deferred to Phase 12. The PDF is text-only.
+  - Cross-module automated checks (duplicate farm, overlaps, double counting) are not part of readiness.
 - The browser logs one expected 401 at start-up: the silent session-restore attempt when nobody is signed in.

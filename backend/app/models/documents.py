@@ -30,6 +30,7 @@ class DocumentCategory(str, Enum):
     METHODOLOGY_DOCUMENT = "METHODOLOGY_DOCUMENT"  # Phase 4: authoritative methodology source documents
     LAB_REPORT = "LAB_REPORT"                # Phase 6: laboratory report for a result (PDF only)
     CUSTODY_DOCUMENT = "CUSTODY_DOCUMENT"    # Phase 6: chain-of-custody form for a shipment (PDF only)
+    CALCULATION_REPORT = "CALCULATION_REPORT"  # Phase 8A: generated calculation report of an APPROVED run (PDF only)
     OTHER = "OTHER"
 
 

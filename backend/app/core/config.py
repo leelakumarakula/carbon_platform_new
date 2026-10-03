@@ -88,6 +88,9 @@ class Settings(BaseSettings):
     # Phase 7 (decision A18): calculations run synchronously; a run with more frozen input rows than this is BLOCKED
     # (INPUT_TOO_LARGE) instead of holding an HTTP request open. Background execution is deferred.
     CALCULATION_MAX_INPUT_ROWS: int = 20000
+    # Phase 8A (B11): reports are generated synchronously; a run whose report would exceed this many rows (inputs + outputs +
+    # findings + QA reviews) is refused (REPORT_TOO_LARGE). Background report generation is deferred (Phase 12).
+    CALCULATION_REPORT_MAX_ROWS: int = 20000
     # Decision V1 (platform governance, not a methodology rule): approving an MRV plan with CONFIGURATION_REQUIRED gaps is
     # allowed (with an audited acknowledgement) for DEMO projects and outside production only. No production exception exists.
     SAMPLING_MAX_ATTEMPTS_PER_POINT: int = 400  # rejection-sampling attempts per requested point before giving up

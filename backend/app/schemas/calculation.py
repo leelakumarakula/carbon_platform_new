@@ -275,6 +275,10 @@ class LineageOut(BaseModel):
     inputs: list[LineageSource]
     qa_reviews: list[QaReviewOut]
     history: list[dict[str, Any]]
+    # Phase 8A: internal pre-verification records of the run (not verification)
+    findings: list[dict[str, Any]] = []
+    reports: list[dict[str, Any]] = []
+    readiness: list[dict[str, Any]] = []
 
 
 class CompareOut(BaseModel):

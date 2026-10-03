@@ -33,7 +33,8 @@ CREDIT → REGISTRY → VERIFICATION → CALCULATION RUN → METHODOLOGY VERSION
 | Methodology rule → test → result versions | `lab_tests` (engagement, rule, MRV plan measurement, retest chain) → `lab_results` (versioned, supersedes, report document + SHA-256, analyst, source) → `lab_result_qa_reviews` (append-only) | 6 |
 | Approved laboratory result → everything above | `GET /lab/results/{id}/lineage`: result → versions → test → sample / root → field collection version → point → stratum → farm → project → locked methodology rule → plan measurement, plus shipments, receipts, QA reviews, custody. Exactly one APPROVED result per root sample + rule | 6 |
 | Calculated value → run → methodology version, calculation rules, module and engine versions | `calculation_runs` (frozen lock, `input_snapshot` + `input_sha256`, `output_sha256`, net result) → `calculation_outputs` (rule, inputs, earlier outputs) → `calculation_inputs` (source type, ID, version, exact value, unit) → approved lab result / monitoring record / stratum version → sample, field collection, point, stratum, farm, farmer, project (`GET /calculations/runs/{id}/lineage`); recalculations linked by `recalculation_of_run_id`, supersession by `superseded_by_run_id` | 7 |
-| Verification, registry, credits | — | 8–9 |
+| Approved run → findings, report, readiness | `calculation_findings` (+ events; targets inside the run) → `calculation_reports` (content and PDF SHA-256) → `calculation_readiness_reviews` (manifest + SHA-256 referencing project, periods, methodology lock, dataset snapshot, MRV evidence, laboratory reports, run hashes, report hashes, findings, QA) — in the run lineage API | 8A |
+| Verification, registry, credits | — | 8B–9 |
 
 Reverse lineage, from a farm up to its projects, works through `project_farms` (`GET /projects/my-participation` for the
 farmer's own farms; project farms lists for staff). Every link above is written in the same transaction as its

@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, effect, inject, input, signal } fro
 import { MatButtonModule } from '@angular/material/button';
 import { RouterLink } from '@angular/router';
 
+import { CalcReadinessPanel } from '../../calculation/calc-readiness-panel';
 import { CalculationApi } from '../../calculation/calculation.api';
 import { CALCULATED_LABEL, CalcRun, DEMO_LABEL, Readiness, blockerTitle, calcBadge, formatValue } from '../../calculation/calculation.models';
 import { AuthService } from '../../core/auth/auth.service';
@@ -17,7 +18,7 @@ import { Period } from '../mrv.models';
 @Component({
   selector: 'app-mrv-calculations-panel',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DatePipe, RouterLink, MatButtonModule, StatusBadge],
+  imports: [DatePipe, RouterLink, MatButtonModule, StatusBadge, CalcReadinessPanel],
   template: `
     <div class="tab-body">
       <p class="note">{{ calculatedLabel }}. A calculation never creates credits; verification and issuance are later steps.</p>
@@ -55,6 +56,7 @@ import { Period } from '../mrv.models';
           } @empty { <tr><td colspan="5" class="muted">No calculation run for this period.</td></tr> }
         </tbody>
       </table></div>
+      @if (period(); as p) { <app-calc-readiness-panel [projectId]="projectId()" [periodId]="p.id" /> }
     </div>
   `,
   styles: `h3 { margin: 14px 0 6px; font: var(--mat-sys-title-small); } .blockers { margin: 6px 0; padding-left: 20px; }
