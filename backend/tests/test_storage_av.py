@@ -343,7 +343,7 @@ def test_production_refuses_test_scanners(monkeypatch: pytest.MonkeyPatch, av: T
         malware.get_scanner.cache_clear()
 
 
-def test_production_configuration_guard_requires_storage_and_scanner() -> None:
+def test_production_configuration_guard_requires_storage_and_scanner(tmp_path: Path) -> None:
     from pydantic import ValidationError
 
     from app.core.config import Settings
@@ -357,7 +357,10 @@ def test_production_configuration_guard_requires_storage_and_scanner() -> None:
     base.update(OBJECT_STORAGE_ENDPOINT="https://minio.internal:9000")
     with pytest.raises(ValidationError, match="real antivirus scanner"):
         Settings(**base)                                           # the signature scanner is not an antivirus engine
-    base.update(MALWARE_SCANNER="vendor-x", ANTIVIRUS_ENDPOINT="https://av.internal", ANTIVIRUS_API_KEY="x")
+    base.update(MALWARE_SCANNER="vendor-x", ANTIVIRUS_ENDPOINT="https://av.internal", ANTIVIRUS_API_KEY="x",
+                # Phase 12B-II production requirements (shared Redis limiter over TLS, secret-store mount, JSON logs, manual providers)
+                RATE_LIMIT_BACKEND="redis", REDIS_URL="rediss://carbon-app:secret@redis.internal:6380/0", SECRETS_DIR=str(tmp_path),
+                LOG_FORMAT="json", SATELLITE_PROVIDER="manual", LAB_PROVIDER="manual")
     assert Settings(**base).is_production                          # configuration accepted; the adapter itself is a deployment item
 
 

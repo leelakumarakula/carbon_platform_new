@@ -101,6 +101,9 @@ def login(db: Session, ctx: RequestContext, email: str, password: str) -> Issued
 
 
 def refresh(db: Session, ctx: RequestContext, raw_token: str | None) -> IssuedTokens:
+    # F5 / D19: dedicated per-IP refresh limit (reuse detection and rotation below are unchanged)
+    if not limiter.hit(f"refresh:{ctx.ip_address or 'unknown'}", get_settings().REFRESH_RATE_LIMIT_PER_MINUTE, 60):
+        raise RateLimited("Too many session refreshes. Please wait a minute and try again.")
     if not raw_token:
         raise AuthenticationFailed("No refresh token was provided.", error_code="REFRESH_MISSING")
     now = utcnow()

@@ -7,7 +7,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, File, Form, Header, UploadFile, status
 
-from app.api.deps import DB, Ctx, read_upload, require_any
+from app.api.deps import DB, Ctx, ListLimit, ListOffset, read_upload, require_any
 from app.schemas.lab import DocumentRef
 from app.schemas.marketplace import PaymentIn, PaymentOut, ReasonIn, RefundCompleteIn, RefundOut
 from app.security.permissions import P
@@ -68,8 +68,8 @@ def request_refund(payment_id: uuid.UUID, body: ReasonIn, principal: RefundReque
 
 
 @router.get("/refunds", response_model=list[RefundOut])
-def list_refunds(principal: Reader, db: DB) -> list[RefundOut]:
-    return [mm.refund_out(db, principal, r) for r in ps.visible_refunds(db, principal)]
+def list_refunds(principal: Reader, db: DB, limit: ListLimit = None, offset: ListOffset = 0) -> list[RefundOut]:
+    return [mm.refund_out(db, principal, r) for r in ps.visible_refunds(db, principal, limit=limit, offset=offset)]
 
 
 @router.post("/refunds/{refund_id}/documents", response_model=DocumentRef, status_code=status.HTTP_201_CREATED,

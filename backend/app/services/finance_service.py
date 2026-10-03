@@ -42,6 +42,7 @@ from app.models.documents import DocumentCategory
 from app.repositories.sequences import next_code
 from app.security.permissions import P
 from app.security.principal import Principal
+from app.security.scoping import org_predicate
 from app.services import document_service
 from app.services import ledger_service as ls
 from app.services import marketplace_service as ms
@@ -77,9 +78,12 @@ def period_of(db: Session, p: Project, period_id: uuid.UUID) -> MonitoringPeriod
     return mp
 
 
-def visible_projects(db: Session, principal: Principal) -> list[Project]:
-    return [p for p in db.scalars(select(Project).order_by(Project.project_code)).all()
-            if any(principal.can_in_org(c, p.organization_id) for c in FIN_VIEW)]
+def visible_projects(db: Session, principal: Principal, *, limit: int | None = None, offset: int = 0) -> list[Project]:
+    """Phase 12B D32: filtered in SQL (`can_in_org` on the project's organization for any FIN_VIEW permission), optionally paged."""
+    stmt = select(Project).where(org_predicate(principal, FIN_VIEW, Project.organization_id)).order_by(Project.project_code, Project.id)
+    if limit is not None:
+        stmt = stmt.offset(offset).limit(limit)
+    return list(db.scalars(stmt).all())
 
 
 # ---------------------------------------------------------------- revenue recognition (D8, D9) and reversal (D10)

@@ -1,0 +1,188 @@
+"""Phase 12B D31 / D33 — synthetic performance harness (pytest, TEST data only, inside the rolled-back test transaction).
+
+D31 selected high-volume operation but set NO numeric targets, so these tests assert structural properties instead of timings:
+- the verified hot-spot listings (orders, marketplace listings, refunds, finance projects) load only the caller's rows: the number of
+  ORM rows loaded and SQL statements issued does not grow when thousands of other organizations' rows are added;
+- results are identical to the previous Python visibility rules (`side()`, `can_see_listing()`, `can_in_org()`);
+- the optional limit / offset paging returns disjoint, ordered slices covering the whole list, with the list shape unchanged;
+- lazy expiry still runs on the read path (correctness guarantee, Phase 12A D5).
+Timings are measured and reported as properties (`record_property`) for baselining — never asserted against an invented SLA.
+Synthetic rows are clones of a real scenario's rows re-pointed at synthetic organizations; they never reach DEMO or LIVE data.
+"""
+import time
+import uuid
+from collections.abc import Callable, Iterator
+from contextlib import contextmanager
+from datetime import timedelta
+from typing import Any
+
+import pytest
+from fastapi.testclient import TestClient
+from sqlalchemy import event, insert, select
+from sqlalchemy.orm import Session
+
+from app.core.context import RequestContext
+from app.core.database import get_engine
+from app.models import MarketplaceListing, Order, Organization, Project
+from app.models.base import utcnow
+from app.security.permissions import P
+from app.security.principal import load_principal
+from app.services import finance_service as fs
+from app.services import marketplace_service as ms
+from app.services import order_service as os_
+from tests.conftest import make_org, make_user
+from tests.test_marketplace import MP, ORD, M
+
+NOISE = 1500
+
+
+@contextmanager
+def counting(model: Any) -> Iterator[dict[str, int]]:
+    """Counts ORM instances of `model` loaded and SQL statements executed inside the block."""
+    c = {"rows": 0, "statements": 0}
+
+    def on_load(target: Any, *_a: Any) -> None:
+        c["rows"] += 1
+
+    def on_exec(*_a: Any) -> None:
+        c["statements"] += 1
+    engine = get_engine()
+    event.listen(model, "load", on_load)
+    event.listen(model, "refresh", on_load)
+    event.listen(engine, "before_cursor_execute", on_exec)
+    try:
+        yield c
+    finally:
+        event.remove(model, "load", on_load)
+        event.remove(model, "refresh", on_load)
+        event.remove(engine, "before_cursor_execute", on_exec)
+
+
+def fresh(db: Session) -> Session:
+    """A new session on the test transaction (empty identity map), so every row the query returns is counted."""
+    return Session(bind=db.connection(), join_transaction_mode="create_savepoint", expire_on_commit=False, autoflush=False)
+
+
+def _clone(db: Session, model: Any, template: Any, n: int, overrides: Callable[[int], dict[str, Any]]) -> None:
+    cols = {c.key: getattr(template, c.key) for c in model.__mapper__.column_attrs}
+    rows = [{**cols, "id": uuid.uuid4(), **overrides(i)} for i in range(n)]
+    for start in range(0, n, 500):
+        db.execute(insert(model), rows[start:start + 500])
+    db.flush()
+
+
+def _orgs(db: Session, n: int) -> list[Organization]:
+    return [make_org(db, org_type="PROJECT_DEVELOPER") for _ in range(n)]
+
+
+def _timed(fn: Callable[[], Any]) -> tuple[Any, float]:
+    t = time.perf_counter()
+    out = fn()
+    return out, time.perf_counter() - t
+
+
+@pytest.fixture()
+def scenario(client: TestClient, db: Session) -> M:
+    m = M(client, db, 84.70, 29.70, "9915 3000 4000")
+    m.verify_buyer()
+    return m
+
+
+def test_order_listing_reads_do_not_scale_with_other_organizations(client: TestClient, db: Session, scenario: M,
+                                                                  record_property: Any) -> None:
+    m = scenario
+    lst = m.listing(300)
+    o = m.order([(lst["id"], 10)])
+    assert o.status_code == 201, o.text
+    order = db.get(Order, uuid.UUID(o.json()["id"]))
+    listing = db.get(MarketplaceListing, uuid.UUID(lst["id"]))
+    assert order is not None and listing is not None
+    buyer = load_principal(db, m.buyer.user, None)
+    ctx = RequestContext(request_id="perf", user_id=m.buyer.user.id)
+
+    with counting(Order) as base:
+        before, t0 = _timed(lambda: os_.visible_orders(fresh(db), ctx, buyer))
+    noise = _orgs(db, 20)
+    stamp = uuid.uuid4().hex[:6].upper()
+    _clone(db, Order, order, NOISE, lambda i: {"order_code": f"P{stamp}{i:07d}"[:20], "request_key": None, "status": "CANCELLED",
+                                                "buyer_organization_id": noise[i % 20].id, "seller_organization_id": noise[(i + 1) % 20].id})
+    _clone(db, MarketplaceListing, listing, NOISE, lambda i: {"listing_code": f"Q{stamp}{i:07d}"[:20], "request_key": None,
+                                                               "status": "DRAFT", "seller_organization_id": noise[i % 20].id})
+    with counting(Order) as big:
+        after, t1 = _timed(lambda: os_.visible_orders(fresh(db), ctx, buyer))
+    assert [x.id for x in after] == [x.id for x in before] == [order.id]
+    assert big["rows"] == base["rows"] == 1                             # only the caller's order is loaded, not 1,500 others
+    assert big["statements"] == base["statements"]
+    with counting(MarketplaceListing) as lc:
+        visible, t2 = _timed(lambda: ms.listings(fresh(db), ctx, buyer))
+    assert [x.id for x in visible] == [listing.id] and lc["rows"] == 1   # DRAFT listings of other sellers are never loaded
+    record_property("orders_list_seconds_baseline", round(t0, 4))
+    record_property(f"orders_list_seconds_with_{NOISE}_foreign_rows", round(t1, 4))
+    record_property(f"listings_list_seconds_with_{NOISE}_foreign_rows", round(t2, 4))
+    # the API keeps its response shape; optional paging works
+    r = m.get(ORD)
+    assert r.status_code == 200 and [x["id"] for x in r.json()["orders"]] == [str(order.id)]
+    assert m.get(ORD, limit=1, offset=1).json()["orders"] == []
+    assert m.get(f"{MP}/listings", limit=0).status_code == 422 and m.get(f"{MP}/listings", limit=501).status_code == 422
+
+
+def test_scoped_visibility_matches_previous_python_rules(client: TestClient, db: Session, scenario: M) -> None:
+    m = scenario
+    lst = m.listing(300)
+    draft = m.listing(50, approve=False, rng=m.range400)
+    o = m.order([(lst["id"], 10)])
+    assert o.status_code == 201
+    outsider_org = make_org(db, org_type="BUYER")
+    outsider = make_user(db, roles=[("BUYER", outsider_org)])
+    platform_fin = make_user(db, roles=[("FINANCE_MANAGER", None)])     # platform-wide grant: sees every organization
+    principals = [load_principal(db, u, None) for u in (m.buyer.user, m.fin.user, m.cm.user, outsider, platform_fin)]
+    ctx = RequestContext(request_id="perf")
+    all_orders = db.scalars(select(Order)).all()
+    all_listings = db.scalars(select(MarketplaceListing)).all()
+    all_projects = db.scalars(select(Project)).all()
+    for p in principals:
+        expect_orders = {x.id for x in all_orders if os_.side(p, x) is not None}
+        assert {x.id for x in os_.visible_orders(db, ctx, p)} == expect_orders
+        if p.has(P.MARKETPLACE_READ) or any(p.has(c) for c in ms.SELLER_VIEW):
+            assert {x.id for x in ms.listings(db, ctx, p)} == {x.id for x in all_listings if ms.can_see_listing(p, x)}
+            assert {x.id for x in ms.listings(db, ctx, p, mine=True)} == {x.id for x in all_listings if ms.is_seller_side(p, x)}
+        expect_projects = {x.id for x in all_projects if any(p.can_in_org(c, x.organization_id) for c in fs.FIN_VIEW)}
+        assert {x.id for x in fs.visible_projects(db, p)} == expect_projects
+    seller = load_principal(db, m.cm.user, None)
+    assert draft["id"] in {str(x.id) for x in ms.listings(db, ctx, seller, mine=True)}
+    assert draft["id"] not in {str(x.id) for x in ms.listings(db, ctx, load_principal(db, m.buyer.user, None))}
+
+
+def test_paging_is_disjoint_ordered_and_complete(client: TestClient, db: Session, scenario: M) -> None:
+    m = scenario
+    project = db.scalars(select(Project).where(Project.organization_id == m.seller.id)).first()
+    assert project is not None
+    noise = _orgs(db, 5)
+    stamp = uuid.uuid4().hex[:6].upper()
+    _clone(db, Project, project, 230, lambda i: {"project_code": f"PERF-{stamp}-{i:05d}", "organization_id": noise[i % 5].id})
+    viewer = load_principal(db, make_user(db, roles=[("FINANCE_MANAGER", None)]), None)
+    full = [x.id for x in fs.visible_projects(db, viewer)]
+    pages: list[uuid.UUID] = []
+    for offset in range(0, len(full) + 100, 100):
+        pages += [x.id for x in fs.visible_projects(db, viewer, limit=100, offset=offset)]
+    assert pages == full and len(set(pages)) == len(pages) >= 231
+    scoped = load_principal(db, m.fin.user, None)                          # organization-scoped: none of the 230 synthetic projects
+    with counting(Project) as c:
+        mine = fs.visible_projects(fresh(db), scoped)
+    assert {x.organization_id for x in mine} == {m.seller.id} and c["rows"] == len(mine)
+
+
+def test_lazy_expiry_still_runs_on_the_read_path(client: TestClient, db: Session, scenario: M, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Phase 12A D5 / D24: correctness never depends on the sweep job (or Redis). A due order expires when its party lists orders."""
+    m = scenario
+    lst = m.listing(300, valid_until=(utcnow() + timedelta(hours=72)).isoformat() + "Z")
+    o = m.order([(lst["id"], 10)])
+    assert o.status_code == 201
+    later = utcnow() + timedelta(hours=48)
+    for mod in (os_, ms):
+        monkeypatch.setattr(mod, "utcnow", lambda t=later: t)
+    monkeypatch.setattr("app.services.ledger_service.utcnow", lambda t=later: t)
+    rows = os_.visible_orders(db, RequestContext(request_id="perf", user_id=m.buyer.user.id), load_principal(db, m.buyer.user, None))
+    assert [x.status for x in rows if str(x.id) == o.json()["id"]] == ["EXPIRED"]
+    placed = os_.visible_orders(db, RequestContext(request_id="perf"), load_principal(db, m.buyer.user, None), "PLACED")
+    assert o.json()["id"] not in {str(x.id) for x in placed}

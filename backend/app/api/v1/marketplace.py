@@ -6,8 +6,8 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, File, Form, Header, UploadFile, status
 from sqlalchemy import select
 
-from app.api.deps import DB, Ctx, read_upload, require_any
-from app.models import BuyerProfile
+from app.api.deps import DB, Ctx, ListLimit, ListOffset, read_upload, require_any
+from app.models import BuyerProfile, CreditBatch, Organization
 from app.schemas.lab import DocumentRef
 from app.schemas.marketplace import (
     BuyerProfileIn,
@@ -23,6 +23,7 @@ from app.schemas.marketplace import (
 )
 from app.security.permissions import P
 from app.security.principal import Principal
+from app.security.scoping import preload
 from app.services import marketplace_mappers as mm
 from app.services import marketplace_service as ms
 
@@ -105,8 +106,11 @@ def suspend_buyer(profile_id: uuid.UUID, body: ReasonIn, principal: KycReviewer,
 
 # ---------------------------------------------------------------- listings
 @router.get("/listings", response_model=ListingsOut, summary="ACTIVE listings (buyers) or the organization's own listings (sellers, mine=true)")
-def list_listings(principal: Browser, db: DB, ctx: Ctx, mine: bool = False, status: str | None = None) -> ListingsOut:
-    rows = ms.listings(db, ctx, principal, mine=mine, status=status)
+def list_listings(principal: Browser, db: DB, ctx: Ctx, mine: bool = False, status: str | None = None, limit: ListLimit = None,
+                  offset: ListOffset = 0) -> ListingsOut:
+    rows = ms.listings(db, ctx, principal, mine=mine, status=status, limit=limit, offset=offset)
+    preload(db, Organization, [x.seller_organization_id for x in rows])
+    preload(db, CreditBatch, [x.batch_id for x in rows])
     return ListingsOut(listings=[mm.listing_out(db, principal, x) for x in rows], demo_note=ms.demo_note(principal, bool(rows)),
                        note=mm.LISTING_NOTE)
 

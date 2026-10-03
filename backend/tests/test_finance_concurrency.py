@@ -461,7 +461,9 @@ def _allowed(w: World, sql: str, params: dict[str, Any]) -> None:
 def test_9_finance_triggers(world: World) -> None:
     w = world
     with Session(bind=w.engine) as s:
-        rec = s.scalars(select(RevenueRecord)).first()
+        # a RECOGNITION row: on a REVERSAL row (amount < 0) "SET amount = 1" trips the kind_shape CHECK before the append-only trigger,
+        # and which row .first() returns without ORDER BY depends on random UUIDs (flaky since Phase 11)
+        rec = s.scalars(select(RevenueRecord).where(RevenueRecord.kind == "RECOGNITION").order_by(RevenueRecord.id)).first()
         run = s.get(SettlementRun, w.state["run"])
         po = s.get(Payout, w.state["payout"])
         link = s.scalars(select(SettlementRevenueItem).where(SettlementRevenueItem.settlement_run_id == run.id)).first()

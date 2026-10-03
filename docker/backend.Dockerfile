@@ -19,4 +19,5 @@ RUN useradd --create-home --uid 10001 appuser
 USER appuser
 EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=5s CMD curl -fs http://localhost:8000/api/v1/health || exit 1
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers"]
+# Client IPs come from TRUSTED_PROXIES in the application (Phase 12B D21); uvicorn must not rewrite them itself.
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--no-proxy-headers"]

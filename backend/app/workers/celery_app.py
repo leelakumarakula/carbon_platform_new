@@ -27,6 +27,16 @@ def _beat_schedule() -> dict[str, dict[str, Any]]:
     return beat
 
 
+def _broker_ssl(url: str | None, ca_cert: str | None) -> dict[str, object] | None:
+    if not (url or "").startswith("rediss://"):
+        return None
+    import ssl
+    opts: dict[str, object] = {"ssl_cert_reqs": ssl.CERT_REQUIRED}
+    if ca_cert:
+        opts["ssl_ca_certs"] = ca_cert
+    return opts
+
+
 def create_celery() -> Celery:
     s = get_settings()
     app = Celery("carbon_platform", include=["app.workers.tasks.expiry", "app.workers.tasks.storage", "app.workers.tasks.retention",
@@ -37,6 +47,8 @@ def create_celery() -> Celery:
         broker_connection_retry_on_startup=True,
         # The visibility timeout must exceed the longest task; the SQL lease (JOB_STALE_AFTER_SECONDS) is the authority anyway.
         broker_transport_options={"visibility_timeout": s.JOB_STALE_AFTER_SECONDS + 300, "socket_connect_timeout": 3, "socket_timeout": 10},
+        # Phase 12B D23: rediss:// verifies the broker certificate (REDIS_CA_CERT for a private CA)
+        broker_use_ssl=_broker_ssl(s.REDIS_URL, s.REDIS_CA_CERT),
         result_backend=None,
         task_ignore_result=True,
         task_serializer="json",

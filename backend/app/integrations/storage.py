@@ -189,8 +189,10 @@ class S3ObjectStorage:
                 policy = self.client.bucket_policy(bucket)
                 if policy and _is_public(policy):
                     problems.append(f"bucket {bucket}: a bucket policy grants public access")
-            except (S3Error, OSError) as e:
-                problems.append(f"bucket {bucket}: {type(e).__name__}")
+            except OSError as e:
+                problems.append(f"bucket {bucket}: unreachable ({type(e).__name__})")
+            except S3Error as e:                                   # 5xx = outage; 4xx = configuration / permission problem
+                problems.append(f"bucket {bucket}: unreachable (HTTP {e.status})" if e.status >= 500 else f"bucket {bucket}: {e.code}")
         return problems
 
 

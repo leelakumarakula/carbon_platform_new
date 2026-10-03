@@ -14,7 +14,7 @@ import uuid
 from decimal import Decimal
 from typing import Any
 
-from sqlalchemy import select
+from sqlalchemy import or_, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
@@ -35,6 +35,7 @@ from app.models.documents import DocumentCategory
 from app.repositories.sequences import next_code
 from app.security.permissions import P
 from app.security.principal import Principal
+from app.security.scoping import org_predicate, preload
 from app.services import document_service, finance_service
 from app.services import ledger_service as ls
 from app.services import marketplace_service as ms
@@ -354,13 +355,16 @@ def get_refund(db: Session, principal: Principal, refund_id: uuid.UUID) -> tuple
     return r, p, o
 
 
-def visible_refunds(db: Session, principal: Principal) -> list[Refund]:
-    out = []
-    for r in db.scalars(select(Refund).order_by(Refund.created_at.desc())).all():
-        o = db.get(Order, r.order_id)
-        if o is not None and os_.side(principal, o) is not None:
-            out.append(r)
-    return out
+def visible_refunds(db: Session, principal: Principal, *, limit: int | None = None, offset: int = 0) -> list[Refund]:
+    """Phase 12B D32: refunds of the orders the caller sees (`order_service.side`), filtered in SQL, optionally paged."""
+    visible = or_(org_predicate(principal, os_.BUYER_SIDE, Order.buyer_organization_id),
+                  org_predicate(principal, os_.SELLER_SIDE, Order.seller_organization_id))
+    stmt = select(Refund).join(Order, Order.id == Refund.order_id).where(visible).order_by(Refund.created_at.desc(), Refund.id)
+    if limit is not None:
+        stmt = stmt.offset(offset).limit(limit)
+    rows = list(db.scalars(stmt).all())
+    preload(db, Order, [r.order_id for r in rows])
+    return rows
 
 
 def request_refund(db: Session, ctx: RequestContext, principal: Principal, payment_id: uuid.UUID, reason: str, key: str | None) -> Refund:

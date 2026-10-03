@@ -739,9 +739,33 @@ Tests
   rollback → deleted).
 - `quarantine.spec.ts`; E2E: Phase 12B-I block.
 
+## Phase 12B-II — delivered
+
+**Runtime hardening.** Details and runbooks: [runtime-hardening.md](runtime-hardening.md). Decisions D18–D24, D30–D33, D38–D47 of
+[phase-12b-decision-lock.md](phase-12b-decision-lock.md). No migration.
+
+Backend
+- Rate limiting behind the existing abstraction: Redis backend (hashed keys, counters only) or in-process; production requires Redis.
+  Locked D19 limits as settings: refresh 100 / IP, uploads 100 / user, 1,000 / user, 5,000 / organization, 10,000 deployment-wide burst;
+  login / global / lockout unchanged. Redis outage → fail open (D20), logged, counted, visible in readiness.
+- Trusted proxies (`TRUSTED_PROXIES`); uvicorn `--no-proxy-headers`.
+- Streamed request-body limit (chunked bodies included).
+- `/health/live`, `/health/ready` (database + schema head, storage, antivirus, broker, limiter; 503 only for failures / production
+  misconfiguration); `/health` without the environment in production. Swagger / OpenAPI off in production.
+- Production guards: TLS + ACL-user Redis, shared limiter, secret-store mount (`SECRETS_DIR`, no `.env`, no secrets in environment
+  variables), no simulated providers, JSON logs, metrics token length. Celery broker TLS verification.
+- MultiFernet data-key rotation + `manage.py rotate-data-key`; JWT `kid` signing-key rotation.
+- Structured JSON logging with redaction and request / job correlation; `GET /metrics` (OpenMetrics / JSON, bearer token).
+- External-notification boundary: SMTP configuration only, delivery deferred, opt-in / opt-out / language / quiet-hours gate.
+- SQL-side scoping, optional limit / offset and preloading for orders, listings, refunds, finance projects; lazy expiry kept.
+
+Tests
+- `tests/test_runtime_hardening.py`, `tests/test_performance.py` (synthetic harness, no SLA assertions); E2E: Phase 12B-II block.
+
 ## Known limitations and open items
 
-- The rate limiter is in-memory (single API process). Redis is required before scaling out (Phase 12).
+- Rate limiting uses Redis in production (Phase 12B-II); a Redis outage fails open (D20). Real Redis, secret store, monitoring and
+  SMTP integrations are pending the deployment environment.
 - `docker-compose.yml` has not been run on the development machine (Docker not installed).
 - Status values for later entities (orders, payouts, lab results, …) are still to be confirmed. See the
   architecture document's open questions.

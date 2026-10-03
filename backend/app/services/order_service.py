@@ -16,7 +16,7 @@ from datetime import timedelta
 from decimal import Decimal
 from typing import Any, TypeVar
 
-from sqlalchemy import select
+from sqlalchemy import or_, select
 from sqlalchemy.orm import Session
 
 from app.core.context import RequestContext
@@ -39,6 +39,7 @@ from app.reports import pdf
 from app.repositories.sequences import next_code
 from app.security.permissions import P
 from app.security.principal import Principal
+from app.security.scoping import org_predicate
 from app.services import document_service, finance_service
 from app.services import ledger_service as ls
 from app.services import marketplace_service as ms
@@ -87,17 +88,20 @@ def items_of(db: Session, order_id: uuid.UUID) -> list[OrderItem]:
     return list(db.scalars(select(OrderItem).where(OrderItem.order_id == order_id).order_by(OrderItem.item_code)).all())
 
 
-def visible_orders(db: Session, ctx: RequestContext, principal: Principal, status: str | None = None) -> list[Order]:
-    stmt = select(Order).order_by(Order.placed_at.desc())
+def visible_orders(db: Session, ctx: RequestContext, principal: Principal, status: str | None = None, *, limit: int | None = None,
+                   offset: int = 0) -> list[Order]:
+    """Phase 12B D32: scoped in SQL (same visibility as `side()`), optionally paged. Lazy expiry stays the correctness guarantee:
+    the caller's due PLACED orders are found with one query and expired first (each re-checked under its lock), then the page is read."""
+    visible = or_(org_predicate(principal, BUYER_SIDE, Order.buyer_organization_id),
+                  org_predicate(principal, SELLER_SIDE, Order.seller_organization_id))
+    for o in db.scalars(select(Order).where(visible, Order.status == "PLACED", Order.expires_at <= utcnow())).all():
+        expire_if_due(db, ctx, o)
+    stmt = select(Order).where(visible).order_by(Order.placed_at.desc(), Order.id)
     if status:
         stmt = stmt.where(Order.status == status)
-    out = []
-    for o in db.scalars(stmt).all():
-        if side(principal, o) is None:
-            continue
-        expire_if_due(db, ctx, o)
-        out.append(o)
-    return out
+    if limit is not None:
+        stmt = stmt.offset(offset).limit(limit)
+    return list(db.scalars(stmt.execution_options(populate_existing=True)).all())
 
 
 def _item(db: Session, ctx: RequestContext, item: OrderItem, to: str, reason: str | None = None) -> None:

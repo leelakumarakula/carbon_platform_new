@@ -13,7 +13,7 @@ from datetime import datetime
 from decimal import Decimal
 from typing import Any
 
-from sqlalchemy import func, select
+from sqlalchemy import and_, false, func, or_, select
 from sqlalchemy.orm import Session
 
 from app.core.context import RequestContext
@@ -44,6 +44,7 @@ from app.repositories.sequences import next_code
 from app.security import crypto
 from app.security.permissions import P
 from app.security.principal import Principal
+from app.security.scoping import org_predicate
 from app.services import document_service
 from app.services import ledger_service as ls
 from app.services.ledger_mappers import range_text
@@ -352,18 +353,25 @@ def can_see_listing(principal: Principal, lst: MarketplaceListing) -> bool:
     return lst.status == "ACTIVE" and principal.has(P.MARKETPLACE_READ) and lst.environment == env_of(principal)
 
 
-def listings(db: Session, ctx: RequestContext, principal: Principal, *, mine: bool = False, status: str | None = None) -> list[MarketplaceListing]:
-    stmt = select(MarketplaceListing).order_by(MarketplaceListing.created_at.desc())
+def listings(db: Session, ctx: RequestContext, principal: Principal, *, mine: bool = False, status: str | None = None,
+             limit: int | None = None, offset: int = 0) -> list[MarketplaceListing]:
+    """Phase 12B D32: scoped in SQL with the visibility of `can_see_listing` / `is_seller_side`, optionally paged. Lazy expiry stays:
+    due listings within that scope are expired first (each re-checked under its lock), so the page shows their current state."""
+    seller = org_predicate(principal, SELLER_VIEW, MarketplaceListing.seller_organization_id)
+    buyer = and_(MarketplaceListing.status == "ACTIVE", MarketplaceListing.environment == env_of(principal)) \
+        if principal.has(P.MARKETPLACE_READ) else false()
+    scope = seller if mine else or_(seller, buyer)
+    due = select(MarketplaceListing).where(scope, MarketplaceListing.status.in_(("ACTIVE", "PAUSED")),
+                                           MarketplaceListing.valid_until <= utcnow())
+    for lst in db.scalars(due).all():
+        expire_listing_if_due(db, ctx, lst)
+    stmt = select(MarketplaceListing).where(scope).order_by(MarketplaceListing.created_at.desc(), MarketplaceListing.id)
     if status:
         stmt = stmt.where(MarketplaceListing.status == status)
-    out = []
-    for lst in db.scalars(stmt).all():
-        expire_listing_if_due(db, ctx, lst)
-        if mine and not is_seller_side(principal, lst):
-            continue
-        if can_see_listing(principal, lst):
-            out.append(lst)
-    return out
+    if limit is not None:
+        stmt = stmt.offset(offset).limit(limit)
+    rows = db.scalars(stmt.execution_options(populate_existing=True)).all()
+    return [x for x in rows if (is_seller_side(principal, x) if mine else can_see_listing(principal, x))]
 
 
 def _check_quantity(db: Session, b: CreditBatch, seller_id: uuid.UUID, serial_range_id: uuid.UUID | None, quantity: Decimal) -> None:

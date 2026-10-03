@@ -76,7 +76,8 @@ _HTTP_CODES = {400: "BAD_REQUEST", 401: "AUTHENTICATION_FAILED", 403: "PERMISSIO
 def install_error_handlers(app: FastAPI) -> None:
     @app.exception_handler(AppError)
     async def _app_error(request: Request, exc: AppError) -> JSONResponse:
-        headers = {"WWW-Authenticate": "Bearer"} if exc.status_code == 401 else None
+        headers = {"WWW-Authenticate": "Bearer"} if exc.status_code == 401 else \
+            {"Retry-After": "60"} if exc.status_code == 429 else None
         return envelope(request, exc.status_code, exc.error_code, exc.message, exc.details, headers)
 
     @app.exception_handler(RequestValidationError)

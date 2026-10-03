@@ -49,6 +49,8 @@ const phase11 = { financeNav: false, demoNote: false, revenueEmpty: false, confi
   noFakeData: false };
 const phase12 = { jobsNav: false, statusPanel: false, demoNote: false, brokerHonest: false, registry: 0, triggered: '', replay: false,
   cancelledUi: false, arbitraryRefused: '', retryRefused: '', outsidersBlocked: false, noFinanceTasks: false, audit: [] };
+const phase12c = { live: '', ready: '', readyChecks: '', compat: false, tooLarge: '', paged: false, pageRejected: 0,
+  refreshLimited: '' };
 const phase12b = { scanState: '', eicarRefused: '', quarantined: '', quarantineNav: false, quarantinePage: false, historyUi: false,
   releaseRefused: '', stillQuarantined: false, downloadBlocked: '', outsidersBlocked: false, adminNoManage: '', audit: [] };
 const REQUIRED_AUDIT_P6 = ['LAB_ENGAGEMENT_PROPOSED', 'LAB_ENGAGEMENT_ACCEPTED', 'LAB_ENGAGEMENT_ENDED', 'LAB_SAMPLE_REGISTERED', 'LAB_CUSTODY_SEALED',
@@ -1184,6 +1186,22 @@ ${EICAR}`) } } }));
   const aud12b = await json(await api.get(`${BASE}/api/v1/admin/audit-logs?entity_id=${farmer12.id}`, { headers: adH }));
   phase12b.audit = [...new Set(aud12b.items.map((a) => a.action))].filter((a) => a.startsWith('DOCUMENT_')).sort();
   for (const x of [mrv, qa, sup, fieldS]) await x.ctx.close();
+
+  // ---- Phase 12B-II: runtime hardening, against the running development server (no Redis / secret store / monitoring here:
+  // the in-process limiter, a not-configured broker and a disabled metrics endpoint are the honest development state).
+  const H = `${BASE}/api/v1/health`;
+  phase12c.live = (await json(await api.get(`${H}/live`))).status;
+  const rd = await api.get(`${H}/ready`);
+  const rdj = await rd.json();
+  phase12c.ready = `${rd.status()} ${rdj.status}`;
+  phase12c.readyChecks = Object.keys(rdj.checks).sort().join(',') + ` db=${rdj.checks.database}`;
+  phase12c.compat = (await json(await api.get(H))).database === 'ok';
+  phase12c.tooLarge = await errCode(await api.post(`${BASE}/api/v1/auth/login`, { headers: { 'content-type': 'application/json' },
+    data: Buffer.alloc(25 * 1024 * 1024 + 10, 32) }));
+  const buyer12c = await as('buyer');
+  const pg = await json(await api.get(`${BASE}/api/v1/orders?limit=1&offset=0`, { headers: buyer12c }));
+  phase12c.paged = Array.isArray(pg.orders) && pg.orders.length <= 1;
+  phase12c.pageRejected = (await api.get(`${BASE}/api/v1/orders?limit=0`, { headers: buyer12c })).status();
   await api.dispose();
 
   // ---- Phase 3: buyer has no project access
@@ -1243,6 +1261,15 @@ ${EICAR}`) } } }));
   console.log('phase 11:', JSON.stringify(phase11));
   console.log('phase 12A:', JSON.stringify(phase12));
   console.log('phase 12B-I:', JSON.stringify(phase12b));
+  // F5 / D19: the refresh limit (100 per IP per minute). Runs after every UI step: later refreshes from this IP are limited for a minute.
+  const apiLast = await request.newContext();
+  const refreshCodes = [];
+  for (let i = 0; i < 101; i++) refreshCodes.push((await apiLast.post(`${BASE}/api/v1/auth/refresh`)).status());
+  await apiLast.dispose();
+  const first429 = refreshCodes.indexOf(429);   // earlier silent session restores share this IP's window: some 401s, then only 429s
+  phase12c.refreshLimited = first429 > 0 && refreshCodes.slice(0, first429).every((c) => c === 401)
+    && refreshCodes.slice(first429).every((c) => c === 429) ? `${first429}x401 then ${101 - first429}x429` : refreshCodes.join(',');
+  console.log('phase 12B-II:', JSON.stringify(phase12c));
 
   await browser.close();
   // One 401 per session is expected: the silent session-restore attempt before sign-in.
@@ -1309,13 +1336,17 @@ ${EICAR}`) } } }));
     && phase12.arbitraryRefused === '422 TASK_NOT_TRIGGERABLE' && phase12.retryRefused === '409 JOB_NOT_RETRYABLE' && phase12.outsidersBlocked
     && phase12.noFinanceTasks && phase12.audit.includes('JOB_CREATED')
     && (after12.status === 'CANCELLED' ? phase12.audit.includes('JOB_CANCELLED') : phase12.audit.includes('JOB_SUCCEEDED'));
+  const p12cok = phase12c.live === 'alive' && /^200 (ready|degraded)$/.test(phase12c.ready)
+    && phase12c.readyChecks === 'antivirus,broker,database,rate_limiter,storage db=ok' && phase12c.compat
+    && phase12c.tooLarge === '413 PAYLOAD_TOO_LARGE' && phase12c.paged && phase12c.pageRejected === 422
+    && /^\d+x401 then \d+x429$/.test(phase12c.refreshLimited);
   const p12bok = phase12b.scanState === 'NOT_SCANNED' && phase12b.eicarRefused === '422 MALWARE_DETECTED' && phase12b.quarantined === '200 QUARANTINED'
     && phase12b.downloadBlocked === '409 DOCUMENT_QUARANTINED' && phase12b.quarantineNav && phase12b.quarantinePage && phase12b.historyUi
     && phase12b.releaseRefused === '409 DOCUMENT_RELEASE_REFUSED' && phase12b.stillQuarantined && phase12b.outsidersBlocked
     && phase12b.adminNoManage === '200 403'
     && ['DOCUMENT_QUARANTINED', 'DOCUMENT_RELEASE_REFUSED', 'DOCUMENT_RESCANNED', 'DOCUMENT_UPLOADED'].every((a) => phase12b.audit.includes(a));
   if (!stillIn || real.length || navItems.length !== 5 || !p2ok || !p3ok || !p4ok || !p5ok || !p6ok || !p7ok || !p8ok || !p8bok || !p9ok
-    || !p9bok || !p10ok || !p11ok || !p12ok || !p12bok) process.exitCode = 1;
+    || !p9bok || !p10ok || !p11ok || !p12ok || !p12bok || !p12cok) process.exitCode = 1;
 })().catch(async (e) => {
   console.error('DRIVER FAILED:', e.message);
   if (lastPage) {

@@ -7,6 +7,9 @@
   python manage.py seed-demo          DEMO organizations + one user per role (password from DEMO_USER_PASSWORD)
   python manage.py setup              create-db + migrate + seed-reference
   python manage.py jobs-recover       one background-job recovery pass (requeue stale / due jobs, republish unpublished ones)
+  python manage.py rotate-data-key [--dry-run]
+                                      re-encrypt stored bank account numbers with DATA_ENCRYPTION_KEY (old keys listed in
+                                      DATA_ENCRYPTION_PREVIOUS_KEYS); run after a key rotation, then remove the old keys
   python manage.py storage-migrate [--dry-run]
                                       copy every document object from LOCAL_STORAGE_ROOT into the configured object store
                                       (STORAGE_BACKEND=s3), verifying SHA-256; local originals are never deleted
@@ -116,6 +119,18 @@ def storage_migrate(dry_run: bool = False) -> None:
         sys.exit(1)
 
 
+def rotate_data_key(dry_run: bool = False) -> None:
+    """Runbook (Phase 12B D30): idempotent, batched; values already on the current key are skipped. Exit code 1 if any value
+    cannot be decrypted with any configured key (nothing is overwritten in that case)."""
+    from app.core.database import get_session_factory
+    from app.services.key_rotation import reencrypt_bank_accounts
+    with get_session_factory()() as db:
+        rep = reencrypt_bank_accounts(db, dry_run=dry_run)
+    print("data key rotation" + (" (dry run)" if dry_run else "") + ":", rep)
+    if rep["undecryptable"]:
+        sys.exit(1)
+
+
 def setup() -> None:
     create_db()
     migrate()
@@ -124,13 +139,14 @@ def setup() -> None:
 
 def main() -> None:
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("command", choices=["bootstrap-admin", "create-db", "jobs-recover", "migrate", "seed-demo", "seed-reference", "setup",
-                                       "storage-migrate"])
-    p.add_argument("--dry-run", action="store_true", help="storage-migrate: check and count, write nothing")
+    p.add_argument("command", choices=["bootstrap-admin", "create-db", "jobs-recover", "migrate", "rotate-data-key", "seed-demo",
+                                       "seed-reference", "setup", "storage-migrate"])
+    p.add_argument("--dry-run", action="store_true", help="storage-migrate / rotate-data-key: check and count, write nothing")
     args = p.parse_args()
     cmds: dict[str, Callable[[], None]] = {
         "create-db": create_db, "migrate": migrate, "seed-reference": seed_reference, "bootstrap-admin": bootstrap_admin,
-        "seed-demo": seed_demo, "setup": setup, "jobs-recover": jobs_recover, "storage-migrate": lambda: storage_migrate(args.dry_run)}
+        "seed-demo": seed_demo, "setup": setup, "jobs-recover": jobs_recover, "storage-migrate": lambda: storage_migrate(args.dry_run),
+        "rotate-data-key": lambda: rotate_data_key(args.dry_run)}
     cmds[args.command]()
 
 

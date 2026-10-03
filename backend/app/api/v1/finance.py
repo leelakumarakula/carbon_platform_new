@@ -9,7 +9,7 @@ from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, File, Form, Header, UploadFile, status
 
-from app.api.deps import DB, Ctx, read_upload, require_any
+from app.api.deps import DB, Ctx, ListLimit, ListOffset, read_upload, require_any
 from app.models import FarmAllocationVersion, RevenueShareVersion
 from app.schemas.finance import (
     AllocationIn,
@@ -56,8 +56,8 @@ IdemKey = Annotated[str | None, Header(alias="Idempotency-Key", max_length=80)]
 # ---------------------------------------------------------------- revenue
 @router.get("/revenue/projects", response_model=list[FinanceProjectOut],
             summary="Projects the caller may see financially, with their monitoring periods and farm participations")
-def finance_projects(principal: FinanceReader, db: DB) -> list[FinanceProjectOut]:
-    return [fm.finance_project_out(db, p) for p in fs.visible_projects(db, principal)]
+def finance_projects(principal: FinanceReader, db: DB, limit: ListLimit = None, offset: ListOffset = 0) -> list[FinanceProjectOut]:
+    return [fm.finance_project_out(db, p) for p in fs.visible_projects(db, principal, limit=limit, offset=offset)]
 
 
 @router.get("/revenue", response_model=list[RevenueOut], summary="Recognized revenue and reversals of a project (append-only)")

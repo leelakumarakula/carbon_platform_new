@@ -9,8 +9,9 @@ from sqlalchemy.orm import Session
 from app.core.config import get_settings
 from app.core.context import RequestContext
 from app.core.database import get_db
-from app.core.errors import AuthenticationFailed, PermissionDenied
+from app.core.errors import AuthenticationFailed, PermissionDenied, RateLimited
 from app.core.middleware import client_ip
+from app.core.rate_limit import limiter
 from app.models import User, UserSession, UserStatus
 from app.models.base import utcnow
 from app.schemas.common import PageParams
@@ -33,7 +34,25 @@ def get_principal(request: Request, db: DB, token: Annotated[str | None, Depends
     if user is None or user.status != UserStatus.ACTIVE.value or user.is_locked():
         raise AuthenticationFailed("This account is not active.", error_code="ACCOUNT_INACTIVE")
     request.state.user_id = user.id
-    return load_principal(db, user, session.id)
+    principal = load_principal(db, user, session.id)
+    _apply_principal_limits(request, principal)
+    return principal
+
+
+def _apply_principal_limits(request: Request, principal: Principal) -> None:
+    """D19: per user, per organization of the caller, and per-user uploads. Fail-open on a Redis outage (D20, in the limiter)."""
+    s = get_settings()
+    uid = principal.user_id
+    if not limiter.hit(f"user:{uid}", s.USER_RATE_LIMIT_PER_MINUTE, 60):
+        raise RateLimited("Too many requests from this account. Please wait a minute and try again.")
+    for org in sorted(principal.member_organization_ids, key=str):
+        if not limiter.hit(f"org:{org}", s.ORGANIZATION_RATE_LIMIT_PER_MINUTE, 60):
+            raise RateLimited("Your organization has made too many requests. Please wait a minute and try again.",
+                              error_code="ORGANIZATION_RATE_LIMITED")
+    upload = request.method in ("POST", "PUT", "PATCH") and \
+        (request.headers.get("content-type") or "").lower().startswith("multipart/form-data")
+    if upload and not limiter.hit(f"upload:{uid}", s.UPLOAD_RATE_LIMIT_PER_MINUTE, 60):
+        raise RateLimited("Too many uploads. Please wait a minute and try again.", error_code="UPLOAD_RATE_LIMITED")
 
 
 CurrentPrincipal = Annotated[Principal, Depends(get_principal)]
@@ -106,3 +125,6 @@ def page_params(page: Annotated[int, Query(ge=1)] = 1,
 
 
 Paging = Annotated[PageParams, Depends(page_params)]
+# Phase 12B D32: optional paging for list endpoints that keep their list response shape (no limit = the whole scoped list).
+ListLimit = Annotated[int | None, Query(ge=1, le=500, description="Optional page size (the response stays a list)")]
+ListOffset = Annotated[int, Query(ge=0, description="Rows to skip; used with limit")]

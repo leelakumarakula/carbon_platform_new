@@ -1,10 +1,31 @@
-"""Application settings, loaded from environment variables / backend/.env (never committed)."""
+"""Application settings, loaded from environment variables / backend/.env (never committed).
+
+Production (Phase 12B D30): secrets come ONLY from files mounted by the self-hosted secret store under SECRETS_DIR (one file per
+setting, named like the setting, e.g. rendered by the secret store's agent / sidecar). In production the `.env` file is not read at
+all, and a secret supplied as a plain environment variable is refused at start-up. Development and tests keep `.env`.
+"""
+import ipaddress
+import os
 from functools import lru_cache
-from typing import Annotated
+from pathlib import Path
+from typing import Annotated, Any
+from urllib.parse import urlsplit
 
 from pydantic import Field, field_validator, model_validator
-from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
+from pydantic_settings import BaseSettings, NoDecode, PydanticBaseSettingsSource, SettingsConfigDict
 from sqlalchemy.engine import URL
+
+# Settings that are secrets (D30). In production each must come from the secret-store mount, never from an environment variable.
+SECRET_SETTINGS = ("SECRET_KEY", "JWT_SECRET", "JWT_PREVIOUS_KEYS", "DATA_ENCRYPTION_KEY", "DATA_ENCRYPTION_PREVIOUS_KEYS",
+                   "DATABASE_URL", "SQL_SERVER_PASSWORD", "REDIS_URL", "RATE_LIMIT_REDIS_URL", "OBJECT_STORAGE_SECRET_KEY",
+                   "OBJECT_STORAGE_DELETE_SECRET_KEY", "ANTIVIRUS_API_KEY", "SMTP_PASSWORD", "METRICS_TOKEN",
+                   "BOOTSTRAP_ADMIN_PASSWORD", "DEMO_USER_PASSWORD")
+# Provider names that denote a simulated / test implementation (D38): never acceptable in production.
+MOCK_PROVIDER_NAMES = frozenset({"mock", "fake", "test", "stub", "dummy", "simulated", "simulator", "demo"})
+
+
+def _production_env() -> bool:
+    return os.environ.get("APP_ENV", "").strip().lower() == "production"
 
 
 class Settings(BaseSettings):
@@ -37,12 +58,27 @@ class Settings(BaseSettings):
 
     CORS_ORIGINS: Annotated[list[str], NoDecode] = ["http://localhost:4200"]
 
-    # Abuse protection
+    # Abuse protection. Existing limits (login per IP and per IP+email, global per IP, DB lockout) are unchanged.
     LOGIN_RATE_LIMIT_PER_MINUTE: int = 10
     GLOBAL_RATE_LIMIT_PER_MINUTE: int = 600
     MAX_FAILED_LOGINS: int = 5
     LOCKOUT_MINUTES: int = 15
-    MAX_REQUEST_BYTES: int = 25 * 1024 * 1024
+    MAX_REQUEST_BYTES: int = 25 * 1024 * 1024   # enforced on the streamed body (chunked bodies included), not only Content-Length
+    # Phase 12B D19 (locked values; per minute). Uploads and per-user / per-organization limits apply to authenticated requests;
+    # the API burst limit is one deployment-wide ceiling over all API requests (interpretation of "job / API burst", documented).
+    REFRESH_RATE_LIMIT_PER_MINUTE: int = 100        # per client IP (F5)
+    UPLOAD_RATE_LIMIT_PER_MINUTE: int = 100         # per user, multipart uploads
+    USER_RATE_LIMIT_PER_MINUTE: int = 1000          # per user, all authenticated API requests
+    ORGANIZATION_RATE_LIMIT_PER_MINUTE: int = 5000  # per organization of the caller, all authenticated API requests
+    API_BURST_RATE_LIMIT_PER_MINUTE: int = 10000    # whole deployment, all API requests
+    # D18 / D20: "memory" (one process: development / tests) or "redis" (shared; required in production). Redis outage = fail open.
+    RATE_LIMIT_BACKEND: str = "memory"
+    RATE_LIMIT_REDIS_URL: str | None = None         # default: REDIS_URL (use a separate ACL user, see docs/runtime-hardening.md)
+    RATE_LIMIT_KEY_PREFIX: str = "rl"
+    RATE_LIMIT_REDIS_TIMEOUT_SECONDS: float = 0.5
+    RATE_LIMIT_REDIS_RETRY_SECONDS: float = 5.0
+    # D21: reverse proxies whose X-Forwarded-For is trusted (IPs or CIDRs). Empty = X-Forwarded-For is ignored entirely.
+    TRUSTED_PROXIES: Annotated[list[str], NoDecode] = []
 
     API_ACCESS_LOG_ENABLED: bool = True
 
@@ -56,6 +92,15 @@ class Settings(BaseSettings):
     # field-level encryption of bank account numbers. Generate: python -c "from cryptography.fernet import
     # Fernet; print(Fernet.generate_key().decode())". Losing it makes encrypted values unreadable.
     DATA_ENCRYPTION_KEY: str = Field(min_length=44)
+    # D30 rotation: earlier Fernet keys still accepted for decryption (MultiFernet); `manage.py rotate-data-key` re-encrypts with
+    # DATA_ENCRYPTION_KEY, after which the old keys are removed. Comma separated.
+    DATA_ENCRYPTION_PREVIOUS_KEYS: Annotated[list[str], NoDecode] = []
+    # D30 JWT signing-key rotation: tokens carry `kid` = JWT_KEY_ID and are signed with JWT_SECRET; JWT_PREVIOUS_KEYS ("kid:secret",
+    # comma separated) still verify until their tokens expire (ACCESS_TOKEN_MINUTES), then are removed.
+    JWT_KEY_ID: str = "k1"
+    JWT_PREVIOUS_KEYS: Annotated[list[str], NoDecode] = []
+    # D30: directory of secret files mounted by the self-hosted secret store (required in production; no vendor chosen)
+    SECRETS_DIR: str | None = None
 
     # Documents / object storage (Phase 12B D2–D11). "local" stores files under LOCAL_STORAGE_ROOT (development / test only);
     # "s3" is the S3-compatible MinIO backend (stdlib SigV4 client): one private, versioned bucket per data environment named
@@ -109,6 +154,7 @@ class Settings(BaseSettings):
 
     # Later-phase integrations (configured now so .env.example is complete)
     REDIS_URL: str | None = None
+    REDIS_CA_CERT: str | None = None                      # CA bundle for a private-CA rediss:// endpoint (D23)
     OBJECT_STORAGE_ENDPOINT: str | None = None            # e.g. https://minio.internal:9000 (path-style; TLS required in production)
     OBJECT_STORAGE_REGION: str = "us-east-1"              # SigV4 signing region (MinIO default)
     OBJECT_STORAGE_ACCESS_KEY: str | None = None          # application identity: put / get / head / list — no delete permission (D8)
@@ -118,8 +164,9 @@ class Settings(BaseSettings):
     OBJECT_STORAGE_BUCKET_PREFIX: str = "carbon"          # buckets: <prefix>-live, <prefix>-demo (one private bucket per environment)
     OBJECT_STORAGE_CA_CERT: str | None = None             # CA bundle for a private TLS endpoint
     OBJECT_STORAGE_TIMEOUT_SECONDS: int = 30
-    SATELLITE_PROVIDER: str = "mock"
-    LAB_PROVIDER: str = "mock"
+    # D38: runtime providers are MANUAL (no simulated provider exists at runtime; test doubles live in the test suite only).
+    SATELLITE_PROVIDER: str = "manual"   # satellite evidence is recorded manually
+    LAB_PROVIDER: str = "manual"         # laboratories use the laboratory workspace (NoLimsAdapter)
     REGISTRY_PROVIDER: str = "manual"
     PAYMENT_PROVIDER: str = "manual"   # Phase 10 D15 / D33: manual until a contracted provider exists; no mock provider at all
 
@@ -139,10 +186,40 @@ class Settings(BaseSettings):
     JOB_HEARTBEAT_SECONDS: int = 30           # worker heartbeat into SQL Server
     JOB_RESCAN_INTERVAL: int = 86400          # Phase 12B D15: background rescan of documents not yet scanned CLEAN by a real scanner
 
+    # Phase 12B D44 / D43: structured logs and platform-neutral metrics (no monitoring vendor selected).
+    LOG_FORMAT: str = "json"                  # json | text (text only for local reading)
+    LOG_LEVEL: str = "INFO"
+    METRICS_TOKEN: str | None = None          # bearer token for GET /metrics; unset = the endpoint is disabled
+
+    # Phase 12B D39 / D41 / D42: SMTP is the selected FUTURE external channel. Delivery is DEFERRED: the only accepted value is
+    # "disabled". SMTP settings are configuration for the boundary only; nothing is sent.
+    NOTIFICATION_EXTERNAL_DELIVERY: str = "disabled"
+    SMTP_HOST: str | None = None
+    SMTP_PORT: int = 587
+    SMTP_USERNAME: str | None = None
+    SMTP_PASSWORD: str | None = None
+    SMTP_FROM: str | None = None
+    SMTP_STARTTLS: bool = True
+
+    @classmethod
+    def settings_customise_sources(cls, settings_cls: type[BaseSettings], init_settings: PydanticBaseSettingsSource,
+                                   env_settings: PydanticBaseSettingsSource, dotenv_settings: PydanticBaseSettingsSource,
+                                   file_secret_settings: PydanticBaseSettingsSource) -> tuple[PydanticBaseSettingsSource, ...]:
+        if _production_env():                     # D30: production never reads .env
+            return init_settings, env_settings, file_secret_settings
+        return init_settings, env_settings, dotenv_settings, file_secret_settings
+
     @field_validator("SQL_SERVER_PORT", mode="before")
     @classmethod
     def _empty_port(cls, v: object) -> object:
         return None if v == "" else v
+
+    @field_validator("TRUSTED_PROXIES", "DATA_ENCRYPTION_PREVIOUS_KEYS", "JWT_PREVIOUS_KEYS", mode="before")
+    @classmethod
+    def _split_list(cls, v: object) -> object:
+        if isinstance(v, str) and not v.strip().startswith("["):
+            return [e.strip() for e in v.split(",") if e.strip()]
+        return v
 
     @field_validator("JOB_ENVIRONMENTS", mode="before")
     @classmethod
@@ -183,7 +260,56 @@ class Settings(BaseSettings):
                 raise ValueError("Production requires a real antivirus scanner (MALWARE_SCANNER, ANTIVIRUS_ENDPOINT, ANTIVIRUS_API_KEY; D13 / D17)")
         if self.JOB_STALE_AFTER_SECONDS < 900:
             raise ValueError("JOB_STALE_AFTER_SECONDS must exceed every task time limit (at least 900 s)")
+        self._runtime_guards()
         return self
+
+    def _runtime_guards(self) -> None:
+        """Phase 12B-II start-up validation (D18-D23, D30, D38, D39-D44, D47)."""
+        limits = (self.REFRESH_RATE_LIMIT_PER_MINUTE, self.UPLOAD_RATE_LIMIT_PER_MINUTE, self.USER_RATE_LIMIT_PER_MINUTE,
+                  self.ORGANIZATION_RATE_LIMIT_PER_MINUTE, self.API_BURST_RATE_LIMIT_PER_MINUTE, self.LOGIN_RATE_LIMIT_PER_MINUTE,
+                  self.GLOBAL_RATE_LIMIT_PER_MINUTE)
+        if min(limits) < 1 or self.MAX_REQUEST_BYTES < 1024:
+            raise ValueError("Rate limits must be at least 1 per minute and MAX_REQUEST_BYTES at least 1 KiB")
+        if self.RATE_LIMIT_BACKEND not in ("memory", "redis"):
+            raise ValueError("RATE_LIMIT_BACKEND must be 'memory' or 'redis'")
+        if self.RATE_LIMIT_BACKEND == "redis" and not (self.RATE_LIMIT_REDIS_URL or self.REDIS_URL):
+            raise ValueError("RATE_LIMIT_BACKEND=redis needs RATE_LIMIT_REDIS_URL or REDIS_URL")
+        for cidr in self.TRUSTED_PROXIES:
+            try:
+                net = ipaddress.ip_network(cidr, strict=False)
+            except ValueError as e:
+                raise ValueError(f"TRUSTED_PROXIES: {cidr!r} is not an IP address or CIDR") from e
+            if net.prefixlen == 0:
+                raise ValueError("TRUSTED_PROXIES must not trust every address (0.0.0.0/0 or ::/0) (D21)")
+        _validate_rotation_keys(self.DATA_ENCRYPTION_KEY, self.DATA_ENCRYPTION_PREVIOUS_KEYS, self.JWT_KEY_ID, self.JWT_PREVIOUS_KEYS)
+        if self.LOG_FORMAT not in ("json", "text"):
+            raise ValueError("LOG_FORMAT must be 'json' or 'text'")
+        if self.NOTIFICATION_EXTERNAL_DELIVERY != "disabled":
+            raise ValueError("External notification delivery is deferred (D39 / D41): NOTIFICATION_EXTERNAL_DELIVERY must be 'disabled'")
+        if self.SECRETS_DIR and not Path(self.SECRETS_DIR).is_dir():
+            raise ValueError("SECRETS_DIR does not exist or is not a directory")
+        if not self.is_production:
+            return
+        # ---- production only
+        if self.LOG_FORMAT != "json":
+            raise ValueError("Production logs must be structured JSON (D44)")
+        for name in ("SATELLITE_PROVIDER", "LAB_PROVIDER", "REGISTRY_PROVIDER", "PAYMENT_PROVIDER"):
+            if str(getattr(self, name)).strip().lower() in MOCK_PROVIDER_NAMES:
+                raise ValueError(f"{name}={getattr(self, name)!r}: simulated providers are not allowed in production (D38)")
+        if self.RATE_LIMIT_BACKEND != "redis":
+            raise ValueError("Production requires RATE_LIMIT_BACKEND=redis: limits must be shared by every API process (D18)")
+        for name in ("REDIS_URL", "RATE_LIMIT_REDIS_URL"):
+            url = getattr(self, name)
+            if url:
+                _require_secure_redis(name, url)
+        if not self.SECRETS_DIR:
+            raise ValueError("Production requires SECRETS_DIR: secrets are mounted by the self-hosted secret store (D30)")
+        plain = [n for n in SECRET_SETTINGS if getattr(self, n, None) and os.environ.get(n)]
+        if plain:
+            raise ValueError(f"Secrets supplied as plain environment variables are refused in production (D30): {', '.join(plain)}"
+                             " - provide them as files under SECRETS_DIR")
+        if self.METRICS_TOKEN is not None and len(self.METRICS_TOKEN) < 32:
+            raise ValueError("METRICS_TOKEN must be at least 32 characters")
 
     @property
     def is_production(self) -> bool:
@@ -208,6 +334,41 @@ class Settings(BaseSettings):
         )
 
 
+def _require_secure_redis(name: str, url: str) -> None:
+    """D22 / D23 / F8: self-hosted production Redis is reached over TLS with a dedicated ACL user and password."""
+    u = urlsplit(url)
+    if u.scheme != "rediss":
+        raise ValueError(f"{name}: production Redis must use TLS (rediss://) (D23)")
+    if not u.username or not u.password:
+        raise ValueError(f"{name}: production Redis must authenticate with an ACL user and password (rediss://user:password@host) (D23)")
+    if u.username == "default":
+        raise ValueError(f"{name}: use a dedicated Redis ACL user, not 'default' (D23)")
+
+
+def _validate_rotation_keys(primary: str, previous: list[str], kid: str, jwt_previous: list[str]) -> None:
+    from cryptography.fernet import Fernet
+    for k in [primary, *previous]:
+        try:
+            Fernet(k.encode("ascii"))
+        except (ValueError, UnicodeEncodeError) as e:
+            raise ValueError("DATA_ENCRYPTION_KEY / DATA_ENCRYPTION_PREVIOUS_KEYS must be Fernet keys") from e
+    if not kid or ":" in kid or "," in kid or len(kid) > 40:
+        raise ValueError("JWT_KEY_ID must be a short identifier without ':' or ','")
+    seen = {kid}
+    for entry in jwt_previous:
+        k, sep, secret = entry.partition(":")
+        if not sep or not k or len(secret) < 32:
+            raise ValueError("JWT_PREVIOUS_KEYS entries must be 'kid:secret' with a secret of at least 32 characters")
+        if k in seen:
+            raise ValueError(f"JWT key id {k!r} is used twice")
+        seen.add(k)
+
+
+def _settings_kwargs() -> dict[str, Any]:
+    secrets_dir = os.environ.get("SECRETS_DIR")
+    return {"_secrets_dir": secrets_dir} if secrets_dir else {}
+
+
 @lru_cache
 def get_settings() -> Settings:
-    return Settings()  # type: ignore[call-arg]
+    return Settings(**_settings_kwargs())  # type: ignore[call-arg]

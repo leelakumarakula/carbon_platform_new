@@ -6,11 +6,13 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, File, Form, Header, UploadFile, status
 
-from app.api.deps import DB, Ctx, read_upload, require_any
+from app.api.deps import DB, Ctx, ListLimit, ListOffset, read_upload, require_any
+from app.models import Organization
 from app.schemas.lab import DocumentRef
 from app.schemas.marketplace import LineageOut, OrderIn, OrderListOut, OrderOut, ReasonIn, TransferCompleteIn
 from app.security.permissions import P
 from app.security.principal import Principal
+from app.security.scoping import preload
 from app.services import marketplace_mappers as mm
 from app.services import marketplace_service as ms
 from app.services import order_service as os_
@@ -33,8 +35,10 @@ def place_order(body: OrderIn, principal: Placer, db: DB, ctx: Ctx, key: IdemKey
 
 
 @router.get("", response_model=OrderListOut, summary="The organization's orders (as buyer or as seller)")
-def list_orders(principal: Reader, db: DB, ctx: Ctx, status: str | None = None) -> OrderListOut:
-    rows = os_.visible_orders(db, ctx, principal, status)
+def list_orders(principal: Reader, db: DB, ctx: Ctx, status: str | None = None, limit: ListLimit = None,
+                offset: ListOffset = 0) -> OrderListOut:
+    rows = os_.visible_orders(db, ctx, principal, status, limit=limit, offset=offset)
+    preload(db, Organization, [x for o in rows for x in (o.buyer_organization_id, o.seller_organization_id)])
     return OrderListOut(orders=[mm.order_out(db, principal, o) for o in rows], demo_note=ms.demo_note(principal, bool(rows)))
 
 
