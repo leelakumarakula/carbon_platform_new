@@ -31,8 +31,6 @@ from app.services import field_rules, mrv_service, sampling_service
 # 1×1 PNG, clearly a DEMO placeholder (not a real field photo)
 DEMO_PNG = bytes.fromhex("89504e470d0a1a0a0000000d4948445200000001000000010806000000"
                          "1f15c4890000000d49444154789c6360f8cf00000301010018dd8db40000000049454e44ae426082")
-# the platform-default checklist (decision S2) — DEMO methodologies configure no field checklist
-CHECKLIST = dict.fromkeys((i["key"] for i in field_rules.PLATFORM_CHECKLISTS["PLATFORM-DEFAULT-1"]), True)
 
 
 def seed_demo_mrv(db: Session) -> dict[str, int]:
@@ -88,7 +86,8 @@ def seed_demo_mrv(db: Session) -> dict[str, int]:
         sampling_service.update_collection(db, col_ctx, col, fc.id, CollectionUpdate(
             collected_at=datetime(2026, 9, 15, 9 + n, 0, tzinfo=timezone.utc), gps_latitude=float(sp.latitude), gps_longitude=float(sp.longitude),
             gps_accuracy_m=Decimal("4"), actual_depth_top_cm=sp.planned_depth_top_cm, actual_depth_bottom_cm=sp.planned_depth_bottom_cm,
-            sample_quantity=Decimal("0.5"), sample_unit="kg", observations="DEMO: dry soil, residue present", checklist=CHECKLIST))
+            sample_quantity=Decimal("0.5"), sample_unit="kg", observations="DEMO: dry soil, residue present",
+            checklist=dict.fromkeys(field_rules.checklist_keys(field_rules.of_design(dv)), True)))
         mrv_service.add_evidence(db, col_ctx, col, project_id=p.id, entity_type="FIELD_COLLECTION", entity_id=fc.id, evidence_type="FIELD_PHOTO",
                                  description="DEMO placeholder image (not a real photo)", latitude=float(sp.latitude),
                                  longitude=float(sp.longitude), captured_at=None, filename="demo-photo.png", data=DEMO_PNG)

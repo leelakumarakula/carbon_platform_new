@@ -429,6 +429,7 @@ export const CHECKLIST_LABELS: Record<string, string> = {
   location_confirmed: 'Location confirmed on site',
   depth_measured: 'Sampling depth measured',
   sample_labelled: 'Sample bag labelled with the collection code',
+  sample_labelled_with_sample_code: 'Sample container labelled with its sample code (SMP-…)',
   photo_taken: 'Field photo taken',
 };
 

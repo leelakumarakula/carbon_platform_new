@@ -136,7 +136,7 @@ def collect(client: TestClient, c: MrvCtx, point: dict, collector: Actor, when: 
         "collected_at": when, "gps_latitude": float(point["latitude"]), "gps_longitude": float(point["longitude"]), "gps_accuracy_m": "4",
         "actual_depth_top_cm": point["planned_depth_top_cm"], "actual_depth_bottom_cm": point["planned_depth_bottom_cm"],
         "sample_quantity": "0.5", "sample_unit": "kg", "observations": "Dry, crop residue present",
-        "checklist": {"location_confirmed": True, "depth_measured": True, "sample_labelled": True, "photo_taken": True}})
+        "checklist": dict.fromkeys(fc["required_checklist"], True)})   # the checklist frozen on the record (S2 / decision 18)
     assert r.status_code == 200, r.text
     photo(client, c, collector, "FIELD_COLLECTION", fc["id"])
     r = client.post(f"{MRV}/field-collections/{fc['id']}/submit", headers=collector.headers)

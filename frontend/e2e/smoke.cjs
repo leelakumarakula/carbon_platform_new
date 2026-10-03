@@ -28,6 +28,11 @@ const REQUIRED_AUDIT_P5 = ['MRV_PLAN_CREATED', 'MRV_PLAN_APPROVED', 'MONITORING_
 const PNG = Buffer.from('89504e470d0a1a0a0000000d4948445200000001000000010806000000'
   + '1f15c4890000000d49444154789c6360f8cf00000301010018dd8db40000000049454e44ae426082', 'hex');
 const phase4 = { catalog: false, approvedReadOnly: false, demoLock: '', candidates: 0, recommended: false, locked: '', audit: [] };
+const phase6 = { engagement: '', scope: '', sample: '', tests: 0, shipment: '', unitPrefilled: '', qaFails: -1, approved: '', lineage: false,
+  analysisStatus: '', labRestricted: false, buyerFarmerBlocked: false, sod: '', retest: '', windDown: {}, audit: [] };
+const REQUIRED_AUDIT_P6 = ['LAB_ENGAGEMENT_PROPOSED', 'LAB_ENGAGEMENT_ACCEPTED', 'LAB_ENGAGEMENT_ENDED', 'LAB_SAMPLE_REGISTERED', 'LAB_CUSTODY_SEALED',
+  'LAB_TEST_CREATED', 'LAB_SHIPMENT_CREATED', 'LAB_SHIPMENT_DISPATCHED', 'LAB_SHIPMENT_RECEIPT_RECORDED', 'LAB_TEST_STARTED', 'LAB_RESULT_CREATED',
+  'LAB_REPORT_ATTACHED', 'LAB_RESULT_SUBMITTED', 'LAB_QA_STARTED', 'LAB_RESULT_APPROVED', 'LAB_RETEST_REQUESTED', 'LAB_RESULT_SUPERSEDED'];
 const REQUIRED_AUDIT_P4 = ['PROJECT_METHODOLOGY_CANDIDATES_EVALUATED', 'PROJECT_METHODOLOGY_REVIEWED', 'PROJECT_METHODOLOGY_CONFIRMED'];
 const REQUIRED_AUDIT = ['PROJECT_CREATED', 'PROJECT_STATUS_CHANGED', 'PROJECT_FARM_ADDED', 'PROJECT_CARBON_RIGHT_CREATED',
   'PROJECT_PARTICIPANT_ADDED', 'PROJECT_STANDARD_SELECTED', 'PROJECT_ACTIVITY_SELECTED', 'PROJECT_CREDITING_PERIOD_CREATED',
@@ -393,7 +398,7 @@ const REQUIRED_AUDIT = ['PROJECT_CREATED', 'PROJECT_STATUS_CHANGED', 'PROJECT_FA
   await C.getByText('Field checklist').waitFor();
   await C.getByLabel('Latitude').fill(String(pts[0].latitude));
   await C.getByLabel('Longitude').fill(String(pts[0].longitude));
-  for (const k of ['location_confirmed', 'depth_measured', 'sample_labelled']) await C.locator(`[data-check="${k}"] input`).check();
+  for (const k of ['location_confirmed', 'depth_measured', 'sample_labelled_with_sample_code']) await C.locator(`[data-check="${k}"] input`).check();
   await C.getByTestId('photo').setInputFiles({ name: 'sample.png', mimeType: 'image/png', buffer: PNG });
   await C.getByText('Photos (1)').waitFor();
   await shot(C, '46-field-collection-mobile');
@@ -406,7 +411,7 @@ const REQUIRED_AUDIT = ['PROJECT_CREATED', 'PROJECT_STATUS_CHANGED', 'PROJECT_FA
   const fc2 = await json(await api.post(`${MRV}/field-collections`, { headers: colH, data: { sampling_point_id: pts[1].id } }));
   await json(await api.patch(`${MRV}/field-collections/${fc2.id}`, { headers: colH, data: { collected_at: new Date().toISOString(),
     gps_latitude: Number(pts[1].latitude), gps_longitude: Number(pts[1].longitude), actual_depth_top_cm: 0, actual_depth_bottom_cm: 30,
-    checklist: { location_confirmed: true, depth_measured: true, sample_labelled: true, photo_taken: true } } }));
+    checklist: Object.fromEntries(fc2.required_checklist.map((k) => [k, true])) } }));
   await json(await api.post(`${MRV}/evidence`, { headers: colH, multipart: { project_id: projectId, entity_type: 'FIELD_COLLECTION', entity_id: fc2.id,
     evidence_type: 'FIELD_PHOTO', file: { name: 'sample.png', mimeType: 'image/png', buffer: PNG } } }));
   await json(await api.post(`${MRV}/field-collections/${fc2.id}/submit`, { headers: colH }));
@@ -453,6 +458,193 @@ const REQUIRED_AUDIT = ['PROJECT_CREATED', 'PROJECT_STATUS_CHANGED', 'PROJECT_FA
   await M.goto(`${BASE}/mrv/projects/${projectId}?tab=history`);
   await M.getByText('Mrv dataset approved').first().waitFor();
   await shot(M, '50-mrv-history');
+  // ---- Phase 6: engagement → sample (auto tests) → seal → shipment → receipt → analysis → laboratory QA → lineage; SoD, retest, wind-down
+  const LAB = `${BASE}/api/v1/lab`;
+  const LABV = `${BASE}/api/v1/laboratory`;
+  const p6Start = new Date(Date.now() - 2000).toISOString();
+  const PDF = Buffer.from('%PDF-1.4\n% E2E laboratory report (test document, not a real analysis)\n%%EOF\n');
+  const errCode = async (r) => `${r.status()} ${(await r.json().catch(() => ({}))).error_code ?? ''}`.trim();
+  // Material select identified by its data-testid (labels can overlap, e.g. "Laboratory" / "LABORATORY rules in scope")
+  async function pick(page, testid, option, multiple = false) {
+    const target = page.locator('mat-option:not(.mat-mdc-option-disabled)').filter(option ? { hasText: option } : {}).first();
+    for (let i = 0; i < 20; i++) {
+      await page.getByTestId(testid).click({ force: true });
+      if (await target.waitFor({ timeout: 1000 }).then(() => true, () => false)) break;
+      await page.keyboard.press('Escape');
+    }
+    await target.click();
+    if (multiple) await page.keyboard.press('Escape');
+    await page.waitForTimeout(200);
+  }
+  const supH = await as('supervisor');
+  const techH = await as('labtech');
+  const lmH = await as('labmanager');
+  const lqaH = await as('labqa');
+  const labOrg = (await json(await api.get(`${LAB}/projects/${projectId}/laboratories`, { headers: mrvH }))).find((o) => o.code === 'DEMO-LAB-B');
+  // engagement: MRV manager proposes (UI), the laboratory manager accepts (UI)
+  await M.goto(`${BASE}/mrv/projects/${projectId}?tab=samples`);
+  lastPage = M;
+  await pick(M, 'engage-lab', labOrg.name);
+  await pick(M, 'engage-rules', null, true);
+  await M.getByTestId('propose-engagement').click();
+  await M.getByText('Proposed', { exact: true }).first().waitFor();
+  const lm = await signIn('labmanager');
+  lastPage = lm.page;
+  await lm.page.goto(`${BASE}/laboratory`);
+  const projCode = (await json(await api.get(`${BASE}/api/v1/projects/${projectId}`, { headers: pmH }))).project_code;
+  await lm.page.locator('.line', { hasText: projCode }).getByTestId('accept-engagement').click();
+  await lm.page.locator('.line', { hasText: projCode }).getByText('Active', { exact: true }).waitFor();
+  const eng = (await json(await api.get(`${LAB}/engagements?project_id=${projectId}`, { headers: mrvH }))).find((e) => e.status === 'ACTIVE');
+  phase6.engagement = eng.status;
+  phase6.scope = eng.rules.map((r) => `${r.rule_code} (${r.unit})`).join(', ');
+  await shot(lm.page, '60-lab-engagement-accepted');
+  // 1–2. field agent registers & seals a sample from their own accepted record (phone UI); tests are created automatically
+  const fcs = await json(await api.get(`${MRV}/field-collections?monitoring_period_id=${period.id}`, { headers: mrvH }));
+  const fc1 = fcs.find((x) => x.sampling_point_id === pts[0].id && x.status === 'ACCEPTED');
+  const fcB = fcs.find((x) => x.sampling_point_id === pts[1].id && x.status === 'ACCEPTED');
+  lastPage = C;
+  await C.goto(`${BASE}/field/collections/${fc1.id}`);
+  await C.getByTestId('register-sample').click();
+  await C.getByTestId('seal-sample').waitFor();
+  const smp = (await json(await api.get(`${LAB}/samples?field_collection_id=${fc1.id}`, { headers: colH })))[0];
+  phase6.sample = smp.sample_code;
+  phase6.tests = smp.test_count;
+  await C.getByTestId(`seal-${smp.sample_code}`).fill('E2E-SEAL-0001');
+  await C.getByTestId('seal-sample').click();
+  await C.getByText('Sealed', { exact: true }).first().waitFor();
+  await shot(C, '61-field-register-seal-mobile');
+  // 3–4. supervisor creates the shipment, adds the sealed sample and dispatches it (UI)
+  lastPage = sup.page;
+  await sup.page.goto(`${BASE}/mrv/projects/${projectId}?tab=samples`);
+  await pick(sup.page, 'ship-lab', labOrg.name);
+  await sup.page.getByTestId('create-shipment').click();
+  await sup.page.getByText(/SHP-\d{4}-\d{6}/).first().waitFor();
+  const ship = (await json(await api.get(`${LAB}/shipments?project_id=${projectId}`, { headers: supH })))[0];
+  await pick(sup.page, `add-samples-${ship.shipment_code}`, smp.sample_code, true);
+  await sup.page.getByRole('button', { name: 'Add', exact: true }).click();
+  await sup.page.getByText(`${smp.sample_code} · In shipment`).waitFor();
+  await sup.page.getByTestId('dispatch').click();
+  await sup.page.getByText('Dispatched', { exact: true }).first().waitFor();
+  phase6.shipment = ship.shipment_code;
+  await shot(sup.page, '62-mrv-samples-shipment');
+  // 5. laboratory receives (item level) and registers the sample (UI)
+  const lt = await signIn('labtech');
+  const T = lt.page;
+  lastPage = T;
+  await T.goto(`${BASE}/laboratory`);
+  await T.getByRole('tab', { name: 'Incoming' }).click();
+  await T.getByTestId('receive').click();
+  await T.getByText('Receipt recorded.').waitFor();
+  await T.getByRole('tab', { name: 'Samples' }).click();
+  await T.getByTestId(`accession-${smp.sample_code}`).fill('E2E-ACC-0001');
+  await T.getByRole('button', { name: 'Register', exact: true }).click();
+  await T.getByText('E2E-ACC-0001').waitFor();
+  await shot(T, '63-lab-samples');
+  // 6–7. technician analyses, enters the result with the rule's exact unit, attaches the PDF report and submits (UI)
+  await T.getByRole('tab', { name: 'Worklist' }).click();
+  const test1 = (await json(await api.get(`${LABV}/tests`, { headers: techH }))).find((t) => t.sample_code === smp.sample_code);
+  await T.getByRole('link', { name: test1.test_code }).click();
+  await T.getByTestId('start-test').click();
+  await T.getByTestId('result-value').fill('1.23');
+  phase6.unitPrefilled = await T.getByTestId('result-unit').inputValue();
+  await T.getByTestId('save-result').click();
+  await T.getByTestId('report-1').setInputFiles({ name: 'e2e-report.pdf', mimeType: 'application/pdf', buffer: PDF });
+  await T.getByText('Report: e2e-report.pdf').waitFor();
+  await T.getByTestId('submit-result').click();
+  await T.getByText('Submitted', { exact: true }).first().waitFor();
+  await shot(T, '64-lab-test-result');
+  const r1 = (await json(await api.get(`${LABV}/tests/${test1.id}`, { headers: techH }))).results[0];
+  // 8–9. a different laboratory manager performs QA and approves (UI)
+  const lq = await signIn('labqa');
+  lastPage = lq.page;
+  await lq.page.goto(`${BASE}/laboratory`);
+  await lq.page.getByRole('tab', { name: 'QA' }).click();
+  await lq.page.locator(`a[href="/laboratory/qa/${r1.id}"]`).click();
+  await lq.page.getByTestId('start-lab-qa').click();
+  await lq.page.getByTestId('lab-qa-notes').waitFor();
+  phase6.qaFails = await lq.page.locator('.check', { hasText: 'FAIL' }).count();
+  await shot(lq.page, '65-lab-qa-checks');
+  await lq.page.getByTestId('lab-qa-notes').fill('E2E: all laboratory QA checks pass');
+  await lq.page.getByTestId('lab-qa-submit').click();
+  await lq.page.getByText('Approved', { exact: true }).first().waitFor();
+  phase6.approved = (await json(await api.get(`${LABV}/qa/${r1.id}`, { headers: lqaH }))).result.status;
+  // 10. project user sees the approved result and its full lineage (UI)
+  lastPage = M;
+  await M.goto(`${BASE}/mrv/projects/${projectId}?tab=samples`);
+  await M.getByTestId('lineage-link').first().click();
+  await M.getByTestId('lineage').waitFor();
+  const lineageText = await M.getByTestId('lineage').innerText();
+  phase6.lineage = [smp.sample_code, fc1.collection_code, pts[0].point_code, 'Farm', 'Methodology', 'Plan measurement'].every((s) => lineageText.includes(s));
+  phase6.analysisStatus = (await json(await api.get(`${MRV}/field-collections/${fc1.id}`, { headers: mrvH }))).analysis_status;
+  await shot(M, '66-lab-result-lineage');
+  // 11. laboratory users see allow-listed data only: no farmer / farm / GPS / MRV data
+  const labJson = JSON.stringify([await json(await api.get(`${LABV}/samples/${smp.id}`, { headers: techH })),
+    await json(await api.get(`${LABV}/shipments/${ship.id}`, { headers: techH })), await json(await api.get(`${LABV}/tests/${test1.id}`, { headers: techH }))]);
+  const leaks = ['farmer', 'farm_', 'latitude', 'longitude', 'gps', 'field_collection', 'sampling_point', 'stratum'].filter((k) => labJson.includes(k));
+  const labDenied = [];
+  for (const u of [`${BASE}/api/v1/farmers`, `${BASE}/api/v1/farms`, `${MRV}/projects`, `${LAB}/samples/${smp.id}`, `${LAB}/results/${r1.id}/lineage`,
+    `${MRV}/field-collections/${fc1.id}`]) {
+    const r = await api.get(u, { headers: techH });
+    if ([403, 404].includes(r.status())) labDenied.push(u);
+  }
+  await T.goto(`${BASE}/mrv`);
+  await T.getByText("You don't have access to this page").waitFor();
+  phase6.labRestricted = !leaks.length && labDenied.length === 6;
+  if (leaks.length) console.log('laboratory view leaks:', leaks);
+  // 12. buyer / farmer remain outside Phase 6
+  let outside = 0;
+  for (const who of ['buyer', 'farmer']) {
+    const h = await as(who);
+    for (const u of [`${LABV}/dashboard`, `${LAB}/results?project_id=${projectId}`, `${LAB}/samples?project_id=${projectId}`]) {
+      if ([403, 404].includes((await api.get(u, { headers: h })).status())) outside++;
+    }
+  }
+  phase6.buyerFarmerBlocked = outside === 6;
+  // 14 + 13. retest: labmanager requests it; technician re-analyses; the requester's approval is refused (SEPARATION_OF_DUTIES); labqa approves
+  const t2 = await json(await api.post(`${LABV}/results/${r1.id}/retest`, { headers: lmH, data: { reason: 'E2E: duplicate check requested' } }));
+  await json(await api.post(`${LABV}/tests/${t2.id}/start`, { headers: techH, data: {} }));
+  const r2 = await json(await api.post(`${LABV}/tests/${t2.id}/results`, { headers: techH, data: { result_type: 'NUMERIC', value_number: 1.25,
+    unit: t2.required_unit, analysed_at: new Date().toISOString() } }));
+  await json(await api.post(`${LABV}/results/${r2.id}/report`, { headers: techH, multipart: { file: { name: 'e2e-retest.pdf', mimeType: 'application/pdf', buffer: PDF } } }));
+  await json(await api.post(`${LABV}/results/${r2.id}/submit`, { headers: techH }));
+  const lmStart = await api.post(`${LABV}/qa/${r2.id}/start`, { headers: lmH });
+  const sod = lmStart.ok() ? await api.post(`${LABV}/qa/${r2.id}/decision`, { headers: lmH, data: { decision: 'APPROVED', notes: 'E2E: requester tries',
+    acknowledge_configuration: false } }) : lmStart;
+  phase6.sod = await errCode(sod);
+  if (!lmStart.ok() || (await json(await api.get(`${LABV}/qa/${r2.id}`, { headers: lqaH }))).can_start) {
+    await json(await api.post(`${LABV}/qa/${r2.id}/start`, { headers: lqaH }));
+  }
+  await json(await api.post(`${LABV}/qa/${r2.id}/decision`, { headers: lqaH, data: { decision: 'APPROVED', notes: 'E2E: retest result approved',
+    acknowledge_configuration: false } }));
+  const all = await json(await api.get(`${LAB}/results?project_id=${projectId}&status=ALL`, { headers: mrvH }));
+  phase6.retest = `${all.find((x) => x.id === r1.id)?.status}/${all.find((x) => x.id === r2.id)?.status}`;
+  // 15. wind-down: a second sample is already in transit when the project ends the engagement
+  const s2 = await json(await api.post(`${LAB}/samples`, { headers: colH, data: { field_collection_id: fcB.id, description: 'E2E second core' } }));
+  await json(await api.post(`${LAB}/samples/${s2.id}/seal`, { headers: colH, data: { seal_number: 'E2E-SEAL-0002' } }));
+  const ship2 = await json(await api.post(`${LAB}/shipments`, { headers: supH, data: { project_id: projectId, laboratory_org_id: labOrg.id } }));
+  await json(await api.post(`${LAB}/shipments/${ship2.id}/items`, { headers: supH, data: { sample_ids: [s2.id] } }));
+  await json(await api.post(`${LAB}/shipments/${ship2.id}/dispatch`, { headers: supH, data: {} }));
+  await json(await api.post(`${LAB}/engagements/${eng.id}/end`, { headers: mrvH, data: { reason: 'E2E: laboratory contract finished' } }));
+  const wind = {
+    receiptAllowed: (await api.post(`${LABV}/shipments/${ship2.id}/receive`, { headers: techH, data: { items: [{ sample_id: s2.id, accepted: true,
+      condition: 'intact', seal_number_observed: 'E2E-SEAL-0002' }] } })).ok(),
+    newShipment: await errCode(await api.post(`${LAB}/shipments`, { headers: supH, data: { project_id: projectId, laboratory_org_id: labOrg.id } })),
+    retest: await errCode(await api.post(`${LABV}/results/${r2.id}/retest`, { headers: lmH, data: { reason: 'E2E: after the end' } })),
+    endAgain: await errCode(await api.post(`${LABV}/engagements/${eng.id}/end`, { headers: lmH, data: { reason: 'E2E: again' } })),
+    approvedStillVisible: (await json(await api.get(`${LAB}/results?project_id=${projectId}`, { headers: mrvH }))).some((x) => x.id === r2.id),
+  };
+  const pending = (await json(await api.get(`${LABV}/tests`, { headers: techH }))).find((t) => t.sample_code === s2.sample_code);
+  wind.newTestStart = pending ? await errCode(await api.post(`${LABV}/tests/${pending.id}/start`, { headers: techH, data: {} })) : 'no test';
+  phase6.windDown = wind;
+  // audit (platform admin)
+  const actions = new Set();
+  for (const et of ['lab_engagement', 'lab_sample', 'lab_shipment', 'lab_test', 'lab_result']) {
+    const pg = await json(await api.get(`${BASE}/api/v1/admin/audit-logs?entity_type=${et}&from=${encodeURIComponent(p6Start)}&page_size=100`,
+      { headers: await as('admin') }));
+    pg.items.forEach((x) => actions.add(x.action));
+  }
+  phase6.audit = [...actions].sort();
+  for (const x of [lm, lt, lq]) await x.ctx.close();
   for (const x of [mrv, qa, sup, fieldS]) await x.ctx.close();
   await api.dispose();
 
@@ -468,6 +660,9 @@ const REQUIRED_AUDIT = ['PROJECT_CREATED', 'PROJECT_STATUS_CHANGED', 'PROJECT_FA
   await b.page.goto(`${BASE}/field`);
   await b.page.getByText("You don't have access to this page").waitFor();
   phase5.buyerBlocked = !(await b.page.locator('nav a', { hasText: 'MRV' }).count());
+  await b.page.goto(`${BASE}/laboratory`);
+  await b.page.getByText("You don't have access to this page").waitFor();
+  phase6.buyerUiBlocked = !(await b.page.locator('nav a', { hasText: 'Laboratory' }).count());
   await b.ctx.close();
 
   // ---- farmer: least privilege + self-service
@@ -479,6 +674,9 @@ const REQUIRED_AUDIT = ['PROJECT_CREATED', 'PROJECT_STATUS_CHANGED', 'PROJECT_FA
   await f.page.goto(`${BASE}/mrv`);
   await f.page.getByText("You don't have access to this page").waitFor();
   phase5.farmerBlocked = true;
+  await f.page.goto(`${BASE}/laboratory`);
+  await f.page.getByText("You don't have access to this page").waitFor();
+  phase6.farmerUiBlocked = true;
   await f.page.goto(`${BASE}/admin/users`);
   await f.page.getByText("You don't have access to this page").waitFor();
   await shot(f.page, '09-farmer-forbidden');
@@ -497,6 +695,7 @@ const REQUIRED_AUDIT = ['PROJECT_CREATED', 'PROJECT_STATUS_CHANGED', 'PROJECT_FA
   console.log('phase 3:', JSON.stringify(phase3));
   console.log('phase 4:', JSON.stringify(phase4));
   console.log('phase 5:', JSON.stringify(phase5));
+  console.log('phase 6:', JSON.stringify(phase6));
 
   await browser.close();
   // One 401 per session is expected: the silent session-restore attempt before sign-in.
@@ -517,7 +716,16 @@ const REQUIRED_AUDIT = ['PROJECT_CREATED', 'PROJECT_STATUS_CHANGED', 'PROJECT_FA
   const p5ok = phase5.dashboard && phase5.planApproved && phase5.periodOpen && phase5.points === 2 && phase5.assigned
     && /^FIELD-\d{4}-\d{6}$/.test(phase5.collected) && phase5.accepted === 2 && phase5.qaFails === 0 && phase5.datasetApproved
     && phase5.periodStatus === 'APPROVED' && phase5.projectStatus === 'MONITORING' && phase5.buyerBlocked && phase5.farmerBlocked && !missingP5.length;
-  if (!stillIn || real.length || navItems.length !== 4 || !p2ok || !p3ok || !p4ok || !p5ok) process.exitCode = 1;
+  const missingP6 = REQUIRED_AUDIT_P6.filter((a) => !phase6.audit.includes(a));
+  if (missingP6.length) console.log('missing phase 6 audit events:', missingP6);
+  const w = phase6.windDown;
+  const p6ok = phase6.engagement === 'ACTIVE' && /^SMP-\d{4}-\d{6}$/.test(phase6.sample) && phase6.tests >= 1 && /^SHP-\d{4}-\d{6}$/.test(phase6.shipment)
+    && phase6.unitPrefilled !== '' && phase6.qaFails === 0 && phase6.approved === 'APPROVED' && phase6.lineage && phase6.analysisStatus === 'ANALYSED'
+    && phase6.labRestricted && phase6.buyerFarmerBlocked && phase6.buyerUiBlocked && phase6.farmerUiBlocked
+    && phase6.sod === '403 SEPARATION_OF_DUTIES' && phase6.retest === 'SUPERSEDED/APPROVED'
+    && w.receiptAllowed && w.newShipment === '409 ENGAGEMENT_NOT_ACTIVE' && w.retest === '409 ENGAGEMENT_NOT_ACTIVE'
+    && w.newTestStart === '409 ENGAGEMENT_NOT_ACTIVE' && w.endAgain === '409 ENGAGEMENT_ENDED' && w.approvedStillVisible && !missingP6.length;
+  if (!stillIn || real.length || navItems.length !== 4 || !p2ok || !p3ok || !p4ok || !p5ok || !p6ok) process.exitCode = 1;
 })().catch(async (e) => {
   console.error('DRIVER FAILED:', e.message);
   if (lastPage) {

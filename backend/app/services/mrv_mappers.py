@@ -177,9 +177,17 @@ def relocation_out(r: SamplingPointRelocation) -> RelocationOut:
     return RelocationOut.model_validate(r, from_attributes=True)
 
 
-def _has_laboratory_parameters(db: Session, fc: FieldCollectionRecord) -> bool:
+def _analysis_status(db: Session, fc: FieldCollectionRecord) -> str | None:
+    """AWAITING_ANALYSIS until every methodology LABORATORY parameter of the plan has an APPROVED laboratory result for a sample
+    from this collection, then ANALYSED (Phase 6, decision 19). Display only — Phase 5 snapshots and QA are unchanged."""
+    from app.services import lab_service
     mp = db.get(MonitoringPeriod, fc.monitoring_period_id)
-    return mp is not None and any(msvc.is_laboratory_parameter(db, m) for m in msvc.measurements(db, mp.mrv_plan_id))
+    if mp is None:
+        return None
+    lab_rules = [m.monitoring_rule_id for m in msvc.measurements(db, mp.mrv_plan_id) if msvc.is_laboratory_parameter(db, m)]
+    if not lab_rules or fc.status not in ("SUBMITTED", "ACCEPTED", "SUPERSEDED"):
+        return None
+    return lab_service.collection_analysis_status(db, fc, [r for r in lab_rules if r is not None])
 
 
 def collection_out(db: Session, principal: Principal, fc: FieldCollectionRecord) -> CollectionOut:
@@ -192,7 +200,7 @@ def collection_out(db: Session, principal: Principal, fc: FieldCollectionRecord)
         **base, "checklist": ssvc.checklist_of(fc) or None, "required_checklist": field_rules.checklist_keys(fr),
         "checklist_version": fr["checklist_version"], "checklist_items": fr["checklist_items"], "gps_tolerance_m": fr["gps_tolerance_m"],
         "min_photos": fr["min_photos"], "field_rules": fr,
-        "analysis_status": "AWAITING_ANALYSIS" if fc.status in ("SUBMITTED", "ACCEPTED") and _has_laboratory_parameters(db, fc) else None,
+        "analysis_status": _analysis_status(db, fc),
         "point_code": sp.point_code if sp else None, "collector_name": names.get(fc.collector_id),
         "planned_depth_top_cm": sp.planned_depth_top_cm if sp else None, "planned_depth_bottom_cm": sp.planned_depth_bottom_cm if sp else None,
         "evidence_count": ssvc.evidence_count(db, fc.id),

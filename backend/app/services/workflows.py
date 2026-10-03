@@ -127,3 +127,54 @@ OVERLAP_MACHINE = StateMachine.build(
     transitions={"OPEN": {"CLEARED", "CONFIRMED_CONFLICT", "OBSOLETE"}, "CONFIRMED_CONFLICT": {"OBSOLETE"}, "CLEARED": {"OBSOLETE"}},
     terminal={"OBSOLETE"},
 )
+
+
+# ---------------------------------------------------------------- Phase 6 — laboratory & sample analysis
+# Engagement: project proposes, laboratory accepts; never reactivated (a new engagement is created instead).
+LAB_ENGAGEMENT_MACHINE = StateMachine.build(
+    "lab_engagement", initial="PROPOSED",
+    transitions={"PROPOSED": {"ACTIVE", "ENDED"}, "ACTIVE": {"ENDED"}},
+    terminal={"ENDED"},
+)
+
+# Physical custody of a sample. Retention / return / disposal are out of scope (decision 21): custody ends at ANALYSED.
+# EXCEPTION is resolved back to the state it interrupted (checked against the custody history, not here).
+_SAMPLE_ANY = {"EXCEPTION"}
+LAB_SAMPLE_MACHINE = StateMachine.build(
+    "lab_sample", initial="REGISTERED",
+    transitions={
+        "REGISTERED": {"SEALED", "VOIDED"} | _SAMPLE_ANY,
+        "SEALED": {"IN_SHIPMENT", "VOIDED"} | _SAMPLE_ANY,
+        "IN_SHIPMENT": {"SEALED", "DISPATCHED"} | _SAMPLE_ANY,
+        "DISPATCHED": {"IN_TRANSIT", "LAB_RECEIVED", "REJECTED_AT_RECEIPT"} | _SAMPLE_ANY,
+        "IN_TRANSIT": {"IN_TRANSIT", "LAB_RECEIVED", "REJECTED_AT_RECEIPT"} | _SAMPLE_ANY,
+        "LAB_RECEIVED": {"LAB_REGISTERED"} | _SAMPLE_ANY,
+        "LAB_REGISTERED": {"IN_ANALYSIS"} | _SAMPLE_ANY,
+        "IN_ANALYSIS": {"ANALYSED"} | _SAMPLE_ANY,
+        "ANALYSED": {"IN_ANALYSIS"},          # an explicit retest on the same sample
+        "EXCEPTION": {"REGISTERED", "SEALED", "IN_SHIPMENT", "DISPATCHED", "IN_TRANSIT", "LAB_RECEIVED", "LAB_REGISTERED", "IN_ANALYSIS",
+                      "REJECTED_AT_RECEIPT", "VOIDED"},
+    },
+    terminal={"REJECTED_AT_RECEIPT", "VOIDED"},
+)
+
+LAB_SHIPMENT_MACHINE = StateMachine.build(
+    "lab_shipment", initial="DRAFT",
+    transitions={"DRAFT": {"DISPATCHED", "CANCELLED"}, "DISPATCHED": {"RECEIVED"}},
+    terminal={"RECEIVED", "CANCELLED"},
+)
+
+LAB_TEST_MACHINE = StateMachine.build(
+    "lab_test", initial="REQUESTED",
+    transitions={"REQUESTED": {"IN_PROGRESS", "CANCELLED"}, "IN_PROGRESS": {"RESULT_SUBMITTED", "CANCELLED"},
+                 "RESULT_SUBMITTED": {"IN_PROGRESS", "CLOSED"}, "CLOSED": {"IN_PROGRESS"}},  # CLOSED → IN_PROGRESS: correction
+    terminal={"CANCELLED"},
+)
+
+# Result versions. REJECTED / RETEST_REQUIRED / WITHDRAWN / SUPERSEDED are final for that version.
+LAB_RESULT_MACHINE = StateMachine.build(
+    "lab_result", initial="DRAFT",
+    transitions={"DRAFT": {"SUBMITTED", "WITHDRAWN"}, "SUBMITTED": {"QA_REVIEW", "REJECTED", "RETEST_REQUIRED", "WITHDRAWN"},
+                 "QA_REVIEW": {"APPROVED", "REJECTED", "RETEST_REQUIRED"}, "APPROVED": {"SUPERSEDED"}},
+    terminal={"REJECTED", "RETEST_REQUIRED", "WITHDRAWN", "SUPERSEDED"},
+)

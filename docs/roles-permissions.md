@@ -84,6 +84,27 @@ and cannot read the MRV workspace. Buyers, labs, VVB and finance have no MRV acc
 self-service pages. Separation of duties applies to every approval (plan, stratum, design, relocation, field record,
 QA completion, dataset).
 
+## Phase 6 permissions
+
+| Code | Meaning | Holders |
+|---|---|---|
+| lab.read | project side: engagements, samples, shipments, approved results and lineage (never drafts) | MRV manager, project manager, field supervisor, QA officer, calculation analyst |
+| lab.sample_register | register and seal samples (field agents: from their own SUBMITTED / ACCEPTED records only) | field agent, field supervisor, MRV manager |
+| lab.sample_manage | correct / void samples before dispatch, project-side custody events | field supervisor, MRV manager |
+| lab.shipment_manage | create, fill, dispatch, cancel shipments | field supervisor, MRV manager (never a field agent) |
+| lab.engage | propose or end an engagement (project side) | project manager, MRV manager |
+| lab.engagement_accept | accept or end an engagement (laboratory side) | lab manager |
+| lab.lab_read | laboratory workspace: allow-listed views of samples shipped to the laboratory | lab technician, lab manager |
+| lab.receive | receive / reject items, accession numbers, laboratory custody | lab technician, lab manager |
+| lab.test | start tests, enter / submit / withdraw / correct results, attach PDF reports | lab technician, lab manager |
+| lab.qa | laboratory QA decision (APPROVED / REJECTED / RETEST_REQUIRED) | lab manager |
+| lab.retest_request | request a retest, with a reason | lab manager |
+
+Laboratory users never see farmer, farm, GPS, sampling point, stratum, field-collection or MRV data, and project users never
+see laboratory drafts. A LAB_MANAGER cannot approve a result they analysed or submitted, nor one whose sample they registered or
+sealed, whose shipment they created or dispatched, or whose retest they requested (`SEPARATION_OF_DUTIES`). The proposer of an
+engagement can never accept it. Buyers, VVB, finance and farmers have no Phase 6 access.
+
 ## Permission-grant matrix (decision D4, approved)
 
 Granting a role needs `users.assign_roles` in the scope of the grant, plus every *privileged* permission the role

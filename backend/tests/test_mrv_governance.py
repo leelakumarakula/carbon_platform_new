@@ -70,14 +70,16 @@ def test_s1_s2_platform_defaults_frozen_on_records(client: TestClient, db: Sessi
     st = approved_stratum(client, c, "S1", [c.farms[0]["id"]])
     d = approved_design(client, c, mp["id"], [{"stratum_id": st["id"], "sample_count": 2}])
     fr = d["current"]["field_rules"]
-    assert (fr["gps_tolerance_m"], fr["duplicate_distance_m"], fr["min_photos"], fr["checklist_version"]) == (30.0, 1.0, 1, "PLATFORM-DEFAULT-1")
+    # Phase 6 decision 18: new design versions use PLATFORM-DEFAULT-2 (sample-code label); v1 stays defined for older records
+    assert (fr["gps_tolerance_m"], fr["duplicate_distance_m"], fr["min_photos"], fr["checklist_version"]) == (30.0, 1.0, 1, "PLATFORM-DEFAULT-2")
+    assert "sample_labelled_with_sample_code" in [i["key"] for i in fr["checklist_items"]]
     assert {fr["gps_tolerance_source"], fr["duplicate_distance_source"], fr["min_photos_source"], fr["checklist_source"]} == {"PLATFORM_DEFAULT"}
     assert "not requirements of any methodology" in fr["note"]
     pts = client.post(f"{MRV}/sampling-designs/{d['id']}/generate-points", headers=c.mrv.headers).json()["points"]
     client.post(f"{MRV}/sampling-points/assign", headers=c.supervisor.headers,
                 json={"point_ids": [x["id"] for x in pts], "collector_id": str(c.collector.user.id)})
     fc = collect(client, c, pts[0], c.collector)
-    assert fc["checklist_version"] == "PLATFORM-DEFAULT-1" and float(fc["gps_tolerance_m"]) == 30.0 and fc["min_photos"] == 1
+    assert fc["checklist_version"] == "PLATFORM-DEFAULT-2" and float(fc["gps_tolerance_m"]) == 30.0 and fc["min_photos"] == 1
     assert [i["key"] for i in fc["checklist_items"]] == fc["required_checklist"] and fc["checklist"]["photo_taken"] is True
     assert fc["analysis_status"] == "AWAITING_ANALYSIS"   # SOC comes from Phase 6; no value is entered
     # changing the defaults later never alters historical records or the existing design version

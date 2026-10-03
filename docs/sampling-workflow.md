@@ -100,7 +100,10 @@ The same seed and boundaries reproduce the same points.
   - sample quantity and unit;
   - observations;
   - the checklist items completed, against the checklist version frozen on the record (platform default
-    `PLATFORM-DEFAULT-1`: `location_confirmed`, `depth_measured`, `sample_labelled`, `photo_taken`).
+    `PLATFORM-DEFAULT-2` since Phase 6: `location_confirmed`, `depth_measured`, `sample_labelled_with_sample_code` — "Sample container
+    labelled with its sample code (SMP-…)", `photo_taken`; records created before keep `PLATFORM-DEFAULT-1` with `sample_labelled`).
+- **Sample registration (Phase 6):** from a SUBMITTED or ACCEPTED record, the collector uses "Register & seal sample" on the
+  collection screen; see [laboratory-workflow.md](laboratory-workflow.md).
 - **GPS checks:** SQL Server computes the **distance from the planned point** and whether the GPS lies **inside the
   farm**.
 - **Submit requires:**

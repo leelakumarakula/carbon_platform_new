@@ -443,7 +443,7 @@ class CollectionOut(BaseModel):
     min_photos: int = 1
     field_rules: dict[str, Any] | None = None
     # sample-based methodology parameters (e.g. SOC) come from Phase 6 analysis; never entered here
-    analysis_status: str | None = None
+    analysis_status: str | None = None          # AWAITING_ANALYSIS / ANALYSED (Phase 6 display)
 
 
 # ---------------------------------------------------------------- monitoring records / evidence

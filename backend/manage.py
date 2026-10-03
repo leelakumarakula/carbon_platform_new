@@ -70,6 +70,7 @@ def seed_demo() -> None:
     if not pw:
         sys.exit("Set DEMO_USER_PASSWORD (environment or backend/.env).")
     from app.seed.demo_farms import seed_demo_farms
+    from app.seed.demo_lab import seed_demo_lab
     from app.seed.demo_methodologies import seed_demo_methodologies
     from app.seed.demo_mrv import seed_demo_mrv
     from app.seed.demo_projects import seed_demo_projects
@@ -79,6 +80,7 @@ def seed_demo() -> None:
         print("demo projects:", seed_demo_projects(db))
         print("demo methodologies:", seed_demo_methodologies(db))
         print("demo MRV (no lab results, calculations or credits):", seed_demo_mrv(db))
+        print("demo laboratory (manual DEMO flow, DEMO placeholder values; no calculations or credits):", seed_demo_lab(db))
 
 
 def setup() -> None:

@@ -106,6 +106,36 @@ export const routes: Routes = [
           },
           { path: 'plans/:id', title: 'MRV plan', loadComponent: () => import('./mrv/mrv-plan-detail-page').then((m) => m.MrvPlanDetailPage) },
           { path: 'datasets/:id', title: 'MRV dataset', loadComponent: () => import('./mrv/mrv-dataset-page').then((m) => m.MrvDatasetPage) },
+          {
+            path: 'samples/:id',
+            title: 'Sample',
+            canActivate: [permissionGuard],
+            data: { permissions: [P.LAB_READ] },
+            loadComponent: () => import('./lab/sample-detail-page').then((m) => m.SampleDetailPage),
+          },
+          {
+            path: 'lab-results/:id',
+            title: 'Laboratory result',
+            canActivate: [permissionGuard],
+            data: { permissions: [P.LAB_READ] },
+            loadComponent: () => import('./lab/lab-result-lineage-page').then((m) => m.LabResultLineagePage),
+          },
+        ],
+      },
+      {
+        path: 'laboratory',
+        canActivate: [permissionGuard],
+        data: { permissions: [P.LAB_LAB_READ] },
+        children: [
+          { path: '', title: 'Laboratory', loadComponent: () => import('./lab/laboratory-page').then((m) => m.LaboratoryPage) },
+          { path: 'tests/:id', title: 'Laboratory test', loadComponent: () => import('./lab/lab-test-page').then((m) => m.LabTestPage) },
+          {
+            path: 'qa/:id',
+            title: 'Laboratory QA',
+            canActivate: [permissionGuard],
+            data: { permissions: [P.LAB_QA] },
+            loadComponent: () => import('./lab/lab-qa-page').then((m) => m.LabQaPage),
+          },
         ],
       },
       {

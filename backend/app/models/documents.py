@@ -28,6 +28,8 @@ class DocumentCategory(str, Enum):
     CARBON_RIGHTS = "CARBON_RIGHTS"          # Phase 3: carbon-rights evidence (agreements, assignments)
     BASELINE_DATA = "BASELINE_DATA"          # Phase 3: baseline-period data sources
     METHODOLOGY_DOCUMENT = "METHODOLOGY_DOCUMENT"  # Phase 4: authoritative methodology source documents
+    LAB_REPORT = "LAB_REPORT"                # Phase 6: laboratory report for a result (PDF only)
+    CUSTODY_DOCUMENT = "CUSTODY_DOCUMENT"    # Phase 6: chain-of-custody form for a shipment (PDF only)
     OTHER = "OTHER"
 
 

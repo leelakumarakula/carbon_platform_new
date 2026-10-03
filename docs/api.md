@@ -168,6 +168,30 @@ checklists, `can_manage` / `can_review` / `can_review_boundary` and `is_editable
 | GET | `/mrv/qa/{dataset_id}` (checks + reviews) | mrv.read |
 | POST | `/mrv/qa/{dataset_id}/start` · `/complete` | mrv.review (complete: not the submitter) |
 
+## Endpoints (Phase 6) — project side, prefix `/lab`
+
+| Method | Path | Permission |
+|---|---|---|
+| GET | `/lab/projects/{id}/laboratories` · `/lab/projects/{id}/laboratory-rules` | lab.engage or lab.read |
+| GET/POST | `/lab/engagements` · POST `/lab/engagements/{id}/end` | lab.read / lab.engage |
+| GET/POST | `/lab/samples` (filters: project, period, field collection) · GET/PATCH `/lab/samples/{id}` | lab.read, own records with lab.sample_register / lab.sample_register |
+| POST | `/lab/samples/{id}/seal` · `/void` · GET/POST `/lab/samples/{id}/custody` | lab.sample_register (seal) / lab.sample_manage |
+| GET/POST | `/lab/shipments` · GET `/lab/shipments/{id}` · POST `/{id}/items` · `/{id}/items/{sample_id}/remove` · `/{id}/dispatch` · `/{id}/cancel` · `/{id}/documents` (PDF) | lab.read / lab.shipment_manage |
+| GET | `/lab/results?project_id&status=` (default APPROVED; ALL = every non-draft status) · `/lab/results/{id}/lineage` | lab.read |
+
+## Endpoints (Phase 6) — laboratory side, prefix `/laboratory` (allow-list views only)
+
+| Method | Path | Permission |
+|---|---|---|
+| GET | `/laboratory/dashboard` | lab.lab_read |
+| GET | `/laboratory/engagements` · POST `/{id}/accept` · `/{id}/end` | lab.lab_read / lab.engagement_accept |
+| GET | `/laboratory/shipments` · `/laboratory/shipments/{id}` · POST `/{id}/receive` (per item) · `/{id}/documents` (PDF) | lab.lab_read / lab.receive |
+| GET | `/laboratory/samples` · `/laboratory/samples/{id}` · POST `/{id}/accession` · `/{id}/custody` | lab.lab_read / lab.receive |
+| GET | `/laboratory/tests?test_status=` · `/laboratory/tests/{id}` · POST `/{id}/start` · `/{id}/results` | lab.lab_read / lab.test |
+| PATCH/POST | `/laboratory/results/{id}` · `/report` (PDF) · `/submit` · `/withdraw` · `/correct` | lab.test |
+| POST | `/laboratory/results/{id}/retest` | lab.retest_request |
+| GET/POST | `/laboratory/qa` · `/laboratory/qa/{id}` · POST `/{id}/start` · `/{id}/decision` | lab.qa (never on your own work) |
+
 ## Notable error codes
 
 `INVALID_CREDENTIALS`, `TOKEN_EXPIRED`, `SESSION_REVOKED`, `REFRESH_REUSED`, `ACCOUNT_INACTIVE`,
@@ -200,3 +224,12 @@ the methodology rule declares LABORATORY cannot be entered as monitoring data), 
 declares no measurement source). Phase 4 monitoring rules require `measurement_source` = FIELD / FIELD_ACTIVITY / LABORATORY (422 otherwise).
 Plan measurements and monitoring records expose `data_role` (METHODOLOGY_PARAMETER / LABORATORY_PARAMETER / UNCLASSIFIED_PARAMETER /
 SUPPLEMENTARY_OBSERVATION) and `authoritative` (decision V2-B: user-created measurements are supplementary, never authoritative).
+
+Phase 6: `ENGAGEMENT_NOT_ACTIVE`, `ENGAGEMENT_ENDED`, `ENGAGEMENT_PENDING`, `ENGAGEMENT_NOT_PROPOSED`, `NOT_A_LABORATORY`, `RULE_NOT_LABORATORY`,
+`LABORATORY_REQUIRED`, `FIELD_COLLECTION_NOT_READY`, `NOT_COLLECTOR`, `INVALID_PARENT`, `DEPTH_REQUIRED`, `INVALID_DEPTH`, `PLAN_MEASUREMENT_MISSING`,
+`SAMPLE_SEALED`, `SAMPLE_NOT_REGISTERED`, `SAMPLE_NOT_SEALED`, `SAMPLE_NOT_VOIDABLE`, `SAMPLE_NOT_RECEIVED`, `SAMPLE_NOT_LAB_REGISTERED`,
+`WRONG_LABORATORY`, `NOT_IN_SHIPMENT`, `SHIPMENT_NOT_DRAFT`, `SHIPMENT_EMPTY`, `SHIPMENT_NOT_DISPATCHED`, `CUSTODY_OUT_OF_ORDER`, `NOT_CUSTODIAN`,
+`EXCEPTION_OPEN`, `NO_EXCEPTION`, `INVALID_CUSTODY_EVENT`, `TEST_NOT_REQUESTED`, `TEST_NOT_IN_PROGRESS`, `RESULT_IN_PROGRESS`, `RESULT_NOT_EDITABLE`,
+`NOT_ANALYST`, `ONE_VALUE_REQUIRED`, `RESULT_NOT_IN_QA`, `QA_CHECKS_FAILED`, `CONFIGURATION_REQUIRED` (with `PRODUCTION_BLOCK` when not acknowledgeable),
+`SEPARATION_OF_DUTIES` (403; details list the reasons), `AUTHORITATIVE_RESULT_EXISTS`, `RESULT_NOT_APPROVED`, `RESULT_NOT_RETESTABLE`,
+`INVALID_RETEST_SAMPLE`, `RETEST_OPEN`, `UNSUPPORTED_FILE_TYPE` (laboratory documents are PDF only), `LAB_NOT_FOUND` (404).

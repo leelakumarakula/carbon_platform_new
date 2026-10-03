@@ -29,6 +29,14 @@ PLATFORM_CHECKLISTS: dict[str, list[dict[str, str]]] = {
         {"key": "sample_labelled", "label": "Sample bag labelled with the collection code"},
         {"key": "photo_taken", "label": "Field photo taken"},
     ],
+    # Phase 6 (decision 18): physical samples carry their own SMP code. Used by new sampling design versions only;
+    # records frozen with PLATFORM-DEFAULT-1 keep it.
+    "PLATFORM-DEFAULT-2": [
+        {"key": "location_confirmed", "label": "Location confirmed on site"},
+        {"key": "depth_measured", "label": "Sampling depth measured"},
+        {"key": "sample_labelled_with_sample_code", "label": "Sample container labelled with its sample code (SMP-…)"},
+        {"key": "photo_taken", "label": "Field photo taken"},
+    ],
 }
 NOTE = ("Values marked PLATFORM_DEFAULT are platform governance defaults, not requirements of any methodology; "
         "values marked METHODOLOGY come from the locked methodology version's SAMPLING rules.")

@@ -83,7 +83,7 @@ class Settings(BaseSettings):
     # Field-collection PLATFORM DEFAULTS (decisions S1, S2) — not methodology requirements. A methodology version's SAMPLING
     # rule may override them; the values used are frozen on each design version / collection record (services/field_rules.py).
     GPS_MAX_DISTANCE_M: float = 30.0          # collection GPS further than this from the planned point needs a note
-    FIELD_CHECKLIST_VERSION: str = "PLATFORM-DEFAULT-1"
+    FIELD_CHECKLIST_VERSION: str = "PLATFORM-DEFAULT-2"   # Phase 6: label with the SMP sample code
     FIELD_MIN_PHOTOS_PER_SAMPLE: int = 1
     # Decision V1 (platform governance, not a methodology rule): approving an MRV plan with CONFIGURATION_REQUIRED gaps is
     # allowed (with an audited acknowledgement) for DEMO projects and outside production only. No production exception exists.

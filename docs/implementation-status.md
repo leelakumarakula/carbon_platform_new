@@ -7,8 +7,8 @@
 | 3 | Project | **Done** |
 | 4 | Standard / activity / methodology | **Done** |
 | 5 | MRV / GIS / sampling | **Done** |
-| 6 | Sample / lab | Next (awaiting approval) |
-| 7 | Calculation | — |
+| 6 | Sample / lab | **Done** |
+| 7 | Calculation | Next (awaiting approval) |
 | 8 | VVB / ACVA | — |
 | 9 | Registry / credits | — |
 | 10 | Marketplace | — |
@@ -299,6 +299,54 @@ Verification (exit gate, 3 Oct 2026)
   period APPROVED, project MONITORING; buyer and farmer blocked from MRV; all required MRV audit events present; no console
   errors.
 
+## Phase 6 — delivered
+
+**Engagement → sample → custody → shipment → receipt → test → result → laboratory QA → APPROVED result with lineage.**
+Details are in [laboratory-workflow.md](laboratory-workflow.md). Phase 6 produces no calculation, tCO2e, credit, verification,
+issuance or retirement.
+
+Backend
+- Migration `0009`: 9 tables (engagements + rules, samples, custody events, shipments + items, tests, results, QA reviews), the
+  `SMP-` / `SHP-` / `LT-` sequences, append-only triggers on custody events and QA reviews, the approved-result immutability
+  trigger, filtered unique indexes (one ACTIVE engagement per project + laboratory, one open shipment item per sample, one ordinary
+  test per sample + rule, one APPROVED result per root sample + rule), and the `LAB_REPORT` / `CUSTODY_DOCUMENT` document categories.
+  No Phase 5 schema change.
+- Two-sided engagements scoped to LABORATORY rules of the locked methodology version (proposer ≠ accepter; either side ends with a
+  reason; never reactivated; wind-down rules after END).
+- Samples only from SUBMITTED / ACCEPTED field records (field collection version kept forever), splits, depth / quantity / seal;
+  automatic tests (one per in-scope rule with full lineage, no manual ordinary tests, no duplicates except explicit retests).
+- Append-only custody with ordering, exceptions with reasons; shipments managed by supervisors / MRV managers; item-level receipt.
+- Versioned results (exactly one value, NUMERIC or verbatim TEXT, no qualifier, no unit conversion, MANUAL / LIMS_IMPORT source,
+  PDF report); 12 deterministic laboratory QA checks (exact unit match, CONFIGURATION_REQUIRED production block, report checksum,
+  analysis timing, separation of duties); corrections and retests with a single authoritative result.
+- Laboratory-facing API `/laboratory` with explicit allow-list schemas; project read model `/lab/results` + lineage (no drafts).
+- `LimsAdapter` interface only. 11 `lab.*` permissions. All material actions audited (project-org and laboratory-org rows; laboratory
+  rows carry no field data). Field checklist `PLATFORM-DEFAULT-2` (`sample_labelled_with_sample_code`); the Phase 5 field record shows
+  AWAITING_ANALYSIS / ANALYSED (display only).
+- DEMO: the full manual flow on the Niphad project with a second laboratory manager (`labqa@`) doing laboratory QA.
+
+Frontend
+- Laboratory workspace (`/laboratory`: engagements, incoming shipments with per-item receipt, sample registration, worklist, QA
+  queue), test page (`/laboratory/tests/:id`: start, result entry with the rule unit pre-filled and an exact-match preview, PDF
+  report, submit, withdraw, retest) and QA page (`/laboratory/qa/:id`: checks, separation-of-duties explanation, decision,
+  configuration acknowledgement). Nav: "Laboratory" (`lab.lab_read`).
+- MRV workspace tab "Samples & laboratory" (engagements, samples per field record, sealing, shipments, approved results), sample
+  detail (`/mrv/samples/:id`, custody timeline) and result lineage (`/mrv/lab-results/:id`); "Register & seal sample" on the mobile
+  field collection screen.
+
+Verification (exit gate, 3 Oct 2026)
+- Backend: **252 pytest tests passed** (Phase 6: 18 laboratory tests + the DEMO laboratory seed test). ruff clean. mypy clean
+  (127 files). `alembic check`: no drift. Migration 0009 tested upgrade → downgrade (to 0008) → upgrade (twice) on the test database; its downgrade is refused while LAB_REPORT / CUSTODY_DOCUMENT documents exist (verified).
+- Frontend: **74 Vitest tests passed** (11 files). Production build OK (initial bundle 742 kB, 174 kB transferred).
+- E2E passed (Phases 1–6): MRV manager proposed an engagement and the lab manager accepted it (UI); the collector registered and
+  sealed a sample from an accepted record on a phone viewport, one test was created automatically; the supervisor created and
+  dispatched a shipment; the technician received it, registered it, analysed it with the exact rule unit, attached a PDF report and
+  submitted; a different lab manager ran QA (0 FAIL) and approved; the MRV manager opened the full lineage and the record shows
+  ANALYSED; laboratory users saw no farmer / farm / GPS / MRV data and were refused MRV pages; buyer and farmer were refused;
+  the retest requester's approval returned SEPARATION_OF_DUTIES, the retest result was approved and superseded the first; after the
+  engagement ended, receipt of an in-transit shipment was allowed and new shipments, retests and test starts returned
+  ENGAGEMENT_NOT_ACTIVE; all required laboratory audit events present; no console errors.
+
 ## Known limitations and open items
 
 - The rate limiter is in-memory (single API process). Redis is required before scaling out (Phase 12).
@@ -340,4 +388,10 @@ Verification (exit gate, 3 Oct 2026)
     are versioned, configurable PLATFORM DEFAULTS frozen per design version and field record — migration 0007). Assumptions
     V3–V4 and S3–S4 still need confirmation. No production exception to V1 exists.
   - Each E2E run adds an MRV plan, period, points and dataset to its DEMO-environment project in the development database.
+- Phase 6:
+  - No LIMS is connected (interface only); results are entered manually.
+  - Sample retention, return and disposal are out of scope (custody ends at ANALYSED).
+  - Analysis times are entered to the second; laboratory QA compares them with the receipt time at whole-second precision.
+  - Each E2E run adds an engagement, two samples, two shipments and laboratory results to its DEMO project in the development
+    database.
 - The browser logs one expected 401 at start-up: the silent session-restore attempt when nobody is signed in.

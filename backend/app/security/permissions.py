@@ -61,6 +61,18 @@ class P:
     SAMPLING_ASSIGN = "sampling.assign"
     SAMPLING_COLLECT = "sampling.collect"
     SAMPLING_REVIEW = "sampling.review"
+    # Phase 6 — laboratory & sample analysis
+    LAB_READ = "lab.read"                          # project side: samples, custody, shipments, non-draft results, lineage
+    LAB_SAMPLE_REGISTER = "lab.sample_register"    # register + seal samples (field agents: own collections only)
+    LAB_SAMPLE_MANAGE = "lab.sample_manage"        # correct / void samples, project-side custody exceptions and transfers
+    LAB_SHIPMENT_MANAGE = "lab.shipment_manage"    # create shipments, add / remove samples, dispatch, cancel
+    LAB_ENGAGE = "lab.engage"                      # propose / end project ↔ laboratory engagements (project side)
+    LAB_ENGAGEMENT_ACCEPT = "lab.engagement_accept"  # accept / end engagements (laboratory side)
+    LAB_LAB_READ = "lab.lab_read"                  # laboratory side: restricted, allow-listed views only
+    LAB_RECEIVE = "lab.receive"                    # receive / reject samples, accession numbers, lab-side custody
+    LAB_TEST = "lab.test"                          # start tests, enter / submit results, attach reports
+    LAB_QA = "lab.qa"                              # laboratory QA decisions (never on your own work)
+    LAB_RETEST_REQUEST = "lab.retest_request"      # request a retest (with a reason)
 
 
 PERMISSIONS: tuple[PermissionDef, ...] = (
@@ -115,6 +127,21 @@ PERMISSIONS: tuple[PermissionDef, ...] = (
                   "Field collection on sampling points assigned to you; request point relocations."),
     PermissionDef(P.SAMPLING_REVIEW, "sampling", "Review sampling",
                   "Approve strata and sampling design versions; accept/return field collections; decide relocations (never your own)."),
+    PermissionDef(P.LAB_READ, "lab", "View laboratory work (project)",
+                  "View the project's samples, custody, shipments, submitted/approved laboratory results and their full lineage."),
+    PermissionDef(P.LAB_SAMPLE_REGISTER, "lab", "Register & seal samples",
+                  "Register a physical sample (SMP code) from a submitted/accepted field collection and seal it (field agents: own collections)."),
+    PermissionDef(P.LAB_SAMPLE_MANAGE, "lab", "Manage samples", "Correct or void samples before dispatch; record project-side custody events."),
+    PermissionDef(P.LAB_SHIPMENT_MANAGE, "lab", "Manage shipments", "Create laboratory shipments, add or remove sealed samples, dispatch or cancel."),
+    PermissionDef(P.LAB_ENGAGE, "lab", "Engage laboratories", "Propose or end the project's engagement with a laboratory organization."),
+    PermissionDef(P.LAB_ENGAGEMENT_ACCEPT, "lab", "Accept engagements (laboratory)",
+                  "Accept or end an engagement proposed to your laboratory (never one you proposed)."),
+    PermissionDef(P.LAB_LAB_READ, "lab", "Laboratory workspace",
+                  "Laboratory-facing views only: sample codes, physical details, requested parameters, shipments and lab documents."),
+    PermissionDef(P.LAB_RECEIVE, "lab", "Receive samples", "Receive or reject shipped samples, record condition, accession numbers and lab custody."),
+    PermissionDef(P.LAB_TEST, "lab", "Perform tests", "Start requested tests, enter and submit results, attach PDF reports."),
+    PermissionDef(P.LAB_QA, "lab", "Laboratory QA", "Approve, reject or require a retest of a laboratory result (never your own work)."),
+    PermissionDef(P.LAB_RETEST_REQUEST, "lab", "Request retests", "Request a retest of a laboratory result, with a reason."),
     PermissionDef(P.CONSENTS_CONFIGURE, "admin", "Configure consent types",
                   "Publish versioned consent definitions and choose which are required for farmer activation."),
 )
@@ -147,13 +174,15 @@ SYSTEM_ROLES: tuple[RoleDef, ...] = (
     _r("FARMER", "Farmer", ORG, "Maintains profile, KYC, farms and history; views participation, sampling, credits and payouts.",
        P.FARMERS_SELF),
     _r("FIELD_AGENT", "Field Collector / Field Agent", ORG, "Performs assigned field visits, sampling, evidence capture and chain of custody.",
-       P.FARMERS_READ, P.FARMERS_MANAGE, P.FARMS_READ, P.FARMS_MANAGE, P.PROJECTS_READ, P.MRV_COLLECT, P.SAMPLING_COLLECT),
+       P.FARMERS_READ, P.FARMERS_MANAGE, P.FARMS_READ, P.FARMS_MANAGE, P.PROJECTS_READ, P.MRV_COLLECT, P.SAMPLING_COLLECT,
+       P.LAB_SAMPLE_REGISTER),
     _r("FIELD_SUPERVISOR", "Field Supervisor", ORG, "Assigns collectors and sampling points; reviews field submissions.",
        P.FARMERS_READ, P.FARMERS_MANAGE, P.FARMS_READ, P.FARMS_MANAGE, P.PROJECTS_READ, P.MRV_READ, P.MRV_COLLECT,
-       P.SAMPLING_ASSIGN, P.SAMPLING_COLLECT, P.SAMPLING_REVIEW),
+       P.SAMPLING_ASSIGN, P.SAMPLING_COLLECT, P.SAMPLING_REVIEW, P.LAB_READ, P.LAB_SAMPLE_REGISTER, P.LAB_SAMPLE_MANAGE,
+       P.LAB_SHIPMENT_MANAGE),
     _r("PROJECT_MANAGER", "Project Manager / Project Developer", ORG, "Creates projects, selects standard/activity/methodology, manages MRV, VVB and registry workflows.",
        P.FARMERS_READ, P.FARMERS_MANAGE, P.FARMERS_KYC_VERIFY, P.FARMERS_BANK_MANAGE, P.FARMS_READ, P.FARMS_MANAGE,
-       P.PROJECTS_READ, P.PROJECTS_MANAGE, P.METHODOLOGIES_READ, P.MRV_READ, P.MRV_MANAGE),
+       P.PROJECTS_READ, P.PROJECTS_MANAGE, P.METHODOLOGIES_READ, P.MRV_READ, P.MRV_MANAGE, P.LAB_READ, P.LAB_ENGAGE),
     _r("METHODOLOGY_SPECIALIST", "Methodology Specialist", PLATFORM, "Manages versioned, approval-controlled methodology configuration.",
        P.PROJECTS_READ, P.STANDARDS_MANAGE, P.METHODOLOGIES_READ, P.METHODOLOGIES_MANAGE, P.METHODOLOGIES_APPROVE,
        P.METHODOLOGIES_REVIEW_PROJECT, P.MRV_READ),
@@ -164,14 +193,16 @@ SYSTEM_ROLES: tuple[RoleDef, ...] = (
        P.FARMERS_READ, P.FARMS_READ, P.FARMS_REVIEW_CROSS_ORG, P.PROJECTS_READ, P.MRV_READ),
     _r("MRV_MANAGER", "MRV Manager", ORG, "Manages MRV plans, monitoring periods and approves monitoring datasets.",
        P.FARMERS_READ, P.FARMS_READ, P.PROJECTS_READ, P.METHODOLOGIES_READ, P.MRV_READ, P.MRV_MANAGE, P.MRV_COLLECT, P.MRV_REVIEW,
-       P.SAMPLING_MANAGE, P.SAMPLING_ASSIGN),
-    _r("LAB_TECHNICIAN", "Lab Technician", ORG, "Receives samples, enters results and uploads lab reports."),
-    _r("LAB_MANAGER", "Lab Manager / Lab QA", ORG, "Approves or rejects lab results and requests retests."),
+       P.SAMPLING_MANAGE, P.SAMPLING_ASSIGN, P.LAB_READ, P.LAB_SAMPLE_REGISTER, P.LAB_SAMPLE_MANAGE, P.LAB_SHIPMENT_MANAGE, P.LAB_ENGAGE),
+    _r("LAB_TECHNICIAN", "Lab Technician", ORG, "Receives samples, enters results and uploads lab reports.",
+       P.LAB_LAB_READ, P.LAB_RECEIVE, P.LAB_TEST),
+    _r("LAB_MANAGER", "Lab Manager / Lab QA", ORG, "Approves or rejects lab results and requests retests.",
+       P.LAB_LAB_READ, P.LAB_RECEIVE, P.LAB_TEST, P.LAB_QA, P.LAB_RETEST_REQUEST, P.LAB_ENGAGEMENT_ACCEPT),
     _r("CALCULATION_ANALYST", "Carbon Calculation Analyst", ORG, "Runs approved calculation engines; cannot type a final credit quantity.",
-       P.METHODOLOGIES_READ, P.MRV_READ),
+       P.METHODOLOGIES_READ, P.MRV_READ, P.LAB_READ),
     _r("QA_OFFICER", "Data Quality / QA Officer", ORG, "Reviews anomalies and duplicates; approves or rejects datasets.",
        P.FARMERS_READ, P.FARMERS_KYC_VERIFY, P.FARMS_READ, P.PROJECTS_READ, P.PROJECTS_REVIEW, P.METHODOLOGIES_READ, P.MRV_READ,
-       P.MRV_REVIEW, P.MRV_APPROVE),
+       P.MRV_REVIEW, P.MRV_APPROVE, P.LAB_READ),
     _r("VVB_REVIEWER", "VVB / ACVA Reviewer", ORG, "External verifier: reviews assigned projects, raises findings, submits decisions."),
     _r("REGISTRY_MANAGER", "Registry Manager", ORG, "Manages registry submissions, issuance tracking and serial reconciliation."),
     _r("CREDIT_MANAGER", "Credit Manager", ORG, "Manages issued-credit inventory, reservations, transfers and retirements."),

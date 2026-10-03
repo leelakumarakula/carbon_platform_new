@@ -8,6 +8,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 
 import { ApiError } from '../core/api/api.models';
+import { CollectionSamples } from '../lab/collection-samples';
 import { NotifyService } from '../core/notify.service';
 import { label } from '../farmer/farmer.models';
 import { GeoMap, MapPoint } from '../shared/geo-map';
@@ -31,7 +32,8 @@ function localInput(iso: string | null): string {
 @Component({
   selector: 'app-field-collection-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DatePipe, ReactiveFormsModule, MatButtonModule, MatCheckboxModule, MatFormFieldModule, MatInputModule, PageHeader, StateView, StatusBadge, GeoMap],
+  imports: [DatePipe, ReactiveFormsModule, MatButtonModule, MatCheckboxModule, MatFormFieldModule, MatInputModule, PageHeader, StateView, StatusBadge, GeoMap,
+    CollectionSamples],
   template: `
     <app-state-view [loading]="loading()" [error]="error()" (retry)="load()" />
     @if (c(); as c) {
@@ -100,6 +102,7 @@ function localInput(iso: string | null): string {
       } @else {
         <p class="small muted">This record is {{ label(c.status) }} and can no longer be edited by you.</p>
       }
+      <app-collection-samples [collectionId]="c.id" [collectionStatus]="c.status" />
     }
   `,
   styles: `

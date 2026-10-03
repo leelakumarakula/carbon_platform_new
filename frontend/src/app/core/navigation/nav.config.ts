@@ -40,6 +40,10 @@ export const NAVIGATION: readonly NavSection[] = [
     ],
   },
   {
+    title: 'Laboratory',
+    items: [{ label: 'Laboratory', icon: 'science', route: '/laboratory', permissions: [P.LAB_LAB_READ] }],
+  },
+  {
     title: 'My farm',
     items: [
       { label: 'My farmer profile', icon: 'badge', route: '/me/farmer', permissions: [P.FARMERS_SELF] },

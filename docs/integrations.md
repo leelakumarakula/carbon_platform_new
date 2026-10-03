@@ -10,7 +10,7 @@ never presented as a real external confirmation, and the UI labels DEMO data and
 | Basemap tiles | in use (D6) | any XYZ tile source; OpenStreetMap public tiles by default (development only) | `MAP_TILE_*` |
 | Notifications | in use | in-app only. Email, SMS and WhatsApp adapters pending | — |
 | Satellite, weather, land records | planned (Phase 6+); Phase 5 records no satellite data — field evidence only | mock + real | `SATELLITE_PROVIDER` |
-| Laboratory (LIMS) | planned (Phase 6) | manual entry + mock + real | `LAB_PROVIDER` |
+| Laboratory (LIMS) | interface only (Phase 6): `LimsAdapter` (submit manifest, fetch results, acknowledge) in `app/integrations/lims.py`; `NoLimsAdapter` raises `LimsNotConfigured` | manual entry in the laboratory workspace (source MANUAL); a real LIMS would import as `LIMS_IMPORT` with an external result ID. There is no mock result source | — |
 | Verification (VVB/ACVA) | planned (Phase 8) | workflow only; the platform is not the verifier | — |
 | Registry | planned (Phase 9) | Manual + mock; Verra / Gold Standard / CCTS adapters where APIs exist | `REGISTRY_PROVIDER` |
 | Payment | planned (Phase 10–11) | mock (never in production mode) + real | `PAYMENT_PROVIDER` |

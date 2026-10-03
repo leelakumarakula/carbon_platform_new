@@ -89,6 +89,7 @@ DEMO_USERS = [
     ("farmer", "Demo Farmer", "DEMO-FPO-E", "FARMER"),
     ("labtech", "Demo Lab Technician", "DEMO-LAB-B", "LAB_TECHNICIAN"),
     ("labmanager", "Demo Lab Manager", "DEMO-LAB-B", "LAB_MANAGER"),
+    ("labqa", "Demo Lab QA Manager", "DEMO-LAB-B", "LAB_MANAGER"),     # second manager: lab QA independent of retest requests
     ("vvb", "Demo VVB Reviewer", "DEMO-VVB-C", "VVB_REVIEWER"),
     ("buyer", "Demo Buyer", "DEMO-BUYER-D", "BUYER"),
 ]

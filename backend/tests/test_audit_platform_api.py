@@ -241,3 +241,29 @@ def test_demo_mrv_seed(db: Session) -> None:
     assert sorted(c.status for c in cols) == ["ACCEPTED", "ACCEPTED", "SUBMITTED"]
     ds = db.scalars(select(MrvDataset).where(MrvDataset.project_id == p.id)).one()
     assert ds.status == "COLLECTING" and ds.environment == "DEMO"
+
+
+def test_demo_lab_seed(db: Session) -> None:
+    """Manual DEMO laboratory flow (no mock generator): engagement, sample, shipment, receipt, result, independent lab QA."""
+    from app.models import LabResult, LabResultQaReview, LabSample, ProjectLaboratoryEngagement, User
+    from app.seed.demo_farms import seed_demo_farms
+    from app.seed.demo_lab import seed_demo_lab
+    from app.seed.demo_methodologies import seed_demo_methodologies
+    from app.seed.demo_mrv import seed_demo_mrv
+    from app.seed.demo_projects import seed_demo_projects
+    seed_demo(db, "Demo-Password-123")
+    seed_demo_farms(db)
+    seed_demo_projects(db)
+    seed_demo_methodologies(db)
+    seed_demo_mrv(db)
+    assert seed_demo_lab(db) == {"engagements": 1, "samples": 1, "approved_results": 1}
+    assert seed_demo_lab(db) == {"engagements": 0, "samples": 0, "approved_results": 0}  # idempotent
+    e = db.scalars(select(ProjectLaboratoryEngagement)).one()
+    assert e.status == "ACTIVE" and e.environment == "DEMO" and e.accepted_by != e.proposed_by
+    s = db.scalars(select(LabSample)).one()
+    assert s.status == "ANALYSED" and s.sample_code.startswith("SMP-") and s.environment == "DEMO"
+    r = db.scalars(select(LabResult)).one()
+    assert r.status == "APPROVED" and r.source == "MANUAL" and r.report_document_id is not None
+    reviewer = db.get(User, db.scalars(select(LabResultQaReview)).one().reviewer_id)
+    assert reviewer is not None and reviewer.email.startswith("labqa@")   # independent of the analyst and of every handler
+    assert r.analyst_id != reviewer.id and s.registered_by != reviewer.id

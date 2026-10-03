@@ -39,6 +39,17 @@ export const P = {
   SAMPLING_ASSIGN: 'sampling.assign',
   SAMPLING_COLLECT: 'sampling.collect',
   SAMPLING_REVIEW: 'sampling.review',
+  LAB_READ: 'lab.read',
+  LAB_SAMPLE_REGISTER: 'lab.sample_register',
+  LAB_SAMPLE_MANAGE: 'lab.sample_manage',
+  LAB_SHIPMENT_MANAGE: 'lab.shipment_manage',
+  LAB_ENGAGE: 'lab.engage',
+  LAB_ENGAGEMENT_ACCEPT: 'lab.engagement_accept',
+  LAB_LAB_READ: 'lab.lab_read',
+  LAB_RECEIVE: 'lab.receive',
+  LAB_TEST: 'lab.test',
+  LAB_QA: 'lab.qa',
+  LAB_RETEST_REQUEST: 'lab.retest_request',
 } as const;
 
 export type PermissionCode = (typeof P)[keyof typeof P];

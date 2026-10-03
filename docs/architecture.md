@@ -31,7 +31,7 @@ models; no module reaches into another's tables except through its service.
 | `audit/` | Audit/workflow/security-event writers, API access-log writer |
 | `api/` | `deps.py` (principal, `require()`, context, paging) and versioned routers |
 | `rules/` | Pure functions: geometry parsing (GeoJSON/KML to WKT), file-type sniffing, the deterministic methodology applicability engine, seeded sampling-point candidate generation (SQL Server decides containment) |
-| `integrations/` | Adapters: `ObjectStorage` (local; S3 pending), `MalwareScanner` (signature; real AV pending) |
+| `integrations/` | Adapters: `ObjectStorage` (local; S3 pending), `MalwareScanner` (signature; real AV pending), `LimsAdapter` (interface only; `NoLimsAdapter`) |
 | `seed/` | Reference data sync, bootstrap admin, DEMO data (accounts, farmers, farms) |
 
 Rules followed: routes contain no DB logic; services take an explicit `RequestContext` so every audit row
@@ -45,7 +45,7 @@ transaction.
 | `core/` | `ApiService`, `ApiError`, auth service/guards/interceptors, permissions, navigation registry, notifications |
 | `shared/` | Status badge, page header, state view, reason dialog, form helpers, `PagedList` |
 | `layout/` | Shell: side navigation filtered by permissions, user menu, DEMO indicator |
-| `auth/`, `dashboard/`, `admin/`, `farmer/`, `farms/`, `projects/`, `methodologies/`, `mrv/` (MRV workspace + mobile field screens) | Feature pages; each feature has its own models and API service |
+| `auth/`, `dashboard/`, `admin/`, `farmer/`, `farms/`, `projects/`, `methodologies/`, `mrv/` (MRV workspace + mobile field screens), `lab/` (laboratory workspace, test / QA pages, sample detail, result lineage) | Feature pages; each feature has its own models and API service |
 
 `shared/geo-map.ts` wraps Leaflet. The browser only draws and previews shapes; validation and area are
 always computed by SQL Server.
@@ -74,4 +74,5 @@ on the server. The client only mirrors them (state machines, password policy) fo
 - **Methodologies**: catalog/versioning in `methodology_service`; project selection in `project_methodology_service`, which
   builds facts from project data and runs `rules/methodology_engine.py` (pure, deterministic, versioned engine). The
   engine output is stored as an append-only evaluation; people review, confirm and lock.
+- **Laboratory**: `lab_service` (project side: engagements, samples, custody, shipments, read model) and `laboratory_service` (laboratory side: receipt, tests, results, QA, retests). Two routers: `/lab` (project) and `/laboratory` (allow-list `*LabView` schemas built in `lab_mappers`). Custody, QA reviews and approved results are protected by DB triggers.
 - **Time**: stored as naive UTC `datetime2`, emitted as ISO-8601 with `Z`.

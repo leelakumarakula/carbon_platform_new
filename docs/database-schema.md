@@ -127,6 +127,23 @@ Shared services added in Phase 2:
 | `mrv_datasets` | `dataset_code` unique, version + `supersedes_id`; 7 statuses (filtered unique: one open per period); `snapshot` JSON + `snapshot_sha256`; configuration gaps; `environment` |
 | `mrv_qa_reviews` | checks JSON, result PASS/FAIL/REQUIRES_CORRECTION, start/complete stamps |
 
+## Phase 6 tables (§7.7 samples / laboratory) — migration 0009
+
+| Table | Key columns / rules |
+|---|---|
+| `project_laboratory_engagements` | project, laboratory organization, locked methodology version; PROPOSED/ACTIVE/ENDED; `replaces_engagement_id`; proposed / accepted / ended stamps, `ended_side` PROJECT/LABORATORY, `end_reason` (required when ENDED); CHECK proposer ≠ accepter; filtered unique: one ACTIVE and one PROPOSED per project + laboratory; `environment` |
+| `project_laboratory_engagement_rules` | engagement × methodology monitoring rule (composite PK) — the engagement scope (LABORATORY rules only) |
+| `lab_samples` | `sample_code` unique (`seq_sample_code`, SMP-); `root_sample_id` (NOT NULL, self-FK) and `parent_sample_id` (splits); `field_collection_id` (never re-pointed), point, period, farm, project, methodology version, engagement, laboratory; 12 custody states; description, depth top/bottom, quantity + unit, container label, seal, accession number; registered / sealed stamps; `environment` |
+| `sample_custody_events` | append-only (`trg_sample_custody_events_append_only`); unique (sample, `sequence_no`); event type, from/to state, actor user / organization / role / side, occurred / recorded at, location, lat/lon, seal, shipment, exception type (required for EXCEPTION_RECORDED), reason (required for REJECTED / EXCEPTION / VOIDED), document |
+| `lab_shipments` | `shipment_code` unique (`seq_shipment_code`, SHP-); DRAFT/DISPATCHED/RECEIVED/CANCELLED; carrier, tracking; created / dispatched / received stamps; cancel reason |
+| `lab_shipment_items` | unique (shipment, sample); filtered unique: one open (IN_SHIPMENT) item per sample; receipt condition, observed seal, reason, received by / at |
+| `lab_tests` | `test_code` unique (`seq_lab_test_code`, LT-); sample, root sample, project, laboratory, engagement, methodology version, rule, MRV plan measurement; REQUESTED/IN_PROGRESS/RESULT_SUBMITTED/CLOSED/CANCELLED; `retest_of_test_id`, retest reason / requester; filtered unique (sample, rule) for non-retest, non-cancelled tests |
+| `lab_results` | test + `version`, supersedes / superseded-by; sample, root sample, project, laboratory, methodology version, rule, plan measurement; `result_type` NUMERIC/TEXT with CHECK exactly one of `value_number` / `value_text`; unit (verbatim); analysed at, analyst, method, `report_document_id`; `source` MANUAL/LIMS_IMPORT (+ `external_result_id`, unique per laboratory); 8 statuses; filtered unique: one APPROVED per root sample + rule; trigger `trg_lab_results_approved_immutable` (an APPROVED row changes only to SUPERSEDED, and is never deleted) |
+| `lab_result_qa_reviews` | append-only (`trg_lab_result_qa_reviews_append_only`); reviewer, decision, checks JSON (`ISJSON`), notes, configuration acknowledgement |
+
+0009 also widens `documents.category` with `LAB_REPORT` and `CUSTODY_DOCUMENT` (PDF only, enforced by the document service);
+its downgrade refuses to run while documents of those categories exist. No Phase 5 table changes.
+
 ## Migrations
 
 `backend/alembic/versions/20261002_0001_phase1_identity_access_audit.py` and
@@ -138,7 +155,8 @@ Shared services added in Phase 2:
 `20261003_0007_phase5_field_rules_governance.py` (decisions S1/S2: `field_rules` JSON on design versions and field records,
 `checklist_version` and `gps_tolerance_m` on field records; existing rows backfilled with the defaults in force then) and
 `20261003_0008_methodology_measurement_source.py` (decision V2-A: `methodology_monitoring_rules.measurement_source`; DEMO rule DM1 →
-LABORATORY, other existing rows → UNCLASSIFIED; one methodology change-history entry per backfilled row). Spatial
+LABORATORY, other existing rows → UNCLASSIFIED; one methodology change-history entry per backfilled row) and
+`20261003_0009_phase6_laboratory.py` (9 laboratory tables, the SMP- / SHP- / LT- sequences, three triggers, document categories). Spatial
 indexes (`six_*`) are hand-written SQL and excluded from autogenerate by `include_object` in `alembic/env.py`. Generate new revisions with
 `alembic revision --autogenerate`, review them, and add raw SQL (triggers, spatial indexes) by hand.
 `alembic check` must report no drift before a phase is closed.

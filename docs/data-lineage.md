@@ -26,9 +26,13 @@ CREDIT → REGISTRY → VERIFICATION → CALCULATION RUN → METHODOLOGY VERSION
 | Field collection → point, collector, GPS, evidence | `field_collection_records` (versioned, `supersedes_id`) → `mrv_evidence` (`document_id`, SHA-256) | 5 |
 | Monitoring record → measurement → plan | `monitoring_records` (versioned) | 5 |
 | MRV dataset → everything above | `mrv_datasets.snapshot` (frozen JSON of plan, period, design versions, strata, points, accepted collections, records, evidence checksums) + `snapshot_sha256`, re-verified on approval; `mrv_qa_reviews` | 5 |
-| Field collection → (later) physical sample → lab result | Decision V2: sample-based parameters (SOC, bulk density, …) are authoritative only as an APPROVED laboratory result. Phase 5 stores no analytical value; the field collection record is the anchor the Phase 6 sample will reference | 5 → 6 |
+| Field collection → (later) physical sample → lab result | Decision V2: sample-based parameters (SOC, bulk density, …) are authoritative only as an APPROVED laboratory result. Phase 5 stores no analytical value; the field collection record is the anchor of the Phase 6 sample (`lab_samples.field_collection_id`) | 5 → 6 |
 | Monitoring record → authority | Decision V2-B: each snapshot record carries `origin` (METHODOLOGY / PROJECT_CONFIGURED), `measurement_source`, `data_role` and `authoritative`. User-created/custom measurements are supplementary observations and are not authoritative laboratory results or authoritative calculation inputs. Authoritative analytical parameters originate from methodology-defined monitoring rules and their declared measurement provenance. A calculation may only use authoritative methodology records and approved laboratory results | 5 |
-| Samples, lab, calculation, verification, registry, credits | — | 6–9 |
+| Field collection version → sample → root sample / splits | `lab_samples` (`field_collection_id` kept forever, `root_sample_id`, `parent_sample_id`, point, farm, period, methodology version, engagement) | 6 |
+| Sample → custody | `sample_custody_events` (append-only, ordered `sequence_no`, actor / organization / side / seal / shipment / document) and `lab_shipment_items` (receipt condition, observed seal) | 6 |
+| Methodology rule → test → result versions | `lab_tests` (engagement, rule, MRV plan measurement, retest chain) → `lab_results` (versioned, supersedes, report document + SHA-256, analyst, source) → `lab_result_qa_reviews` (append-only) | 6 |
+| Approved laboratory result → everything above | `GET /lab/results/{id}/lineage`: result → versions → test → sample / root → field collection version → point → stratum → farm → project → locked methodology rule → plan measurement, plus shipments, receipts, QA reviews, custody. Exactly one APPROVED result per root sample + rule | 6 |
+| Calculation, verification, registry, credits | — | 7–9 |
 
 Reverse lineage, from a farm up to its projects, works through `project_farms` (`GET /projects/my-participation` for the
 farmer's own farms; project farms lists for staff). Every link above is written in the same transaction as its

@@ -93,7 +93,7 @@ Schema changes go through Alembic only (agent rules 4–5).
 | admin / security / support / methodology / methodologyqa / platformgis | Platform Admin / Security Admin / Support / Methodology Specialist (author) / Methodology Specialist (approver) / Platform GIS Specialist | platform-wide |
 | pm, supervisor, collector, gis, mrv, analyst, qa, registry, credits, finance | developer-side roles | Project Developer A (DEMO) |
 | farmer | Farmer | Farmer Producer Group E (DEMO) |
-| labtech, labmanager | Lab Technician, Lab Manager | Soil Laboratory B (DEMO) |
+| labtech, labmanager, labqa | Lab Technician, Lab Manager, second Lab Manager (independent laboratory QA) | Soil Laboratory B (DEMO) |
 | vvb | VVB / ACVA Reviewer | Verification Body C (DEMO) |
 | buyer | Buyer | Buyer D (DEMO) |
 
@@ -113,7 +113,12 @@ specialist recommendation and confirmation, so its methodology version is locked
 Phase 5 adds DEMO MRV data on the Niphad project: an approved MRV plan (CONFIGURATION_REQUIRED gaps acknowledged — the DEMO
 methodology configures no sampling rules), a monitoring period in data collection, two strata, an approved sampling design,
 six points assigned to `collector@demo.carbon.example` (sign in on a phone-sized window and open **Field work**), accepted and
-submitted field records with DEMO placeholder photos, and a COLLECTING dataset. There are no lab results, calculations or credits.
+submitted field records with DEMO placeholder photos, and a COLLECTING dataset.
+
+Phase 6 adds the manual laboratory flow on the Niphad project: `mrv@` proposes an engagement with Soil Laboratory B, `labmanager@`
+accepts, `collector@` registers and seals a sample, `supervisor@` ships it, `labtech@` receives, registers, analyses and submits a
+DEMO placeholder result with a DEMO PDF, and `labqa@` approves it after laboratory QA (open **Laboratory** as a lab user, or the
+**Samples & laboratory** tab of the MRV workspace). It is not a real analysis; there are no calculations or credits.
 
 Demo and live records cannot be mixed; the API rejects it with `ENVIRONMENT_MISMATCH`.
 
@@ -136,7 +141,7 @@ npm run e2e:smoke                       # E2E smoke (API + ng serve running, DEM
 
 The 19 roles in spec §4 (plus Platform GIS Specialist, decision D5) are defined in `backend/app/security/permissions.py`. See
 [docs/roles-permissions.md](docs/roles-permissions.md). Phase 2 added the farmer and farm permissions to the
-field, project, GIS, QA, MRV and finance roles, and `farmers.self` to Farmer. Phase 3 added `projects.*` and `standards.manage`; Phase 4 added `methodologies.*`; Phase 5 added `mrv.*` and `sampling.*`. Each later phase adds its module's permissions.
+field, project, GIS, QA, MRV and finance roles, and `farmers.self` to Farmer. Phase 3 added `projects.*` and `standards.manage`; Phase 4 added `methodologies.*`; Phase 5 added `mrv.*` and `sampling.*`; Phase 6 added `lab.*`. Each later phase adds its module's permissions.
 
 ## Workflow
 
@@ -145,7 +150,8 @@ Each transition is validated, then written to `workflow_events` and `audit_logs`
 enforced by database triggers. The farmer and farm workflows are described in [docs/farmer-workflow.md](docs/farmer-workflow.md), the project
 workflow in [docs/project-workflow.md](docs/project-workflow.md), methodology selection in
 [docs/methodology-engine.md](docs/methodology-engine.md), MRV in [docs/mrv-workflow.md](docs/mrv-workflow.md) and
-[docs/sampling-workflow.md](docs/sampling-workflow.md), lineage in [docs/data-lineage.md](docs/data-lineage.md).
+[docs/sampling-workflow.md](docs/sampling-workflow.md), samples and laboratory analysis in
+[docs/laboratory-workflow.md](docs/laboratory-workflow.md), lineage in [docs/data-lineage.md](docs/data-lineage.md).
 
 ## External integrations
 

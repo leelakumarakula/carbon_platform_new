@@ -253,7 +253,7 @@ def test_field_collector_rules_and_isolation(client: TestClient, db: Session, c:
     client.patch(f"{MRV}/field-collections/{fc['id']}", headers=c.collector.headers, json={
         "collected_at": "2026-07-01T09:00:00Z", "gps_latitude": float(pts[0]["latitude"]) + 0.001, "gps_longitude": float(pts[0]["longitude"]),
         "actual_depth_top_cm": "0", "actual_depth_bottom_cm": "30",
-        "checklist": {"location_confirmed": True, "depth_measured": True, "sample_labelled": True, "photo_taken": True}})
+        "checklist": dict.fromkeys(fc["required_checklist"], True)})
     photo(client, c, c.collector, "FIELD_COLLECTION", fc["id"])
     got = client.get(f"{MRV}/field-collections/{fc['id']}", headers=c.collector.headers).json()
     assert 100 < float(got["distance_from_point_m"]) < 125

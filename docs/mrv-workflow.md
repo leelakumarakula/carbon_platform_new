@@ -207,7 +207,7 @@ The automated QA checks are deterministic (`mrv_service.qa_checks`):
 | duplicate_records | no duplicate accepted collections or monitoring records |
 | invalid_locations | no two points closer than 1 m |
 | inconsistent_data (WARN) | actual depth equals planned depth |
-| sample_analysis_pending (WARN) | "Awaiting laboratory analysis": methodology sampling-point parameters (e.g. SOC) are AWAITING_ANALYSIS; no value is entered |
+| sample_analysis_pending (WARN) | "Awaiting laboratory analysis": methodology sampling-point parameters (e.g. SOC) are AWAITING_ANALYSIS; no value is entered. Since Phase 6 the field record shows ANALYSED (display only) once every in-scope rule has an APPROVED laboratory result |
 | configuration (WARN) | CONFIGURATION_REQUIRED gaps |
 
 ## Lineage
@@ -244,7 +244,7 @@ existing self-service pages.
 |---|---|---|---|---|
 | GPS tolerance from the planned point (S1) | 30 m | **PLATFORM DEFAULT** | `GPS_MAX_DISTANCE_M`, or the methodology SAMPLING key `gps_max_distance_m` | design version `field_rules`; field record `gps_tolerance_m` + `field_rules` |
 | Duplicate sampling-point threshold (S1) | 1 m | **PLATFORM DEFAULT** | `SAMPLING_DUPLICATE_DISTANCE_M`, or `duplicate_point_distance_m` | design version `field_rules` |
-| Field checklist (S2) | `PLATFORM-DEFAULT-1`: location confirmed, depth measured, sample labelled, photo taken | **PLATFORM DEFAULT** | `FIELD_CHECKLIST_VERSION` (versioned list in `services/field_rules.py`), or `field_checklist` | design version `field_rules`; field record `checklist_version` + items completed (`checklist`) |
+| Field checklist (S2) | `PLATFORM-DEFAULT-2` (Phase 6): location confirmed, depth measured, sample container labelled with its sample code (SMP-…), photo taken (`PLATFORM-DEFAULT-1` kept on older records) | **PLATFORM DEFAULT** | `FIELD_CHECKLIST_VERSION` (versioned list in `services/field_rules.py`), or `field_checklist` | design version `field_rules`; field record `checklist_version` + items completed (`checklist`) |
 | Minimum photos per sample (S2) | 1 | **PLATFORM DEFAULT** | `FIELD_MIN_PHOTOS_PER_SAMPLE`, or `min_photos_per_sample` | design version / field record `field_rules` |
 | Plan approval with CONFIGURATION_REQUIRED gaps (V1) | DEMO / non-production: allowed with audited acknowledgement; production: **blocked** | **PLATFORM GOVERNANCE RULE** | `mrv_service.gap_approval_allowed()` | plan `gaps_acknowledged_by`, `MRV_PLAN_APPROVED` audit |
 | Quantification approach, sampling depth, minimum samples per stratum, statistical design, precision, confidence, stratification variables | none | **METHODOLOGY REQUIREMENT** (only when the locked version's SAMPLING rule configures it; otherwise CONFIGURATION_REQUIRED) | methodology version SAMPLING rule | plan / design version (`requirement_source`, gaps) |

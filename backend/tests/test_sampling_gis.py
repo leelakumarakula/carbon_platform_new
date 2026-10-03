@@ -159,8 +159,7 @@ def test_gps_outside_farm_flagged_and_justified(client: TestClient, db: Session,
     fc = client.post(f"{MRV}/field-collections", headers=c.collector.headers, json={"sampling_point_id": pt["id"]}).json()
     r = client.patch(f"{MRV}/field-collections/{fc['id']}", headers=c.collector.headers, json={
         "collected_at": "2026-07-01T09:00:00Z", "gps_latitude": 23.4990, "gps_longitude": 76.4990, "actual_depth_top_cm": "0",
-        "actual_depth_bottom_cm": "30", "checklist": {"location_confirmed": True, "depth_measured": True, "sample_labelled": True,
-                                                      "photo_taken": True}})
+        "actual_depth_bottom_cm": "30", "checklist": dict.fromkeys(fc["required_checklist"], True)})
     got = r.json()
     assert got["gps_inside_farm"] is False and float(got["distance_from_point_m"]) > 30
     photo(client, c, c.collector, "FIELD_COLLECTION", fc["id"])

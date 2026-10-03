@@ -21,20 +21,21 @@ import { MrvDatasetsPanel } from './panels/mrv-datasets-panel';
 import { MrvDesignPanel } from './panels/mrv-design-panel';
 import { MrvEvidencePanel } from './panels/mrv-evidence-panel';
 import { MrvHistoryPanel } from './panels/mrv-history-panel';
+import { MrvSamplesPanel } from './panels/mrv-samples-panel';
 import { MrvPeriodsPanel } from './panels/mrv-periods-panel';
 import { MrvPlansPanel } from './panels/mrv-plans-panel';
 import { MrvPointsPanel } from './panels/mrv-points-panel';
 import { MrvRecordsPanel } from './panels/mrv-records-panel';
 import { MrvStrataPanel } from './panels/mrv-strata-panel';
 
-const TABS = ['plans', 'periods', 'strata', 'design', 'points', 'data', 'evidence', 'datasets', 'history'];
+const TABS = ['plans', 'periods', 'strata', 'design', 'points', 'data', 'evidence', 'samples', 'datasets', 'history'];
 
 /** MRV workspace of one project (locked methodology). Tabs that work per monitoring period share the period picker. */
 @Component({
   selector: 'app-mrv-project-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [FormsModule, MatTabsModule, MatFormFieldModule, MatSelectModule, PageHeader, StateView, StatusBadge, MrvPlansPanel, MrvPeriodsPanel,
-    MrvStrataPanel, MrvDesignPanel, MrvPointsPanel, MrvRecordsPanel, MrvEvidencePanel, MrvDatasetsPanel, MrvHistoryPanel],
+    MrvStrataPanel, MrvDesignPanel, MrvPointsPanel, MrvRecordsPanel, MrvEvidencePanel, MrvDatasetsPanel, MrvHistoryPanel, MrvSamplesPanel],
   template: `
     <app-state-view [loading]="loading()" [error]="error()" (retry)="load()" />
     @if (project(); as p) {
@@ -81,6 +82,9 @@ const TABS = ['plans', 'periods', 'strata', 'design', 'points', 'data', 'evidenc
         </ng-template></mat-tab>
         <mat-tab label="Evidence"><ng-template matTabContent>
           <app-mrv-evidence-panel [projectId]="p.id" [period]="period()" [farms]="farms()" />
+        </ng-template></mat-tab>
+        <mat-tab label="Samples & laboratory"><ng-template matTabContent>
+          <app-mrv-samples-panel [projectId]="p.id" [period]="period()" />
         </ng-template></mat-tab>
         <mat-tab label="Datasets & QA"><ng-template matTabContent>
           <app-mrv-datasets-panel [projectId]="p.id" [periods]="periods()" (changed)="reloadPeriods()" />
