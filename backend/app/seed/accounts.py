@@ -9,9 +9,10 @@ from sqlalchemy.orm import Session
 
 from app.audit.service import record
 from app.core.context import RequestContext
-from app.core.errors import AppError
+from app.core.errors import AppError, ValidationFailed
 from app.models import Organization, OrganizationUser, Role, User, UserRole
 from app.models.base import Environment, utcnow
+from app.schemas.common import _normalise_email
 from app.security.passwords import hash_password, validate_password_policy
 from app.seed.reference import PLATFORM_ORG_CODE
 
@@ -43,7 +44,11 @@ def _member(db: Session, user: User, org: Organization, title: str | None = None
 def bootstrap_admin(db: Session, email: str, password: str, full_name: str) -> tuple[User, bool]:
     """Create the first Platform Admin if no user with that email exists. Returns (user, created)."""
     validate_password_policy(password)
-    email = email.strip().lower()
+    try:
+        email = _normalise_email(email)  # same check as sign-in, so the admin can always log in
+    except ValueError as e:
+        raise ValidationFailed(f"BOOTSTRAP_ADMIN_EMAIL is not accepted at sign-in: {e}",
+                               error_code="INVALID_EMAIL") from e
     user = db.scalars(select(User).where(User.email == email)).first()
     if user:
         return user, False
