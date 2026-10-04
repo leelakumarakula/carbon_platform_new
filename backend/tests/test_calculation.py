@@ -133,11 +133,14 @@ def test_framework_is_deterministic_decimal_and_never_invents_a_step() -> None:
         Constant("K", "2", "TEST", " ")                                           # a constant must cite its source
 
 
-def test_registry_ships_only_vm0042_and_the_test_fixture_is_not_registered(client: TestClient, db: Session) -> None:
-    assert [m.code for m in registry.modules()] == ["VM0042-V2.2-QA2-QA3"] and registry.resolve("TEST", "1") is None
-    assert registry.modules()[0].readiness == fw.NOT_PRODUCTION_READY and registry.modules()[0].calculation_rules_version == 0
+SHIPPED = ["VM0042-V2.2-QA2-QA3", "GS402-ZT-A1", "GS402-IT-A1", "GS402-IT-A3", "GS402-CC-A1", "GS402-CC-A3", "VM0047-V1.1-CENSUS", "VM0044-V1.2", "CCTS-FR05.002", "CCTS-FR05.001", "VM0051-V1.1-QA3", "CCTS-AG04.002", "GS403-V2.1"]
+
+
+def test_registry_ships_the_methodology_modules_and_the_test_fixture_is_not_registered(client: TestClient, db: Session) -> None:
+    assert [m.code for m in registry.modules()] == SHIPPED and registry.resolve("TEST", "1") is None
+    assert all(m.readiness == fw.NOT_PRODUCTION_READY and m.calculation_rules_version == 0 for m in registry.modules())
     u = make_user(db, roles=[("CALCULATION_ANALYST", make_org(db))])
-    assert [m["code"] for m in client.get(f"{CALC}/modules", headers=login(client, u)).json()] == ["VM0042-V2.2-QA2-QA3"]
+    assert [m["code"] for m in client.get(f"{CALC}/modules", headers=login(client, u)).json()] == SHIPPED
 
 
 # ---------------------------------------------------------------- the real DEMO path stays blocked

@@ -111,6 +111,17 @@ def _add_measurement(db: Session, plan: MrvPlan, m: MeasurementIn) -> MrvPlanMea
     return row
 
 
+def _module_optional_rules(v: Any) -> set[str]:
+    """Monitoring rules the version's calculation module reads only as optional inputs: their plan measurements are not required
+    (dataset QA does not fail when, e.g., no fertiliser or burning was recorded). Without a module every rule stays required."""
+    from app.calculation import registry
+    module = registry.by_code(v.calculation_module_code) if getattr(v, "calculation_module_code", None) else None
+    if module is None:
+        return set()
+    required = {var.rule_code for var in module.variables if var.rule_code and var.required}
+    return {var.rule_code for var in module.variables if var.rule_code and not var.required} - required
+
+
 def create_plan(db: Session, ctx: RequestContext, principal: Principal, data: PlanIn) -> MrvPlan:
     p = mrv_access.project(db, principal, data.project_id, P.MRV_MANAGE)
     pm, v = mrv_access.locked_methodology(db, p)
@@ -132,6 +143,7 @@ def create_plan(db: Session, ctx: RequestContext, principal: Principal, data: Pl
                    supersedes_id=current.id if current else None, created_by=principal.user_id)
     db.add(plan)
     db.flush()
+    optional = _module_optional_rules(v)
     for r in req.monitoring:  # methodology monitoring rules become measurement definitions (not invented)
         # LABORATORY parameters are measured on the samples, so they attach to sampling points (decision V2-A: from the declared
         # provenance, not from the unit); other parameters keep the Phase 5 level mapping
@@ -139,7 +151,8 @@ def create_plan(db: Session, ctx: RequestContext, principal: Principal, data: Pl
         db.add(MrvPlanMeasurement(mrv_plan_id=plan.id, code=r["rule_code"][:40], name=(r["parameter"] or r["title"])[:200], category="OTHER",
                                   value_type="NUMBER" if r["unit"] else "TEXT", unit=r["unit"],
                                   level=r.get("data_level") or ("SAMPLING_POINT" if (lab or r["unit"]) else "FARM"),
-                                  frequency=r["frequency"], required=True, source="METHODOLOGY", monitoring_rule_id=uuid.UUID(r["rule_id"])))
+                                  frequency=r["frequency"], required=r["rule_code"] not in optional, source="METHODOLOGY",
+                                  monitoring_rule_id=uuid.UUID(r["rule_id"])))
     db.flush()
     for m in data.measurements:
         _add_measurement(db, plan, m)

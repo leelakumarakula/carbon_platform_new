@@ -43,6 +43,7 @@ from app.models import (
     ProjectMethodology,
     ProjectStratum,
     SamplingDesignVersion,
+    SamplingPoint,
     StratumCharacteristic,
     StratumFarm,
 )
@@ -129,8 +130,9 @@ def evaluate(db: Session, p: Project, period: MonitoringPeriod, crediting: Proje
     if p.status not in CALC_PROJECT_STATES:
         ev.blockers.append(Blocker("PROJECT_NOT_IN_MRV", f"Calculation needs a project in monitoring (it is {p.status})."))
     # ---- module (decision A1 / A2 / A10; C3 / C4)
-    module = (resolver or registry_resolve)(ev.methodology.code, ev.version.version_label)
     selected = ev.version.calculation_module_code
+    module = (resolver(ev.methodology.code, ev.version.version_label) if resolver
+              else registry_resolve(ev.methodology.code, ev.version.version_label, selected))
     if module is not None and selected and module.code != selected:
         ev.blockers.append(Blocker("CONFIGURATION_REQUIRED", f"The methodology version selected calculation module {selected}, which is not "
                                    "the registered module for it.", "MODULE_SELECTION_MISMATCH", {"selected": selected, "registered": module.code}))
@@ -462,8 +464,17 @@ def _record_inputs(db: Session, var: fw.Variable, rules: dict[str, MethodologyMo
                         sampling_point_id=r.sampling_point_id, field_collection_id=r.field_collection_id, monitoring_rule_id=rule.id,
                         plan_measurement_id=meas.id, requirement_source="METHODOLOGY",
                         context={"period": pd.label, "phase": r.measurement_phase,
-                                 "observed_on": r.observed_on.isoformat() if r.observed_on else None}))
+                                 "observed_on": r.observed_on.isoformat() if r.observed_on else None,
+                                 **(_stratum_context(db, pd, _record_stratum(db, r)) if (r.stratum_id or r.sampling_point_id) else {})}))
     return out
+
+
+def _record_stratum(db: Session, r: MonitoringRecord) -> str | None:
+    """The stratum of a record: its own, or that of its sampling point (per-unit records of census methods)."""
+    if r.stratum_id:
+        return str(r.stratum_id)
+    sp = db.get(SamplingPoint, r.sampling_point_id) if r.sampling_point_id else None
+    return str(sp.stratum_id) if sp is not None and sp.stratum_id else None
 
 
 def _num(v: Any) -> str:

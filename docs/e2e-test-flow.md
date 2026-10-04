@@ -325,6 +325,169 @@ On the approved version's Calculation tab: meth1@ **Request production readiness
 
 ---
 
+## Stage K: Gold Standard SOC (GS 402) calculation, end to end
+
+The Gold Standard SOC Framework v1.0 is one methodology with five calculation modules, one per activity module and approach.
+Run K1–K3 once, then follow **one** of the two paths: **K4 measured** (Approach 1) or **K5 default factors** (Approach 3).
+
+### K1. Catalog and methodology (admin, meth1@ → meth2@)
+1. **Standards & activities**:
+   - standard `GS` · `Gold Standard for the Global Goals` · owner `Gold Standard Foundation` · Voluntary;
+   - activity `AGR-SOC` · `Agriculture - soil organic carbon`, offered under Gold Standard.
+2. **Methodologies → Add**: Code exactly **`GS402`**, standard Gold Standard, activity `AGR-SOC`.
+3. Draft version: label exactly **`1.0`**, effective from `01/01/2020`, source `Gold Standard SOC Framework Methodology v1.0`.
+4. **Calculation tab → Calculation module**: the dropdown shows five GS402 options. Choose one:
+
+| Your project | Module |
+|---|---|
+| Zero tillage, with soil sampling | **GS 402 + 402.4 Zero Tillage - Approach 1** (`GS402-ZT-A1`) |
+| Reduced tillage, with soil sampling | `GS402-IT-A1` |
+| Reduced tillage, no sampling (IPCC factors) | **GS 402 + 402.1 Improved Tillage - Approach 3** (`GS402-IT-A3`) |
+| Cover crops, with soil sampling | `GS402-CC-A1` |
+| Cover crops, no sampling (national Tier 2 factors) | `GS402-CC-A3` |
+
+   **Use this module** → the draft receives 8 rules (`GS-BSL` … `GS-NET`) and the monitoring rules the module needs.
+   You can switch the module while the version is a draft.
+5. Add the applicability rules (`standard_code EQUALS "GS"`, `activity_code EQUALS "AGR-SOC"`) → **Submit**; meth2@ **Approves**.
+
+### K2. Farm, project, strata
+Stages C–F as before, locking the project on **GS402 1.0**. In **MRV → Stratification**, create one project stratum `S1` for the
+project farm; gis@ approves it. Gold Standard has **no control sites**: the baseline is the project's own state at the project start.
+
+### K3. Two monitoring periods and farm activity
+1. **Period 0**, purpose BASELINE (e.g. `2025-06-01`–`2026-05-31`) and **Period 1**, purpose MONITORING (`2026-06-01`–`2027-05-31`).
+   The calculation runs on Period 1.
+2. **Monitoring data**, per farm:
+   - phase **BASELINE**, one record per historical year (up to 5 years before the project start): `GS_FERT_N` (kg N),
+     `GS_DIESEL` (L), `GS_YIELD` (kg/ha), …;
+   - phase **PROJECT**, observed inside Period 1: the same activities under the new practice.
+3. Project level (no farm): `GS_FEF_DIESEL` e.g. `0.00268` t CO2e/L (the national inventory or IPCC 2006 factor). This is needed only if
+   diesel use went up.
+4. Cover crops only: `GS_CC_SEED` (kg per farm), `GS_CC_EF_SP`, `GS_CC_EF_ST`, `GS_CC_DIST`.
+
+### K4. Path A: measured (Approach 1: `GS402-ZT-A1`, `-IT-A1`, `-CC-A1`)
+1. For **each** period: a sampling design with **at least 3 samples in S1**, depth `0`–`50` cm (zero tillage) or `0`–`30` cm or deeper
+   (others). Generate points, assign them, collect them (probe diameter and number of cores required), sup@ accepts.
+2. Laboratory: engagement with rules **`GS_OC`** and **`GS_SOIL_MASS`**. On each field record register **two depth samples**, e.g.:
+   - zero tillage: `0`–`30` and `30`–`50`;
+   - others: `0`–`15` and `15`–`30`.
+   labtech@ enters organic carbon in **g/kg** and dry fine-earth mass in **g**; labqa@ approves.
+3. Approve the dataset of each period.
+
+### K5. Path B: default factors (Approach 3: `GS402-IT-A3`, `-CC-A3`)
+No soil sampling. In **Monitoring data**, choose each per-stratum measurement, pick **Stratum S1**, and record (Period 1):
+
+| Measurement | Example (tropical moist, full → reduced tillage) |
+|---|---|
+| `GS_SOC_REF` (t C/ha) | `47` (from a soil map or measurements; document the source) |
+| `GS_F_LU` | `0.83` |
+| `GS_F_MG_BL` / `GS_F_MG_PR` | `1.00` / `1.04` |
+| `GS_F_I_BL` / `GS_F_I_PR` | `1.00` / `1.00` |
+| `GS_T_BL` (yr) | `20` |
+| `GS_T_PR` (yr) | `1` (years since the project start at the end of Period 1) |
+| `GS_U_F_LU`, `GS_U_F_MG_PR` (%) | `11`, `7` (the ± from the IPCC table; optional) |
+
+A factor with no ± % gets the methodology's default (standard error 50 %, t = 3), and that produces a large uncertainty deduction.
+Record the ± values whenever the source gives them. Approve the dataset.
+
+### K6. Calculate (analyst@) and read the result
+**Calculations** → Period 1 → readiness (only the warning NOT_PRODUCTION_READY) → **New run** → **Freeze** → **Execute**. The outputs are:
+- `SOC_0_S1` and `SOC_T_S1` (t C/ha);
+- `DSOC_C` (t C);
+- `UNC` and `UD` (the uncertainty and the deduction above 20 %);
+- `PE_*` (fertiliser, fuel, electricity, agrochemicals, seed);
+- `LK_TOTAL`;
+- `BUFFER` (20 %);
+- **`GS_VER_TOTAL`** (whole tonnes, rounded down).
+
+Typical blockers:
+
+| Blocker | Meaning |
+|---|---|
+| `PREVIOUS_PERIOD_REQUIRED` | Approach 1: Period 0 is not approved |
+| `INSUFFICIENT_SAMPLES` | Fewer than 3 samples in a campaign |
+| `SAMPLING_DEPTH_INSUFFICIENT` | Zero tillage sampled shallower than 50 cm |
+| `MISSING_REQUIRED_INPUT` | A missing factor, `GS_FEF_DIESEL`, or `GS_LK_EF` after a yield drop |
+
+**Paris alignment:** Gold Standard credits vintages from 1 January 2026 only under a Paris-aligned methodology (GS 119). For a test period in 2026 or later, record project-level `GS_PAA` = `YES`; otherwise `PAA_BLOCKED_SHARE` is 1 and `GS_VER_TOTAL` is 0. In production, record YES only after Gold Standard approves the transition.
+
+Production readiness works as in J8.
+
+---
+
+## Stage L: VM0047 ARR (census-based: trees planted on farmland)
+
+For tree planting on farms where farming continues, with **at most 50 trees per hectare**.
+
+### L1. Methodology (meth1@ → meth2@)
+1. Add a methodology with code exactly **`VM0047`** (Verified Carbon Standard, an ARR activity, e.g. `ARR`, offered under VCS).
+2. Create version **`1.1`** with effective from `05/14/2025`.
+3. **Calculation tab** → **VM0047 v1.1 - census-based approach** → **Use this module**.
+4. Add the applicability rules, **Submit**, then meth2@ **Approves**.
+
+### L2. Project and strata
+Stages C–F. Lock the project on **VM0047 1.1**, then create stratum `S1` (the planted fields) and have gis@ approve it.
+
+### L3. Period 0: the complete census (t = 0)
+1. Period 0, purpose BASELINE.
+2. **Monitoring data** → `V47_N` → Stratum S1 → the number of trees planted, e.g. `400` (S1 must be at least 8 ha for 400 trees).
+3. Approve the dataset.
+
+### L4. Period 1: the monitoring event (at most 5 years later)
+1. **Sampling design**: one point per sampled tree, e.g. 10 points in S1.
+2. Generate the points.
+3. **Monitoring data** (level *Sampling point*), for each point:
+   - `V47_ALIVE`: `1` alive, `0` dead or not found;
+   - `V47_AGB`: kg dry matter from the allometric equation, e.g. `48` (alive trees only; `0` below the size threshold);
+   - `V47_BURNED`: `0` or `1`.
+4. Also record:
+   - `V47_N` for S1 again (`400`);
+   - per farm, `V47_FSN` and `V47_FON` (kg N) if fertiliser was used;
+   - project level: `V47_ROOT_SHOOT` e.g. `0.25`, and `V47_NPR` e.g. `12`.
+5. Approve the dataset.
+
+### L5. Calculate
+Calculations → Period 1 → run. The outputs are:
+- `MORTALITY_S1`;
+- `C_PU_AVG_S1` (t C per tree);
+- `C_WOODY_S1`;
+- `DC_WP_T` (t CO2e);
+- `UNC_T`;
+- `PE_BURN` and `PE_FERT`;
+- `CR_T` and `CR_ANNUALIZED`;
+- `BUFFER` (minimum 12 %);
+- **`VCU_TOTAL`**.
+
+Blockers:
+
+| Blocker | Meaning |
+|---|---|
+| `DENSITY_EXCEEDED` | More than 50 trees per ha: use the area-based approach, which is not built |
+| `INSUFFICIENT_SAMPLES` | Fewer than 2 live sampled trees |
+| `PREVIOUS_PERIOD_REQUIRED` | The census period is not approved |
+
+---
+
+## Stage M: other methodologies (same flow as Stage J; only the data differ)
+
+For each methodology:
+1. Create the methodology with the **exact code and version label** below.
+2. Choose the module on the **Calculation tab**, then submit and approve the version.
+3. Lock a project on it.
+4. Record the data listed, using **Monitoring data**: level *Project*, *Farm*, *Stratum* or *Sampling point* as shown.
+5. Approve the dataset, then calculate.
+
+The **Calculation tab** shows every data item the module needs, and every interpretation it uses.
+
+| Methodology (code / label) | Module | Data to record | Final output |
+|---|---|---|---|
+| Biochar `VM0044` / `1.2` | VM0044 v1.2 | Project, per batch / application: `V44_PRODUCED`, `V44_USED_SOIL`, `V44_USED_NONSOIL` (t dry), `V44_FCP` (fraction), `V44_HC_RATIO`, `V44_TEMP` (°C), `V44_TECH` HIGH/LOW, optional `V44_FEEDSTOCK`/`V44_PROCESS`, tool results in t CO2e | `VCU_TOTAL` |
+| CCTS A/R `BM-FR05.002` / `1.0` (mangroves: `BM-FR05.001`) | CCTS FR05.002 / FR05.001 | Two periods. Per plot (sampling point) `AR_PLOT_AGB` (t d.m.); project `AR_PLOT_AREA` (ha); optional `AR_BSL_STOCK`, `AR_SHRUB_CC` + `AR_B_FOREST`, `AR_GHG_E`, `AR_LK`; mangroves `AR_PLANT_YEAR` per stratum | `LCCC` |
+| Rice `VM0051` / `1.1` (CCTS: `BM-AG04.002` / `1.0`) | VM0051 QA3 / CCTS AG04.002 | Per farm and season (same observed-on date): `RI_AREA`, `RI_DAYS`, `RI_WATER`, `RI_PRESEASON`, `RI_STRAW` + `RI_STRAW_TIMING`, `RI_N`, …; the same with phase **BASELINE** for at least 3 look-back years; project `RI_REGION` (e.g. `SOUTH_ASIA`) | `CREDITS` |
+| GS A/R `GS403` / `2.1` | GS 403 v2.1 | Per plot `GA_PLOT_VOL` (m³); project `GA_PLOT_AREA`, `GA_BSL`, `GA_LK`, `GA_BURNING`, `GA_ISSUED_PRIOR`; optional MU factors `GA_WD`/`GA_BEF`/`GA_RS`, `GA_CR_LT`; `GA_PAA` = YES only if Gold Standard approved Paris alignment | `GSVER_PROJECT` |
+
+---
+
 ## Final checks
 
 1. **Project → Status history**: Draft → Data collection → Eligibility review → Standard selected → Activity selected → Methodology review → Methodology confirmed → MRV planned → Monitoring.

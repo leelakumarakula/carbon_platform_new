@@ -16,7 +16,7 @@ import { askReason } from '../../shared/reason-dialog';
 import { runAction } from '../../shared/run-action';
 import { StatusBadge } from '../../shared/status-badge';
 import { MrvApi } from '../mrv.api';
-import { Measurement, MonitoringRecord, Period, Plan, capturableInMrv, dataRoleLabel, mrvBadge, parseMeasurementValue } from '../mrv.models';
+import { Measurement, MonitoringRecord, Period, Plan, SamplingPoint, Stratum, capturableInMrv, dataRoleLabel, mrvBadge, parseMeasurementValue } from '../mrv.models';
 
 /** Monitoring data entry against the approved plan's configurable measurement definitions. Corrections create new versions. */
 @Component({
@@ -32,8 +32,16 @@ import { Measurement, MonitoringRecord, Period, Plan, capturableInMrv, dataRoleL
             <mat-select formControlName="measurement_id" data-testid="measurement">
               @for (m of farmMeasurements(); track m.id) { <mat-option [value]="m.id">{{ m.code }} · {{ m.name }}{{ m.unit ? ' (' + m.unit + ')' : '' }}</mat-option> }
             </mat-select></mat-form-field>
-          <mat-form-field subscriptSizing="dynamic"><mat-label>Farm</mat-label>
-            <mat-select formControlName="farm_id">@for (f of farms(); track f.farm_id) { <mat-option [value]="f.farm_id">{{ f.farm_code }} · {{ f.farm_name }}</mat-option> }</mat-select></mat-form-field>
+          @if (measurement()?.level === 'STRATUM') {
+            <mat-form-field subscriptSizing="dynamic"><mat-label>Stratum</mat-label>
+              <mat-select formControlName="stratum_id" data-testid="record-stratum">@for (s of projectStrata(); track s.id) { <mat-option [value]="s.id">{{ s.code }} · {{ s.name }}</mat-option> }</mat-select></mat-form-field>
+          } @else if (measurement()?.level === 'SAMPLING_POINT') {
+            <mat-form-field subscriptSizing="dynamic"><mat-label>Sampling point / planting unit</mat-label>
+              <mat-select formControlName="sampling_point_id" data-testid="record-point">@for (x of points(); track x.id) { <mat-option [value]="x.id">{{ x.point_code }} · {{ x.stratum_code }}</mat-option> }</mat-select></mat-form-field>
+          } @else if (measurement()?.level !== 'PROJECT') {
+            <mat-form-field subscriptSizing="dynamic"><mat-label>Farm</mat-label>
+              <mat-select formControlName="farm_id">@for (f of farms(); track f.farm_id) { <mat-option [value]="f.farm_id">{{ f.farm_code }} · {{ f.farm_name }}</mat-option> }</mat-select></mat-form-field>
+          }
           @if (measurement(); as m) {
             @if (m.value_type === 'CHOICE') {
               <mat-form-field subscriptSizing="dynamic"><mat-label>Value</mat-label>
@@ -57,11 +65,11 @@ import { Measurement, MonitoringRecord, Period, Plan, capturableInMrv, dataRoleL
       }
       <mat-checkbox [checked]="history()" (change)="history.set($event.checked)">Show superseded versions</mat-checkbox>
       <div class="table-wrap"><table class="table">
-        <thead><tr><th>Measurement</th><th>Farm / point</th><th>Value</th><th>Observed</th><th>Phase</th><th>Source</th><th>Role</th><th>Version</th><th>Status</th><th></th></tr></thead>
+        <thead><tr><th>Measurement</th><th>Farm / stratum</th><th>Value</th><th>Observed</th><th>Phase</th><th>Source</th><th>Role</th><th>Version</th><th>Status</th><th></th></tr></thead>
         <tbody>
           @for (r of records(); track r.id) {
             <tr>
-              <td>{{ r.measurement_code }} · {{ r.measurement_name }}</td><td>{{ farmCode(r.farm_id) }}</td>
+              <td>{{ r.measurement_code }} · {{ r.measurement_name }}</td><td>{{ where(r) }}</td>
               <td>{{ show(r.value) }} {{ r.unit ?? '' }}</td><td>{{ r.observed_on }}</td><td>{{ label(r.measurement_phase) }}</td><td>{{ label(r.source) }}</td><td [class.muted]="!r.authoritative">{{ roleLabel(r.data_role) }}</td>
               <td>v{{ r.version }}{{ r.change_reason ? ' · ' + r.change_reason : '' }}</td>
               <td><app-status-badge [status]="badge(r.status)" [text]="label(r.status)" /></td>
@@ -76,6 +84,7 @@ import { Measurement, MonitoringRecord, Period, Plan, capturableInMrv, dataRoleL
 export class MrvRecordsPanel {
   readonly period = input<Period | null>(null);
   readonly farms = input<ProjectFarm[]>([]);
+  readonly strata = input<Stratum[]>([]);
   private readonly api = inject(MrvApi);
   private readonly dialog = inject(MatDialog);
   private readonly notify = inject(NotifyService);
@@ -90,11 +99,15 @@ export class MrvRecordsPanel {
   protected readonly history = signal(false);
   protected readonly plan = signal<Plan | null>(null);
   protected readonly records = signal<MonitoringRecord[]>([]);
+  /** Sampling points of the period (census methods record one value per sampled planting unit). */
+  protected readonly points = signal<SamplingPoint[]>([]);
   protected readonly editable = computed(() => ['ACTIVE', 'DATA_COLLECTION'].includes(this.period()?.status ?? ''));
-  protected readonly farmMeasurements = computed(() => (this.plan()?.measurements ?? []).filter((m) => (m.level === 'FARM' || m.level === 'PROJECT') && capturableInMrv(m)));
+  protected readonly farmMeasurements = computed(() => (this.plan()?.measurements ?? []).filter((m) => capturableInMrv(m)));
   protected readonly form = new FormGroup({
     measurement_id: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
     farm_id: new FormControl('', { nonNullable: true }),
+    stratum_id: new FormControl('', { nonNullable: true }),
+    sampling_point_id: new FormControl('', { nonNullable: true }),
     value: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
     observed_on: new FormControl(new Date().toISOString().slice(0, 10), { nonNullable: true, validators: [Validators.required] }),
     measurement_phase: new FormControl('MONITORING', { nonNullable: true }),
@@ -112,10 +125,21 @@ export class MrvRecordsPanel {
       this.api.plan(p.mrv_plan_id).subscribe((x) => this.plan.set(x));
       this.api.records(p.id, h).subscribe((r) => this.records.set(r));
     });
+    effect(() => {
+      const p = this.period();
+      if (p && this.measurement()?.level === 'SAMPLING_POINT' && !this.points().length) {
+        this.api.points({ monitoring_period_id: p.id }).subscribe((x) => this.points.set(x));
+      }
+    });
   }
 
-  protected farmCode(id: string | null): string {
-    return id ? (this.farms().find((f) => f.farm_id === id)?.farm_code ?? id) : 'project';
+  /** Current approved project strata (Approach 3 factors and other per-stratum values are recorded against them). */
+  protected readonly projectStrata = computed(() => this.strata().filter((s) => s.is_current && s.status === 'APPROVED' && s.role !== 'CONTROL'));
+
+  protected where(r: MonitoringRecord): string {
+    if (r.sampling_point_id) return 'point ' + (this.points().find((x) => x.id === r.sampling_point_id)?.point_code ?? r.sampling_point_id);
+    if (r.stratum_id) return 'stratum ' + (this.strata().find((s) => s.id === r.stratum_id)?.code ?? r.stratum_id);
+    return r.farm_id ? (this.farms().find((f) => f.farm_id === r.farm_id)?.farm_code ?? r.farm_id) : 'project';
   }
 
   protected show(v: unknown): string {
@@ -135,6 +159,8 @@ export class MrvRecordsPanel {
     if (!p || !m) return;
     const v = this.form.getRawValue();
     runAction(this.api.addRecord({ monitoring_period_id: p.id, measurement_id: m.id, farm_id: m.level === 'FARM' ? v.farm_id || null : null,
+      stratum_id: m.level === 'STRATUM' ? v.stratum_id || null : null,
+      sampling_point_id: m.level === 'SAMPLING_POINT' ? v.sampling_point_id || null : null,
       value: parseMeasurementValue(m, v.value), observed_on: v.observed_on, measurement_phase: v.measurement_phase, source: v.source }),
     this.busy, this.notify, 'Value recorded.', () => { this.form.controls.value.setValue(''); this.reload(); });
   }

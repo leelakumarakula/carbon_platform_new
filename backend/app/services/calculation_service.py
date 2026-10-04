@@ -276,7 +276,7 @@ def execute(db: Session, ctx: RequestContext, principal: Principal, run_id: uuid
     if stale:
         raise _block(db, ctx, p, run, [ci.Blocker("INPUTS_OUT_OF_DATE", "Frozen inputs are out of date; create a new run.", None,
                                                   {"problems": stale})])
-    module = registry_bind((resolver or registry_resolve)(snapshot["methodology"]["code"], snapshot["methodology"]["version_label"]),
+    module = registry_bind(_resolve(resolver, snapshot),
                            int(snapshot["methodology"]["calculation_rules_version"]), snapshot["methodology"].get("calculation_readiness"))
     if module is None:
         raise _block(db, ctx, p, run, [ci.Blocker("CONFIGURATION_REQUIRED", "No calculation module is registered for this methodology version.",
@@ -361,9 +361,18 @@ def qa_reviews(db: Session, run_id: uuid.UUID) -> list[CalculationQaReview]:
                            .order_by(CalculationQaReview.started_at)).all())
 
 
+def _resolve(resolver: Resolver | None, snapshot: dict[str, Any]) -> Any:
+    """The frozen methodology's module: a test resolver, or the registry with the version's selected module."""
+    m = snapshot.get("methodology", {})
+    if resolver is not None:
+        return resolver(m.get("code", ""), m.get("version_label", ""))
+    return registry_resolve(m.get("code", ""), m.get("version_label", ""), m.get("calculation_module_code"))
+
+
 def qa_checks(db: Session, run: CalculationRun, reviewer_id: uuid.UUID | None, resolver: Resolver | None = None) -> list[dict[str, Any]]:
     from app.services import calculation_qa
-    return calculation_qa.checks(db, run, reviewer_id, resolver or registry_resolve)
+    snapshot = json.loads(run.input_snapshot or "{}")
+    return calculation_qa.checks(db, run, reviewer_id, lambda _code, _label: _resolve(resolver, snapshot))
 
 
 def start_qa(db: Session, ctx: RequestContext, principal: Principal, run_id: uuid.UUID) -> CalculationQaReview:

@@ -8,7 +8,8 @@ import { NAVIGATION, visibleNavigation } from '../core/navigation/nav.config';
 import { FieldDashboardPage } from './field-dashboard-page';
 import { MrvDashboardPage } from './mrv-dashboard-page';
 import { MrvDatasetPage } from './mrv-dataset-page';
-import { FieldCollection, Measurement, QaView, SamplingPoint, Stratum, capturableInMrv, collectionMissing, dataRoleLabel, mrvBadge, parseMeasurementValue } from './mrv.models';
+import { FieldCollection, Measurement, MonitoringRecord, Period, Plan, QaView, SamplingPoint, Stratum, capturableInMrv, collectionMissing, dataRoleLabel, mrvBadge, parseMeasurementValue } from './mrv.models';
+import { MrvRecordsPanel } from './panels/mrv-records-panel';
 import { MrvStrataPanel } from './panels/mrv-strata-panel';
 
 function point(over: Partial<SamplingPoint> = {}): SamplingPoint {
@@ -128,6 +129,29 @@ describe('MRV screens', () => {
     expect(text).toContain('1 of at least 3');
     expect(text).toContain('No control site yet for S2');
     expect(text).toContain('Soil texture: Clay');
+  });
+
+  it('records panel takes per-stratum values (GS 402 Approach 3 factors) against approved project strata', async () => {
+    TestBed.inject(AuthService).me.set({ user: { id: 'u1' }, permissions: ['mrv.manage'] } as never);
+    const f = TestBed.createComponent(MrvRecordsPanel);
+    f.componentRef.setInput('period', { id: 'mp1', mrv_plan_id: 'pl1', status: 'DATA_COLLECTION' } as Period);
+    f.componentRef.setInput('strata', [stratum(), stratum({ id: 'c1', code: 'C1', role: 'CONTROL' }), stratum({ id: 's3', code: 'S3', status: 'DRAFT' })]);
+    f.detectChanges();
+    const m = { id: 'm1', code: 'GS_SOC_REF', name: 'Reference SOC', value_type: 'NUMBER', unit: 't C/ha', level: 'STRATUM',
+      measurement_source: 'FIELD_ACTIVITY', allowed_values: null } as Measurement;
+    http.expectOne('/api/v1/mrv/plans/pl1').flush({ measurements: [m] } as unknown as Plan);
+    http.expectOne((r) => r.url.startsWith('/api/v1/mrv/periods/mp1/monitoring-records') || r.url.includes('monitoring-records'))
+      .flush([{ id: 'x1', record_id: 'x1', measurement_id: 'm1', measurement_code: 'GS_SOC_REF', measurement_name: 'Reference SOC', farm_id: null,
+        stratum_id: 's1', value: 47, unit: 't C/ha', observed_on: '2026-06-01', measurement_phase: 'BASELINE', source: 'DOCUMENT',
+        data_role: 'METHODOLOGY_PARAMETER', authoritative: true, version: 1, status: 'RECORDED', is_current: true } as unknown as MonitoringRecord]);
+    await f.whenStable();
+    const cmp = f.componentInstance as unknown as { form: { controls: { measurement_id: { setValue(v: string): void } } }; projectStrata(): Stratum[] };
+    cmp.form.controls.measurement_id.setValue('m1');
+    f.detectChanges();
+    const el = f.nativeElement as HTMLElement;
+    expect(el.querySelector('[data-testid="record-stratum"]')).not.toBeNull();
+    expect(cmp.projectStrata().map((x) => x.code)).toEqual(['S1']);        // no control sites, no drafts
+    expect(el.textContent).toContain('stratum S1');
   });
 
   it('MRV dashboard lists projects with a locked methodology', async () => {

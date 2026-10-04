@@ -84,7 +84,7 @@ const TABS = ['plans', 'periods', 'strata', 'design', 'points', 'data', 'evidenc
                                 [canReview]="auth.has(P.SAMPLING_REVIEW)" />
         </ng-template></mat-tab>
         <mat-tab label="Monitoring data"><ng-template matTabContent>
-          <app-mrv-records-panel [period]="period()" [farms]="farms()" />
+          <app-mrv-records-panel [period]="period()" [farms]="farms()" [strata]="strata()" />
         </ng-template></mat-tab>
         <mat-tab label="Evidence"><ng-template matTabContent>
           <app-mrv-evidence-panel [projectId]="p.id" [period]="period()" [farms]="farms()" />

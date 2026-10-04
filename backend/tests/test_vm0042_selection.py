@@ -26,8 +26,9 @@ def test_select_module_copies_rule_set_and_readiness_workflow(client: TestClient
     author, approver = specialists(db, client)
     _, vid = _draft(client, author, "VM0042")
     opts = client.get(f"{M}/versions/{vid}/calculation-modules", headers=author.headers).json()
-    assert [(o["code"], o["compatible"], o["selected"]) for o in opts] == [(MODULE, True, False)]
+    assert [(o["code"], o["selected"]) for o in opts if o["compatible"]] == [(MODULE, False)]
     assert any("Q12" in a for a in opts[0]["assumptions"])
+    assert {o["code"] for o in opts if not o["compatible"]} >= {"GS402-ZT-A1", "GS402-CC-A3"}   # other methodologies' modules
     # readiness cannot be requested on a draft
     r = client.post(f"{M}/versions/{vid}/calculation-readiness/request", headers=author.headers, json={"reason": "expert checked"})
     assert r.json()["error_code"] == "READINESS_NOT_APPLICABLE"
@@ -76,7 +77,7 @@ def test_module_refused_for_other_methodology_or_conflicting_rule(client: TestCl
     _, other = _draft(client, author, "OTHER-SOC")
     r = client.post(f"{M}/versions/{other}/calculation-module", headers=author.headers, json={"module_code": MODULE, "reason": "try"})
     assert r.json()["error_code"] == "MODULE_NOT_FOR_VERSION"
-    assert client.get(f"{M}/versions/{other}/calculation-modules", headers=author.headers).json()[0]["compatible"] is False
+    assert not any(o["compatible"] for o in client.get(f"{M}/versions/{other}/calculation-modules", headers=author.headers).json())
     _, vid = _draft(client, author, "VM0042")
     client.post(f"{M}/versions/{vid}/rules/monitoring", headers=author.headers,
                 json={"rule_code": "V42_OC", "title": "SOC", "parameter": "soc", "unit": "%", "measurement_source": "LABORATORY"})
