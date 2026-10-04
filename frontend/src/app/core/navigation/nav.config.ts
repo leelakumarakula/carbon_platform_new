@@ -63,7 +63,7 @@ export const NAVIGATION: readonly NavSection[] = [
     items: [
       { label: 'Marketplace', icon: 'storefront', route: '/marketplace', permissions: [P.MARKETPLACE_READ] },
       { label: 'Listings', icon: 'sell', route: '/marketplace/listings', anyPermissions: [P.LISTINGS_MANAGE, P.LISTINGS_APPROVE] },
-      { label: 'Orders', icon: 'receipt_long', route: '/orders', permissions: [P.ORDERS_READ] },
+      { label: 'Orders', icon: 'receipt_long', route: '/orders', anyPermissions: [P.ORDERS_READ, P.ORDERS_PLACE] },
       { label: 'Payments', icon: 'payments', route: '/payments', anyPermissions: [P.PAYMENTS_CONFIRM, P.REFUNDS_REQUEST, P.REFUNDS_APPROVE] },
       { label: 'Buyer profile', icon: 'verified_user', route: '/marketplace/profile', permissions: [P.BUYERS_KYC_SUBMIT] },
       { label: 'KYC review', icon: 'fact_check', route: '/marketplace/kyc-review', permissions: [P.BUYERS_KYC_VERIFY] },

@@ -286,7 +286,8 @@ def result_lab_view(db: Session, principal: Principal, r: LabResult) -> ResultLa
                          value_text=r.value_text, unit=r.unit, analysed_at=r.analysed_at, analyst_name=n.get(r.analyst_id),
                          method_reported=r.method_reported, report=_doc(db, r.report_document_id), source=r.source,
                          supersedes_result_id=r.supersedes_result_id, status_reason=r.status_reason, submitted_at=r.submitted_at,
-                         approved_at=r.approved_at, can_edit=own and r.status == "DRAFT", can_submit=own and r.status == "DRAFT")
+                         approved_at=r.approved_at, can_edit=own and r.status == "DRAFT",
+                         can_submit=own and r.status == "DRAFT" and r.report_document_id is not None)
 
 
 def test_lab_view(db: Session, principal: Principal, t: LabTest) -> TestLabView:

@@ -1,7 +1,6 @@
 """Phase 10 schemas — marketplace. Request bodies forbid unknown fields. Carbon quantities are whole credits (int); money is Decimal (never a
 float) with an ISO-4217 currency; no request carries an available, remaining, owned or sold quantity, a fee or a tax."""
 import uuid
-from datetime import datetime
 from decimal import Decimal
 from typing import Annotated, Any, Literal
 
@@ -53,7 +52,7 @@ class KycReviewOut(BaseModel):
     action: str
     actor_name: str | None
     note: str | None
-    created_at: datetime
+    created_at: UtcDatetime
 
 
 class BuyerProfileOut(BaseModel):
@@ -70,9 +69,9 @@ class BuyerProfileOut(BaseModel):
     identifier_type: str | None
     identifier_last4: str | None
     submitted_by_name: str | None
-    submitted_at: datetime | None
+    submitted_at: UtcDatetime | None
     verified_by_name: str | None
-    verified_at: datetime | None
+    verified_at: UtcDatetime | None
     return_reason: str | None
     suspension_reason: str | None
     documents: list[DocumentRef]
@@ -122,14 +121,14 @@ class ListingOut(BaseModel):
     min_quantity: int | None
     max_quantity: int | None
     payment_window_hours: int
-    valid_until: datetime | None
+    valid_until: UtcDatetime | None
     co_benefits: str | None
     disclosure: dict[str, Any]
     disclosure_sha256: str | None
     status: str
     created_by_name: str | None
     approved_by_name: str | None
-    approved_at: datetime | None
+    approved_at: UtcDatetime | None
     close_reason: str | None
     documents: list[DocumentRef]
     environment: str
@@ -190,9 +189,9 @@ class PaymentOut(BaseModel):
     external_reference: str | None
     evidence_document_id: uuid.UUID | None
     recorded_by_name: str | None
-    recorded_at: datetime
+    recorded_at: UtcDatetime
     confirmed_by_name: str | None
-    confirmed_at: datetime | None
+    confirmed_at: UtcDatetime | None
     reject_reason: str | None
     payer_name: str | None
     payee_name: str | None
@@ -214,7 +213,7 @@ class RefundOut(BaseModel):
     status: str
     requested_by_name: str | None
     approved_by_name: str | None
-    completed_at: datetime | None
+    completed_at: UtcDatetime | None
     external_reference: str | None
     reject_reason: str | None
     can_approve: bool
@@ -234,10 +233,10 @@ class OrderOut(BaseModel):
     status: str
     transfer_kind: str
     recipient_registry_account: str | None
-    expires_at: datetime
-    placed_at: datetime
-    paid_at: datetime | None
-    completed_at: datetime | None
+    expires_at: UtcDatetime
+    placed_at: UtcDatetime
+    paid_at: UtcDatetime | None
+    completed_at: UtcDatetime | None
     close_reason: str | None
     attention_reason: str | None
     items: list[OrderItemOut]

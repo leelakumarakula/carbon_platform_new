@@ -78,6 +78,7 @@ def test_backup_statements() -> None:
         sq.delete_backup_file(sq.master_engine(), r"C:\Windows\system32\config\SAM")
 
 
+@pytest.mark.usefixtures("no_secret_env")
 def test_backup_and_retention_configuration_guards(tmp_path: Any) -> None:
     from pydantic import ValidationError
 

@@ -1,5 +1,5 @@
 import { DatePipe, JsonPipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit, inject, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
@@ -14,6 +14,7 @@ import { NotifyService } from '../core/notify.service';
 import { label } from '../farmer/farmer.models';
 import { PageHeader } from '../shared/page-header';
 import { askReason } from '../shared/reason-dialog';
+import { reloadOn } from '../shared/reload-on';
 import { runAction } from '../shared/run-action';
 import { StateView } from '../shared/state-view';
 import { StatusBadge } from '../shared/status-badge';
@@ -162,7 +163,7 @@ import {
     tr.final td { font-weight: 600; } .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 10px; } .wide { min-width: 260px; flex: 1; }
     h3 { margin: 14px 0 6px; font: var(--mat-sys-title-small); } .check { padding: 3px 0; } .lin { margin: 4px 0; }`,
 })
-export class CalculationRunPage implements OnInit {
+export class CalculationRunPage {
   readonly id = input.required<string>();
   protected readonly api = inject(CalculationApi);
   private readonly dialog = inject(MatDialog);
@@ -186,8 +187,15 @@ export class CalculationRunPage implements OnInit {
   protected qaNotes = '';
   protected otherId = '';
 
-  ngOnInit(): void {
-    this.load();
+  constructor() {
+    reloadOn(this.id, () => {
+      [this.run, this.inputs, this.outputs, this.qa, this.lineage, this.comparison].forEach((s) => s.set(null));
+      this.others.set([]);
+      this.otherId = '';
+      this.error.set(null);
+      this.loading.set(true);
+      this.load();
+    });
   }
 
   load(): void {

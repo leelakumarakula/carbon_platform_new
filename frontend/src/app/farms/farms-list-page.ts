@@ -2,6 +2,7 @@ import { BreakpointObserver } from '@angular/cdk/layout';
 import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -14,6 +15,8 @@ import { MatTableModule } from '@angular/material/table';
 import { Router, RouterLink } from '@angular/router';
 import { debounceTime, map } from 'rxjs';
 
+import { AuthService } from '../core/auth/auth.service';
+import { P } from '../core/auth/permissions';
 import { GeoMap, MapPoint } from '../shared/geo-map';
 import { formatArea } from '../shared/geo';
 import { PageHeader } from '../shared/page-header';
@@ -35,9 +38,11 @@ function readView(): 'list' | 'map' {
   selector: 'app-farms-list-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [ReactiveFormsModule, RouterLink, MatTableModule, MatSortModule, MatPaginatorModule, MatFormFieldModule, MatInputModule,
-    MatSelectModule, MatIconModule, MatSlideToggleModule, MatButtonToggleModule, PageHeader, StateView, StatusBadge, GeoMap],
+    MatSelectModule, MatIconModule, MatSlideToggleModule, MatButtonModule, MatButtonToggleModule, PageHeader, StateView, StatusBadge, GeoMap],
   template: `
-    <app-page-header title="Farms" subtitle="Boundaries, ownership, history, evidence and GIS verification." />
+    <app-page-header title="Farms" subtitle="Boundaries, ownership, history, evidence and GIS verification.">
+      @if (canCreate) { <a mat-flat-button routerLink="/farms/new"><mat-icon>add_location_alt</mat-icon> New farm</a> }
+    </app-page-header>
     <form class="filters" [formGroup]="filters">
       <mat-form-field subscriptSizing="dynamic">
         <mat-label>Search code, name, village, farmer</mat-label>
@@ -124,6 +129,9 @@ export class FarmsListPage implements OnInit {
   protected readonly handset = toSignal(inject(BreakpointObserver).observe('(max-width: 700px)').pipe(map((r) => r.matches)),
     { initialValue: false });
   protected readonly area = formatArea;
+  /** Same rule as the /farms/new route guard. */
+  private readonly auth = inject(AuthService);
+  protected readonly canCreate = this.auth.has(P.FARMS_MANAGE) || this.auth.has(P.FARMERS_SELF);
   protected readonly statuses: FarmStatus[] = ['DRAFT', 'SUBMITTED', 'GIS_REVIEW', 'VERIFIED', 'REJECTED', 'INACTIVE'];
   protected readonly columns = ['farm_code', 'name', 'farmer', 'area_hectares', 'tenure', 'status'];
   protected readonly filters = new FormGroup({

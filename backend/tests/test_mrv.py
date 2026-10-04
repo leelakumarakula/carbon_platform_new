@@ -222,6 +222,19 @@ def test_qa_failure_rejection_and_new_version(client: TestClient, db: Session, c
     assert "MRV_DATASET_REJECTED" in _actions(db, c.project["id"])
 
 
+def test_reopening_a_submitted_period_reopens_its_dataset(client: TestClient, db: Session, c: MrvCtx) -> None:
+    ds, mp, _ = _ready_dataset(client, c, collect_all=False)
+    assert client.post(f"{MRV}/datasets/{ds['id']}/submit", headers=c.mrv.headers, json={"reason": "partial"}).status_code == 200
+    r = client.post(f"{MRV}/monitoring-periods/{mp['id']}/open-collection", headers=c.mrv.headers, json={"reason": "one more point"})
+    assert r.status_code == 200 and r.json()["status"] == "DATA_COLLECTION", r.text
+    again = client.get(f"{MRV}/datasets/{ds['id']}", headers=c.mrv.headers).json()
+    assert again["status"] == "COLLECTING" and again["snapshot_sha256"] is None
+    # period and dataset move together again: re-submission and QA work
+    r = client.post(f"{MRV}/datasets/{ds['id']}/submit", headers=c.mrv.headers, json={"reason": "complete"})
+    assert r.status_code == 200 and r.json()["status"] == "SUBMITTED" and r.json()["snapshot_sha256"], r.text
+    assert client.post(f"{MRV}/qa/{ds['id']}/start", headers=c.t.qa.headers).status_code == 200
+
+
 # ---------------------------------------------------------------- field collection rules & RBAC
 def test_field_collector_rules_and_isolation(client: TestClient, db: Session, c: MrvCtx) -> None:
     approved_plan(client, c)

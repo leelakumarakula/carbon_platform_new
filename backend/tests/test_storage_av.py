@@ -343,6 +343,7 @@ def test_production_refuses_test_scanners(monkeypatch: pytest.MonkeyPatch, av: T
         malware.get_scanner.cache_clear()
 
 
+@pytest.mark.usefixtures("no_secret_env")
 def test_production_configuration_guard_requires_storage_and_scanner(tmp_path: Path) -> None:
     from pydantic import ValidationError
 

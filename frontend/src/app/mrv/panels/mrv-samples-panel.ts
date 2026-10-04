@@ -40,7 +40,7 @@ import { FieldCollection, Period } from '../mrv.models';
       @if (canEngage) {
         <div class="row">
           <mat-form-field subscriptSizing="dynamic"><mat-label>Laboratory</mat-label>
-            <mat-select [(ngModel)]="labId" data-testid="engage-lab">@for (l of labs(); track l.id) { <mat-option [value]="l.id">{{ l.name }}</mat-option> }</mat-select>
+            <mat-select [(ngModel)]="labId" data-testid="engage-lab">@for (l of labs(); track l.id) { <mat-option [value]="l.id">{{ l.name }} ({{ l.code }})</mat-option> }</mat-select>
           </mat-form-field>
           <mat-form-field subscriptSizing="dynamic" class="wide"><mat-label>LABORATORY rules in scope</mat-label>
             <mat-select [(ngModel)]="ruleIds" multiple data-testid="engage-rules">
@@ -108,7 +108,7 @@ import { FieldCollection, Period } from '../mrv.models';
         @if (canShip) {
           <div class="row">
             <mat-form-field subscriptSizing="dynamic"><mat-label>Ship to laboratory</mat-label>
-              <mat-select [(ngModel)]="shipLab" data-testid="ship-lab">@for (e of activeEngagements(); track e.id) { <mat-option [value]="e.laboratory_org_id">{{ e.laboratory_org_name }}</mat-option> }</mat-select>
+              <mat-select [(ngModel)]="shipLab" data-testid="ship-lab">@for (e of activeEngagements(); track e.id) { <mat-option [value]="e.laboratory_org_id">{{ e.laboratory_org_name }}{{ labCode(e.laboratory_org_id) }}</mat-option> }</mat-select>
             </mat-form-field>
             <mat-form-field subscriptSizing="dynamic"><mat-label>Carrier</mat-label><input matInput [(ngModel)]="carrier" /></mat-form-field>
             <button mat-flat-button type="button" [disabled]="busy() || !shipLab" (click)="createShipment()" data-testid="create-shipment">Create shipment</button>
@@ -180,6 +180,12 @@ export class MrvSamplesPanel {
       const p = this.period();
       if (p) this.loadPeriod(p.id);
     });
+  }
+
+  /** Engagements carry no laboratory code; show it when the laboratory list (engage permission) has it. */
+  protected labCode(id: string): string {
+    const code = this.labs().find((l) => l.id === id)?.code;
+    return code ? ` (${code})` : '';
   }
 
   private loadProject(pid: string): void {

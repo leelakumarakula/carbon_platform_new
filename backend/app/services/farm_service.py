@@ -290,6 +290,8 @@ def review_ownership(db: Session, ctx: RequestContext, principal: Principal, far
     principal.require_in_org(P.FARMS_REVIEW, farm.organization_id)
     o = _ownership(db, farm, ownership_id)
     old = o.verification_status
+    if old not in ("UNVERIFIED", "NEEDS_REVIEW"):                   # a decision is final; a changed ownership is a new record
+        raise Conflict(f"This ownership record is already {old}.", error_code="OWNERSHIP_ALREADY_REVIEWED")
     o.verification_status, o.reviewed_by, o.reviewed_at, o.review_notes = status, principal.user_id, utcnow(), notes
     record(db, ctx, "FARM_OWNERSHIP_REVIEWED", ENTITY, farm.id, {"ownership_id": o.id, "verification_status": old},
            {"verification_status": status}, notes, organization_id=farm.organization_id)
@@ -310,8 +312,9 @@ def history_action(db: Session, ctx: RequestContext, principal: Principal, farm_
         principal.require_in_org(P.FARMS_REVIEW, farm.organization_id)
     else:
         farm = get_farm(db, principal, farm_id, P.FARMS_MANAGE)
-    if data is not None and getattr(data, "evidence_document_id", None):
-        document_service.require_attached(db, data.evidence_document_id, ENTITY, farm.id)  # type: ignore[attr-defined]
+    evidence = getattr(data, "evidence_document_id", None) if data is not None else (changes or {}).get("evidence_document_id")
+    if evidence:                                                    # add and amend alike: the farm's own, ACTIVE document only
+        document_service.require_attached(db, uuid.UUID(str(evidence)), ENTITY, farm.id)
     if action == "add":
         out = farm_history_service.add(db, ctx, farm, kind, data)  # type: ignore[arg-type]
     elif action == "amend":

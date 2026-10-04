@@ -1,11 +1,12 @@
 import { DatePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit, inject, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { RouterLink } from '@angular/router';
 
 import { ApiError } from '../core/api/api.models';
 import { label } from '../farmer/farmer.models';
 import { PageHeader } from '../shared/page-header';
+import { reloadOn } from '../shared/reload-on';
 import { StateView } from '../shared/state-view';
 import { StatusBadge } from '../shared/status-badge';
 import { LabApi } from './lab.api';
@@ -64,7 +65,7 @@ import { SampleDetail, labBadge, resultValue } from './lab.models';
   styles: `.status-row { display: flex; gap: 6px; margin: -8px 0 12px; } h3 { margin: 12px 0 8px; font: var(--mat-sys-title-small); }
     .test { padding: 6px 0; border-bottom: 1px solid var(--mat-sys-outline-variant); } .timeline { padding-left: 20px; } .timeline li { margin: 4px 0; }`,
 })
-export class SampleDetailPage implements OnInit {
+export class SampleDetailPage {
   readonly id = input.required<string>();
   private readonly api = inject(LabApi);
   protected readonly label = label;
@@ -74,8 +75,13 @@ export class SampleDetailPage implements OnInit {
   protected readonly loading = signal(true);
   protected readonly error = signal<ApiError | null>(null);
 
-  ngOnInit(): void {
-    this.load();
+  constructor() {
+    reloadOn(this.id, () => {
+      this.s.set(null);
+      this.error.set(null);
+      this.loading.set(true);
+      this.load();
+    });
   }
 
   load(): void {

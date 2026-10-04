@@ -252,10 +252,10 @@ class Settings(BaseSettings):
                 "SQL_SERVER_DRIVER": driver, "SQL_SERVER_TRUSTED_CONNECTION": trusted,
                 "SQL_SERVER_TRUST_SERVER_CERTIFICATE": q.get("trustservercertificate", "yes").lower() == "yes"}
 
-    @field_validator("SQL_SERVER_PORT", mode="before")
+    @field_validator("SQL_SERVER_PORT", "METRICS_TOKEN", mode="before")
     @classmethod
-    def _empty_port(cls, v: object) -> object:
-        return None if v == "" else v
+    def _empty_is_unset(cls, v: object) -> object:
+        return None if v == "" else v                                # `METRICS_TOKEN=` as in .env.example = unset (endpoint disabled)
 
     @field_validator("TRUSTED_PROXIES", "DATA_ENCRYPTION_PREVIOUS_KEYS", "JWT_PREVIOUS_KEYS", mode="before")
     @classmethod

@@ -1,7 +1,7 @@
 """Phase 7 calculation schemas. Request bodies forbid unknown fields: no request can carry a calculated or final tCO2e value —
 the server computes every value from the frozen inputs (decision A1, spec role 4.10)."""
 import uuid
-from datetime import date, datetime
+from datetime import date
 from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict
@@ -298,5 +298,5 @@ class HistoryRow(BaseModel):
     from_status: str | None
     to_status: str | None
     user_name: str | None
-    at: datetime
+    at: UtcDatetime
     reason: str | None

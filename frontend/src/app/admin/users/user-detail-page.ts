@@ -18,6 +18,7 @@ import { P } from '../../core/auth/permissions';
 import { NotifyService } from '../../core/notify.service';
 import { PageHeader } from '../../shared/page-header';
 import { askReason } from '../../shared/reason-dialog';
+import { reloadOn } from '../../shared/reload-on';
 import { StateView } from '../../shared/state-view';
 import { StatusBadge } from '../../shared/status-badge';
 import { RolesApi, UsersApi } from '../admin.api';
@@ -74,8 +75,15 @@ export class UserDetailPage implements OnInit {
 
   protected readonly grantScope = signal<'PLATFORM' | 'ORGANIZATION' | null>(null);
 
+  constructor() {
+    reloadOn(this.id, () => {
+      this.user.set(null);
+      this.loading.set(true);
+      this.load();
+    });
+  }
+
   ngOnInit(): void {
-    this.load();
     if (this.canAssign) this.rolesApi.list().subscribe((r) => this.roles.set(r));
     this.grant.controls.role_code.valueChanges.subscribe((code) => {
       this.grantScope.set(this.roles().find((r) => r.code === code)?.scope ?? null);

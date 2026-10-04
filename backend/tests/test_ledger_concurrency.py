@@ -50,6 +50,8 @@ class World:
     retired_position: uuid.UUID
     completed_transfer: uuid.UUID
     issued: Decimal
+    confirmer: uuid.UUID
+    pending_transfer: uuid.UUID
 
 
 def _master() -> Engine:
@@ -102,9 +104,13 @@ def world() -> Iterator[World]:
             retired = session.scalars(select(CreditPosition).where(CreditPosition.retirement_id == uuid.UUID(r["id"]),
                                                                    CreditPosition.state == "RETIRED")).one()
             session.commit()
+            pending = lg.post("/transfers", {"kind": "INTERNAL", "batch_id": lg.batch["id"], "sender_organization_id": str(lg.org.id),
+                                             "recipient_organization_id": str(buyer.id), "quantity": 5})
+            assert pending.status_code == 201, pending.text                # REQUESTED: two confirmers race to complete it (test F)
             batch = session.get(CreditBatch, uuid.UUID(lg.batch["id"]))
             assert batch is not None and last is not None
-            yield World(engine, batch.id, orgs, managers, buyer.id, retired.id, uuid.UUID(last["id"]), batch.quantity)
+            yield World(engine, batch.id, orgs, managers, buyer.id, retired.id, uuid.UUID(last["id"]), batch.quantity, lg.qa.user.id,
+                        uuid.UUID(pending.json()["id"]))
     finally:
         session.close()
         limiter.reset()
@@ -229,6 +235,20 @@ def test_reservation_racing_retirement(world: World) -> None:
     _outcome(race(w, (w.managers["D"], reserve), (w.managers["D"], retire)))
     st = _check(w, w.orgs["D"], Decimal(100))
     assert st.get("AVAILABLE") == Decimal(20) and (st.get("RESERVED", Decimal(0)) + st.get("RETIREMENT_PENDING", Decimal(0))) == Decimal(80)
+
+
+# ---------------------------------------------------------------- F. two confirmers complete the same transfer
+def test_concurrent_completion_of_one_transfer(world: World) -> None:
+    w = world
+
+    def complete(s: Session, ctx: RequestContext, p: Any) -> Any:
+        return ls.complete_transfer(s, ctx, p, w.pending_transfer, None, None).status
+    results = race(w, (w.confirmer, complete), (w.confirmer, complete))
+    assert sorted(r[0] for r in results) == ["err", "ok"], results          # the loser waits on the row lock: a clean 409, never a 500
+    assert next(r[1] for r in results if r[0] == "err") == "TRANSFER_NOT_REQUESTED", results
+    with Session(bind=w.engine) as s:
+        assert s.scalar(select(func.count()).select_from(CreditLedgerEntry).where(
+            CreditLedgerEntry.transfer_id == w.pending_transfer, CreditLedgerEntry.entry_type == "TRANSFER_COMPLETE")) == 1
 
 
 # ---------------------------------------------------------------- E. fault injection between consumption and posting

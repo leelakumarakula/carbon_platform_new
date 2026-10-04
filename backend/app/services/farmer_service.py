@@ -209,6 +209,9 @@ def change_status(db: Session, ctx: RequestContext, principal: Principal, farmer
     if target == "SUSPENDED" or (target == "ACTIVE" and f.status == "SUSPENDED"):
         principal.require_in_org(P.FARMERS_MANAGE, f.organization_id)  # farmers cannot suspend/reinstate themselves
     FARMER_MACHINE.assert_transition(f.status, target)
+    if target in ("KYC_PENDING", "KYC_VERIFIED") or f.status == "KYC_PENDING":
+        # KYC moves only through POST /kyc and the independent POST /kyc/decision (separation of duties)
+        raise Conflict("KYC is submitted and decided on the KYC tab, not by a status change.", error_code="USE_KYC_WORKFLOW")
     ready = next((r for r in readiness(db, f) if r.target == target), None)
     if ready and not ready.ready:
         missing = [i.label for i in ready.items if i.required and not i.done]

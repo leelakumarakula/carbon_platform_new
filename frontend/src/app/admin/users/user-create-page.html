@@ -40,7 +40,7 @@
         <mat-select formControlName="organization_id">
           <mat-option [value]="null">None (platform staff)</mat-option>
           @for (o of orgs(); track o.id) {
-            <mat-option [value]="o.id">{{ o.name }} · {{ orgLabel(o.org_type) }}@if (o.environment === 'DEMO') { (DEMO) }</mat-option>
+            <mat-option [value]="o.id">{{ o.name }} ({{ o.code }}) · {{ orgLabel(o.org_type) }}@if (o.environment === 'DEMO') { (DEMO) }</mat-option>
           }
         </mat-select>
       </mat-form-field>

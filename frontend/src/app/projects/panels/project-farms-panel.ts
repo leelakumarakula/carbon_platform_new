@@ -113,7 +113,7 @@ import { ProjectsApi } from '../projects.api';
     .add { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; } .wide { min-width: 300px; flex: 1; }
     .sub { width: 100%; font-weight: 600; margin-top: 4px; } h3 { margin: 20px 0 8px; font: var(--mat-sys-title-small); }
     .conflicts { width: 100%; padding: 10px; border: 1px solid #ffb74d; border-radius: 8px; background: #fff8e1; }
-    .toggle { display: block; margin: 8px 0; } .danger { color: #b71c1c; }
+    .toggle { display: block; margin: 8px 0; }
   `,
 })
 export class ProjectFarmsPanel implements OnInit {

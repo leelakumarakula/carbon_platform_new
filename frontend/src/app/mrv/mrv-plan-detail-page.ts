@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit, inject, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 
@@ -8,6 +8,7 @@ import { NotifyService } from '../core/notify.service';
 import { label } from '../farmer/farmer.models';
 import { PageHeader } from '../shared/page-header';
 import { askReason } from '../shared/reason-dialog';
+import { reloadOn } from '../shared/reload-on';
 import { runAction } from '../shared/run-action';
 import { StateView } from '../shared/state-view';
 import { StatusBadge } from '../shared/status-badge';
@@ -71,7 +72,7 @@ import { Plan, dataRoleLabel, mrvBadge } from './mrv.models';
   `,
   styles: `.status-row { display: flex; gap: 6px; margin: -8px 0 12px; } h3 { margin: 0 0 8px; font: var(--mat-sys-title-small); }`,
 })
-export class MrvPlanDetailPage implements OnInit {
+export class MrvPlanDetailPage {
   readonly id = input.required<string>();
   private readonly api = inject(MrvApi);
   private readonly dialog = inject(MatDialog);
@@ -84,8 +85,13 @@ export class MrvPlanDetailPage implements OnInit {
   protected readonly error = signal<ApiError | null>(null);
   protected readonly busy = signal(false);
 
-  ngOnInit(): void {
-    this.load();
+  constructor() {
+    reloadOn(this.id, () => {
+      this.plan.set(null);
+      this.error.set(null);
+      this.loading.set(true);
+      this.load();
+    });
   }
 
   load(): void {

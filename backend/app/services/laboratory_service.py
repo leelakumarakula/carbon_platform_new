@@ -286,6 +286,8 @@ def submit_result(db: Session, ctx: RequestContext, principal: Principal, result
     r = lab_result(db, principal, result_id, P.LAB_TEST)
     if r.created_by != principal.user_id:
         raise PermissionDenied("The analyst who entered the result submits it.", error_code="NOT_ANALYST")
+    if r.report_document_id is None:                                # laboratory QA can never approve a result without its report
+        raise Conflict("Attach the PDF laboratory report before submitting for QA.", error_code="REPORT_REQUIRED")
     t = db.get(LabTest, r.test_id)
     assert t is not None
     record_transition(db, ctx, LAB_RESULT_MACHINE, r.id, r.status, "SUBMITTED", "LAB_RESULT_SUBMITTED", None, r.laboratory_org_id)
@@ -428,13 +430,12 @@ def qa_checks(db: Session, r: LabResult, reviewer_id: uuid.UUID | None = None) -
     if fc is not None and fc.status == "ACCEPTED":
         out.append(_qa("field_collection", "The sample's own field-collection version is ACCEPTED", []))
     elif fc is not None and fc.status == "SUPERSEDED":
-        successors = db.scalars(select(FieldCollectionRecord.collection_code).where(FieldCollectionRecord.supersedes_id == fc.id)).all()
+        # laboratory-facing: never a field-collection code or status (laboratory isolation); the project side sees them in lineage
         out.append(_qa("field_collection", "The sample's own field-collection version is ACCEPTED", [],
-                       warn=[f"{fc.collection_code} was corrected after sampling (successor {', '.join(successors) or '—'}); the sample stays "
-                             "linked to the version it was taken from"]))
+                       warn=["the field record was corrected after sampling; the sample stays linked to the version it was taken from"]))
     else:
         out.append(_qa("field_collection", "The sample's own field-collection version is ACCEPTED",
-                       [f"field collection is {fc.status if fc else 'missing'}"]))
+                       ["the field record is not accepted by the project"]))
     events = ls.custody_events(db, s.id)
     cust = []
     for i, ev in enumerate(events):

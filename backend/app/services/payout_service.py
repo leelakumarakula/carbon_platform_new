@@ -182,7 +182,13 @@ def reissue(db: Session, ctx: RequestContext, principal: Principal, payout_id: u
         raise Conflict("Only a FAILED payout is reissued.", error_code="PAYOUT_NOT_FAILED")
 
     def op() -> Payout:
-        x = ms.lock(db, SettlementRun, run.id)
+        x = ms.lock(db, SettlementRun, run.id)                     # serializes concurrent reissues of the same run
+        if (open_ := db.scalars(select(Payout).where(Payout.settlement_run_id == x.id, Payout.farmer_id == po.farmer_id,
+                                                     Payout.status.in_(["CALCULATED", "PENDING_APPROVAL", "APPROVED", "ON_HOLD",
+                                                                        "PAYMENT_PENDING", "UNCONFIRMED", "PAID", "RECONCILED"]))
+                                         ).first()) is not None:              # the uq_payouts_open set
+            raise Conflict(f"This payout was already reissued as {open_.payout_code}.", error_code="PAYOUT_ALREADY_REISSUED",
+                           details={"payout_id": str(open_.id), "payout_code": open_.payout_code})
         return _new_payout(db, ctx, principal, x, po.farmer_id, _owed(db, x.id)[po.farmer_id], po, key)
     return ls.run(db, ctx, op)
 
@@ -504,8 +510,8 @@ def summary(db: Session, principal: Principal, project_id: uuid.UUID | None = No
         for s in db.scalars(select(SettlementRun).where(SettlementRun.project_id.in_(ids), SettlementRun.status.in_(("APPROVED", "COMPLETED")))):
             for k in ("distributable", "farmer_total", "developer_residual"):
                 runs[s.currency][k] += getattr(s, k) or Decimal(0)
-        orgs = {p.organization_id for p in projects}
-        for po in db.scalars(select(Payout).where(Payout.organization_id.in_(orgs))):
+        for po in db.scalars(select(Payout).join(SettlementRun, SettlementRun.id == Payout.settlement_run_id)
+                             .where(SettlementRun.project_id.in_(ids))):                    # a payout's project is its settlement run's
             pays[po.status]["count"] += 1
             pays[po.status]["amounts"][po.currency] += po.amount
         open_cases = len(db.scalars(select(PayoutAdjustment.id).where(PayoutAdjustment.project_id.in_(ids),

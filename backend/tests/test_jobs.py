@@ -217,6 +217,21 @@ def test_lifecycle_success_and_duplicate_delivery_is_a_no_op(db: Session) -> Non
     assert job_service.execute(db, uuid.uuid4(), "w:3") == "MISSING"
 
 
+def test_due_retry_is_republished_in_the_same_recovery_tick(db: Session, monkeypatch: pytest.MonkeyPatch) -> None:
+    def down(*a: Any) -> dict[str, Any]:
+        raise OperationalError("x", {}, Exception("down"))
+    _swap(monkeypatch, "RETENTION_PURGE", down)
+    job = _enqueue(db)
+    job.published_at, job.last_publish_error = utcnow(), None        # as if the broker accepted the first publication
+    db.commit()
+    assert _run(db, job) == "RETRY_WAITING"
+    published: list[uuid.UUID] = []
+    monkeypatch.setattr(job_service, "publish", lambda db, jid: published.append(jid) or True)
+    _later(monkeypatch, timedelta(seconds=90))                       # backoff (60 s) elapsed, far inside JOB_STALE_AFTER_SECONDS
+    out = job_service.recover(db)
+    assert out["retries_requeued"] == 1 and job.id in published      # not left waiting ~30 min for the stale-publish window
+
+
 def test_transient_failures_retry_with_backoff_then_succeed_or_exhaust(db: Session, monkeypatch: pytest.MonkeyPatch) -> None:
     calls = {"n": 0}
 

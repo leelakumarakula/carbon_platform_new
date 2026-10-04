@@ -1,13 +1,13 @@
 import { DatePipe, JsonPipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatSelectModule } from '@angular/material/select';
 import { ActivatedRoute } from '@angular/router';
 import { debounceTime } from 'rxjs';
 
@@ -17,13 +17,25 @@ import { StateView } from '../../shared/state-view';
 import { AuditApi } from '../admin.api';
 import { AuditLog } from '../admin.models';
 
-const ENTITY_TYPES = ['user', 'organization', 'role', 'session', 'reference_data', 'demo'];
+/** Entity types the backend audits (audit.record / record_transition callers, state machines, document owners). Free text is
+ *  still accepted, so a type added on the server can be filtered before this list is updated. */
+const ENTITY_TYPES = [
+  'activity', 'background_job', 'buyer_profile', 'calculation_finding', 'calculation_readiness', 'calculation_report', 'calculation_run',
+  'consent_definition', 'corrective_action', 'credit_batch', 'credit_issuance', 'credit_opening', 'credit_reservation',
+  'credit_retirement', 'credit_reversal', 'credit_transfer', 'demo', 'document', 'farm', 'farm_allocation_version', 'farm_overlap_check',
+  'farmer', 'farmer_agreement', 'farmer_bank_account', 'field_collection', 'lab', 'lab_engagement', 'lab_result', 'lab_sample',
+  'lab_shipment', 'lab_test', 'marketplace_listing', 'methodology', 'methodology_version', 'monitoring_period', 'mrv', 'mrv_dataset',
+  'mrv_plan', 'order', 'order_item', 'organization', 'payment', 'payment_event', 'payout', 'payout_adjustment', 'project',
+  'project_carbon_right', 'project_cost', 'reference_data', 'refund', 'registry_account', 'registry_registration', 'registry_submission',
+  'retention_policy', 'revenue_record', 'revenue_share_version', 'role', 'session', 'settlement_run', 'sharing_config', 'standard',
+  'storage_object', 'user', 'verification_assignment', 'verification_decision', 'verification_finding', 'verification_submission',
+];
 
 /** Append-only audit trail (spec section 35). Read-only by design: there is no edit or delete. */
 @Component({
   selector: 'app-audit-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, DatePipe, JsonPipe, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatIconModule,
+  imports: [ReactiveFormsModule, DatePipe, JsonPipe, MatFormFieldModule, MatInputModule, MatAutocompleteModule, MatButtonModule, MatIconModule,
     MatPaginatorModule, PageHeader, StateView],
   templateUrl: './audit-page.html',
   styles: `
@@ -44,22 +56,26 @@ export class AuditPage implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly route = inject(ActivatedRoute);
 
-  protected readonly entityTypes = ENTITY_TYPES;
   protected readonly expanded = signal<Set<number>>(new Set());
 
   protected readonly filters = new FormGroup({
-    entity_type: new FormControl<string | null>(null),
+    entity_type: new FormControl('', { nonNullable: true }),
     entity_id: new FormControl('', { nonNullable: true }),
     action: new FormControl('', { nonNullable: true }),
     from: new FormControl('', { nonNullable: true }),
     to: new FormControl('', { nonNullable: true }),
+  });
+  private readonly entityQuery = toSignal(this.filters.controls.entity_type.valueChanges, { initialValue: '' });
+  protected readonly entityTypes = computed(() => {
+    const q = this.entityQuery().trim().toLowerCase();
+    return ENTITY_TYPES.filter((t) => t.includes(q));
   });
 
   protected readonly list = new PagedList<AuditLog>((q) => {
     const f = this.filters.getRawValue();
     return this.api.auditLogs({
       ...q,
-      entity_type: f.entity_type,
+      entity_type: f.entity_type.trim().toLowerCase() || null,
       entity_id: f.entity_id.trim() || null,
       action: f.action.trim().toUpperCase() || null,
       from: f.from ? new Date(f.from).toISOString() : null,
@@ -69,7 +85,7 @@ export class AuditPage implements OnInit {
 
   ngOnInit(): void {
     const qp = this.route.snapshot.queryParamMap;
-    this.filters.patchValue({ entity_type: qp.get('entity_type'), entity_id: qp.get('entity_id') ?? '' }, { emitEvent: false });
+    this.filters.patchValue({ entity_type: qp.get('entity_type') ?? '', entity_id: qp.get('entity_id') ?? '' }, { emitEvent: false });
     this.filters.valueChanges.pipe(debounceTime(350), takeUntilDestroyed(this.destroyRef)).subscribe(() => this.list.reset());
     this.list.load();
   }
@@ -82,6 +98,6 @@ export class AuditPage implements OnInit {
   }
 
   clear(): void {
-    this.filters.reset({ entity_type: null, entity_id: '', action: '', from: '', to: '' });
+    this.filters.reset({ entity_type: '', entity_id: '', action: '', from: '', to: '' });
   }
 }

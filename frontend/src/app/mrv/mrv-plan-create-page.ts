@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angular/core';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 import { NotifyService } from '../core/notify.service';
 import { label } from '../farmer/farmer.models';
 import { PageHeader } from '../shared/page-header';
+import { reloadOn } from '../shared/reload-on';
 import { runAction } from '../shared/run-action';
 import { MrvApi } from './mrv.api';
 import { LEVELS, MEASUREMENT_CATEGORIES, QUANTIFICATION, Requirements, VALUE_TYPES } from './mrv.models';
@@ -81,7 +82,7 @@ function measurementGroup(): FormGroup {
     .row { display: flex; align-items: center; gap: 8px; } .actions { margin-top: 16px; }
   `,
 })
-export class MrvPlanCreatePage implements OnInit {
+export class MrvPlanCreatePage {
   readonly id = input.required<string>();
   private readonly api = inject(MrvApi);
   private readonly notify = inject(NotifyService);
@@ -105,8 +106,12 @@ export class MrvPlanCreatePage implements OnInit {
     measurements: this.measurements,
   });
 
-  ngOnInit(): void {
-    this.api.requirements(this.id()).subscribe((r) => this.req.set(r));
+  constructor() {
+    reloadOn(this.id, () => {
+      this.req.set(null);
+      this.measurements.clear();
+      this.api.requirements(this.id()).subscribe((r) => this.req.set(r));
+    });
   }
 
   protected save(): void {

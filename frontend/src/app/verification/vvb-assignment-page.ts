@@ -1,5 +1,5 @@
 import { DatePipe, JsonPipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit, inject, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
@@ -13,6 +13,7 @@ import { NotifyService } from '../core/notify.service';
 import { label } from '../farmer/farmer.models';
 import { PageHeader } from '../shared/page-header';
 import { askReason } from '../shared/reason-dialog';
+import { reloadOn } from '../shared/reload-on';
 import { runAction } from '../shared/run-action';
 import { StatusBadge } from '../shared/status-badge';
 import { VerificationFindings } from './verification-findings';
@@ -129,7 +130,7 @@ import {
     .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 6px; } .mono { font-family: monospace; font-size: 11px; word-break: break-all; }
     pre { max-height: 360px; overflow: auto; white-space: pre-wrap; }`,
 })
-export class VvbAssignmentPage implements OnInit {
+export class VvbAssignmentPage {
   readonly id = input.required<string>();
   private readonly api = inject(VvbApi);
   private readonly dialog = inject(MatDialog);
@@ -153,8 +154,15 @@ export class VvbAssignmentPage implements OnInit {
   protected rationale = '';
   protected file: File | null = null;
 
-  ngOnInit(): void {
-    this.reload();
+  constructor() {
+    reloadOn(this.id, () => {
+      this.a.set(null);
+      this.pkg.set(null);
+      this.coi = this.quantity = this.unit = this.rationale = '';
+      this.outcome = 'VERIFIED';
+      this.file = null;
+      this.reload();
+    });
   }
 
   reload(): void {

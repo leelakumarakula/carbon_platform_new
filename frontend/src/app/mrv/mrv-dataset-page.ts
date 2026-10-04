@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit, inject, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
@@ -13,6 +13,7 @@ import { NotifyService } from '../core/notify.service';
 import { label } from '../farmer/farmer.models';
 import { PageHeader } from '../shared/page-header';
 import { askReason } from '../shared/reason-dialog';
+import { reloadOn } from '../shared/reload-on';
 import { runAction } from '../shared/run-action';
 import { StateView } from '../shared/state-view';
 import { StatusBadge } from '../shared/status-badge';
@@ -76,10 +77,10 @@ import { QaView, mrvBadge } from './mrv.models';
   styles: `
     .status-row { display: flex; gap: 6px; margin: -8px 0 12px; } h3 { margin: 12px 0 8px; font: var(--mat-sys-title-small); }
     .check { padding: 4px 0; } .mono { font-family: monospace; font-size: 12px; word-break: break-all; }
-    .complete { display: flex; gap: 8px; align-items: center; margin-top: 12px; flex-wrap: wrap; } .danger { color: #b71c1c; }
+    .complete { display: flex; gap: 8px; align-items: center; margin-top: 12px; flex-wrap: wrap; }
   `,
 })
-export class MrvDatasetPage implements OnInit {
+export class MrvDatasetPage {
   readonly id = input.required<string>();
   private readonly api = inject(MrvApi);
   private readonly dialog = inject(MatDialog);
@@ -95,8 +96,13 @@ export class MrvDatasetPage implements OnInit {
   protected readonly busy = signal(false);
   protected result: 'PASS' | 'FAIL' | 'REQUIRES_CORRECTION' = 'PASS';
 
-  ngOnInit(): void {
-    this.load();
+  constructor() {
+    reloadOn(this.id, () => {
+      this.view.set(null);
+      this.error.set(null);
+      this.loading.set(true);
+      this.load();
+    });
   }
 
   load(): void {

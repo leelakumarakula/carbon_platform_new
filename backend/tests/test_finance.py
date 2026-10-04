@@ -39,6 +39,7 @@ from app.services import settlement_service as ss
 from tests.conftest import Actor, login, make_org, make_user
 from tests.payout_fixture import TestPayoutAdapter
 from tests.phase2 import staff
+from tests.phase3 import create_project
 from tests.phase5 import locked_project
 from tests.test_marketplace import ORD, PAY, M
 from tests.test_registry import PDF, codes
@@ -410,6 +411,9 @@ def test_settlement_payout_execution_and_reconciliation_lifecycle(client: TestCl
     assert s["settlements"] == [{"currency": "INR", "distributable": "1150.0000", "farmer_total": "460.0000", "developer_residual": "690.0000"}]
     assert s["payouts_by_status"] == [{"status": "RECONCILED", "count": 1, "amounts": [{"currency": "INR", "amount": "460.0000"}]}]
     assert {c["category"] for c in s["costs_by_category"]} == {"FIELD_OPERATIONS"}
+    # the project filter applies to payouts too: another project of the same organization shows none of them
+    other = create_project(client, f.m.k.x.c.t, name="Second pilot")
+    assert f.get("/revenue/summary", project_id=other["id"]).json()["payouts_by_status"] == []
 
 
 # ---------------------------------------------------------------- refunds after payout → recovery case; rejection frees inputs; reissue
@@ -437,6 +441,8 @@ def test_refund_after_payout_opens_recovery_case_and_rejected_runs_free_inputs(c
     re = f.post(f"/payouts/{po['id']}/reissue", {}, f.fin2, key="re-1")
     assert re.status_code == 201 and re.json()["replaces_payout_code"] == po["payout_code"] and Decimal(re.json()["amount"]) == Decimal("200")
     assert f.post(f"/payouts/{po['id']}/reissue", {}, f.fin2, key="re-1").json()["id"] == re.json()["id"]
+    for k in ("re-2", None):                                  # a second reissue (new key or none) is a clear 409, never a 500
+        assert codes(f.post(f"/payouts/{po['id']}/reissue", {}, f.fin2, key=k)) == "PAYOUT_ALREADY_REISSUED"
     p2 = re.json()
     f.post(f"/payouts/{p2['id']}/submit", {}, f.fin2)
     f.post(f"/payouts/{p2['id']}/approve", {}, f.fin3)
@@ -481,6 +487,32 @@ def test_reversal_before_payout_is_netted_in_the_next_run(client: TestClient, db
     r2 = f.run(share, alloc)
     assert Decimal(r2["gross_revenue"]) == Decimal("300") and Decimal(r2["farmer_total"]) == Decimal("150")
     assert f.get("/payouts/adjustments", project_id=f.project_id).json() == []
+
+
+def test_recovery_case_stands_when_the_calculation_is_refused(client: TestClient, db: Session, monkeypatch: pytest.MonkeyPatch) -> None:
+    f = F(client, db, 83.36, 28.36, "9660 2000 3000")
+    od = f.sale(40, "10.00")
+    share = f.share("50", deduct=False, rounding="DOWN")
+    alloc = f.allocation(["50", "50"])
+    r = f.run(share, alloc)
+    po = f.post(f"/payouts/from-settlement/{r['id']}", {}, f.fin2).json()[0]
+    f.bank(uuid.UUID(po["farmer_id"]), "1111 2222 4444")
+    f.post(f"/payouts/{po['id']}/submit", {}, f.fin2)
+    f.post(f"/payouts/{po['id']}/approve", {}, f.fin3)
+    f.post(f"/payouts/{po['id']}/initiate", {}, f.fin4)
+    ev = f.doc(f"/payouts/{po['id']}/documents", f.fin4, "PAYOUT_EVIDENCE")
+    assert f.post(f"/payouts/{po['id']}/confirm-paid", {"external_reference": "TEST-NEFT-9", "document_id": ev}, f.fin4).json()["status"] == "PAID"
+    pay_id = f.m.get(f"{ORD}/{od['id']}", f.fin).json()["payments"][0]["id"]
+    rf = f.m.post(f"{PAY}/{pay_id}/refunds", {"reason": "TEST: refund after payout"}, f.fin).json()
+    f.m.post(f"/api/v1/refunds/{rf['id']}/approve", {}, f.fin2)
+    rev = f.m.upload(f"/api/v1/refunds/{rf['id']}/documents", f.fin).json()["document_id"]
+    f.m.post(f"/api/v1/refunds/{rf['id']}/complete", {"external_reference": "TEST-RF-19", "document_id": rev}, f.fin)
+    f.sale(10, "10.00", rng=f.m.range400)                                                             # new revenue, so the run calculates
+    real = ss.calculate_figures
+    monkeypatch.setattr(ss, "calculate_figures", lambda i: {**real(i), "distributable": "-1"})
+    assert codes(f.run(share, alloc, approve=False)) == "NEGATIVE_DISTRIBUTABLE"
+    cases = f.get("/payouts/adjustments", project_id=f.project_id).json()
+    assert len(cases) == 1 and cases[0]["status"] == "OPEN"                                          # not rolled back with the refusal
 
 
 # ---------------------------------------------------------------- TEST adapter (service layer only): timeout → UNCONFIRMED → status query

@@ -1,15 +1,20 @@
+import { AsyncPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Observable, debounceTime, distinctUntilChanged, filter, map, startWith, switchMap } from 'rxjs';
 
 import { ApiError } from '../core/api/api.models';
+import { AuthService } from '../core/auth/auth.service';
+import { P } from '../core/auth/permissions';
 import { NotifyService } from '../core/notify.service';
-import { Farmer, label } from '../farmer/farmer.models';
+import { Farmer, FarmerSummary, label } from '../farmer/farmer.models';
 import { FarmersApi } from '../farmer/farmers.api';
 import { applyServerErrors } from '../shared/forms';
 import { PageHeader } from '../shared/page-header';
@@ -19,10 +24,26 @@ import { FarmsApi } from './farms.api';
 @Component({
   selector: 'app-farm-create-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, MatCardModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, PageHeader],
+  imports: [ReactiveFormsModule, AsyncPipe, MatAutocompleteModule, MatCardModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule,
+    PageHeader],
   template: `
     <app-page-header title="Add farm" [subtitle]="farmer() ? 'For ' + farmer()!.full_name + ' (' + farmer()!.farmer_code + ')' : null"
-                     [backLink]="farmer() ? '/farmers/' + farmer()!.id : '/farms'" backLabel="Back" />
+                     [backLink]="farmer() && !picking() ? '/farmers/' + farmer()!.id : '/farms'" backLabel="Back" />
+    @if (picking()) {
+      <mat-card appearance="outlined" class="section">
+        <mat-card-content>
+          <mat-form-field class="full"><mat-label>Farmer</mat-label>
+            <input matInput [formControl]="farmerSearch" [matAutocomplete]="auto" placeholder="Search name or code" />
+            <mat-autocomplete #auto="matAutocomplete" [displayWith]="display" (optionSelected)="pick($event)">
+              @for (f of candidates | async; track f.id) {
+                <mat-option [value]="f">{{ f.full_name }} · {{ f.farmer_code }}<span class="muted small"> · {{ f.village }}</span></mat-option>
+              }
+            </mat-autocomplete>
+            <mat-hint>Only registered, non-suspended farmers can have farms added.</mat-hint>
+          </mat-form-field>
+        </mat-card-content>
+      </mat-card>
+    }
     <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
       <mat-card appearance="outlined" class="section">
         <mat-card-content class="form-grid">
@@ -44,6 +65,7 @@ import { FarmsApi } from './farms.api';
       </div>
     </form>
   `,
+  styles: `.full { width: 100%; }`,
 })
 export class FarmCreatePage implements OnInit {
   private readonly route = inject(ActivatedRoute);
@@ -51,9 +73,21 @@ export class FarmCreatePage implements OnInit {
   private readonly farmersApi = inject(FarmersApi);
   private readonly api = inject(FarmsApi);
   private readonly notify = inject(NotifyService);
+  private readonly auth = inject(AuthService);
   protected readonly farmer = signal<Farmer | null>(null);
   protected readonly saving = signal(false);
   protected readonly error = signal<string | null>(null);
+  /** Staff opening /farms/new directly choose the farmer here (the farmer tab passes ?farmer=). */
+  protected readonly picking = signal(false);
+  protected readonly farmerSearch = new FormControl<string | FarmerSummary>('', { nonNullable: true });
+  protected readonly candidates: Observable<FarmerSummary[]> = this.farmerSearch.valueChanges.pipe(
+    startWith(''),
+    filter((v): v is string => typeof v === 'string'),
+    debounceTime(250),
+    distinctUntilChanged(),
+    switchMap((q) => this.farmersApi.list({ search: q.trim() || null, page_size: 20 })),
+    map((p) => p.items.filter((f) => eligible(f.status))),
+  );
   protected readonly tenures = TENURES;
   protected readonly label = label;
   protected readonly form = new FormGroup({
@@ -68,14 +102,37 @@ export class FarmCreatePage implements OnInit {
 
   ngOnInit(): void {
     const id = this.route.snapshot.queryParamMap.get('farmer');
-    const load = id ? this.farmersApi.get(id) : this.farmersApi.me();
-    load.subscribe({
+    if (id) this.load(id);
+    else if (this.auth.has(P.FARMERS_SELF)) this.load(null);
+    else this.picking.set(true);
+  }
+
+  private load(id: string | null): void {
+    this.error.set(null);
+    (id ? this.farmersApi.get(id) : this.farmersApi.me()).subscribe({
       next: (f) => {
+        if (!eligible(f.status)) {                                  // the server re-checks status and permission
+          this.farmer.set(null);
+          this.error.set(f.status === 'DRAFT' ? 'Register the farmer before adding farms.' : 'Farms cannot be added for a suspended farmer.');
+          return;
+        }
         this.farmer.set(f);
         this.form.patchValue({ village: f.village ?? '', district: f.district ?? '', state: f.state ?? '', country: f.country });
       },
-      error: () => this.error.set('Open this page from a farmer record (Farmers → farmer → Farms → Add farm).'),
+      error: () => {
+        // A staff member who is not a farmer falls back to picking one.
+        if (!id && this.auth.has(P.FARMS_MANAGE)) this.picking.set(true);
+        else this.error.set('Open this page from a farmer record (Farmers → farmer → Farms → Add farm).');
+      },
     });
+  }
+
+  protected pick(e: MatAutocompleteSelectedEvent): void {
+    this.load((e.option.value as FarmerSummary).id);
+  }
+
+  protected display(f: FarmerSummary | string | null): string {
+    return f && typeof f === 'object' ? `${f.full_name} (${f.farmer_code})` : (f ?? '');
   }
 
   submit(): void {
@@ -97,4 +154,9 @@ export class FarmCreatePage implements OnInit {
       },
     });
   }
+}
+
+/** Mirrors the farmer Farms tab: no farms for DRAFT or SUSPENDED farmers. */
+function eligible(status: string): boolean {
+  return !['DRAFT', 'SUSPENDED'].includes(status);
 }

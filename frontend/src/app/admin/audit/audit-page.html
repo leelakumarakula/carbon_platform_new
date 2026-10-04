@@ -3,10 +3,10 @@
 <form class="filters" [formGroup]="filters">
   <mat-form-field appearance="outline" subscriptSizing="dynamic">
     <mat-label>Entity type</mat-label>
-    <mat-select formControlName="entity_type">
-      <mat-option [value]="null">Any</mat-option>
-      @for (t of entityTypes; track t) { <mat-option [value]="t">{{ t }}</mat-option> }
-    </mat-select>
+    <input matInput formControlName="entity_type" [matAutocomplete]="types" placeholder="Any" />
+    <mat-autocomplete #types="matAutocomplete">
+      @for (t of entityTypes(); track t) { <mat-option [value]="t">{{ t }}</mat-option> }
+    </mat-autocomplete>
   </mat-form-field>
   <mat-form-field appearance="outline" subscriptSizing="dynamic">
     <mat-label>Entity ID</mat-label>

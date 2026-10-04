@@ -74,7 +74,7 @@ import { ProjectsApi } from '../projects.api';
     @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
     .note { padding: 8px 10px; border-radius: 8px; background: var(--mat-sys-surface-container); font-size: 13px; white-space: pre-line; }
     .note.warn { background: #fff3e0; color: #e65100; } .actions { display: flex; gap: 8px; flex-wrap: wrap; margin: 8px 0; }
-    h4 { margin: 16px 0 6px; font: var(--mat-sys-title-small); } .danger { color: #b71c1c; }
+    h4 { margin: 16px 0 6px; font: var(--mat-sys-title-small); }
     table.simple { width: 100%; border-collapse: collapse; }
     table.simple th, table.simple td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--mat-sys-outline-variant); }
   `,

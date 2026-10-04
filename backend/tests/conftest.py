@@ -37,7 +37,7 @@ os.environ["LOCAL_STORAGE_ROOT"] = _STORAGE
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
-from app.core.config import get_settings
+from app.core.config import SECRET_SETTINGS, get_settings
 from app.core.database import get_db, get_engine
 from app.core.rate_limit import limiter
 from app.main import create_app
@@ -56,6 +56,14 @@ def pytest_sessionstart(session: pytest.Session) -> None:
     free = shutil.disk_usage(tempfile.gettempdir()).free // (1024 * 1024)
     if free < 1024:
         pytest.exit(f"Refusing to run the test suite: only {free} MB free on the temp volume (need >= 1024 MB).", returncode=3)
+
+
+@pytest.fixture()
+def no_secret_env(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Production-configuration tests: no secret as a plain environment variable (D30 refuses it). This module exports the test
+    DATABASE_URL, and a developer's shell may carry others; the cached application settings are unaffected."""
+    for name in SECRET_SETTINGS:
+        monkeypatch.delenv(name, raising=False)
 
 
 @pytest.fixture(scope="session", autouse=True)

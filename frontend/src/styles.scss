@@ -37,6 +37,13 @@ code { font-family: ui-monospace, Consolas, monospace; font-size: 12px; backgrou
 .small { font-size: 12px; }
 .notice { padding: 10px 12px; border-radius: 8px; background: #fff4d6; color: #6b4a00; }
 .form-error { color: #b71c1c; margin: 4px 0 12px; }
+/* ---------- destructive actions: `class="danger"` on any button (Material 21 button tokens) ---------- */
+.danger { color: #b71c1c; }
+.mat-mdc-unelevated-button.danger { --mat-button-filled-container-color: #c62828; --mat-button-filled-label-text-color: #fff; }
+.mat-mdc-outlined-button.danger { --mat-button-outlined-label-text-color: #b71c1c; --mat-button-outlined-outline-color: #e0a3a3;
+  --mat-button-outlined-state-layer-color: #b71c1c; --mat-button-outlined-ripple-color: rgba(183, 28, 28, .12); }
+.mat-mdc-button.danger { --mat-button-text-label-text-color: #b71c1c; --mat-button-text-state-layer-color: #b71c1c;
+  --mat-button-text-ripple-color: rgba(183, 28, 28, .12); }
 .row-actions { display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
 .section { margin-bottom: 16px; }
 .stack { display: flex; flex-direction: column; }

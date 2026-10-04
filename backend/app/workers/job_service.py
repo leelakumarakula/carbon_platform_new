@@ -93,6 +93,8 @@ def _move(db: Session, ctx: RequestContext, job: BackgroundJob, to: str, action:
     frm = job.status
     BACKGROUND_JOB_MACHINE.assert_transition(frm, to)
     job.status = to
+    if to == "QUEUED":
+        job.published_at = None                                     # republished on the next recovery tick, not after the stale window
     ls.workflow(db, ctx, ENTITY, job.id, frm, to, reason)
     record(db, ctx, action, ENTITY, job.id, {"status": frm}, {"job_code": job.job_code, "job_type": job.job_type, "status": to,
                                                                  "environment": job.environment, **(extra or {})}, reason,

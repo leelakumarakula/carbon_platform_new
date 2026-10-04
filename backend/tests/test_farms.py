@@ -102,8 +102,16 @@ def test_history_is_versioned_never_overwritten(client: TestClient, db: Session,
     assert nothing.json()["error_code"] == "NO_CHANGES"
     bad = client.post(f"{url}/{rid}/amend", headers=ctx["agent"].headers, json={"reason": "bad", "data": {"yield_unit": None}})
     assert bad.status_code == 422
+    # an amendment may cite only an ACTIVE document of this farm (same rule as add)
+    other = create_farm(client, ctx["agent"].headers, ctx["farmer"]["id"], name="Other plot")
+    foreign = upload(client, ctx["agent"].headers, f"{FA}/{other['id']}/documents", "LAND_RECORD").json()["id"]
+    xlink = client.post(f"{url}/{rid}/amend", headers=ctx["agent"].headers, json={"reason": "evidence", "data": {"evidence_document_id": foreign}})
+    assert xlink.status_code == 422 and xlink.json()["error_code"] == "DOCUMENT_NOT_ATTACHED"
+    own = upload(client, ctx["agent"].headers, f"{FA}/{farm['id']}/documents", "LAND_RECORD").json()["id"]
+    ok = client.post(f"{url}/{rid}/amend", headers=ctx["agent"].headers, json={"reason": "evidence", "data": {"evidence_document_id": own}})
+    assert ok.status_code == 200 and ok.json()["version"] == 3, ok.text
     rt = client.post(f"{url}/{rid}/retract", headers=ctx["agent"].headers, json={"reason": "entered on wrong farm"})
-    assert rt.json()["is_retracted"] is True and rt.json()["version"] == 3
+    assert rt.json()["is_retracted"] is True and rt.json()["version"] == 4
     assert client.get(url, headers=ctx["agent"].headers).json() == []
     assert len(client.get(url, headers=ctx["agent"].headers, params={"include_retracted": True}).json()) == 1
     prac = client.post(f"{FA}/{farm['id']}/history/practice", headers=ctx["agent"].headers,
@@ -160,6 +168,9 @@ def test_verification_gates_and_separation_of_duties(client: TestClient, db: Ses
     client.post(f"{FA}/{g['farm']['id']}/submit", headers=both.headers, json={"reason": "submit"})
     client.post(f"{FA}/{g['farm']['id']}/start-review", headers=both.headers, json={"reason": "review"})
     client.post(f"{FA}/{g['farm']['id']}/ownership/{g['owner']['id']}/review", headers=both.headers, json={"status": "VERIFIED", "notes": "ok ok"})
+    again = client.post(f"{FA}/{g['farm']['id']}/ownership/{g['owner']['id']}/review", headers=both.headers,
+                        json={"status": "REJECTED", "notes": "second look"})
+    assert again.status_code == 409 and again.json()["error_code"] == "OWNERSHIP_ALREADY_REVIEWED"
     sod = client.post(f"{FA}/{g['farm']['id']}/verify", headers=both.headers, json={"reason": "verify own"})
     assert sod.status_code == 403 and sod.json()["error_code"] == "SEPARATION_OF_DUTIES"
     # unverified ownership blocks verification; rejection returns to DRAFT via reopen

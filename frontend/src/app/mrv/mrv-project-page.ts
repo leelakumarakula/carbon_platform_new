@@ -1,10 +1,11 @@
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTabsModule } from '@angular/material/tabs';
 import { ActivatedRoute } from '@angular/router';
-import { forkJoin } from 'rxjs';
+import { forkJoin, map } from 'rxjs';
 
 import { ApiError } from '../core/api/api.models';
 import { AuthService } from '../core/auth/auth.service';
@@ -13,6 +14,7 @@ import { label } from '../farmer/farmer.models';
 import { Project, ProjectFarm } from '../projects/project.models';
 import { ProjectsApi } from '../projects/projects.api';
 import { PageHeader } from '../shared/page-header';
+import { reloadOn } from '../shared/reload-on';
 import { StateView } from '../shared/state-view';
 import { StatusBadge } from '../shared/status-badge';
 import { MrvApi } from './mrv.api';
@@ -119,7 +121,7 @@ const TABS = ['plans', 'periods', 'strata', 'design', 'points', 'data', 'evidenc
     .warn { background: #fff4d6; color: #5d4000; }
   `,
 })
-export class MrvProjectPage implements OnInit {
+export class MrvProjectPage {
   readonly id = input.required<string>();
   protected readonly auth = inject(AuthService);
   protected readonly P = P;
@@ -139,10 +141,19 @@ export class MrvProjectPage implements OnInit {
   protected readonly period = computed(() => this.periods().find((x) => x.id === this.periodId()) ?? null);
   protected readonly loading = signal(true);
   protected readonly error = signal<ApiError | null>(null);
-  protected readonly tab = signal(Math.max(0, TABS.indexOf(this.route.snapshot.queryParamMap.get('tab') ?? 'plans')));
+  protected readonly tab = signal(0);
+  private readonly tabParam = toSignal(this.route.queryParamMap.pipe(map((q) => q.get('tab'))));
 
-  ngOnInit(): void {
-    this.load();
+  constructor() {
+    reloadOn(this.id, () => {
+      this.project.set(null);
+      this.req.set(null);
+      this.periodId.set(null);
+      [this.farms, this.periods, this.strata].forEach((s) => s.set([]));
+      this.loading.set(true);
+      this.load();
+    });
+    reloadOn(() => [this.id(), this.tabParam()], () => this.tab.set(Math.max(0, TABS.indexOf(this.tabParam() ?? 'plans'))));
   }
 
   load(): void {

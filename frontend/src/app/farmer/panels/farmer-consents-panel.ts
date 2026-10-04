@@ -95,7 +95,7 @@ export class FarmerConsentsPanel implements OnInit {
 
   pick(type: string): void {
     const d = this.definitions().find((x) => x.consent_type === type);
-    this.form.patchValue({ consent_type: type, consent_text_version: d?.text_version ?? this.form.controls.consent_text_version.value });
+    this.form.patchValue({ consent_type: type, consent_text_version: d?.text_version ?? '' });
   }
 
   grant(): void {

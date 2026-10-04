@@ -90,7 +90,7 @@ import {
           <div class="row">
             <mat-form-field subscriptSizing="dynamic" class="wide"><mat-label>VVB / ACVA organization</mat-label>
               <mat-select [(ngModel)]="vvbOrgId" data-testid="vvb-org">
-                @for (o of orgs(); track o.id) { <mat-option [value]="o.id">{{ o.name }}</mat-option> }</mat-select></mat-form-field>
+                @for (o of orgs(); track o.id) { <mat-option [value]="o.id">{{ o.name }}{{ o.code ? ' (' + o.code + ')' : '' }}</mat-option> }</mat-select></mat-form-field>
             <mat-form-field subscriptSizing="dynamic" class="wide"><mat-label>Notes (optional)</mat-label><input matInput [(ngModel)]="notes" /></mat-form-field>
             <button mat-flat-button type="button" [disabled]="busy() || !vvbOrgId" (click)="propose(s)" data-testid="propose-assignment">Propose</button>
           </div>

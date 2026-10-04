@@ -59,7 +59,7 @@ export interface ReasonDialogResult {
       </mat-dialog-actions>
     </form>
   `,
-  styles: `.full { width: 100%; } form { min-width: min(440px, 80vw); } .danger { --mdc-filled-button-container-color: #c62828; }`,
+  styles: `.full { width: 100%; } form { min-width: min(440px, 80vw); }`,
 })
 export class ReasonDialog {
   protected readonly data = inject<ReasonDialogData>(MAT_DIALOG_DATA);

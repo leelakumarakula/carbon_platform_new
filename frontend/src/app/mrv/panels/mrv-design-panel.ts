@@ -64,6 +64,11 @@ import { DESIGNS, Design, DesignVersion, Period, RuleSource, Stratum, mrvBadge, 
         <form [formGroup]="form" (ngSubmit)="create()" class="form-grid">
           <mat-form-field subscriptSizing="dynamic"><mat-label>Code</mat-label><input matInput formControlName="code" /></mat-form-field>
           <mat-form-field subscriptSizing="dynamic"><mat-label>Name</mat-label><input matInput formControlName="name" /></mat-form-field>
+          <div class="span-all small muted">Samples per approved stratum (configured by you or required by the methodology):</div>
+          @for (c of counts.controls; track $index; let i = $index) {
+            <mat-form-field subscriptSizing="dynamic"><mat-label>{{ approved()[i]?.code }} · {{ approved()[i]?.area_hectares }} ha</mat-label>
+              <input matInput type="number" min="0" [formControl]="c" [attr.data-testid]="'count-' + approved()[i]?.code" /></mat-form-field>
+          }
           <mat-form-field subscriptSizing="dynamic"><mat-label>Statistical design</mat-label>
             <mat-select formControlName="statistical_design">@for (x of designTypes; track x) { <mat-option [value]="x">{{ label(x) }}</mat-option> }</mat-select></mat-form-field>
           <mat-form-field subscriptSizing="dynamic"><mat-label>Sampling method</mat-label><input matInput formControlName="sampling_method" /></mat-form-field>
@@ -73,12 +78,8 @@ import { DESIGNS, Design, DesignVersion, Period, RuleSource, Stratum, mrvBadge, 
           <mat-form-field subscriptSizing="dynamic"><mat-label>Confidence level (%)</mat-label><input matInput type="number" formControlName="confidence_level_pct" /></mat-form-field>
           <mat-form-field subscriptSizing="dynamic"><mat-label>Min. distance between points (m)</mat-label><input matInput type="number" formControlName="min_distance_m" /></mat-form-field>
           <mat-form-field subscriptSizing="dynamic"><mat-label>Random seed (optional)</mat-label><input matInput type="number" formControlName="random_seed" /></mat-form-field>
-          <div class="span-all small muted">Samples per approved stratum (configured by you or required by the methodology):</div>
-          @for (c of counts.controls; track $index; let i = $index) {
-            <mat-form-field subscriptSizing="dynamic"><mat-label>{{ approved()[i]?.code }} · {{ approved()[i]?.area_hectares }} ha</mat-label>
-              <input matInput type="number" min="0" [formControl]="c" [attr.data-testid]="'count-' + approved()[i]?.code" /></mat-form-field>
-          }
-          <div class="span-all"><button mat-flat-button type="submit" [disabled]="busy() || form.invalid || !total()">Create design ({{ total() }} samples)</button></div>
+          <div class="span-all"><button mat-flat-button type="submit" [disabled]="busy() || form.invalid || !total()">Create design ({{ total() }} samples)</button>
+            @if (blocker(); as b) { <span class="muted small hint">{{ b }}</span> }</div>
         </form>
         @if (!approved().length) { <p class="muted small">Approve at least one stratum first.</p> }
       }
@@ -88,7 +89,7 @@ import { DESIGNS, Design, DesignVersion, Period, RuleSource, Stratum, mrvBadge, 
     .design { border: 1px solid var(--mat-sys-outline-variant); border-radius: 8px; padding: 10px 14px; margin-bottom: 12px; }
     .version { border-top: 1px dashed var(--mat-sys-outline-variant); padding-top: 8px; margin-top: 8px; }
     .row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; } .actions { display: flex; gap: 8px; align-items: center; }
-    h3 { margin: 16px 0 8px; font: var(--mat-sys-title-small); }
+    h3 { margin: 16px 0 8px; font: var(--mat-sys-title-small); } .hint { margin-left: 12px; }
   `,
 })
 export class MrvDesignPanel {
@@ -134,10 +135,20 @@ export class MrvDesignPanel {
     effect(() => {
       const n = this.approved().length;
       this.counts.clear();
-      for (let i = 0; i < n; i++) this.counts.push(new FormControl(0, { nonNullable: true, validators: [Validators.min(0)] }));
+      for (let i = 0; i < n; i++) this.counts.push(new FormControl(1, { nonNullable: true, validators: [Validators.min(0)] }));
       this.countValues.set(this.counts.getRawValue());
     });
     this.counts.valueChanges.subscribe(() => this.countValues.set(this.counts.getRawValue()));
+  }
+
+  /** Why "Create design" is disabled (null when it isn't). */
+  protected blocker(): string | null {
+    if (!this.approved().length) return null;
+    const bad = Object.entries({ code: 'code', name: 'name', depth_top_cm: 'depth top', depth_bottom_cm: 'depth bottom' })
+      .filter(([k]) => this.form.get(k)?.invalid).map(([, l]) => l);
+    if (bad.length) return `Fill in: ${bad.join(', ')}.`;
+    if (this.counts.invalid) return 'Sample counts cannot be negative.';
+    return this.total() ? null : 'Enter at least one sample for an approved stratum.';
   }
 
   protected src(s: RuleSource): string {

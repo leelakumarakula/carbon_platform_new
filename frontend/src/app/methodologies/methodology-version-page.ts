@@ -1,5 +1,5 @@
 import { DatePipe, JsonPipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -16,6 +16,7 @@ import { NotifyService } from '../core/notify.service';
 import { label } from '../farmer/farmer.models';
 import { PageHeader } from '../shared/page-header';
 import { askReason } from '../shared/reason-dialog';
+import { reloadOn } from '../shared/reload-on';
 import { runAction } from '../shared/run-action';
 import { StateView } from '../shared/state-view';
 import { StatusBadge } from '../shared/status-badge';
@@ -130,13 +131,13 @@ import {
     }
   `,
   styles: `
-    .status-row { display: flex; gap: 6px; margin: -8px 0 12px; flex-wrap: wrap; } .danger { color: #b71c1c; }
+    .status-row { display: flex; gap: 6px; margin: -8px 0 12px; flex-wrap: wrap; }
     .form { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 12px 0; } .wide { min-width: 220px; flex: 1; }
     .line { display: flex; gap: 8px; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--mat-sys-outline-variant); } .grow { flex: 1; }
     pre { white-space: pre-wrap; font-size: 11px; }
   `,
 })
-export class MethodologyVersionPage implements OnInit {
+export class MethodologyVersionPage {
   readonly id = input.required<string>();
   private readonly api = inject(MethodologiesApi);
   private readonly notify = inject(NotifyService);
@@ -183,8 +184,14 @@ export class MethodologyVersionPage implements OnInit {
     parameters: new FormControl('', { nonNullable: true }),
   });
 
-  ngOnInit(): void {
-    this.load();
+  constructor() {
+    reloadOn(this.id, () => {
+      this.v.set(null);
+      this.changes.set([]);
+      this.ruleError.set(null);
+      this.loading.set(true);
+      this.load();
+    });
   }
 
   load(): void {

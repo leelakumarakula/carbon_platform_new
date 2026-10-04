@@ -252,13 +252,18 @@ def calculate(db: Session, ctx: RequestContext, principal: Principal, run_id: uu
             "costs": [{"id": str(c.id), "cost_code": c.cost_code, "category": c.category, "amount": str(c.amount)} for c in costs],
         }
         res = calculate_figures(inputs)
+
+        def refuse(e: Conflict) -> Conflict:
+            if recovery:
+                db.commit()                                         # nothing else is written yet: the opened recovery cases stand
+            return e
         if Decimal(res["distributable"]) < 0:
-            raise Conflict("Costs and reversals exceed the revenue of this run: nothing can be distributed (no negative entitlements, no "
-                           "automatic clawback).", error_code="NEGATIVE_DISTRIBUTABLE", details={k: res[k] for k in ("gross_revenue",
-                                                                                                                     "deducted_costs")})
+            raise refuse(Conflict("Costs and reversals exceed the revenue of this run: nothing can be distributed (no negative entitlements, "
+                                  "no automatic clawback).", error_code="NEGATIVE_DISTRIBUTABLE",
+                                  details={k: res[k] for k in ("gross_revenue", "deducted_costs")}))
         if Decimal(res["developer_residual"]) < 0:
-            raise Conflict("With this rounding mode the rounded entitlements exceed the distributable amount; approve a version with a "
-                           "different rounding mode.", error_code="ROUNDING_EXCEEDS_DISTRIBUTABLE")
+            raise refuse(Conflict("With this rounding mode the rounded entitlements exceed the distributable amount; approve a version with "
+                                  "a different rounding mode.", error_code="ROUNDING_EXCEEDS_DISTRIBUTABLE"))
         snapshot = canonical({"inputs": inputs, "results": res})
         x.input_snapshot, x.input_sha256 = snapshot, hashlib.sha256(snapshot.encode("utf-8")).hexdigest()
         x.calculation_version = CALCULATION_VERSION

@@ -322,6 +322,7 @@ def test_orders_kyc_gate_reservations_rollback_and_isolation(client: TestClient,
     assert o.status_code == 201, o.text
     od = o.json()
     assert od["status"] == "PLACED" and Decimal(od["total"]) == Decimal("1290.00") and len(od["items"]) == 2
+    assert od["placed_at"].endswith("Z") and od["expires_at"].endswith("Z")                              # explicit UTC (api.md)
     assert all(i["status"] == "RESERVED" and i["reservation_status"] == "ACTIVE" for i in od["items"])
     assert m.order([(l1["id"], 100), (l2["id"], 40)], key="ord-1").json()["id"] == od["id"]          # idempotent replay
     res = db.scalars(select(CreditReservation).where(CreditReservation.purpose_reference.in_([i["item_code"] for i in od["items"]]))).all()

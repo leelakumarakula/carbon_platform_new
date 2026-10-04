@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit, inject, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -11,6 +11,7 @@ import { ApiError } from '../core/api/api.models';
 import { NotifyService } from '../core/notify.service';
 import { label } from '../farmer/farmer.models';
 import { PageHeader } from '../shared/page-header';
+import { reloadOn } from '../shared/reload-on';
 import { runAction } from '../shared/run-action';
 import { StateView } from '../shared/state-view';
 import { StatusBadge } from '../shared/status-badge';
@@ -56,7 +57,7 @@ import { QaLabView, labBadge, resultValue } from './lab.models';
   styles: `.status-row { display: flex; gap: 8px; align-items: center; margin: -8px 0 12px; } h3 { margin: 14px 0 8px; font: var(--mat-sys-title-small); }
     .check { padding: 3px 0; } .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 10px; } .wide { min-width: 260px; flex: 1; }`,
 })
-export class LabQaPage implements OnInit {
+export class LabQaPage {
   readonly id = input.required<string>();
   private readonly api = inject(LaboratoryApi);
   private readonly notify = inject(NotifyService);
@@ -71,8 +72,16 @@ export class LabQaPage implements OnInit {
   protected notes = '';
   protected ack = false;
 
-  ngOnInit(): void {
-    this.load();
+  constructor() {
+    reloadOn(this.id, () => {
+      this.v.set(null);
+      this.decision = 'APPROVED';
+      this.notes = '';
+      this.ack = false;
+      this.error.set(null);
+      this.loading.set(true);
+      this.load();
+    });
   }
 
   load(): void {

@@ -296,6 +296,7 @@ def _prod(tmp_path: Any, **over: Any) -> dict[str, Any]:
     return base
 
 
+@pytest.mark.usefixtures("no_secret_env")
 def test_valid_production_configuration_is_accepted(tmp_path: Any) -> None:
     assert Settings(**_prod(tmp_path)).is_production
 
@@ -314,6 +315,7 @@ def test_valid_production_configuration_is_accepted(tmp_path: Any) -> None:
     ({"LOG_FORMAT": "text"}, "structured JSON"),
     ({"METRICS_TOKEN": "short"}, "METRICS_TOKEN"),
 ])
+@pytest.mark.usefixtures("no_secret_env")
 def test_unsafe_production_configuration_is_refused(tmp_path: Any, over: dict[str, Any], match: str) -> None:
     with pytest.raises(ValidationError, match=match):
         Settings(**_prod(tmp_path, **over))
@@ -340,7 +342,10 @@ def test_secrets_as_plain_environment_variables_are_refused_in_production(tmp_pa
 
 def test_secret_store_mount_is_read_and_dotenv_is_ignored_in_production(tmp_path: Any, monkeypatch: pytest.MonkeyPatch) -> None:
     (tmp_path / "METRICS_TOKEN").write_text("m" * 40, encoding="utf-8")
-    assert Settings(_secrets_dir=str(tmp_path)).METRICS_TOKEN == "m" * 40              # type: ignore[call-arg]
+    s = get_settings()                                              # no .env here: a developer's METRICS_TOKEN= line would win
+    required = {"SECRET_KEY": s.SECRET_KEY, "JWT_SECRET": s.JWT_SECRET, "DATA_ENCRYPTION_KEY": s.DATA_ENCRYPTION_KEY}
+    monkeypatch.delenv("METRICS_TOKEN", raising=False)
+    assert Settings(_env_file=None, _secrets_dir=str(tmp_path), **required).METRICS_TOKEN == "m" * 40  # type: ignore[call-arg]
     sources = ("init", "env", "dotenv", "secrets")
     monkeypatch.setenv("APP_ENV", "production")
     assert Settings.settings_customise_sources(Settings, *sources) == ("init", "env", "secrets")  # type: ignore[arg-type]

@@ -1,5 +1,5 @@
 import { AsyncPipe, DatePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -18,6 +18,7 @@ import { P } from '../../core/auth/permissions';
 import { NotifyService } from '../../core/notify.service';
 import { PageHeader } from '../../shared/page-header';
 import { askReason } from '../../shared/reason-dialog';
+import { reloadOn } from '../../shared/reload-on';
 import { StateView } from '../../shared/state-view';
 import { StatusBadge } from '../../shared/status-badge';
 import { OrganizationsApi, UsersApi } from '../admin.api';
@@ -33,7 +34,7 @@ const ACTION: Record<OrgStatus, string> = { ACTIVE: 'Reactivate', SUSPENDED: 'Su
   templateUrl: './organization-detail-page.html',
   styles: `.add-member { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-top: 16px; } .add-member mat-form-field { min-width: 260px; }`,
 })
-export class OrganizationDetailPage implements OnInit {
+export class OrganizationDetailPage {
   readonly id = input.required<string>();
 
   private readonly api = inject(OrganizationsApi);
@@ -76,8 +77,13 @@ export class OrganizationDetailPage implements OnInit {
     map((users) => users.filter((u) => !this.members().some((m) => m.user_id === u.id))),
   );
 
-  ngOnInit(): void {
-    this.load();
+  constructor() {
+    reloadOn(this.id, () => {
+      this.org.set(null);
+      this.members.set([]);
+      this.loading.set(true);
+      this.load();
+    });
   }
 
   load(): void {

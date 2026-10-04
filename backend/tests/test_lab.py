@@ -226,6 +226,20 @@ def test_analysis_time_compared_with_receipt_at_whole_seconds(client: TestClient
     assert timing() == "FAIL"                                   # a whole second earlier is before the receipt
 
 
+def test_result_cannot_be_submitted_without_its_report(client: TestClient, db: Session, x: LabCtx) -> None:
+    s = to_lab(client, x)
+    test_id = s["tests"][0]["id"]
+    assert client.post(f"{LABV}/tests/{test_id}/start", headers=x.tech.headers, json={}).status_code == 200
+    res = client.post(f"{LABV}/tests/{test_id}/results", headers=x.tech.headers,
+                      json={"result_type": "NUMERIC", "value_number": "1.2", "unit": "t C/ha", "analysed_at": now_iso(1)}).json()
+    assert res["can_edit"] is True and res["can_submit"] is False       # QA could never approve it: submission waits for the PDF
+    r = client.post(f"{LABV}/results/{res['id']}/submit", headers=x.tech.headers)
+    assert r.status_code == 409 and r.json()["error_code"] == "REPORT_REQUIRED"
+    r = client.post(f"{LABV}/results/{res['id']}/report", headers=x.tech.headers, files={"file": ("r.pdf", PDF, "application/pdf")})
+    assert r.json()["can_submit"] is True
+    assert client.post(f"{LABV}/results/{res['id']}/submit", headers=x.tech.headers).json()["status"] == "SUBMITTED"
+
+
 # ---------------------------------------------------------------- separation of duties
 def test_lab_qa_separation_of_duties(client: TestClient, db: Session, x: LabCtx) -> None:
     # one user who registered/sealed the sample in the project org and is also a lab manager
@@ -457,7 +471,9 @@ def test_sample_keeps_original_field_collection_version(client: TestClient, db: 
     res = enter_result(client, x, s["tests"][0]["id"])
     client.post(f"{LABV}/qa/{res['id']}/start", headers=x.qa.headers)
     checks = {c["key"]: c for c in client.get(f"{LABV}/qa/{res['id']}", headers=x.qa.headers).json()["checks"]}
-    assert checks["field_collection"]["result"] == "WARN" and corr["collection_code"] in checks["field_collection"]["details"][0]
+    assert checks["field_collection"]["result"] == "WARN"
+    shown = json.dumps(checks)                                       # laboratory isolation: no field-record code or status in QA text
+    assert corr["collection_code"] not in shown and x.fcs[0]["collection_code"] not in shown and "SUPERSEDED" not in shown
     r = client.post(f"{LABV}/qa/{res['id']}/decision", headers=x.qa.headers, json={"decision": "APPROVED", "notes": "physical sample unchanged"})
     assert r.json()["result"]["status"] == "APPROVED"
 

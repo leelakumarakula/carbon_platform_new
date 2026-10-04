@@ -1,10 +1,11 @@
 import { DatePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit, inject, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { ApiError } from '../core/api/api.models';
 import { label } from '../farmer/farmer.models';
 import { PageHeader } from '../shared/page-header';
+import { reloadOn } from '../shared/reload-on';
 import { StateView } from '../shared/state-view';
 import { StatusBadge } from '../shared/status-badge';
 import { LabApi } from './lab.api';
@@ -51,7 +52,7 @@ import { Lineage, labBadge, resultValue } from './lab.models';
   styles: `.status-row { display: flex; gap: 8px; align-items: center; margin: -8px 0 12px; } .chain li { margin: 6px 0; }
     h3 { margin: 14px 0 6px; font: var(--mat-sys-title-small); } .mono { font-family: monospace; font-size: 12px; }`,
 })
-export class LabResultLineagePage implements OnInit {
+export class LabResultLineagePage {
   readonly id = input.required<string>();
   private readonly api = inject(LabApi);
   protected readonly label = label;
@@ -61,8 +62,13 @@ export class LabResultLineagePage implements OnInit {
   protected readonly loading = signal(true);
   protected readonly error = signal<ApiError | null>(null);
 
-  ngOnInit(): void {
-    this.load();
+  constructor() {
+    reloadOn(this.id, () => {
+      this.l.set(null);
+      this.error.set(null);
+      this.loading.set(true);
+      this.load();
+    });
   }
 
   load(): void {

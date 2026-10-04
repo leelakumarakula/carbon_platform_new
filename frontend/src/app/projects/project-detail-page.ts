@@ -1,9 +1,11 @@
 import { DatePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTabsModule } from '@angular/material/tabs';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { map } from 'rxjs';
 
 import { ApiError } from '../core/api/api.models';
 import { AuthService } from '../core/auth/auth.service';
@@ -16,6 +18,7 @@ import { formatArea } from '../shared/geo';
 import { PageHeader } from '../shared/page-header';
 import { ReadinessPanel } from '../shared/readiness-panel';
 import { askReason } from '../shared/reason-dialog';
+import { reloadOn } from '../shared/reload-on';
 import { runAction } from '../shared/run-action';
 import { StateView } from '../shared/state-view';
 import { StatusBadge } from '../shared/status-badge';
@@ -122,10 +125,9 @@ const TAB_ONLY: ProjectStatus[] = ['METHODOLOGY_REVIEW', 'METHODOLOGY_CONFIRMED'
     .status-row { display: flex; gap: 6px; margin: -8px 0 16px; flex-wrap: wrap; }
     .overview { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 20px; }
     @media (max-width: 900px) { .overview { grid-template-columns: 1fr; } }
-    .danger { color: #b71c1c; }
   `,
 })
-export class ProjectDetailPage implements OnInit {
+export class ProjectDetailPage {
   readonly id = input.required<string>();
   private readonly api = inject(ProjectsApi);
   private readonly dialog = inject(MatDialog);
@@ -142,7 +144,8 @@ export class ProjectDetailPage implements OnInit {
   protected readonly loading = signal(true);
   protected readonly error = signal<ApiError | null>(null);
   protected readonly busy = signal(false);
-  protected readonly tab = signal(Math.max(0, TABS.indexOf(this.route.snapshot.queryParamMap.get('tab') ?? 'overview')));
+  protected readonly tab = signal(0);
+  private readonly tabParam = toSignal(this.route.queryParamMap.pipe(map((q) => q.get('tab'))));
   protected readonly uploadFn: UploadFn = (file, category, title) => this.api.uploadDocument(this.id(), file, category, title);
   protected readonly actions = computed(() => {
     const p = this.project();
@@ -157,8 +160,15 @@ export class ProjectDetailPage implements OnInit {
     return out;
   });
 
-  ngOnInit(): void {
-    this.load();
+  constructor() {
+    reloadOn(this.id, () => {
+      this.project.set(null);
+      this.boundary.set(null);
+      this.documents.set([]);
+      this.loading.set(true);
+      this.load();
+    });
+    reloadOn(() => [this.id(), this.tabParam()], () => this.tab.set(Math.max(0, TABS.indexOf(this.tabParam() ?? 'overview'))));
   }
 
   load(): void {

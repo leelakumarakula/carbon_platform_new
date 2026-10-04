@@ -50,7 +50,7 @@ import { ProjectsApi } from '../projects.api';
   `,
   styles: `
     .line { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--mat-sys-outline-variant); flex-wrap: wrap; }
-    .off { opacity: .6; } .grow { flex: 1; min-width: 260px; } .danger { color: #b71c1c; }
+    .off { opacity: .6; } .grow { flex: 1; min-width: 260px; }
   `,
 })
 export class ProjectRightsPanel implements OnInit {

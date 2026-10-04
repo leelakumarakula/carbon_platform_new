@@ -111,7 +111,7 @@ import { Project } from '../project.models';
   `,
   styles: `
     .locked { display: flex; gap: 12px; align-items: flex-start; padding: 12px; border-radius: 10px; background: #e8f5e9; margin-bottom: 12px; }
-    .grow { flex: 1; } .danger { color: #b71c1c; }
+    .grow { flex: 1; }
     .note { padding: 6px 10px; border-radius: 8px; background: var(--mat-sys-surface-container); font-size: 13px; }
     .note.warn { background: #fff3e0; color: #e65100; }
     .facts { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 8px 0 12px; }

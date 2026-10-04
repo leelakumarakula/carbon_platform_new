@@ -8,6 +8,7 @@ from typing import Any
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+from sqlalchemy.exc import IntegrityError
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 log = logging.getLogger("app.errors")
@@ -91,6 +92,14 @@ def install_error_handlers(app: FastAPI) -> None:
         code = _HTTP_CODES.get(exc.status_code, "HTTP_ERROR")
         msg = exc.detail if isinstance(exc.detail, str) else "Request failed."
         return envelope(request, exc.status_code, code, msg)
+
+    @app.exception_handler(IntegrityError)
+    async def _integrity(request: Request, exc: IntegrityError) -> JSONResponse:
+        # Services check state first; a unique / foreign-key / check violation reaching here is a concurrent change (409, not 500).
+        # The SQL text and parameters are never returned.
+        log.warning("Integrity conflict (request_id=%s): %s", getattr(request.state, "request_id", None), type(exc.orig).__name__)
+        return envelope(request, 409, "CONCURRENT_CONFLICT",
+                        "The record was changed by another request at the same time. Reload and try again.")
 
     @app.exception_handler(Exception)
     async def _unhandled(request: Request, exc: Exception) -> JSONResponse:

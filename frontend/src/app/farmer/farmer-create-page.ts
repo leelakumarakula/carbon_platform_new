@@ -33,7 +33,7 @@ const MANAGING = new Set(['PROJECT_DEVELOPER', 'FIELD_PARTNER', 'FARMER_GROUP'])
           <mat-form-field>
             <mat-label>Managing organization</mat-label>
             <mat-select formControlName="organization_id">
-              @for (o of orgs(); track o.id) { <mat-option [value]="o.id">{{ o.name }}</mat-option> }
+              @for (o of orgs(); track o.id) { <mat-option [value]="o.id">{{ o.name }} ({{ o.code }})</mat-option> }
             </mat-select>
           </mat-form-field>
           <mat-form-field>
@@ -87,7 +87,7 @@ export class FarmerCreatePage implements OnInit {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
   private readonly notify = inject(NotifyService);
-  protected readonly orgs = signal<Pick<Organization, 'id' | 'name'>[]>([]);
+  protected readonly orgs = signal<Pick<Organization, 'id' | 'name' | 'code'>[]>([]);
   protected readonly saving = signal(false);
   protected readonly error = signal<string | null>(null);
 
@@ -110,7 +110,7 @@ export class FarmerCreatePage implements OnInit {
     const memberships = this.auth.user()?.organizations ?? [];
     const allowed = memberships.filter((m) => MANAGING.has(m.org_type) &&
       grants.some((g) => g.organization_id === m.organization_id) && this.auth.has(P.FARMERS_MANAGE));
-    this.orgs.set(allowed.map((m) => ({ id: m.organization_id, name: m.organization_name })));
+    this.orgs.set(allowed.map((m) => ({ id: m.organization_id, name: m.organization_name, code: m.organization_code })));
     if (allowed.length === 1) this.form.controls.organization_id.setValue(allowed[0].organization_id);
     if (!allowed.length && this.auth.has('organizations.read')) {
       this.orgsApi.list({ page_size: 100, status: 'ACTIVE' }).subscribe((p) =>

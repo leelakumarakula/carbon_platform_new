@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit, inject, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
@@ -15,6 +15,7 @@ import { NotifyService } from '../core/notify.service';
 import { label } from '../farmer/farmer.models';
 import { PageHeader } from '../shared/page-header';
 import { askReason } from '../shared/reason-dialog';
+import { reloadOn } from '../shared/reload-on';
 import { runAction } from '../shared/run-action';
 import { StateView } from '../shared/state-view';
 import { StatusBadge } from '../shared/status-badge';
@@ -71,11 +72,15 @@ import { ResultLabView, TestLabView, labBadge, resultTypeApprovable, resultValue
             @if (r.can_edit || r.status === 'SUBMITTED') {
               <label class="upload">PDF report <input type="file" accept="application/pdf" (change)="upload(r, $event)" [attr.data-testid]="'report-' + r.version" /></label>
             }
-            @if (r.can_submit) { <button mat-flat-button type="button" [disabled]="busy()" (click)="submit(r)" data-testid="submit-result">Submit for QA</button> }
-            @if (r.can_submit) { <button mat-button type="button" (click)="withdraw(r)">Withdraw</button> }
+            @if (r.can_submit || (r.can_edit && !r.report)) {
+              <!-- QA cannot approve a result without its laboratory report, so submission needs one (server: REPORT_REQUIRED). -->
+              <button mat-flat-button type="button" [disabled]="busy() || !r.report" (click)="submit(r)" data-testid="submit-result">Submit for QA</button>
+            }
+            @if (r.can_submit || r.can_edit) { <button mat-button type="button" (click)="withdraw(r)">Withdraw</button> }
             @if (r.status === 'SUBMITTED' || r.status === 'QA_REVIEW') { <a mat-button [routerLink]="['/laboratory/qa', r.id]">Laboratory QA</a> }
             @if (r.status === 'APPROVED' && canRetest) { <button mat-button type="button" (click)="retest(r)">Request retest</button> }
           </div>
+          @if ((r.can_submit || r.can_edit) && !r.report) { <p class="small muted">Attach the PDF laboratory report before submitting for QA.</p> }
         </div>
       } @empty { <p class="muted small">No result yet.</p> }
     }
@@ -84,7 +89,7 @@ import { ResultLabView, TestLabView, labBadge, resultTypeApprovable, resultValue
     .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; } .wide { min-width: 260px; flex: 1; }
     .result { border-bottom: 1px solid var(--mat-sys-outline-variant); padding: 6px 0; } .upload { font-size: 13px; }`,
 })
-export class LabTestPage implements OnInit {
+export class LabTestPage {
   readonly id = input.required<string>();
   private readonly api = inject(LaboratoryApi);
   private readonly dialog = inject(MatDialog);
@@ -105,8 +110,16 @@ export class LabTestPage implements OnInit {
   /** Local time with seconds: laboratory QA compares it with the receipt time. */
   protected analysedAt = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 19);
 
-  ngOnInit(): void {
-    this.load();
+  constructor() {
+    reloadOn(this.id, () => {
+      this.t.set(null);
+      this.method = this.unit = this.valueText = '';
+      this.valueNumber = null;
+      this.resultType = 'NUMERIC';
+      this.error.set(null);
+      this.loading.set(true);
+      this.load();
+    });
   }
 
   load(): void {
@@ -151,6 +164,7 @@ export class LabTestPage implements OnInit {
   }
 
   protected submit(r: ResultLabView): void {
+    if (!r.report) return;
     runAction(this.api.submit(r.id), this.busy, this.notify, 'Submitted for laboratory QA.', () => this.load());
   }
 

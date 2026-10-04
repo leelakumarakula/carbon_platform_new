@@ -73,6 +73,7 @@ import { User, UserStatus } from '../admin.models';
           <td mat-cell *matCellDef="let u">
             <app-status-badge [status]="u.status" />
             @if (u.is_locked) { <app-status-badge status="LOCKED" /> }
+            @if (u.must_change_password) { <app-status-badge status="WARNING" text="Must change password" /> }
             @if (u.environment === 'DEMO') { <app-status-badge status="DEMO" /> }
           </td>
         </ng-container>

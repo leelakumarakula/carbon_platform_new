@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -13,6 +13,7 @@ import { NotifyService } from '../core/notify.service';
 import { label } from '../farmer/farmer.models';
 import { GeoMap, MapPoint } from '../shared/geo-map';
 import { PageHeader } from '../shared/page-header';
+import { reloadOn } from '../shared/reload-on';
 import { runAction } from '../shared/run-action';
 import { StateView } from '../shared/state-view';
 import { StatusBadge } from '../shared/status-badge';
@@ -117,7 +118,7 @@ function localInput(iso: string | null): string {
     .reloc { margin: 8px 0 24px; max-width: 640px; }
   `,
 })
-export class FieldCollectionPage implements OnInit {
+export class FieldCollectionPage {
   readonly id = input.required<string>();
   private readonly api = inject(MrvApi);
   private readonly notify = inject(NotifyService);
@@ -165,8 +166,16 @@ export class FieldCollectionPage implements OnInit {
     return out;
   });
 
-  ngOnInit(): void {
-    this.load();
+  constructor() {
+    reloadOn(this.id, () => {
+      this.c.set(null);
+      this.point.set(null);
+      this.photos.set([]);
+      this.form.enable();
+      this.error.set(null);
+      this.loading.set(true);
+      this.load();
+    });
   }
 
   load(): void {

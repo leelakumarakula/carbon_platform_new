@@ -97,6 +97,26 @@ describe('Laboratory screens', () => {
     expect(el.textContent).toContain('UNIT_MISMATCH');
   });
 
+  it('test page blocks Submit for QA until the PDF report is attached, even if the server says can_submit', async () => {
+    const report = { document_id: 'd1', category: 'LAB_REPORT', title: 'Report', file_name: 'r.pdf', sha256: 'abc', uploaded_at: null };
+    const f = TestBed.createComponent(LabTestPage);
+    f.componentRef.setInput('id', 't1');
+    f.detectChanges();
+    http.expectOne('/api/v1/laboratory/tests/t1').flush(test({ results: [result({ can_submit: true })] }));
+    await f.whenStable();
+    f.detectChanges();
+    const el = f.nativeElement as HTMLElement;
+    expect(el.querySelector<HTMLButtonElement>('[data-testid="submit-result"]')?.disabled).toBe(true);
+    expect(el.textContent).toContain('Attach the PDF laboratory report before submitting for QA.');
+    f.componentRef.setInput('id', 't2');          // the router reuses the page for another test: it reloads
+    f.detectChanges();
+    http.expectOne('/api/v1/laboratory/tests/t2').flush(test({ id: 't2', results: [result({ can_submit: true, report })] }));
+    await f.whenStable();
+    f.detectChanges();
+    expect(el.querySelector<HTMLButtonElement>('[data-testid="submit-result"]')?.disabled).toBe(false);
+    expect(el.textContent).not.toContain('Attach the PDF laboratory report');
+  });
+
   it('test page shows CONFIGURATION_REQUIRED when the rule declares no unit', async () => {
     const f = TestBed.createComponent(LabTestPage);
     f.componentRef.setInput('id', 't1');

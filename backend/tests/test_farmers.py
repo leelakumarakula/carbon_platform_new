@@ -90,6 +90,9 @@ def test_kyc_return_and_duplicate_flag(client: TestClient, db: Session, pm, qa, 
     assert r.json()["kyc"]["possible_duplicate"] is True
     blocked = client.post(f"{F}/{f['id']}/kyc/decision", headers=qa.headers, json={"decision": "VERIFIED", "notes": "looks fine"})
     assert blocked.status_code == 409 and blocked.json()["error_code"] == "DUPLICATE_REVIEW_REQUIRED"
+    # the submitter cannot withdraw a pending KYC through a plain status change: only the independent reviewer returns it
+    skip = client.post(f"{F}/{f['id']}/status", headers=pm.headers, json={"status": "REGISTERED", "reason": "withdraw"})
+    assert skip.status_code == 409 and skip.json()["error_code"] == "USE_KYC_WORKFLOW"
     back = client.post(f"{F}/{f['id']}/kyc/decision", headers=qa.headers, json={"decision": "RETURNED", "notes": "duplicate identity"})
     assert back.json()["status"] == "REGISTERED" and back.json()["kyc"]["notes"] == "duplicate identity"
 
@@ -118,6 +121,7 @@ def test_consent_definitions_are_versioned_and_drive_activation(client: TestClie
     """Decision D3: consent types are configuration; activation requires the current version of every required one."""
     defs = client.get("/api/v1/consent-definitions", headers=pm.headers).json()
     assert [(d["consent_type"], d["version"], d["required_for_activation"]) for d in defs] == [("DATA_PROCESSING", 1, True)]
+    assert defs[0]["text_version"] == "DATA_PROCESSING-v1"                   # the consent form prefills the wording identifier from it
     # Only consent configurers may publish; project managers cannot.
     new_type = {"consent_type": "photo_use", "title": "Use of field photos", "required_for_activation": False}
     assert client.post("/api/v1/admin/consent-definitions", headers=pm.headers, json=new_type).status_code == 403

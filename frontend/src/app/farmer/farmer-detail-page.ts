@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
@@ -11,6 +11,7 @@ import { DocumentsPanel, UploadFn } from '../shared/documents-panel';
 import { PageHeader } from '../shared/page-header';
 import { ReadinessPanel } from '../shared/readiness-panel';
 import { askReason } from '../shared/reason-dialog';
+import { reloadOn } from '../shared/reload-on';
 import { StateView } from '../shared/state-view';
 import { StatusBadge } from '../shared/status-badge';
 import { FARMER_DOC_CATEGORIES, Farmer, label } from './farmer.models';
@@ -80,7 +81,7 @@ const ACTION: Record<string, string> = { REGISTERED: 'Register', ACTIVE: 'Activa
   `,
   styles: `.status-row { display: flex; gap: 6px; margin: -8px 0 16px; flex-wrap: wrap; }`,
 })
-export class FarmerDetailPage implements OnInit {
+export class FarmerDetailPage {
   readonly id = input.required<string>();
   private readonly api = inject(FarmersApi);
   private readonly dialog = inject(MatDialog);
@@ -94,8 +95,11 @@ export class FarmerDetailPage implements OnInit {
   protected readonly hasReadiness = computed(() => (this.farmer()?.readiness ?? []).some((r) => r.items.length));
   protected readonly uploadFn: UploadFn = (file, category, title) => this.api.uploadDocument(this.id(), file, category, title);
 
-  ngOnInit(): void {
-    this.load();
+  constructor() {
+    reloadOn(this.id, () => {
+      this.farmer.set(null);
+      this.load();
+    });
   }
 
   load(): void {

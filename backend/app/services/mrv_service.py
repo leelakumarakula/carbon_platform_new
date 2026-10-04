@@ -315,9 +315,10 @@ def period_action(db: Session, ctx: RequestContext, principal: Principal, period
         psvc.transition_to(db, ctx, p, "MONITORING", "PROJECT_STATUS_CHANGED", "MONITORING_STARTED", reason)
     if action == "open-collection":
         ds = open_dataset(db, mp.id)
-        if ds is not None and ds.status == "DRAFT":
-            record_transition(db, ctx, MRV_DATASET_MACHINE, ds.id, "DRAFT", "COLLECTING", "MRV_DATASET_COLLECTING", reason, p.organization_id)
-            ds.status = "COLLECTING"
+        if ds is not None and ds.status in ("DRAFT", "SUBMITTED"):
+            # A SUBMITTED dataset is re-opened with its period: the frozen snapshot is dropped and rebuilt at the next submit.
+            record_transition(db, ctx, MRV_DATASET_MACHINE, ds.id, ds.status, "COLLECTING", "MRV_DATASET_COLLECTING", reason, p.organization_id)
+            ds.status, ds.snapshot, ds.snapshot_sha256, ds.submitted_by, ds.submitted_at = "COLLECTING", None, None, None, None
     _audit(db, ctx, p, audit_action, {"monitoring_period_id": mp.id, "status": target}, None, reason)
     db.commit()
     return mp

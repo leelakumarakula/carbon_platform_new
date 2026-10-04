@@ -402,7 +402,7 @@ def confirm_opening(db: Session, ctx: RequestContext, principal: Principal, open
     assert account is not None
 
     def op() -> CreditOpening:
-        db.refresh(o)
+        relock(db, o)
         db.refresh(b)
         if o.status != "REQUESTED":
             raise Conflict(f"The opening is {o.status}.", error_code="OPENING_NOT_REQUESTED")
@@ -541,7 +541,7 @@ def release_reservation(db: Session, ctx: RequestContext, principal: Principal, 
     expire_due(db, ctx, batch_ids=[r.batch_id])
 
     def op() -> CreditReservation:
-        db.refresh(r)
+        relock(db, r)
         release_in_tx(db, ctx, r, principal.user_id, reason, key)
         return r
     return run(db, ctx, op)
@@ -656,7 +656,7 @@ def complete_transfer(db: Session, ctx: RequestContext, principal: Principal, tr
     b = get_batch(db, t.batch_id)
 
     def op() -> CreditTransfer:
-        db.refresh(t)
+        relock(db, t)
         complete_transfer_in_tx(db, ctx, t, batch=b, confirmer_id=principal.user_id, data=data, key=key)
         return t
     return run(db, ctx, op)
@@ -676,6 +676,14 @@ def check_completion(db: Session, principal: Principal, t: CreditTransfer, data:
                                                    CreditTransfer.registry_transfer_reference == data.registry_transfer_reference,
                                                    CreditTransfer.id != t.id)).first():
             raise Conflict("This registry transfer reference is already recorded.", error_code="DUPLICATE_REGISTRY_REFERENCE")
+
+
+def relock(db: Session, obj: Any) -> None:
+    """Re-read a workflow row under UPDLOCK inside the operation's transaction: of two concurrent confirmers the second waits and
+    then sees the final status (a clean 409), instead of racing into the database's final-state triggers."""
+    model = type(obj)
+    db.scalars(select(model).with_hint(model, LOCK_HINT, "mssql").where(model.id == obj.id)
+              .execution_options(populate_existing=True)).first()
 
 
 def lock_transfer(db: Session, transfer_id: uuid.UUID) -> CreditTransfer | None:
@@ -734,7 +742,7 @@ def close_transfer(db: Session, ctx: RequestContext, principal: Principal, trans
     check_close(db, principal, t, to)
 
     def op() -> CreditTransfer:
-        db.refresh(t)
+        relock(db, t)
         close_transfer_in_tx(db, ctx, t, batch=b, to=to, actor_id=principal.user_id, reason=reason, key=key)
         return t
     return run(db, ctx, op)
@@ -825,7 +833,7 @@ def retire(db: Session, ctx: RequestContext, principal: Principal, retirement_id
         raise Conflict("This registry retirement reference is already recorded.", error_code="DUPLICATE_REGISTRY_REFERENCE")
 
     def op() -> CreditRetirement:
-        db.refresh(r)
+        relock(db, r)
         if r.status != "REQUESTED":
             raise Conflict(f"The retirement is {r.status}.", error_code="RETIREMENT_NOT_REQUESTED")
         positions = lock_positions(db, b.id, retirement_id=r.id, state="RETIREMENT_PENDING")
@@ -866,7 +874,7 @@ def close_retirement(db: Session, ctx: RequestContext, principal: Principal, ret
         _require_confirmer(principal, _pending_custodians(db, pending) or {r.owner_organization_id}, r.requested_by)
 
     def op() -> CreditRetirement:
-        db.refresh(r)
+        relock(db, r)
         if r.status != "REQUESTED":
             raise Conflict(f"The retirement is {r.status}.", error_code="RETIREMENT_NOT_REQUESTED")
         positions = lock_positions(db, b.id, retirement_id=r.id, state="RETIREMENT_PENDING")
@@ -932,7 +940,7 @@ def decide_reversal(db: Session, ctx: RequestContext, principal: Principal, reve
     b = get_batch(db, v.batch_id)
 
     def op() -> CreditReversal:
-        db.refresh(v)
+        relock(db, v)
         if v.status != "REQUESTED":
             raise Conflict(f"The reversal is {v.status}.", error_code="REVERSAL_NOT_REQUESTED")
         to = "APPLIED" if apply else "REJECTED"

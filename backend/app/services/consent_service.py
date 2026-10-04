@@ -21,7 +21,7 @@ from app.security.principal import Principal
 ENTITY = "consent_definition"
 BASELINE = {"consent_type": "DATA_PROCESSING", "title": "Personal data processing",
             "description": "Consent to collect and process the farmer's personal data for platform operations.",
-            "required_for_activation": True}
+            "text_version": "DATA_PROCESSING-v1", "required_for_activation": True}
 
 
 def list_definitions(db: Session, include_retired: bool = False) -> list[ConsentDefinition]:
@@ -83,9 +83,15 @@ def resolve_for_grant(db: Session, consent_type: str) -> ConsentDefinition:
 
 
 def ensure_baseline(db: Session) -> bool:
-    """Reference-data sync: make sure the baseline DATA_PROCESSING definition exists (never alters existing ones)."""
-    if db.scalars(select(ConsentDefinition).where(ConsentDefinition.consent_type == BASELINE["consent_type"])).first():
-        return False
+    """Reference-data sync: make sure the baseline DATA_PROCESSING definition exists. An existing one is never altered, except that a
+    missing wording identifier on the baseline version 1 (seeded empty by migration 0003) is filled, so the consent form can prefill it."""
+    d = db.scalars(select(ConsentDefinition).where(ConsentDefinition.consent_type == BASELINE["consent_type"])
+                   .order_by(ConsentDefinition.version)).first()
+    if d is not None:
+        if d.version == 1 and d.text_version is None:
+            d.text_version = str(BASELINE["text_version"])
+            db.flush()
+        return False                                                # not added
     db.add(ConsentDefinition(version=1, **BASELINE))
     db.flush()
     return True

@@ -32,7 +32,7 @@ const OWNER_TYPES = new Set(['PROJECT_DEVELOPER', 'FIELD_PARTNER', 'FARMER_GROUP
           <mat-form-field>
             <mat-label>Organization</mat-label>
             <mat-select formControlName="organization_id">
-              @for (o of orgs(); track o.id) { <mat-option [value]="o.id">{{ o.name }}</mat-option> }
+              @for (o of orgs(); track o.id) { <mat-option [value]="o.id">{{ o.name }} ({{ o.code }})</mat-option> }
             </mat-select>
             @if (!orgs().length) { <mat-hint>You do not manage projects in any organization.</mat-hint> }
           </mat-form-field>
@@ -81,7 +81,7 @@ export class ProjectCreatePage implements OnInit {
   private readonly notify = inject(NotifyService);
   protected readonly label = label;
   protected readonly types = PROJECT_TYPES;
-  protected readonly orgs = signal<{ id: string; name: string }[]>([]);
+  protected readonly orgs = signal<{ id: string; name: string; code: string }[]>([]);
   protected readonly saving = signal(false);
   protected readonly error = signal<string | null>(null);
   protected readonly form = new FormGroup({
@@ -100,7 +100,7 @@ export class ProjectCreatePage implements OnInit {
     const grantOrgs = new Set((user?.roles ?? []).map((g) => g.organization_id).filter((o): o is string => !!o));
     const allowed = this.auth.has(P.PROJECTS_MANAGE)
       ? (user?.organizations ?? []).filter((m) => OWNER_TYPES.has(m.org_type) && grantOrgs.has(m.organization_id)) : [];
-    this.orgs.set(allowed.map((m) => ({ id: m.organization_id, name: m.organization_name })));
+    this.orgs.set(allowed.map((m) => ({ id: m.organization_id, name: m.organization_name, code: m.organization_code })));
     if (allowed.length === 1) this.form.controls.organization_id.setValue(allowed[0].organization_id);
   }
 

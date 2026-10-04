@@ -100,7 +100,7 @@
                 <mat-label>In organization</mat-label>
                 <mat-select formControlName="organization_id">
                   @for (m of u.organizations; track m.organization_id) {
-                    <mat-option [value]="m.organization_id">{{ m.organization_name }}</mat-option>
+                    <mat-option [value]="m.organization_id">{{ m.organization_name }} ({{ m.organization_code }})</mat-option>
                   }
                 </mat-select>
                 @if (!u.organizations.length) { <mat-hint>Add the user to an organization first.</mat-hint> }

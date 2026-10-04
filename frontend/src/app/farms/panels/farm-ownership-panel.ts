@@ -33,7 +33,7 @@ import { FarmsApi } from '../farms.api';
           </div>
           <app-status-badge [status]="o.verification_status === 'VERIFIED' ? 'ACTIVE' : o.verification_status === 'REJECTED' ? 'FAILED' : 'INFO'"
                             [text]="label(o.verification_status)" />
-          @if (farm().can_review && o.is_current) {
+          @if (farm().can_review && o.is_current && pending(o)) {
             <button mat-button type="button" (click)="review(o, 'REJECTED')" [disabled]="busy()">Reject</button>
             <button mat-stroked-button type="button" (click)="review(o, 'VERIFIED')" [disabled]="busy()">Verify</button>
           }
@@ -77,6 +77,8 @@ export class FarmOwnershipPanel implements OnInit {
   protected readonly label = label;
   protected readonly ownerTypes = ['FARMER', 'INDIVIDUAL', 'ORGANIZATION', 'GOVERNMENT', 'COMMUNITY'];
   protected readonly relationships = ['OWNER', 'CO_OWNER', 'TENANT', 'LESSEE', 'SHARECROPPER', 'CUSTODIAN', 'OTHER'];
+  /** Only unreviewed records can be reviewed; the server refuses re-review. */
+  protected readonly pending = (o: Ownership) => o.verification_status === 'UNVERIFIED' || o.verification_status === 'NEEDS_REVIEW';
   protected readonly editable = computed(() => this.farm().can_manage && this.farm().status === 'DRAFT');
   protected readonly form = new FormGroup({
     owner_type: new FormControl('FARMER', { nonNullable: true }),
