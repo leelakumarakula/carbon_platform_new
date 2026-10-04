@@ -13,6 +13,9 @@ from app.schemas.farms import (
     BoundaryOut,
     EvidenceIn,
     EvidenceOut,
+    ExternalDataOut,
+    ExternalFetchIn,
+    ExternalObservationOut,
     FarmCreate,
     FarmOut,
     FarmSummary,
@@ -31,6 +34,7 @@ from app.schemas.farms import (
 )
 from app.security.permissions import P
 from app.security.principal import Principal
+from app.services import external_data_service as external
 from app.services import farm_history_service as history
 from app.services import farm_service as svc
 from app.services import gis_service
@@ -210,6 +214,19 @@ def review_evidence(farm_id: uuid.UUID, evidence_id: uuid.UUID, body: ReviewDeci
                     ctx: Ctx) -> EvidenceOut:
     e = svc.review_evidence(db, ctx, principal, farm_id, evidence_id, body.status, body.notes)
     return evidence_out(db, svc.get_farm(db, principal, farm_id), e)
+
+
+@router.get("/{farm_id}/external-data", response_model=ExternalDataOut,
+            summary="External reference data (weather, soil, satellite NDVI): providers and fetched observations — evidence only")
+def external_data(farm_id: uuid.UUID, principal: Reader, db: DB) -> ExternalDataOut:
+    return external.overview(db, principal, farm_id)
+
+
+@router.post("/{farm_id}/external-data/{kind}", response_model=ExternalObservationOut, status_code=status.HTTP_201_CREATED,
+             summary="Fetch from the provider and store an append-only observation (farms.manage or farms.review)")
+def fetch_external_data(farm_id: uuid.UUID, kind: Literal["weather", "soil", "satellite-ndvi", "land-records"], body: ExternalFetchIn,
+                        principal: Reader, db: DB, ctx: Ctx) -> ExternalObservationOut:
+    return external.fetch(db, ctx, principal, farm_id, kind, body.period_start, body.period_end)
 
 
 @router.post("/{farm_id}/documents", response_model=IdRef, status_code=status.HTTP_201_CREATED)

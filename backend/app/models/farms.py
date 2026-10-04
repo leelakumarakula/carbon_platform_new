@@ -269,3 +269,38 @@ class FarmOverlapCheck(UUIDPrimaryKey, Base):
 
 
 Farm.current_boundary = relationship(FarmBoundary, foreign_keys=[Farm.current_boundary_id], viewonly=True)  # type: ignore[attr-defined]
+
+
+EXTERNAL_DATA_TYPES = ["WEATHER", "SOIL", "SATELLITE_NDVI", "LAND_RECORD"]
+
+
+class FarmExternalObservation(UUIDPrimaryKey, Base):
+    """External reference data fetched for a farm (weather, soil, satellite NDVI) — evidence only, append-only (trigger).
+
+    Never an input to a status change, a verification decision or a calculation. Each row keeps the provider, dataset, the request
+    (without credentials), the boundary version it was taken for and the SHA-256 of the provider's raw response."""
+    __tablename__ = "farm_external_observations"
+    __table_args__ = (
+        CheckConstraint(in_check("data_type", EXTERNAL_DATA_TYPES), name="data_type"),
+        CheckConstraint(in_check("environment", Environment), name="environment"),
+        CheckConstraint("ISJSON(summary) = 1 AND ISJSON(request) = 1", name="json"),
+        CheckConstraint("period_start IS NULL OR period_end IS NULL OR period_start <= period_end", name="period"),
+        CheckConstraint("latitude BETWEEN -90 AND 90 AND longitude BETWEEN -180 AND 180", name="location"),
+        Index("ix_farm_external_observations_farm", "farm_id", "data_type", "fetched_at"),
+    )
+    farm_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("farms.id"))
+    boundary_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("farm_boundaries.id"))
+    organization_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("organizations.id"))
+    environment: Mapped[str] = mapped_column(Unicode(10))
+    data_type: Mapped[str] = mapped_column(Unicode(20))
+    provider: Mapped[str] = mapped_column(Unicode(40))
+    dataset: Mapped[str] = mapped_column(Unicode(120))
+    period_start: Mapped[date | None] = mapped_column(Date)
+    period_end: Mapped[date | None] = mapped_column(Date)
+    latitude: Mapped[Decimal] = mapped_column(Numeric(10, 7))
+    longitude: Mapped[Decimal] = mapped_column(Numeric(10, 7))
+    request: Mapped[str] = mapped_column(UnicodeText)
+    summary: Mapped[str] = mapped_column(UnicodeText)
+    raw_sha256: Mapped[str] = mapped_column(Unicode(64))
+    fetched_by: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id"))
+    fetched_at: Mapped[datetime] = mapped_column(default=utcnow, server_default=text("SYSUTCDATETIME()"))
