@@ -8,7 +8,8 @@ import { NAVIGATION, visibleNavigation } from '../core/navigation/nav.config';
 import { FieldDashboardPage } from './field-dashboard-page';
 import { MrvDashboardPage } from './mrv-dashboard-page';
 import { MrvDatasetPage } from './mrv-dataset-page';
-import { FieldCollection, Measurement, QaView, SamplingPoint, capturableInMrv, collectionMissing, dataRoleLabel, mrvBadge, parseMeasurementValue } from './mrv.models';
+import { FieldCollection, Measurement, QaView, SamplingPoint, Stratum, capturableInMrv, collectionMissing, dataRoleLabel, mrvBadge, parseMeasurementValue } from './mrv.models';
+import { MrvStrataPanel } from './panels/mrv-strata-panel';
 
 function point(over: Partial<SamplingPoint> = {}): SamplingPoint {
   return { id: 'pt1', point_code: 'SP-2026-000001', project_id: 'p1', monitoring_period_id: 'mp1', design_version_id: 'dv1', stratum_id: 's1',
@@ -31,6 +32,13 @@ function collection(over: Partial<FieldCollection> = {}): FieldCollection {
     ...over };
 }
 
+function stratum(over: Partial<Stratum> = {}): Stratum {
+  return { id: 's1', record_id: 'r1', project_id: 'p1', version: 1, is_current: true, code: 'S1', name: 'Black soil', description: null, geojson: null,
+    area_hectares: '5.2', farm_ids: ['f1'], farm_codes: ['FARM-1'], characteristics: [{ characteristic: 'SOIL_TEXTURE', value: 'Clay' }],
+    missing_required_characteristics: [], role: 'PROJECT', linked_strata: [], source: 'FARM_GROUPING', status: 'APPROVED', change_reason: null,
+    created_by: 'u1', created_at: '2026-10-01T00:00:00Z', approved_at: '2026-10-02T00:00:00Z', ...over };
+}
+
 describe('MRV helpers', () => {
   it('maps statuses to badge tones', () => {
     expect(mrvBadge('APPROVED')).toBe('ACTIVE');
@@ -48,6 +56,12 @@ describe('MRV helpers', () => {
     expect(missing.join(' ')).toContain('GPS deviation');
     expect(collectionMissing({ ...far, deviation_note: 'flooded', checklist: collection().checklist }, 1)).toEqual([]);
     expect(collectionMissing(collection({ gps_inside_farm: false }), 1)).toEqual(['a note explaining the GPS deviation']);
+  });
+
+  it('asks for probe diameter and number of cores only when the methodology requires them', () => {
+    expect(collectionMissing(collection(), 1)).toEqual([]);
+    expect(collectionMissing(collection({ core_details_required: true }), 1)).toEqual(['probe diameter and number of cores']);
+    expect(collectionMissing(collection({ core_details_required: true, probe_diameter_mm: '21.50', cores_count: 4 }), 1)).toEqual([]);
   });
 
   it('uses the rules frozen on the record (decisions S1, S2), not hard-coded values', () => {
@@ -96,6 +110,24 @@ describe('MRV screens', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({ providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()] });
     http = TestBed.inject(HttpTestingController);
+  });
+
+  it('strata panel separates control sites and tracks the VM0042 control-site requirements', () => {
+    const f = TestBed.createComponent(MrvStrataPanel);
+    f.componentRef.setInput('projectId', 'p1');
+    f.componentRef.setInput('strata', [
+      stratum(),
+      stratum({ id: 's2', record_id: 'r2', code: 'S2', name: 'Red soil', farm_ids: ['f2'], farm_codes: ['FARM-2'] }),
+      stratum({ id: 'c1', record_id: 'rc1', code: 'C1', name: 'Control north', role: 'CONTROL', farm_ids: ['f9'], farm_codes: ['FARM-9'],
+        linked_strata: [{ record_id: 'r1', code: 'S1' }] }),
+    ]);
+    f.detectChanges();
+    const text = (f.nativeElement as HTMLElement).textContent ?? '';
+    expect(text).toContain('Control sites');
+    expect(text).toContain('Represents S1');
+    expect(text).toContain('1 of at least 3');
+    expect(text).toContain('No control site yet for S2');
+    expect(text).toContain('Soil texture: Clay');
   });
 
   it('MRV dashboard lists projects with a locked methodology', async () => {

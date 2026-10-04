@@ -18,6 +18,7 @@ from app.schemas.mrv import (
     CollectionReview,
     CollectionStart,
     CollectionUpdate,
+    ControlCandidate,
     DatasetIn,
     DatasetOut,
     DesignIn,
@@ -190,6 +191,12 @@ def list_strata(project_id: uuid.UUID, principal: FieldOrReader, db: DB, include
     p = mrv_access.project(db, principal, project_id, P.MRV_READ)
     req = ssvc.required_characteristics(db, p) if p.methodology_status == "CONFIRMED" else []
     return [mm.stratum_out(db, s, req) for s in ssvc.strata(db, p.id, include_history)]
+
+
+@router.get("/projects/{project_id}/control-site-candidates", response_model=list[ControlCandidate],
+            summary="Farms that may serve as a baseline control site (eligible, not participating in this project)")
+def control_site_candidates(project_id: uuid.UUID, principal: SamplingManager, db: DB) -> list[ControlCandidate]:
+    return [ControlCandidate(**c) for c in ssvc.control_candidates(db, principal, project_id)]
 
 
 @router.post("/projects/{project_id}/strata", response_model=StratumOut, status_code=status.HTTP_201_CREATED)

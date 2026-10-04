@@ -138,7 +138,7 @@ def create_plan(db: Session, ctx: RequestContext, principal: Principal, data: Pl
         lab = r["measurement_source"] == "LABORATORY"
         db.add(MrvPlanMeasurement(mrv_plan_id=plan.id, code=r["rule_code"][:40], name=(r["parameter"] or r["title"])[:200], category="OTHER",
                                   value_type="NUMBER" if r["unit"] else "TEXT", unit=r["unit"],
-                                  level="SAMPLING_POINT" if (lab or r["unit"]) else "FARM",
+                                  level=r.get("data_level") or ("SAMPLING_POINT" if (lab or r["unit"]) else "FARM"),
                                   frequency=r["frequency"], required=True, source="METHODOLOGY", monitoring_rule_id=uuid.UUID(r["rule_id"])))
     db.flush()
     for m in data.measurements:
@@ -640,7 +640,8 @@ def build_snapshot(db: Session, ds: MrvDataset) -> dict[str, Any]:
         "monitoring_period": {"id": str(mp.id), "number": mp.period_number, "start": mp.start_date.isoformat(), "end": mp.end_date.isoformat(),
                               "purpose": mp.purpose},
         "sampling_design_versions": [{"id": str(dv.id), "design_id": str(dv.design_id), "version": dv.version} for dv in dvs],
-        "strata": [{"id": i, "record_id": str(s.record_id), "version": s.version, "code": s.code} for i, s in strata.items()],
+        "strata": [{"id": i, "record_id": str(s.record_id), "version": s.version, "code": s.code, "role": s.role,
+                    "linked_stratum_record_ids": json.loads(s.linked_stratum_record_ids or "[]")} for i, s in strata.items()],
         "sampling_points": [{"id": str(x.id), "code": x.point_code, "status": x.status, "farm_id": str(x.farm_id), "stratum_id": str(x.stratum_id),
                              "lat": str(x.latitude), "lon": str(x.longitude)} for x in pts],
         "field_collections": [{"id": str(c.id), "code": c.collection_code, "version": c.version, "point_id": str(c.sampling_point_id)}

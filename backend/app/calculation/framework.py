@@ -27,7 +27,9 @@ IMPLEMENTED = "IMPLEMENTED"
 NOT_INCLUDED_DEMO = "NOT_INCLUDED_DEMO"          # decision A10: only for DEMO, shown as "Not included — DEMO"
 NOT_PRODUCTION_READY = "NOT_PRODUCTION_READY"
 PRODUCTION_READY = "PRODUCTION_READY"
-VARIABLE_SOURCES = ("LAB_RESULT", "MONITORING_RECORD", "STRATUM_AREA", "SAMPLING_DESIGN_PARAMETER")
+VARIABLE_SOURCES = ("LAB_RESULT", "MONITORING_RECORD", "STRATUM_AREA", "SAMPLING_DESIGN_PARAMETER", "STRATUM_CHARACTERISTIC")
+# which approved dataset a variable reads: the reporting period's, or the most recent earlier period's (re-measurement methods)
+PERIODS = ("CURRENT", "PREVIOUS")
 DESIGN_PARAMETERS = ("target_precision_pct", "confidence_level_pct")
 LEVELS = ("PROJECT", "STRATUM", "FARM", "SAMPLING_POINT")
 # Fixed arithmetic context (decision A12): 34 significant digits, banker's rounding only where Decimal itself must round
@@ -53,10 +55,13 @@ class Variable:
     parameter: str | None = None     # SAMPLING_DESIGN_PARAMETER: target_precision_pct / confidence_level_pct
     kind: str = "NUMBER"             # NUMBER or TEXT
     required: bool = True
+    period: str = "CURRENT"          # CURRENT or PREVIOUS (LAB_RESULT / MONITORING_RECORD / STRATUM_AREA)
 
     def __post_init__(self) -> None:
-        if self.source not in VARIABLE_SOURCES or self.level not in LEVELS or self.kind not in ("NUMBER", "TEXT"):
+        if self.source not in VARIABLE_SOURCES or self.level not in LEVELS or self.kind not in ("NUMBER", "TEXT") or self.period not in PERIODS:
             raise ValueError(f"Invalid variable declaration {self.code}")
+        if self.source == "STRATUM_CHARACTERISTIC" and not self.parameter:
+            raise ValueError(f"Variable {self.code} must name the stratum characteristic")
         if self.source in ("LAB_RESULT", "MONITORING_RECORD") and not self.rule_code:
             raise ValueError(f"Variable {self.code} must name its monitoring rule")
         if self.source == "SAMPLING_DESIGN_PARAMETER" and self.parameter not in DESIGN_PARAMETERS:
@@ -95,6 +100,7 @@ class InputValue:
     stratum_id: str | None
     farm_id: str | None
     sampling_point_id: str | None
+    context: dict[str, Any] = field(default_factory=dict)   # depth layer, probe, period, stratum role / links, record phase, ...
 
 
 @dataclass
@@ -121,7 +127,7 @@ class CalculationContext:
             value: Decimal | str = Decimal(row["value"]) if row["value_kind"] == "NUMBER" else row["value"]
             self._inputs.setdefault(row["variable"], []).append(InputValue(
                 row["seq"], row["variable"], value, row.get("unit"), row["level"], row.get("stratum_id"), row.get("farm_id"),
-                row.get("sampling_point_id")))
+                row.get("sampling_point_id"), dict(row.get("context") or {})))
         self.outputs: dict[str, Output] = {}
 
     def values(self, variable: str) -> list[InputValue]:
@@ -150,6 +156,12 @@ class CalculationModule:
     constants: tuple[Constant, ...] = ()
     steps: tuple[Step, ...] = ()
     label: str = ""                            # e.g. "DEMO — not carbon accounting"
+    # The rule set a methodology version must carry to use this module. Selecting the module on a DRAFT version's Calculation
+    # tab copies these (calculation rules, monitoring rules, SAMPLING parameters); approval of the version approves the choice.
+    calculation_rule_definitions: ClassVar[tuple[dict[str, Any], ...]] = ()
+    monitoring_rule_definitions: ClassVar[tuple[dict[str, Any], ...]] = ()
+    sampling_parameters: ClassVar[dict[str, Any]] = {}
+    assumptions: ClassVar[tuple[str, ...]] = ()   # documented interpretations, shown to reviewers
 
     def step(self, name: str) -> Step | None:
         return next((s for s in self.steps if s.step == name), None)
@@ -161,8 +173,9 @@ class CalculationModule:
             "rules": dict(sorted(self.rules.items())),
             "steps": [{"step": s.step, "status": s.status, "rule_code": s.rule_code} for s in self.steps],
             "variables": [{"code": v.code, "source": v.source, "unit": v.unit, "level": v.level, "rule_code": v.rule_code,
-                           "parameter": v.parameter, "kind": v.kind, "required": v.required} for v in self.variables],
+                           "parameter": v.parameter, "kind": v.kind, "required": v.required, "period": v.period} for v in self.variables],
             "constants": [{"code": c.code, "value": c.value, "unit": c.unit, "source_reference": c.source_reference} for c in self.constants],
+            "assumptions": list(self.assumptions),
         }
 
     # ---- spec section 18 framework methods; no default formula exists

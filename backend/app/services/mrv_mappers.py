@@ -35,6 +35,7 @@ from app.schemas.mrv import (
     DesignOut,
     DesignVersionOut,
     EvidenceOut,
+    LinkedStratum,
     MeasurementOut,
     MonitoringRecordOut,
     PeriodOut,
@@ -118,7 +119,10 @@ def stratum_out(db: Session, s: ProjectStratum, required: list[str]) -> StratumO
                       description=s.description, criteria=json.loads(s.criteria) if s.criteria else None,
                       geojson=wkt_to_geojson(s.geometry) if s.geometry else None, area_hectares=s.area_hectares, farm_ids=[x.farm_id for x in farms],
                       farm_codes=codes, characteristics=chars_out,
-                      missing_required_characteristics=[c for c in required if c not in have], source=s.source, status=s.status,
+                      missing_required_characteristics=[c for c in required if c not in have], role=s.role,
+                      linked_strata=[LinkedStratum(record_id=r, code=(lambda t: t.code if t else None)(ssvc.current_of_record(db, s.project_id, r)))
+                                     for r in ssvc.linked_record_ids(s)],
+                      source=s.source, status=s.status,
                       change_reason=s.change_reason, created_by=s.created_by, created_at=s.created_at, approved_by=s.approved_by,
                       approved_at=s.approved_at)
 
@@ -199,7 +203,7 @@ def collection_out(db: Session, principal: Principal, fc: FieldCollectionRecord)
     return CollectionOut.model_validate({
         **base, "checklist": ssvc.checklist_of(fc) or None, "required_checklist": field_rules.checklist_keys(fr),
         "checklist_version": fr["checklist_version"], "checklist_items": fr["checklist_items"], "gps_tolerance_m": fr["gps_tolerance_m"],
-        "min_photos": fr["min_photos"], "field_rules": fr,
+        "min_photos": fr["min_photos"], "field_rules": fr, "core_details_required": bool(fr.get("core_details_required")),
         "analysis_status": _analysis_status(db, fc),
         "point_code": sp.point_code if sp else None, "collector_name": names.get(fc.collector_id),
         "planned_depth_top_cm": sp.planned_depth_top_cm if sp else None, "planned_depth_bottom_cm": sp.planned_depth_bottom_cm if sp else None,

@@ -29,6 +29,7 @@ from app.core.errors import Conflict, NotFound, PermissionDenied, ValidationFail
 from app.models import (
     Farm,
     FarmBoundary,
+    Farmer,
     FieldCollectionRecord,
     MonitoringPeriod,
     MrvEvidence,
@@ -101,12 +102,77 @@ def get_stratum(db: Session, principal: Principal, stratum_id: uuid.UUID, *codes
     return s, mrv_access.project(db, principal, s.project_id, *codes)
 
 
-def _set_farms(db: Session, p: Project, s: ProjectStratum, farm_ids: list[uuid.UUID]) -> None:
+def control_candidates(db: Session, principal: Principal, project_id: uuid.UUID) -> list[dict[str, Any]]:
+    """Farms that may serve as a baseline control site: eligible like a project farm (same organization and environment,
+    VERIFIED with a boundary, active farmer), but NOT participating in this project."""
+    from app.services.project_farm_service import _eligibility_reasons
+    p = mrv_access.project(db, principal, project_id, P.SAMPLING_MANAGE)
     active = {pf.farm_id for pf in project_repo.project_farms(db, p.id, active_only=True)}
-    unknown = [f for f in farm_ids if f not in active]
-    if unknown:
-        raise ValidationFailed("Only farms participating in the project can be stratified.", error_code="FARM_NOT_IN_PROJECT",
-                               details={"farm_ids": [str(f) for f in unknown]})
+    farms = db.scalars(select(Farm).where(Farm.organization_id == p.organization_id, Farm.environment == p.environment,
+                                          Farm.status == "VERIFIED").order_by(Farm.farm_code)).all()
+    out = []
+    for f in farms:
+        if f.id in active or _eligibility_reasons(db, f, p):
+            continue
+        farmer = db.get(Farmer, f.farmer_id)
+        out.append({"farm_id": f.id, "farm_code": f.farm_code, "farm_name": f.name,
+                    "farmer_name": farmer.full_name if farmer else None, "area_hectares": f.area_hectares})
+    return out
+
+
+def _check_stratum_farms(db: Session, p: Project, role: str, farm_ids: list[uuid.UUID]) -> None:
+    active = {pf.farm_id for pf in project_repo.project_farms(db, p.id, active_only=True)}
+    if role == "PROJECT":
+        unknown = [f for f in farm_ids if f not in active]
+        if unknown:
+            raise ValidationFailed("Only farms participating in the project can be stratified.", error_code="FARM_NOT_IN_PROJECT",
+                                   details={"farm_ids": [str(f) for f in unknown]})
+        return
+    from app.services.project_farm_service import _eligibility_reasons
+    participants = [f for f in farm_ids if f in active]
+    if participants:
+        raise ValidationFailed("A control site keeps the baseline practices, so its farms cannot be project participants.",
+                               error_code="CONTROL_FARM_IN_PROJECT", details={"farm_ids": [str(f) for f in participants]})
+    bad: dict[str, list[str]] = {}
+    for fid in farm_ids:
+        farm = db.get(Farm, fid)
+        reasons = ["Farm not found."] if farm is None else _eligibility_reasons(db, farm, p)
+        if reasons:
+            bad[str(fid)] = reasons
+    if bad:
+        raise ValidationFailed("These farms cannot serve as a control site.", error_code="CONTROL_FARM_NOT_ELIGIBLE", details=bad)
+
+
+def _set_links(db: Session, p: Project, s: ProjectStratum, linked_ids: list[uuid.UUID]) -> None:
+    """CONTROL strata name the current PROJECT strata they represent (stored as stable record ids)."""
+    if s.role == "PROJECT":
+        if linked_ids:
+            raise ValidationFailed("Only a control site is linked to project strata.", error_code="LINKS_NOT_ALLOWED")
+        s.linked_stratum_record_ids = None
+        return
+    if not linked_ids:
+        raise ValidationFailed("Link the control site to at least one project stratum it represents.", error_code="CONTROL_LINKS_REQUIRED")
+    record_ids = []
+    for sid in dict.fromkeys(linked_ids):
+        t = db.get(ProjectStratum, sid)
+        if t is None or t.project_id != p.id or t.role != "PROJECT" or t.status not in ("DRAFT", "APPROVED"):
+            raise ValidationFailed("A control site can only be linked to this project's project strata.",
+                                   error_code="INVALID_STRATUM_LINK", details={"stratum_id": str(sid)})
+        record_ids.append(str(t.record_id))
+    s.linked_stratum_record_ids = json.dumps(sorted(set(record_ids)))
+
+
+def linked_record_ids(s: ProjectStratum) -> list[uuid.UUID]:
+    return [uuid.UUID(x) for x in json.loads(s.linked_stratum_record_ids or "[]")]
+
+
+def current_of_record(db: Session, project_id: uuid.UUID, record_id: uuid.UUID) -> ProjectStratum | None:
+    return db.scalars(select(ProjectStratum).where(ProjectStratum.project_id == project_id, ProjectStratum.record_id == record_id,
+                                                   ProjectStratum.is_current == True)).first()  # noqa: E712
+
+
+def _set_farms(db: Session, p: Project, s: ProjectStratum, farm_ids: list[uuid.UUID]) -> None:
+    _check_stratum_farms(db, p, s.role, farm_ids)
     taken = {sf.farm_id: o.code for o in strata(db, p.id) if o.record_id != s.record_id and o.is_current for sf in stratum_farms(db, o.id)}
     clash = [f for f in farm_ids if f in taken]
     if clash:
@@ -137,19 +203,60 @@ def _set_characteristics(db: Session, s: ProjectStratum, items: list[Any], requi
                                      required_by_methodology=c.characteristic in required))
 
 
+# categorical criteria that must be identical where both the control site and the project stratum declare them (VM0042 Table 7)
+SIMILARITY_EXACT = ("SOIL_TEXTURE", "SOIL_GROUP", "SLOPE_CLASS", "ECOREGION", "CLIMATE")
+
+
+def _number(v: str) -> Decimal | None:
+    try:
+        return Decimal(v.strip())
+    except Exception:
+        return None
+
+
+def control_site_problems(db: Session, p: Project, s: ProjectStratum) -> list[str]:
+    """VM0042 v2.2 Table 7 checks the platform can verify from recorded data: each linked project stratum exists and is current,
+    lies within CONTROL_SITE_MAX_DISTANCE_KM, declares the same categorical criteria, and mean annual precipitation is within
+    the tolerance. SOC % similarity (a statistical test) and historical management are evidenced in the project documents."""
+    st = get_settings()
+    mine = {c.characteristic: c.value.strip() for c in characteristics(db, s.id)}
+    problems = []
+    for rid in linked_record_ids(s):
+        t = current_of_record(db, p.id, rid)
+        if t is None or t.role != "PROJECT":
+            problems.append(f"A linked project stratum ({rid}) no longer exists.")
+            continue
+        d = gis.strata_distance_m(db, s.id, t.id)
+        if d is not None and d > st.CONTROL_SITE_MAX_DISTANCE_KM * 1000:
+            problems.append(f"{t.code}: the control site is {d / 1000:.1f} km away (limit {st.CONTROL_SITE_MAX_DISTANCE_KM:g} km).")
+        theirs = {c.characteristic: c.value.strip() for c in characteristics(db, t.id)}
+        for k in SIMILARITY_EXACT:
+            if k in mine and k in theirs and mine[k].casefold() != theirs[k].casefold():
+                problems.append(f"{t.code}: {k} differs ({mine[k]} vs {theirs[k]}).")
+        a, b = _number(mine.get("PRECIPITATION_MM", "")), _number(theirs.get("PRECIPITATION_MM", ""))
+        if a is not None and b is not None and abs(a - b) > Decimal(str(st.CONTROL_SITE_PRECIPITATION_TOLERANCE_MM)):
+            problems.append(f"{t.code}: mean annual precipitation differs by {abs(a - b)} mm "
+                            f"(limit {st.CONTROL_SITE_PRECIPITATION_TOLERANCE_MM:g} mm).")
+    return problems
+
+
 def create_stratum(db: Session, ctx: RequestContext, principal: Principal, project_id: uuid.UUID, data: StratumIn) -> ProjectStratum:
     p = mrv_access.project(db, principal, project_id, P.SAMPLING_MANAGE)
     mrv_access.locked_methodology(db, p)
     if any(o.code == data.code and o.status in ("DRAFT", "APPROVED") for o in strata(db, p.id)):
         raise Conflict(f"Stratum {data.code} already exists.", error_code="STRATUM_EXISTS")
     s = ProjectStratum(project_id=p.id, record_id=uuid.uuid4(), version=1, is_current=True, code=data.code, name=data.name,
-                       description=data.description, criteria=json.dumps(data.criteria) if data.criteria else None, created_by=principal.user_id)
+                       description=data.description, criteria=json.dumps(data.criteria) if data.criteria else None, created_by=principal.user_id,
+                       role=data.role)
+    _set_links(db, p, s, data.linked_stratum_ids)            # validated before anything is written
+    _check_stratum_farms(db, p, data.role, data.farm_ids)
     db.add(s)
     db.flush()
     _set_farms(db, p, s, data.farm_ids)
     _set_characteristics(db, s, data.characteristics, required_characteristics(db, p))
     db.flush()
-    _audit(db, ctx, p, "STRATUM_CREATED", {"stratum_id": s.id, "code": s.code, "version": 1, "farm_ids": data.farm_ids,
+    _audit(db, ctx, p, "STRATUM_CREATED", {"stratum_id": s.id, "code": s.code, "version": 1, "farm_ids": data.farm_ids, "role": s.role,
+                                          "linked_stratum_record_ids": linked_record_ids(s),
                                           "area_hectares": s.area_hectares,
                                           "characteristics": {c.characteristic: c.value for c in data.characteristics}})
     db.commit()
@@ -168,7 +275,8 @@ def update_stratum(db: Session, ctx: RequestContext, principal: Principal, strat
         if any(o.record_id == s.record_id and o.status == "DRAFT" for o in strata(db, p.id)):
             raise Conflict("A revision of this stratum is already in draft; edit that version.", error_code="REVISION_EXISTS")
         target = ProjectStratum(project_id=p.id, record_id=s.record_id, version=s.version + 1, is_current=False, code=s.code, name=s.name,
-                                description=s.description, criteria=s.criteria, created_by=principal.user_id, change_reason=data.reason)
+                                description=s.description, criteria=s.criteria, created_by=principal.user_id, change_reason=data.reason,
+                                role=s.role, linked_stratum_record_ids=s.linked_stratum_record_ids)
         db.add(target)
         db.flush()
         _set_farms(db, p, target, data.farm_ids or [sf.farm_id for sf in stratum_farms(db, s.id)])
@@ -184,6 +292,8 @@ def update_stratum(db: Session, ctx: RequestContext, principal: Principal, strat
             setattr(target, k, getattr(data, k))
     if data.criteria is not None:
         target.criteria = json.dumps(data.criteria)
+    if data.linked_stratum_ids is not None:
+        _set_links(db, p, target, data.linked_stratum_ids)
     db.flush()
     _audit(db, ctx, p, "STRATUM_UPDATED", {"stratum_id": target.id, "record_id": target.record_id, "version": target.version,
                                           "new_version": target is not s, "area_hectares": target.area_hectares}, None, data.reason)
@@ -202,6 +312,11 @@ def approve_stratum(db: Session, ctx: RequestContext, principal: Principal, stra
     if missing:
         raise Conflict("The methodology requires these stratification variables: " + ", ".join(missing) + ".",
                        error_code="CHARACTERISTICS_REQUIRED", details={"missing": missing})
+    if s.role == "CONTROL":
+        problems = control_site_problems(db, p, s)
+        if problems:
+            raise Conflict("The control site does not meet the similarity requirements for the strata it represents.",
+                           error_code="CONTROL_SITE_NOT_SIMILAR", details={"problems": problems})
     for old in strata(db, p.id):
         if old.record_id == s.record_id and old.id != s.id and old.status == "APPROVED":
             old.status, old.is_current = "SUPERSEDED", False
@@ -701,6 +816,8 @@ def submit_collection(db: Session, ctx: RequestContext, principal: Principal, co
         (fc.actual_depth_top_cm is not None and fc.actual_depth_bottom_cm is not None, "actual sampling depth"),
         (all(checklist_of(fc).get(k) for k in keys), f"completed checklist {fr['checklist_version']} (" + ", ".join(keys) + ")"),
         (photos >= fr["min_photos"], f"at least {fr['min_photos']} field photo(s)"),
+        (not fr.get("core_details_required") or (fc.probe_diameter_mm is not None and fc.cores_count is not None),
+         "the probe/auger inside diameter and the number of cores (required by the methodology)"),
     ) if not ok]
     if fc.collected_at is not None and not (mp.start_date <= fc.collected_at.date() <= mp.end_date):
         missing.append("a collection date within the monitoring period")
@@ -759,8 +876,8 @@ def correct_collection(db: Session, ctx: RequestContext, principal: Principal, c
     assert mp is not None
     keep = ("sampling_point_id", "assignment_id", "monitoring_period_id", "project_id", "farm_id", "collector_id", "collected_at", "gps_location",
             "gps_latitude", "gps_longitude", "gps_accuracy_m", "distance_from_point_m", "gps_inside_farm", "deviation_note", "actual_depth_top_cm",
-            "actual_depth_bottom_cm", "sample_quantity", "sample_unit", "observations", "notes", "checklist", "field_rules", "checklist_version",
-            "gps_tolerance_m")
+            "actual_depth_bottom_cm", "probe_diameter_mm", "cores_count", "sample_quantity", "sample_unit", "observations", "notes",
+            "checklist", "field_rules", "checklist_version", "gps_tolerance_m")
     new = FieldCollectionRecord(collection_code=next_code(db, "field_collection", mp.start_date.year), version=fc.version + 1,
                                 supersedes_id=fc.id, correction_reason=reason, **{k: getattr(fc, k) for k in keep})
     db.add(new)

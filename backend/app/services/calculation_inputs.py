@@ -22,10 +22,12 @@ from sqlalchemy.orm import Session
 
 from app.calculation import framework as fw
 from app.calculation.registry import Resolver
+from app.calculation.registry import bind as registry_bind
 from app.calculation.registry import resolve as registry_resolve
 from app.core.config import get_settings
 from app.models import (
     DocumentVersion,
+    FieldCollectionRecord,
     LabResult,
     LabSample,
     Methodology,
@@ -41,6 +43,8 @@ from app.models import (
     ProjectMethodology,
     ProjectStratum,
     SamplingDesignVersion,
+    StratumCharacteristic,
+    StratumFarm,
 )
 
 # later monitoring periods are calculated while the project is in (aggregate) verification (Phase 8B, C2)
@@ -75,6 +79,8 @@ class Evaluation:
     inputs: list[dict[str, Any]] = field(default_factory=list)
     snapshot: dict[str, Any] | None = None
     snapshot_sha256: str | None = None
+    previous_period: MonitoringPeriod | None = None
+    previous_dataset: MrvDataset | None = None
 
     @property
     def ready(self) -> bool:
@@ -124,6 +130,17 @@ def evaluate(db: Session, p: Project, period: MonitoringPeriod, crediting: Proje
         ev.blockers.append(Blocker("PROJECT_NOT_IN_MRV", f"Calculation needs a project in monitoring (it is {p.status})."))
     # ---- module (decision A1 / A2 / A10; C3 / C4)
     module = (resolver or registry_resolve)(ev.methodology.code, ev.version.version_label)
+    selected = ev.version.calculation_module_code
+    if module is not None and selected and module.code != selected:
+        ev.blockers.append(Blocker("CONFIGURATION_REQUIRED", f"The methodology version selected calculation module {selected}, which is not "
+                                   "the registered module for it.", "MODULE_SELECTION_MISMATCH", {"selected": selected, "registered": module.code}))
+    if module is not None and module.calculation_rules_version == 0:
+        if selected == module.code:
+            module = registry_bind(module, ev.version.calculation_rules_version, ev.version.calculation_readiness)
+        else:
+            ev.blockers.append(Blocker("CONFIGURATION_REQUIRED", f"Calculation module {module.code} is available for this methodology version but "
+                                       "has not been selected on its Calculation tab and approved.", "MODULE_NOT_SELECTED",
+                                       {"module": module.code}))
     ev.module = module
     ev.steps = step_statuses(module)
     if module is None:
@@ -194,6 +211,55 @@ def evaluate(db: Session, p: Project, period: MonitoringPeriod, crediting: Proje
     return ev
 
 
+@dataclass
+class _PeriodData:
+    """One period's approved dataset as seen by the input builder (CURRENT = the reporting period, PREVIOUS = the most recent
+    earlier period of the project with an APPROVED dataset, i.e. the re-measurement baseline of measure-and-remeasure methods)."""
+    label: str
+    period: MonitoringPeriod
+    ds: MrvDataset
+    snap: dict[str, Any]
+    collections: dict[str, dict]
+    points: dict[str, dict]
+    strata: dict[str, dict]
+    measurements: dict[uuid.UUID, MrvPlanMeasurement]
+
+
+def _period_data(db: Session, label: str, period: MonitoringPeriod, ds: MrvDataset) -> _PeriodData:
+    snap = json.loads(ds.snapshot or "{}")
+    measurements = {m.monitoring_rule_id: m for m in db.scalars(select(MrvPlanMeasurement).where(
+        MrvPlanMeasurement.mrv_plan_id == ds.mrv_plan_id)).all() if m.monitoring_rule_id}
+    return _PeriodData(label, period, ds, snap, {c["id"]: c for c in snap.get("field_collections", [])},
+                       {x["id"]: x for x in snap.get("sampling_points", [])}, {x["id"]: x for x in snap.get("strata", [])}, measurements)
+
+
+def previous_period(db: Session, p: Project, period: MonitoringPeriod) -> tuple[MonitoringPeriod, MrvDataset] | None:
+    """The most recent earlier monitoring period of the project (by start date) that has an APPROVED dataset."""
+    earlier = db.scalars(select(MonitoringPeriod).where(MonitoringPeriod.project_id == p.id, MonitoringPeriod.start_date < period.start_date)
+                         .order_by(MonitoringPeriod.start_date.desc())).all()
+    for mp in earlier:
+        ds = approved_dataset(db, mp.id)
+        if ds is not None:
+            return mp, ds
+    return None
+
+
+def _stratum_context(db: Session, pd: _PeriodData, stratum_id: str | None) -> dict[str, Any]:
+    """Role and links of a stratum as frozen in the dataset snapshot (older snapshots: read from the stratum version itself)."""
+    if not stratum_id:
+        return {}
+    meta = pd.strata.get(stratum_id) or {}
+    s = db.get(ProjectStratum, uuid.UUID(stratum_id))
+    role = meta.get("role") or (s.role if s else "PROJECT")
+    links = meta.get("linked_stratum_record_ids")
+    if links is None:
+        links = json.loads(s.linked_stratum_record_ids or "[]") if s else []
+    record = meta.get("record_id") or (str(s.record_id) if s else None)
+    farms = sorted(str(f) for f in db.scalars(select(StratumFarm.farm_id).where(StratumFarm.stratum_id == uuid.UUID(stratum_id))).all())
+    return {"stratum_role": role, "stratum_record_id": record, "stratum_code": meta.get("code") or (s.code if s else None),
+            "linked_stratum_record_ids": list(links), "farm_ids": farms}
+
+
 def _snapshot(ev: Evaluation, module: fw.CalculationModule, ds: MrvDataset, crediting: ProjectCreditingPeriod | None,
               rows: list[dict[str, Any]]) -> dict[str, Any]:
     p, mp, pm, v, m = ev.project, ev.period, ev.pm, ev.version, ev.methodology
@@ -210,9 +276,15 @@ def _snapshot(ev: Evaluation, module: fw.CalculationModule, ds: MrvDataset, cred
                     "mrv_plan_id": str(ds.mrv_plan_id)},
         "methodology": {"methodology_id": str(m.id), "code": m.code, "version_id": str(v.id), "version_label": v.version_label,
                         "is_demo_illustrative": v.is_demo_illustrative, "project_methodology_id": str(pm.id),
+                        "calculation_readiness": v.calculation_readiness, "calculation_module_code": v.calculation_module_code,
                         "calculation_rules_version": pm.calculation_rules_version, "monitoring_rules_version": pm.monitoring_rules_version,
                         "calculation_rules": [{"id": str(r.id), "rule_code": r.rule_code, "step": r.step, "title": r.title,
                                                "equation_reference": r.equation_reference} for r in ev.calc_rules]},
+        "previous_period": ({"id": str(ev.previous_period.id), "number": ev.previous_period.period_number, "name": ev.previous_period.name,
+                             "start": ev.previous_period.start_date.isoformat(), "end": ev.previous_period.end_date.isoformat(),
+                             "dataset_id": str(ev.previous_dataset.id) if ev.previous_dataset else None,
+                             "dataset_snapshot_sha256": ev.previous_dataset.snapshot_sha256 if ev.previous_dataset else None}
+                            if ev.previous_period else None),
         "module": module.declaration(),
         "inputs": rows,
     }
@@ -221,31 +293,55 @@ def _snapshot(ev: Evaluation, module: fw.CalculationModule, ds: MrvDataset, cred
 def _resolve_inputs(db: Session, ev: Evaluation, module: fw.CalculationModule, ds: MrvDataset) -> tuple[list[dict[str, Any]], list[Blocker]]:
     v = ev.version
     assert v is not None
-    snap = json.loads(ds.snapshot or "{}")
-    collections = {c["id"]: c for c in snap.get("field_collections", [])}
-    points = {x["id"]: x for x in snap.get("sampling_points", [])}
     rules = {r.rule_code: r for r in db.scalars(select(MethodologyMonitoringRule).where(
         MethodologyMonitoringRule.methodology_version_id == v.id)).all()}
-    measurements = {m.monitoring_rule_id: m for m in db.scalars(select(MrvPlanMeasurement).where(
-        MrvPlanMeasurement.mrv_plan_id == ds.mrv_plan_id)).all() if m.monitoring_rule_id}
+    periods: dict[str, _PeriodData] = {"CURRENT": _period_data(db, "CURRENT", ev.period, ds)}
     rows: list[dict[str, Any]] = []
     problems: list[Blocker] = []
+    if any(var.period == "PREVIOUS" for var in module.variables):
+        prev = previous_period(db, ev.project, ev.period)
+        if prev is None:
+            problems.append(Blocker("PREVIOUS_PERIOD_REQUIRED", "This methodology compares two measurement campaigns: an earlier monitoring "
+                                    "period with an APPROVED dataset (e.g. the baseline sampling at t0) is required.", "NO_PREVIOUS_APPROVED_PERIOD"))
+        else:
+            ev.previous_period, ev.previous_dataset = prev
+            periods["PREVIOUS"] = _period_data(db, "PREVIOUS", *prev)
     for var in module.variables:
         found: list[dict[str, Any]] = []
+        pd = periods.get(var.period)
+        if pd is None:
+            continue   # PREVIOUS_PERIOD_REQUIRED already reported
         if var.source == "LAB_RESULT":
-            found = _lab_inputs(db, ev, var, rules, measurements, collections, points, problems)
+            found = _lab_inputs(db, ev, var, rules, pd, problems)
         elif var.source == "MONITORING_RECORD":
-            found = _record_inputs(db, var, rules, measurements, snap, problems)
+            found = _record_inputs(db, var, rules, pd, problems)
         elif var.source == "STRATUM_AREA":
-            for st in snap.get("strata", []):
+            for st in pd.snap.get("strata", []):
                 s = db.get(ProjectStratum, uuid.UUID(st["id"]))
                 if s is None or s.area_hectares is None:
                     problems.append(Blocker("MISSING_REQUIRED_INPUT", f"Stratum {st['code']} has no computed area.", None,
                                             {"variable": var.code, "stratum": st["code"]}))
                     continue
-                found.append(_row(var, "STRATUM_AREA", s.id, s.version, s.code, _num(s.area_hectares), "ha", "STRATUM", stratum_id=s.id))
+                found.append(_row(var, "STRATUM_AREA", s.id, s.version, s.code, _num(s.area_hectares), "ha", "STRATUM", stratum_id=s.id,
+                                  context={"period": pd.label, **_stratum_context(db, pd, st["id"])}))
+        elif var.source == "STRATUM_CHARACTERISTIC":
+            for st in pd.snap.get("strata", []):
+                ch = db.scalars(select(StratumCharacteristic).where(StratumCharacteristic.stratum_id == uuid.UUID(st["id"]),
+                                                                    StratumCharacteristic.characteristic == var.parameter)).first()
+                if ch is None:
+                    continue
+                value: str = ch.value
+                if var.kind == "NUMBER":
+                    try:
+                        value = _num(Decimal(ch.value.strip()))
+                    except Exception:  # a characteristic is free text: refuse rather than guess
+                        problems.append(Blocker("INPUT_NOT_NUMERIC", f"{var.code}: stratum {st['code']} value '{ch.value}' is not a number.",
+                                                None, {"variable": var.code, "stratum": st["code"]}))
+                        continue
+                found.append(_row(var, "STRATUM_CHARACTERISTIC", ch.id, None, f"{st['code']}:{var.parameter}", value, var.unit, "STRATUM",
+                                  kind=var.kind, stratum_id=st["id"], context={"period": pd.label, **_stratum_context(db, pd, st["id"])}))
         elif var.source == "SAMPLING_DESIGN_PARAMETER":
-            for dvs in snap.get("sampling_design_versions", []):
+            for dvs in pd.snap.get("sampling_design_versions", []):
                 dv = db.get(SamplingDesignVersion, uuid.UUID(dvs["id"]))
                 val = getattr(dv, var.parameter or "", None) if dv else None
                 if dv is None or val is None:
@@ -267,15 +363,15 @@ def _resolve_inputs(db: Session, ev: Evaluation, module: fw.CalculationModule, d
                      "value": fw.decimal_text(Decimal(c.value)), "value_kind": "NUMBER", "unit": c.unit, "level": "PROJECT",
                      "stratum_id": None, "farm_id": None, "sampling_point_id": None, "field_collection_id": None, "sample_id": None,
                      "root_sample_id": None, "monitoring_rule_id": None, "plan_measurement_id": None, "requirement_source": "MODULE",
-                     "source_reference": c.source_reference, "source_sha256": None})
+                     "source_reference": c.source_reference, "source_sha256": None, "context": {}})
     for i, r in enumerate(rows):
         r["seq"] = i + 1
     return rows, problems
 
 
-def _lab_inputs(db: Session, ev: Evaluation, var: fw.Variable, rules: dict[str, MethodologyMonitoringRule],
-                measurements: dict[uuid.UUID, MrvPlanMeasurement], collections: dict[str, dict], points: dict[str, dict],
+def _lab_inputs(db: Session, ev: Evaluation, var: fw.Variable, rules: dict[str, MethodologyMonitoringRule], pd: _PeriodData,
                 problems: list[Blocker]) -> list[dict[str, Any]]:
+    measurements, collections, points = pd.measurements, pd.collections, pd.points
     rule = rules.get(var.rule_code or "")
     if rule is None or rule.measurement_source != "LABORATORY":
         problems.append(Blocker("CALCULATION_RULE_NOT_CONFIGURED", f"{var.code}: monitoring rule {var.rule_code} is not a LABORATORY rule of "
@@ -292,7 +388,7 @@ def _lab_inputs(db: Session, ev: Evaluation, var: fw.Variable, rules: dict[str, 
     by_collection: dict[str, list[tuple[LabResult, LabSample]]] = {}
     for res in results:
         root = db.get(LabSample, res.root_sample_id)
-        if root is None or root.project_id != ev.project.id or root.monitoring_period_id != ev.period.id:
+        if root is None or root.project_id != ev.project.id or root.monitoring_period_id != pd.period.id:
             continue
         if str(root.field_collection_id) not in collections:
             ev.warnings.append(f"Approved result for sample {root.sample_code} excluded: its field-collection version is not in the dataset.")
@@ -304,8 +400,9 @@ def _lab_inputs(db: Session, ev: Evaluation, var: fw.Variable, rules: dict[str, 
         pt = points.get(fc["point_id"], {})
         if not found:
             problems.append(Blocker("MISSING_APPROVED_LAB_RESULT", f"No approved {rule.rule_code} result for field collection {fc['code']} "
-                                    f"(point {pt.get('code')}).", None, {"variable": var.code, "rule_code": rule.rule_code,
-                                                                          "field_collection": fc["code"], "point": pt.get("code")}))
+                                    f"(point {pt.get('code')}, {pd.label.lower()} period).", None,
+                                    {"variable": var.code, "rule_code": rule.rule_code, "field_collection": fc["code"], "point": pt.get("code"),
+                                     "period": pd.label}))
             continue
         for res, root in found:
             if var.kind == "NUMBER" and res.result_type != "NUMERIC":
@@ -319,16 +416,24 @@ def _lab_inputs(db: Session, ev: Evaluation, var: fw.Variable, rules: dict[str, 
                 dv = db.scalars(select(DocumentVersion).where(DocumentVersion.document_id == res.report_document_id)
                                 .order_by(DocumentVersion.version.desc())).first()
                 sha = dv.checksum_sha256 if dv else None
+            fcr = db.get(FieldCollectionRecord, uuid.UUID(fc_id))
+            context = {"period": pd.label, "period_id": str(pd.period.id), "period_end": pd.period.end_date.isoformat(),
+                       "depth_top_cm": _num(root.depth_top_cm) if root.depth_top_cm is not None else None,
+                       "depth_bottom_cm": _num(root.depth_bottom_cm) if root.depth_bottom_cm is not None else None,
+                       "probe_diameter_mm": _num(fcr.probe_diameter_mm) if fcr and fcr.probe_diameter_mm is not None else None,
+                       "cores_count": fcr.cores_count if fcr else None, "root_sample_id": str(root.id), "field_collection_id": fc_id,
+                       **_stratum_context(db, pd, pt.get("stratum_id"))}
             out.append(_row(var, "LAB_RESULT", res.id, res.version, root.sample_code, value, res.unit, "SAMPLING_POINT",
-                            kind="NUMBER" if res.result_type == "NUMERIC" else "TEXT",
+                            kind="NUMBER" if res.result_type == "NUMERIC" else "TEXT", context=context,
                             stratum_id=pt.get("stratum_id"), farm_id=pt.get("farm_id"), sampling_point_id=fc["point_id"],
                             field_collection_id=fc_id, sample_id=res.sample_id, root_sample_id=root.id, monitoring_rule_id=rule.id,
                             plan_measurement_id=meas.id, requirement_source="METHODOLOGY", source_sha256=sha))
     return out
 
 
-def _record_inputs(db: Session, var: fw.Variable, rules: dict[str, MethodologyMonitoringRule], measurements: dict[uuid.UUID, MrvPlanMeasurement],
-                   snap: dict[str, Any], problems: list[Blocker]) -> list[dict[str, Any]]:
+def _record_inputs(db: Session, var: fw.Variable, rules: dict[str, MethodologyMonitoringRule], pd: _PeriodData,
+                   problems: list[Blocker]) -> list[dict[str, Any]]:
+    measurements, snap = pd.measurements, pd.snap
     rule = rules.get(var.rule_code or "")
     if rule is None or rule.measurement_source not in ("FIELD", "FIELD_ACTIVITY"):
         problems.append(Blocker("CALCULATION_RULE_NOT_CONFIGURED", f"{var.code}: monitoring rule {var.rule_code} is not a FIELD / FIELD_ACTIVITY "
@@ -355,7 +460,9 @@ def _record_inputs(db: Session, var: fw.Variable, rules: dict[str, MethodologyMo
         out.append(_row(var, "MONITORING_RECORD", r.id, r.version, meas.code, value, r.unit or meas.unit, level,
                         kind="NUMBER" if r.value_number is not None else "TEXT", stratum_id=r.stratum_id, farm_id=r.farm_id,
                         sampling_point_id=r.sampling_point_id, field_collection_id=r.field_collection_id, monitoring_rule_id=rule.id,
-                        plan_measurement_id=meas.id, requirement_source="METHODOLOGY"))
+                        plan_measurement_id=meas.id, requirement_source="METHODOLOGY",
+                        context={"period": pd.label, "phase": r.measurement_phase,
+                                 "observed_on": r.observed_on.isoformat() if r.observed_on else None}))
     return out
 
 
@@ -369,10 +476,10 @@ def _s(v: Any) -> str | None:
 
 def _row(var: fw.Variable, source: str, source_id: Any, version: int | None, code: str | None, value: str, unit: str | None, level: str,
          kind: str = "NUMBER", **ids: Any) -> dict[str, Any]:
-    base = {"variable": var.code, "source_type": source, "source_id": _s(source_id), "source_version": version, "source_code": code,
+    base: dict[str, Any] = {"variable": var.code, "source_type": source, "source_id": _s(source_id), "source_version": version, "source_code": code,
             "value": value, "value_kind": kind, "unit": unit, "level": level, "stratum_id": None, "farm_id": None, "sampling_point_id": None,
             "field_collection_id": None, "sample_id": None, "root_sample_id": None, "monitoring_rule_id": None, "plan_measurement_id": None,
-            "requirement_source": None, "source_reference": None, "source_sha256": None}
+            "requirement_source": None, "source_reference": None, "source_sha256": None, "context": {}}
     for k, v in ids.items():
         base[k] = _s(v) if k.endswith("_id") else v
     return base

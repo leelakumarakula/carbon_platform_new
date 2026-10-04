@@ -6,8 +6,9 @@ import { provideRouter } from '@angular/router';
 import { NAVIGATION, visibleNavigation } from '../core/navigation/nav.config';
 import { ProjectMethodologyPanel } from '../projects/panels/project-methodology-panel';
 import { Project } from '../projects/project.models';
+import { CalculationModulePanel } from './calculation-module-panel';
 import { MethodologyVersionPage } from './methodology-version-page';
-import { Candidate, ProjectMethodologyView, VersionDetail, confirmable, outcomeBadge, parseFactValue } from './methodology.models';
+import { CalculationModuleOption, Candidate, ProjectMethodologyView, VersionDetail, confirmable, outcomeBadge, parseFactValue } from './methodology.models';
 
 const project = { id: 'p1', status: 'METHODOLOGY_REVIEW' } as Project;
 
@@ -129,5 +130,34 @@ describe('Methodology screens', () => {
       expect(text.includes('cannot be edited')).toBe(!editable);
       f.destroy();
     }
+  });
+
+  it('calculation tab shows the selected VM0042 module, the data it needs and the readiness step', async () => {
+    const v = { id: 'v2', methodology_id: 'm1', version_number: 1, version_label: '2.2', status: 'APPROVED', effective_from: '2025-10-21',
+      effective_to: null, source_name: 'Verra', source_url: null, source_document_id: null, rules_version: 1, monitoring_rules_version: 1,
+      calculation_rules_version: 1, calculation_readiness: 'NOT_PRODUCTION_READY', calculation_module_code: 'VM0042-V2.2-QA2-QA3',
+      is_demo_illustrative: false, notes: null, based_on_version_id: null, created_at: '2026-10-05T00:00:00Z', submitted_by: 'a', submitted_at: null,
+      approved_by: 'b', approved_at: null, superseded_at: null, superseded_by_id: null, status_reason: null,
+      rule_counts: { applicability: 1, monitoring: 13, calculation: 8, general: 1 }, methodology_code: 'VM0042', methodology_name: 'IALM',
+      rules: [], can_edit: false, can_submit: false, can_approve: false, readiness_request: null } as VersionDetail;
+    const option: CalculationModuleOption = { code: 'VM0042-V2.2-QA2-QA3', version: '1.0.0', label: 'VM0042 v2.2 - SOC measure & remeasure',
+      methodology_code: 'VM0042', version_label: '2.2', readiness: 'NOT_PRODUCTION_READY', compatible: true, selected: true,
+      calculation_rules: [{ rule_code: 'V42-UNC', step: 'UNCERTAINTY', title: 'Approach 2 sampling uncertainty deduction', equation_reference: 'Eqs. 70, 71, 74' }],
+      monitoring_rules: [{ rule_code: 'V42_OC', title: 'Soil organic carbon content', parameter: 'soil_organic_carbon', unit: 'g/kg',
+        measurement_source: 'LABORATORY', data_level: 'SAMPLING_POINT' }],
+      sampling_parameters: { min_samples_per_stratum: 3 }, assumptions: ['Q12: equivalent mineral soil mass'], variables: [] };
+    const f = TestBed.createComponent(CalculationModulePanel);
+    f.componentRef.setInput('v', v);
+    f.detectChanges();
+    http.expectOne('/api/v1/methodologies/versions/v2/calculation-modules').flush([option]);
+    await f.whenStable();
+    f.detectChanges();
+    const text = (f.nativeElement as HTMLElement).textContent ?? '';
+    expect(text).toContain('VM0042 v2.2 - SOC measure & remeasure');
+    expect(text).toContain('V42-UNC');
+    expect(text).toContain('Soil organic carbon content');
+    expect(text).toContain('Min samples per stratum = 3');
+    expect(text).toContain('Not production ready');
+    expect(text).toContain('Production readiness');
   });
 });

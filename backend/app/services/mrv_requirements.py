@@ -23,6 +23,7 @@ SAMPLING_KEYS = {
     "duplicate_point_distance_m": "Duplicate sampling-point threshold (m) — overrides the platform default",
     "field_checklist": "Field checklist items — overrides the platform default checklist",
     "min_photos_per_sample": "Minimum field photos per sample — overrides the platform default",
+    "core_details_required": "Probe/auger inside diameter and number of cores must be recorded per sample (e.g. VM0042 Eq. 3)",
     "quantification_approach": "Quantification approach (MEASURE_AND_REMEASURE / MEASURE_AND_MODEL)",
     "depth_top_cm": "Sampling depth (top, cm)",
     "depth_bottom_cm": "Sampling depth (bottom, cm)",
@@ -65,7 +66,8 @@ def requirements(db: Session, v: MethodologyVersion) -> Requirements:
     for r in rs["monitoring"]:
         req.monitoring.append({"rule_id": str(r.id), "rule_code": r.rule_code, "title": r.title, "parameter": r.parameter, "unit": r.unit,
                                "frequency": r.frequency, "method": r.method, "evidence_requirement": r.evidence_requirement,
-                               "source_reference": r.source_reference, "measurement_source": r.measurement_source})
+                               "source_reference": r.source_reference, "measurement_source": r.measurement_source,
+                               "data_level": r.data_level})
     for r in rs["general"]:
         params = json.loads(r.parameters) if r.parameters else {}
         if r.rule_type == "SAMPLING":

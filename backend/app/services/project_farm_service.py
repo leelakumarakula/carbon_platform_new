@@ -129,6 +129,13 @@ def eligible_farms(db: Session, principal: Principal, project_id: uuid.UUID) -> 
 
 
 # ---------------------------------------------------------------- farms
+def _is_control_farm(db: Session, project_id: uuid.UUID, farm_id: uuid.UUID) -> bool:
+    from app.models import ProjectStratum, StratumFarm
+    return db.scalars(select(StratumFarm.farm_id).join(ProjectStratum, ProjectStratum.id == StratumFarm.stratum_id)
+                      .where(ProjectStratum.project_id == project_id, ProjectStratum.role == "CONTROL",
+                             ProjectStratum.status.in_(["DRAFT", "APPROVED"]), StratumFarm.farm_id == farm_id)).first() is not None
+
+
 def add_farm(db: Session, ctx: RequestContext, principal: Principal, project_id: uuid.UUID, data: ProjectFarmIn) -> ProjectFarm:
     p = get_project(db, principal, project_id, P.PROJECTS_MANAGE)
     require_status(p, EDITABLE, "Adding farms")
@@ -147,6 +154,9 @@ def add_farm(db: Session, ctx: RequestContext, principal: Principal, project_id:
                        error_code="FARMER_NOT_ACTIVE")
     if any(pf.farm_id == farm.id for pf in repo.project_farms(db, p.id, active_only=True)):
         raise Conflict("This farm is already in the project.", error_code="FARM_ALREADY_IN_PROJECT")
+    if _is_control_farm(db, p.id, farm.id):
+        raise Conflict("This farm is a baseline control site of the project; a control site cannot also participate.",
+                       error_code="FARM_IS_CONTROL_SITE")
     boundary = farm_repo.current_boundary(db, farm.id)
     if boundary is None:
         raise Conflict("The farm has no boundary.", error_code="FARM_HAS_NO_BOUNDARY")

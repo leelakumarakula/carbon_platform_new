@@ -21,6 +21,7 @@ from sqlalchemy.orm import Session
 from app.audit.service import record
 from app.calculation import framework as fw
 from app.calculation.registry import Resolver
+from app.calculation.registry import bind as registry_bind
 from app.calculation.registry import resolve as registry_resolve
 from app.core.config import get_settings
 from app.core.context import RequestContext
@@ -275,7 +276,8 @@ def execute(db: Session, ctx: RequestContext, principal: Principal, run_id: uuid
     if stale:
         raise _block(db, ctx, p, run, [ci.Blocker("INPUTS_OUT_OF_DATE", "Frozen inputs are out of date; create a new run.", None,
                                                   {"problems": stale})])
-    module = (resolver or registry_resolve)(snapshot["methodology"]["code"], snapshot["methodology"]["version_label"])
+    module = registry_bind((resolver or registry_resolve)(snapshot["methodology"]["code"], snapshot["methodology"]["version_label"]),
+                           int(snapshot["methodology"]["calculation_rules_version"]), snapshot["methodology"].get("calculation_readiness"))
     if module is None:
         raise _block(db, ctx, p, run, [ci.Blocker("CONFIGURATION_REQUIRED", "No calculation module is registered for this methodology version.",
                                                   "NO_CALCULATION_MODULE")])

@@ -67,6 +67,7 @@ def resolve(db: Session, version: MethodologyVersion) -> dict[str, Any]:
     gps, gps_src, gps_rule = pick("gps_max_distance_m", s.GPS_MAX_DISTANCE_M)
     dup, dup_src, dup_rule = pick("duplicate_point_distance_m", s.SAMPLING_DUPLICATE_DISTANCE_M)
     photos, ph_src, ph_rule = pick("min_photos_per_sample", s.FIELD_MIN_PHOTOS_PER_SAMPLE)
+    cores, cores_src, cores_rule = pick("core_details_required", False)
     method_items = _checklist_items(req.value("field_checklist"))
     if method_items:
         rule_code = req.sampling["field_checklist"]["rule_code"]
@@ -78,6 +79,8 @@ def resolve(db: Session, version: MethodologyVersion) -> dict[str, Any]:
         "gps_tolerance_m": float(gps), "gps_tolerance_source": gps_src, "gps_tolerance_rule": gps_rule,
         "duplicate_distance_m": float(dup), "duplicate_distance_source": dup_src, "duplicate_distance_rule": dup_rule,
         "min_photos": int(photos), "min_photos_source": ph_src, "min_photos_rule": ph_rule,
+        "core_details_required": cores is True or str(cores).strip().lower() == "true",
+        "core_details_source": cores_src, "core_details_rule": cores_rule,
         "checklist_version": checklist_version, "checklist_items": items, "checklist_source": chk_src,
         "methodology_version_id": str(version.id), "resolved_at": utcnow().isoformat(), "note": NOTE,
     }

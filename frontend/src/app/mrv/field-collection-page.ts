@@ -70,6 +70,10 @@ function localInput(iso: string | null): string {
           <mat-form-field subscriptSizing="dynamic"><mat-label>Collected at</mat-label><input matInput type="datetime-local" formControlName="collected_at" /></mat-form-field>
           <mat-form-field subscriptSizing="dynamic"><mat-label>Depth top (cm)</mat-label><input matInput type="number" formControlName="actual_depth_top_cm" /></mat-form-field>
           <mat-form-field subscriptSizing="dynamic"><mat-label>Depth bottom (cm)</mat-label><input matInput type="number" formControlName="actual_depth_bottom_cm" /></mat-form-field>
+          <mat-form-field subscriptSizing="dynamic"><mat-label>Probe inside diameter (mm){{ c.core_details_required ? ' *' : '' }}</mat-label>
+            <input matInput type="number" formControlName="probe_diameter_mm" inputmode="decimal" data-testid="probe-diameter" /></mat-form-field>
+          <mat-form-field subscriptSizing="dynamic"><mat-label>Number of cores{{ c.core_details_required ? ' *' : '' }}</mat-label>
+            <input matInput type="number" formControlName="cores_count" inputmode="numeric" data-testid="cores-count" /></mat-form-field>
           <mat-form-field subscriptSizing="dynamic"><mat-label>Sample quantity</mat-label><input matInput type="number" formControlName="sample_quantity" /></mat-form-field>
           <mat-form-field subscriptSizing="dynamic"><mat-label>Unit</mat-label><input matInput formControlName="sample_unit" /></mat-form-field>
         </div>
@@ -141,6 +145,8 @@ export class FieldCollectionPage {
     collected_at: new FormControl(localInput(null), { nonNullable: true }),
     actual_depth_top_cm: new FormControl<number | null>(null),
     actual_depth_bottom_cm: new FormControl<number | null>(null),
+    probe_diameter_mm: new FormControl<number | null>(null),
+    cores_count: new FormControl<number | null>(null),
     sample_quantity: new FormControl<number | null>(null),
     sample_unit: new FormControl('kg', { nonNullable: true }),
     observations: new FormControl('', { nonNullable: true }),
@@ -155,7 +161,7 @@ export class FieldCollectionPage {
     const str = (x: number | null | undefined) => (x === null || x === undefined || `${x}` === '' ? null : String(x));
     return collectionMissing({ ...c, checklist: this.checklist(), collected_at: v.collected_at || null, gps_latitude: str(v.gps_latitude),
       gps_longitude: str(v.gps_longitude), actual_depth_top_cm: str(v.actual_depth_top_cm), actual_depth_bottom_cm: str(v.actual_depth_bottom_cm),
-      deviation_note: v.deviation_note?.trim() || null }, this.photos().length);
+      probe_diameter_mm: str(v.probe_diameter_mm), cores_count: v.cores_count ?? null, deviation_note: v.deviation_note?.trim() || null }, this.photos().length);
   });
   protected readonly mapPoints = computed<MapPoint[]>(() => {
     const out: MapPoint[] = [];
@@ -200,7 +206,7 @@ export class FieldCollectionPage {
     const n = (v: string | null) => (v === null ? null : Number(v));
     this.form.patchValue({ gps_latitude: n(c.gps_latitude), gps_longitude: n(c.gps_longitude), gps_accuracy_m: n(c.gps_accuracy_m),
       collected_at: localInput(c.collected_at), actual_depth_top_cm: n(c.actual_depth_top_cm), actual_depth_bottom_cm: n(c.actual_depth_bottom_cm),
-      sample_quantity: n(c.sample_quantity), sample_unit: c.sample_unit ?? 'kg', observations: c.observations ?? '', deviation_note: c.deviation_note ?? '' });
+      probe_diameter_mm: n(c.probe_diameter_mm ?? null), cores_count: c.cores_count ?? null, sample_quantity: n(c.sample_quantity), sample_unit: c.sample_unit ?? 'kg', observations: c.observations ?? '', deviation_note: c.deviation_note ?? '' });
     if (!c.can_edit) this.form.disable();
   }
 
@@ -248,7 +254,8 @@ export class FieldCollectionPage {
     const blank = (s: string) => s.trim() || null;
     return { gps_latitude: v.gps_latitude, gps_longitude: v.gps_longitude, gps_accuracy_m: v.gps_accuracy_m,
       collected_at: v.collected_at ? new Date(v.collected_at).toISOString() : null, actual_depth_top_cm: v.actual_depth_top_cm,
-      actual_depth_bottom_cm: v.actual_depth_bottom_cm, sample_quantity: v.sample_quantity, sample_unit: blank(v.sample_unit),
+      actual_depth_bottom_cm: v.actual_depth_bottom_cm, probe_diameter_mm: v.probe_diameter_mm, cores_count: v.cores_count,
+      sample_quantity: v.sample_quantity, sample_unit: blank(v.sample_unit),
       observations: blank(v.observations), deviation_note: blank(v.deviation_note), checklist: this.checklist() };
   }
 

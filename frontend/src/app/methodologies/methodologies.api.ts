@@ -2,7 +2,9 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { ApiService } from '../core/api/api.service';
-import { Change, Evaluation, Methodology, ProjectMethodologyView, Review, Rule, RuleKind, VersionDetail } from './methodology.models';
+import {
+  CalculationModuleOption, Change, Evaluation, Methodology, ProjectMethodologyView, Review, Rule, RuleKind, VersionDetail,
+} from './methodology.models';
 
 @Injectable({ providedIn: 'root' })
 export class MethodologiesApi {
@@ -23,6 +25,16 @@ export class MethodologiesApi {
   versionAction = (vid: string, action: 'submit' | 'approve' | 'return' | 'retire' | 'withdraw', reason: string,
                    supersedes?: string | null): Observable<VersionDetail> =>
     this.api.post(`${this.base}/versions/${vid}/${action}`, { reason, supersedes_version_id: supersedes ?? null });
+
+  calculationModules = (vid: string): Observable<CalculationModuleOption[]> => this.api.get(`${this.base}/versions/${vid}/calculation-modules`);
+  selectModule = (vid: string, moduleCode: string | null, reason: string): Observable<VersionDetail> =>
+    this.api.post(`${this.base}/versions/${vid}/calculation-module`, { module_code: moduleCode, reason });
+  requestReadiness = (vid: string, evidence: string): Observable<VersionDetail> =>
+    this.api.post(`${this.base}/versions/${vid}/calculation-readiness/request`, { reason: evidence });
+  decideReadiness = (vid: string, approve: boolean, reason: string): Observable<VersionDetail> =>
+    this.api.post(`${this.base}/versions/${vid}/calculation-readiness/decide`, { approve, reason });
+  revokeReadiness = (vid: string, reason: string): Observable<VersionDetail> =>
+    this.api.post(`${this.base}/versions/${vid}/calculation-readiness/revoke`, { reason });
 
   projectView = (pid: string): Observable<ProjectMethodologyView> => this.api.get(`/projects/${pid}/methodology`);
   evaluate = (pid: string, declared: Record<string, unknown>): Observable<Evaluation> =>

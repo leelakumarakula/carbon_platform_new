@@ -20,6 +20,7 @@ import { reloadOn } from '../shared/reload-on';
 import { runAction } from '../shared/run-action';
 import { StateView } from '../shared/state-view';
 import { StatusBadge } from '../shared/status-badge';
+import { CalculationModulePanel } from './calculation-module-panel';
 import { MethodologiesApi } from './methodologies.api';
 import {
   CALC_STEPS, Change, GENERAL_RULE_TYPES, MEASUREMENT_SOURCES, OPERATORS, RULE_CATEGORIES, Rule, RuleKind, VersionDetail, show, versionBadge,
@@ -30,7 +31,7 @@ import {
   selector: 'app-methodology-version-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [DatePipe, JsonPipe, ReactiveFormsModule, MatButtonModule, MatCheckboxModule, MatFormFieldModule, MatInputModule, MatSelectModule,
-    MatTabsModule, PageHeader, StateView, StatusBadge],
+    MatTabsModule, PageHeader, StateView, StatusBadge, CalculationModulePanel],
   template: `
     <app-state-view [loading]="loading()" [error]="error()" (retry)="load()" />
     @if (v(); as v) {
@@ -46,6 +47,7 @@ import {
       <div class="status-row">
         <app-status-badge [status]="badge(v.status)" [text]="label(v.status)" />
         <app-status-badge status="INFO" [text]="'Calculation: ' + label(v.calculation_readiness)" />
+        @if (v.calculation_module_code) { <app-status-badge status="INFO" [text]="'Module: ' + v.calculation_module_code" /> }
         @if (v.is_demo_illustrative) { <app-status-badge status="DEMO" text="Illustrative (DEMO)" /> }
       </div>
       <dl class="kv">
@@ -70,6 +72,7 @@ import {
         @for (k of kinds; track k) {
           <mat-tab [label]="label(k) + ' (' + rulesOf(k).length + ')'">
             <div class="tab-body">
+              @if (k === 'calculation') { <app-calculation-module-panel [v]="v" (changed)="moduleChanged($event)" /> }
               @for (r of rulesOf(k); track r.id) {
                 <div class="line">
                   <div class="grow"><strong>{{ r.rule_code }}</strong> {{ r.title }}
@@ -96,6 +99,9 @@ import {
                     <mat-form-field subscriptSizing="dynamic"><mat-label>Parameter</mat-label><input matInput formControlName="parameter" /></mat-form-field>
                     <mat-form-field subscriptSizing="dynamic"><mat-label>Unit</mat-label><input matInput formControlName="unit" /></mat-form-field>
                     <mat-form-field subscriptSizing="dynamic"><mat-label>Frequency</mat-label><input matInput formControlName="frequency" /></mat-form-field>
+                    <mat-form-field subscriptSizing="dynamic"><mat-label>Recorded per</mat-label>
+                      <mat-select formControlName="data_level"><mat-option value="">Platform default</mat-option>
+                        @for (l of ['PROJECT', 'FARM', 'STRATUM', 'SAMPLING_POINT']; track l) { <mat-option [value]="l">{{ label(l) }}</mat-option> }</mat-select></mat-form-field>
                     <mat-form-field subscriptSizing="dynamic"><mat-label>Measurement source</mat-label>
                       <mat-select formControlName="measurement_source" data-testid="measurement-source">
                         @for (s of measurementSources; track s) { <mat-option [value]="s">{{ label(s) }}</mat-option> }
@@ -113,7 +119,7 @@ import {
                   }
                   <button mat-flat-button type="submit" [disabled]="busy()">Add rule</button>
                 </form>
-                @if (k === 'calculation') { <p class="muted small">Calculation rules document the source equation reference only. No equation is executed until it is implemented and verified (Phase 7).</p> }
+                @if (k === 'calculation') { <p class="muted small">Calculation rules document the source equations. Rules added by hand are documentation only; a calculation runs when a module implementing exactly these rules is selected above.</p> }
                 @if (ruleError(); as e) { <p class="form-error">{{ e }}</p> }
               }
             </div>
@@ -178,6 +184,7 @@ export class MethodologyVersionPage {
     unit: new FormControl('', { nonNullable: true }),
     frequency: new FormControl('', { nonNullable: true }),
     measurement_source: new FormControl('', { nonNullable: true }),
+    data_level: new FormControl('', { nonNullable: true }),
     step: new FormControl('NET', { nonNullable: true }),
     equation_reference: new FormControl('', { nonNullable: true }),
     rule_type: new FormControl('GENERAL', { nonNullable: true }),
@@ -220,7 +227,7 @@ export class MethodologyVersionPage {
     if (r.kind === 'applicability') return `${d['fact_key']} ${d['operator']} ${show(d['expected_value'])} → else ${d['on_fail']}`
       + (d['evidence_requirement'] ? ` · evidence: ${d['evidence_requirement']}` : '');
     if (r.kind === 'monitoring') return `${d['parameter']}${d['unit'] ? ' (' + d['unit'] + ')' : ''}${d['frequency'] ? ' · ' + d['frequency'] : ''}`
-      + ` · source: ${d['measurement_source'] ?? 'UNCLASSIFIED'}`;
+      + ` · source: ${d['measurement_source'] ?? 'UNCLASSIFIED'}${d['data_level'] ? ' · per ' + String(d['data_level']).toLowerCase() : ''}`;
     if (r.kind === 'calculation') return `${d['step']} · ${d['equation_reference'] ?? 'no reference'} · ${d['implementation_status']}`;
     return `${d['rule_type']} ${d['parameters'] ? JSON.stringify(d['parameters']) : ''}`;
   }
@@ -244,7 +251,8 @@ export class MethodologyVersionPage {
           this.ruleError.set('Choose the measurement source (FIELD, FIELD_ACTIVITY or LABORATORY). It is never inferred.');
           return;
         }
-        Object.assign(body, { parameter: f.parameter, unit: blank(f.unit), frequency: blank(f.frequency), measurement_source: f.measurement_source });
+        Object.assign(body, { parameter: f.parameter, unit: blank(f.unit), frequency: blank(f.frequency), measurement_source: f.measurement_source,
+          data_level: f.data_level || null });
       }
       if (kind === 'calculation') Object.assign(body, { step: f.step, equation_reference: blank(f.equation_reference) });
       if (kind === 'general') Object.assign(body, { rule_type: f.rule_type, parameters: f.parameters.trim() ? JSON.parse(f.parameters) : null });
@@ -257,6 +265,11 @@ export class MethodologyVersionPage {
       this.rule.patchValue({ rule_code: '', title: '', fact_key: '', expected: '', evidence: '', parameter: '', parameters: '' });
       this.load();
     });
+  }
+
+  moduleChanged(v: VersionDetail): void {
+    this.v.set(v);
+    this.load();
   }
 
   removeRule(r: Rule): void {

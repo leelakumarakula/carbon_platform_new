@@ -167,7 +167,8 @@ class PeriodOut(BaseModel):
 
 # ---------------------------------------------------------------- strata
 class CharacteristicIn(BaseModel):
-    characteristic: Literal["SOIL_TYPE", "CROP", "LAND_USE", "MANAGEMENT_PRACTICE", "IRRIGATION", "GEOGRAPHY", "CLIMATE", "OTHER"]
+    characteristic: Literal["SOIL_TYPE", "CROP", "LAND_USE", "MANAGEMENT_PRACTICE", "IRRIGATION", "GEOGRAPHY", "CLIMATE", "OTHER",
+                            "SOIL_TEXTURE", "SOIL_GROUP", "SLOPE_CLASS", "SOC_PERCENT", "ECOREGION", "PRECIPITATION_MM"]
     value: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=200)]
     source: Literal["FARM_DATA", "FIELD_OBSERVATION", "DECLARED", "EXTERNAL_DATASET"] = "DECLARED"
 
@@ -179,6 +180,8 @@ class StratumIn(BaseModel):
     farm_ids: list[uuid.UUID] = Field(min_length=1)
     characteristics: list[CharacteristicIn] = []
     criteria: dict[str, Any] | None = None
+    role: Literal["PROJECT", "CONTROL"] = "PROJECT"
+    linked_stratum_ids: list[uuid.UUID] = []      # CONTROL: the project strata this control site represents
 
 
 class StratumUpdate(BaseModel):
@@ -187,7 +190,22 @@ class StratumUpdate(BaseModel):
     farm_ids: list[uuid.UUID] | None = None
     characteristics: list[CharacteristicIn] | None = None
     criteria: dict[str, Any] | None = None
+    linked_stratum_ids: list[uuid.UUID] | None = None   # CONTROL only
     reason: Reason | None = None
+
+
+class LinkedStratum(BaseModel):
+    record_id: uuid.UUID
+    code: str | None
+
+
+class ControlCandidate(BaseModel):
+    """A farm that may serve as a baseline control site: verified boundary, same organization, not a project participant."""
+    farm_id: uuid.UUID
+    farm_code: str
+    farm_name: str
+    farmer_name: str | None
+    area_hectares: Decimal | None
 
 
 class StratumOut(BaseModel):
@@ -206,6 +224,8 @@ class StratumOut(BaseModel):
     farm_codes: list[str]
     characteristics: list[CharacteristicIn]
     missing_required_characteristics: list[str]
+    role: str = "PROJECT"
+    linked_strata: list["LinkedStratum"] = []
     source: str
     status: str
     change_reason: str | None
@@ -384,6 +404,8 @@ class CollectionUpdate(BaseModel):
     gps_accuracy_m: Annotated[Decimal, Field(ge=0, le=10_000, max_digits=8, decimal_places=1)] | None = None
     actual_depth_top_cm: Depth | None = None
     actual_depth_bottom_cm: Depth | None = None
+    probe_diameter_mm: Annotated[Decimal, Field(gt=0, le=500, max_digits=6, decimal_places=2)] | None = None
+    cores_count: Annotated[int, Field(ge=1, le=200)] | None = None
     sample_quantity: Annotated[Decimal, Field(ge=0, max_digits=10, decimal_places=3)] | None = None
     sample_unit: Annotated[str, StringConstraints(strip_whitespace=True, max_length=20)] | None = None
     observations: Long | None = None
@@ -419,6 +441,9 @@ class CollectionOut(BaseModel):
     deviation_note: str | None
     actual_depth_top_cm: Decimal | None
     actual_depth_bottom_cm: Decimal | None
+    probe_diameter_mm: Decimal | None = None
+    cores_count: int | None = None
+    core_details_required: bool = False
     planned_depth_top_cm: Decimal | None = None
     planned_depth_bottom_cm: Decimal | None = None
     sample_quantity: Decimal | None

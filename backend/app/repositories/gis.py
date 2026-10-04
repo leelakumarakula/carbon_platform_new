@@ -190,6 +190,18 @@ def project_overlaps(db: Session, boundary_id: uuid.UUID, project_id: uuid.UUID,
 
 
 # ---------------------------------------------------------------- MRV / sampling (Phase 5)
+_STRATA_DISTANCE = text("""
+SELECT a.geometry.STDistance(b.geometry) FROM dbo.project_strata a, dbo.project_strata b WHERE a.id = :a AND b.id = :b;
+""")
+
+
+def strata_distance_m(db: Session, a: uuid.UUID, b: uuid.UUID) -> float | None:
+    """Shortest geodesic distance between two strata geometries (0 when they touch or overlap); None if either has none."""
+    r = db.execute(_STRATA_DISTANCE, {"a": a, "b": b}).first()
+    return float(r[0]) if r and r[0] is not None else None
+
+
+
 _UNION_OF = text("""
 SET NOCOUNT ON;
 DECLARE @u geography = (SELECT geography::UnionAggregate(boundary) FROM dbo.farm_boundaries

@@ -45,7 +45,10 @@ def checks(db: Session, run: CalculationRun, reviewer_id: uuid.UUID | None, reso
     roots = Counter((r["variable"], r["root_sample_id"]) for r in rows if r["source_type"] == "LAB_RESULT")
     dups = [f"{k[0]} {k[2]}" for k, n in keys.items() if n > 1] + [f"{k[0]} root sample {k[1]}" for k, n in roots.items() if n > 1]
     out.append(_c("no_duplicate_inputs", "No duplicate authoritative inputs (one result per root sample and rule)", dups))
-    module = resolver(snapshot.get("methodology", {}).get("code", ""), snapshot.get("methodology", {}).get("version_label", ""))
+    from app.calculation.registry import bind
+    module = bind(resolver(snapshot.get("methodology", {}).get("code", ""), snapshot.get("methodology", {}).get("version_label", "")),
+                  int(snapshot.get("methodology", {}).get("calculation_rules_version") or 0),
+                  snapshot.get("methodology", {}).get("calculation_readiness"))
     mod_problems = []
     if module is None:
         mod_problems.append("no calculation module is registered for this methodology version")

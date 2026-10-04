@@ -97,6 +97,7 @@ class MonitoringRuleIn(_RuleBase):
     frequency: Annotated[str, StringConstraints(strip_whitespace=True, max_length=120)] | None = None
     method: Annotated[str, StringConstraints(strip_whitespace=True, max_length=1000)] | None = None
     evidence_requirement: Annotated[str, StringConstraints(strip_whitespace=True, max_length=1000)] | None = None
+    data_level: Literal["PROJECT", "FARM", "STRATUM", "SAMPLING_POINT"] | None = None
 
 
 class CalculationRuleIn(_RuleBase):
@@ -139,6 +140,7 @@ class VersionOut(BaseModel):
     monitoring_rules_version: int
     calculation_rules_version: int
     calculation_readiness: str
+    calculation_module_code: str | None = None
     is_demo_illustrative: bool
     notes: str | None
     based_on_version_id: uuid.UUID | None
@@ -157,6 +159,7 @@ class VersionOut(BaseModel):
 class VersionDetail(VersionOut):
     methodology_code: str
     methodology_name: str
+    readiness_request: dict[str, Any] | None = None   # open production-readiness request (requested_by, requested_at, evidence)
     rules: list[RuleOut]
     can_edit: bool
     can_submit: bool
@@ -305,3 +308,25 @@ class ProjectMethodologyView(BaseModel):
 
 
 CandidateOut.model_rebuild()
+
+
+class CalculationModuleOption(BaseModel):
+    """A registered calculation module as offered on a version's Calculation tab."""
+    code: str
+    version: str
+    label: str
+    methodology_code: str
+    version_label: str
+    readiness: str
+    compatible: bool
+    selected: bool
+    calculation_rules: list[dict[str, Any]]
+    monitoring_rules: list[dict[str, Any]]
+    sampling_parameters: dict[str, Any]
+    assumptions: list[str]
+    variables: list[dict[str, Any]]
+
+
+class ModuleSelectionIn(BaseModel):
+    module_code: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=80)] | None
+    reason: Annotated[str, StringConstraints(strip_whitespace=True, min_length=3, max_length=1000)]

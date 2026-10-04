@@ -400,3 +400,147 @@ def history(db: Session, principal: Principal, methodology_id: uuid.UUID) -> lis
     m = get_methodology(db, principal, methodology_id)
     return list(db.scalars(select(MethodologyChangeHistory).where(MethodologyChangeHistory.methodology_id == m.id)
                            .order_by(MethodologyChangeHistory.id.desc())).all())
+
+
+# ---------------------------------------------------------------- calculation module selection (Calculation tab)
+def compatible_modules(db: Session, principal: Principal, version_id: uuid.UUID) -> tuple[Methodology, MethodologyVersion, list[Any]]:
+    """Registered modules with their compatibility for this version (same methodology code and version label)."""
+    from app.calculation import registry
+    m, v = get_version(db, principal, version_id)
+    return m, v, [(mod, mod.methodology_code == m.code and mod.version_label == v.version_label) for mod in registry.modules()]
+
+
+def select_calculation_module(db: Session, ctx: RequestContext, principal: Principal, version_id: uuid.UUID, module_code: str | None,
+                              reason: str) -> MethodologyVersion:
+    """Choose (or clear) the calculation module of a DRAFT version. Choosing copies the module's rule set into the version:
+    its calculation rules replace the draft's calculation rules, its monitoring rules are added (an existing rule with the same code
+    must declare the same unit and measurement source), and its SAMPLING parameters are added as one general rule. The version's
+    approval approves the choice; the calculation engine then binds the module to this version."""
+    from app.calculation import registry
+    _require(principal, P.METHODOLOGIES_MANAGE)
+    m, v = get_version(db, principal, version_id)
+    _draft(v, "Choosing the calculation module")
+    old = {"calculation_module_code": v.calculation_module_code}
+    if module_code is None:
+        v.calculation_module_code = None
+        _change(db, ctx, m, v, "METHODOLOGY_CALCULATION_MODULE_CLEARED", f"Calculation module cleared on draft {v.version_label}", old,
+                {"calculation_module_code": None}, reason)
+        db.commit()
+        return v
+    mod = registry.by_code(module_code)
+    if mod is None:
+        raise NotFound("No such calculation module.", error_code="MODULE_NOT_FOUND")
+    if mod.methodology_code != m.code or mod.version_label != v.version_label:
+        raise ValidationFailed(f"Module {mod.code} implements {mod.methodology_code} {mod.version_label}, not {m.code} {v.version_label}.",
+                               error_code="MODULE_NOT_FOR_VERSION")
+    current = rules(db, v.id)
+    # monitoring rules: add the missing ones; refuse silently different definitions
+    existing = {r.rule_code: r for r in current["monitoring"]}
+    conflicts = [d["rule_code"] for d in mod.monitoring_rule_definitions if d["rule_code"] in existing
+                 and ((existing[d["rule_code"]].unit or None) != (d.get("unit") or None)
+                      or existing[d["rule_code"]].measurement_source != d["measurement_source"])]
+    if conflicts:
+        raise Conflict("These monitoring rules already exist with a different unit or measurement source: " + ", ".join(conflicts) + ".",
+                       error_code="MONITORING_RULE_CONFLICT", details={"rule_codes": conflicts})
+    added_monitoring = []
+    for d in mod.monitoring_rule_definitions:
+        r = existing.get(d["rule_code"])
+        if r is None:
+            db.add(MethodologyMonitoringRule(methodology_version_id=v.id, rule_code=d["rule_code"], title=d["title"], parameter=d["parameter"],
+                                             measurement_source=d["measurement_source"], unit=d.get("unit"), frequency=d.get("frequency"),
+                                             method=d.get("method"), data_level=d.get("data_level"),
+                                             source_reference=d.get("source_reference"), description=f"Required by module {mod.code}"))
+            added_monitoring.append(d["rule_code"])
+        elif r.data_level is None and d.get("data_level"):
+            r.data_level = d["data_level"]
+    if added_monitoring:
+        _bump(db, v, "monitoring")
+    # calculation rules: exactly the module's
+    for r in current["calculation"]:
+        db.delete(r)
+    db.flush()
+    for i, d in enumerate(mod.calculation_rule_definitions):
+        db.add(MethodologyCalculationRule(methodology_version_id=v.id, rule_code=d["rule_code"], title=d["title"], step=d["step"],
+                                          equation_reference=d.get("equation_reference"), sort_order=i + 1,
+                                          implementation_status="NOT_PRODUCTION_READY" if mod.readiness != "PRODUCTION_READY" else "VERIFIED",
+                                          description=f"Implemented by module {mod.code} {mod.version}"))
+    _bump(db, v, "calculation")
+    # sampling parameters: one general SAMPLING rule (kept if the specialist already configured one with this code)
+    smp_code = "MODULE-SAMPLING"
+    if mod.sampling_parameters and not any(r.rule_code == smp_code for r in current["general"]):
+        db.add(MethodologyRule(methodology_version_id=v.id, rule_code=smp_code, title=f"Sampling parameters required by {mod.code}",
+                               rule_type="SAMPLING", parameters=json.dumps(mod.sampling_parameters),
+                               source_reference=", ".join(sorted({d["rule_code"] for d in mod.calculation_rule_definitions}))))
+        _bump(db, v, "general")
+    v.calculation_module_code = mod.code
+    db.flush()
+    _change(db, ctx, m, v, "METHODOLOGY_CALCULATION_MODULE_SELECTED", f"Calculation module {mod.code} {mod.version} selected on draft "
+            f"{v.version_label}", old, {"calculation_module_code": mod.code, "module_version": mod.version, "readiness": mod.readiness,
+                                      "calculation_rules": [d["rule_code"] for d in mod.calculation_rule_definitions],
+                                      "monitoring_rules_added": added_monitoring}, reason)
+    db.commit()
+    return v
+
+
+# ---------------------------------------------------------------- production readiness of the selected calculation module
+READINESS_REQUESTED, READINESS_APPROVED, READINESS_REVOKED = (
+    "CALCULATION_READINESS_REQUESTED", "CALCULATION_READINESS_APPROVED", "CALCULATION_READINESS_REVOKED")
+
+
+def readiness_request(db: Session, version_id: uuid.UUID) -> MethodologyChangeHistory | None:
+    """The open readiness request of a version: the latest REQUESTED entry not followed by an APPROVED / REVOKED one."""
+    entries = db.scalars(select(MethodologyChangeHistory).where(
+        MethodologyChangeHistory.methodology_version_id == version_id,
+        MethodologyChangeHistory.change_type.in_([READINESS_REQUESTED, READINESS_APPROVED, READINESS_REVOKED]))
+        .order_by(MethodologyChangeHistory.id.desc())).all()
+    return entries[0] if entries and entries[0].change_type == READINESS_REQUESTED else None
+
+
+def request_calculation_readiness(db: Session, ctx: RequestContext, principal: Principal, version_id: uuid.UUID, evidence: str) -> MethodologyVersion:
+    """A methodology specialist asks for the selected module to be declared production-ready, citing the verification evidence
+    (expert review of the equations, worked-example tests). Only an APPROVED version with a selected module qualifies."""
+    _require(principal, P.METHODOLOGIES_MANAGE)
+    m, v = get_version(db, principal, version_id)
+    if v.status != "APPROVED" or not v.calculation_module_code:
+        raise Conflict("Production readiness is requested for an APPROVED version that has a calculation module selected.",
+                       error_code="READINESS_NOT_APPLICABLE")
+    if v.calculation_readiness == "PRODUCTION_READY":
+        raise Conflict("The calculation is already production-ready.", error_code="ALREADY_PRODUCTION_READY")
+    if readiness_request(db, v.id) is not None:
+        raise Conflict("A readiness request is already open.", error_code="READINESS_REQUEST_OPEN")
+    _change(db, ctx, m, v, READINESS_REQUESTED, f"Production readiness requested for {v.calculation_module_code} on version {v.version_label}",
+            {"calculation_readiness": v.calculation_readiness}, {"module": v.calculation_module_code}, evidence)
+    db.commit()
+    return v
+
+
+def decide_calculation_readiness(db: Session, ctx: RequestContext, principal: Principal, version_id: uuid.UUID, approve: bool,
+                                 notes: str) -> MethodologyVersion:
+    """Approve (someone other than the requester) or reject the open request."""
+    _require(principal, P.METHODOLOGIES_APPROVE)
+    m, v = get_version(db, principal, version_id)
+    req = readiness_request(db, v.id)
+    if req is None:
+        raise Conflict("There is no open readiness request.", error_code="NO_READINESS_REQUEST")
+    if req.changed_by == principal.user_id:
+        raise PermissionDenied("You requested production readiness, so someone else must decide.", error_code="SEPARATION_OF_DUTIES")
+    old = {"calculation_readiness": v.calculation_readiness}
+    if approve:
+        v.calculation_readiness = "PRODUCTION_READY"
+    _change(db, ctx, m, v, READINESS_APPROVED if approve else READINESS_REVOKED,
+            f"Production readiness {'approved' if approve else 'rejected'} for {v.calculation_module_code} on version {v.version_label}",
+            old, {"calculation_readiness": v.calculation_readiness, "module": v.calculation_module_code}, notes)
+    db.commit()
+    return v
+
+
+def revoke_calculation_readiness(db: Session, ctx: RequestContext, principal: Principal, version_id: uuid.UUID, reason: str) -> MethodologyVersion:
+    _require(principal, P.METHODOLOGIES_APPROVE)
+    m, v = get_version(db, principal, version_id)
+    if v.calculation_readiness != "PRODUCTION_READY":
+        raise Conflict("The calculation is not production-ready.", error_code="NOT_PRODUCTION_READY")
+    v.calculation_readiness = "NOT_PRODUCTION_READY"
+    _change(db, ctx, m, v, READINESS_REVOKED, f"Production readiness revoked for {v.calculation_module_code} on version {v.version_label}",
+            {"calculation_readiness": "PRODUCTION_READY"}, {"calculation_readiness": "NOT_PRODUCTION_READY"}, reason)
+    db.commit()
+    return v

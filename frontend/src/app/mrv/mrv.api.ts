@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { ApiService } from '../core/api/api.service';
 import {
   Collector,
+  ControlCandidate,
   Dataset,
   Design,
   Evidence,
@@ -51,6 +52,7 @@ export class MrvApi {
   createStratum = (pid: string, body: Body): Observable<Stratum> => this.api.post(`${this.b}/projects/${pid}/strata`, body);
   updateStratum = (id: string, body: Body): Observable<Stratum> => this.api.patch(`${this.b}/strata/${id}`, body);
   approveStratum = (id: string, reason: string): Observable<Stratum> => this.api.post(`${this.b}/strata/${id}/approve`, { reason });
+  controlCandidates = (pid: string): Observable<ControlCandidate[]> => this.api.get(`${this.b}/projects/${pid}/control-site-candidates`);
 
   designs = (pid: string, periodId?: string | null): Observable<Design[]> =>
     this.api.get(`${this.b}/sampling-designs`, { project_id: pid, monitoring_period_id: periodId ?? null });

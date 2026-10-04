@@ -133,10 +133,11 @@ def test_framework_is_deterministic_decimal_and_never_invents_a_step() -> None:
         Constant("K", "2", "TEST", " ")                                           # a constant must cite its source
 
 
-def test_registry_ships_no_module_and_the_test_fixture_is_not_registered(client: TestClient, db: Session) -> None:
-    assert registry.modules() == [] and registry.resolve("TEST", "1") is None
+def test_registry_ships_only_vm0042_and_the_test_fixture_is_not_registered(client: TestClient, db: Session) -> None:
+    assert [m.code for m in registry.modules()] == ["VM0042-V2.2-QA2-QA3"] and registry.resolve("TEST", "1") is None
+    assert registry.modules()[0].readiness == fw.NOT_PRODUCTION_READY and registry.modules()[0].calculation_rules_version == 0
     u = make_user(db, roles=[("CALCULATION_ANALYST", make_org(db))])
-    assert client.get(f"{CALC}/modules", headers=login(client, u)).json() == []
+    assert [m["code"] for m in client.get(f"{CALC}/modules", headers=login(client, u)).json()] == ["VM0042-V2.2-QA2-QA3"]
 
 
 # ---------------------------------------------------------------- the real DEMO path stays blocked

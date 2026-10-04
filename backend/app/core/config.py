@@ -146,6 +146,10 @@ class Settings(BaseSettings):
     GPS_MAX_DISTANCE_M: float = 30.0          # collection GPS further than this from the planned point needs a note
     FIELD_CHECKLIST_VERSION: str = "PLATFORM-DEFAULT-2"   # Phase 6: label with the SMP sample code
     FIELD_MIN_PHOTOS_PER_SAMPLE: int = 1
+    # Baseline control sites (VM0042 v2.2 §8.2 Quantification Approach 2, Table 7): a control site must lie within this
+    # distance of every project stratum it represents, and its mean annual precipitation within this tolerance.
+    CONTROL_SITE_MAX_DISTANCE_KM: float = 250.0
+    CONTROL_SITE_PRECIPITATION_TOLERANCE_MM: float = 100.0
     # Phase 7 (decision A18): calculations run synchronously; a run with more frozen input rows than this is BLOCKED
     # (INPUT_TOO_LARGE) instead of holding an HTTP request open. Background execution is deferred.
     CALCULATION_MAX_INPUT_ROWS: int = 20000

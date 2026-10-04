@@ -32,7 +32,10 @@ export const VALUE_TYPES = ['NUMBER', 'TEXT', 'DATE', 'BOOLEAN', 'CHOICE'] as co
 export const LEVELS = ['PROJECT', 'FARM', 'STRATUM', 'SAMPLING_POINT'] as const;
 export const QUANTIFICATION = ['MEASURE_AND_REMEASURE', 'MEASURE_AND_MODEL', 'OTHER'] as const;
 export const DESIGNS = ['STRATIFIED_RANDOM', 'SIMPLE_RANDOM', 'SYSTEMATIC_GRID', 'OTHER'] as const;
-export const CHARACTERISTICS = ['SOIL_TYPE', 'CROP', 'LAND_USE', 'MANAGEMENT_PRACTICE', 'IRRIGATION', 'GEOGRAPHY', 'CLIMATE', 'OTHER'] as const;
+export const CHARACTERISTICS = ['SOIL_TYPE', 'CROP', 'LAND_USE', 'MANAGEMENT_PRACTICE', 'IRRIGATION', 'GEOGRAPHY', 'CLIMATE', 'OTHER',
+  'SOIL_TEXTURE', 'SOIL_GROUP', 'SLOPE_CLASS', 'SOC_PERCENT', 'ECOREGION', 'PRECIPITATION_MM'] as const;
+/** VM0042 Table 7: the criteria a baseline control site is matched on (checked at approval where both sides declare them). */
+export const CONTROL_SITE_CRITERIA = ['SOIL_TEXTURE', 'SOIL_GROUP', 'SLOPE_CLASS', 'ECOREGION', 'CLIMATE', 'PRECIPITATION_MM', 'SOC_PERCENT'] as const;
 export const EVIDENCE_TYPES = ['FIELD_PHOTO', 'FIELD_NOTE', 'PRACTICE_RECORD', 'DOCUMENT', 'GPS', 'OBSERVATION'] as const;
 
 export interface Measurement {
@@ -158,12 +161,24 @@ export interface Stratum {
   farm_codes: string[];
   characteristics: Characteristic[];
   missing_required_characteristics: string[];
+  /** PROJECT: participating farms. CONTROL: a baseline control site (VM0042 Approach 2), linked to the strata it represents. */
+  role: 'PROJECT' | 'CONTROL';
+  linked_strata: { record_id: string; code: string | null }[];
   source: string;
   status: 'DRAFT' | 'APPROVED' | 'SUPERSEDED' | 'RETIRED';
   change_reason: string | null;
   created_by: string | null;
   created_at: string;
   approved_at: string | null;
+}
+
+/** A farm that may serve as a baseline control site (eligible, not a participant of the project). */
+export interface ControlCandidate {
+  farm_id: string;
+  farm_code: string;
+  farm_name: string;
+  farmer_name: string | null;
+  area_hectares: string | null;
 }
 
 export interface Allocation {
@@ -279,6 +294,10 @@ export interface FieldCollection {
   deviation_note: string | null;
   actual_depth_top_cm: string | null;
   actual_depth_bottom_cm: string | null;
+  /** Soil-core details (VM0042 Eq. 3); required when the methodology says so (core_details_required). */
+  probe_diameter_mm?: string | null;
+  cores_count?: number | null;
+  core_details_required?: boolean;
   planned_depth_top_cm: string | null;
   planned_depth_bottom_cm: string | null;
   sample_quantity: string | null;
@@ -444,6 +463,7 @@ export function collectionMissing(c: FieldCollection, photoCount: number): strin
   if (!c.collected_at) out.push('collection time');
   if (c.gps_latitude === null || c.gps_longitude === null) out.push('GPS position');
   if (c.actual_depth_top_cm === null || c.actual_depth_bottom_cm === null) out.push('actual depth');
+  if (c.core_details_required && (c.probe_diameter_mm == null || c.cores_count == null)) out.push('probe diameter and number of cores');
   const labels = new Map(c.checklist_items.map((i) => [i.key, i.label]));
   const missing = c.required_checklist.filter((k) => !c.checklist?.[k]);
   if (missing.length) out.push(`checklist (${missing.map((k) => labels.get(k) ?? CHECKLIST_LABELS[k] ?? k).join(', ')})`);

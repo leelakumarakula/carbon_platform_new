@@ -34,6 +34,8 @@ export interface VersionInfo {
   monitoring_rules_version: number;
   calculation_rules_version: number;
   calculation_readiness: 'NOT_PRODUCTION_READY' | 'PRODUCTION_READY';
+  /** Calculation module chosen on the Calculation tab (approved with the version); null = none. */
+  calculation_module_code?: string | null;
   is_demo_illustrative: boolean;
   notes: string | null;
   based_on_version_id: string | null;
@@ -66,6 +68,25 @@ export interface VersionDetail extends VersionInfo {
   can_edit: boolean;
   can_submit: boolean;
   can_approve: boolean;
+  /** Open production-readiness request of the selected module (requested by, when, evidence summary). */
+  readiness_request?: { requested_by: string | null; requested_at: string; evidence: string | null } | null;
+}
+
+/** A registered calculation module as offered on a version's Calculation tab. */
+export interface CalculationModuleOption {
+  code: string;
+  version: string;
+  label: string;
+  methodology_code: string;
+  version_label: string;
+  readiness: string;
+  compatible: boolean;
+  selected: boolean;
+  calculation_rules: { rule_code: string; step: string; title: string; equation_reference?: string | null }[];
+  monitoring_rules: { rule_code: string; title: string; parameter: string; unit: string | null; measurement_source: string; data_level?: string | null }[];
+  sampling_parameters: Record<string, unknown>;
+  assumptions: string[];
+  variables: Record<string, unknown>[];
 }
 
 export interface Methodology {

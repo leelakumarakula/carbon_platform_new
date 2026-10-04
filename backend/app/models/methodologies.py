@@ -100,6 +100,7 @@ class MethodologyVersion(UUIDPrimaryKey, Base):
     monitoring_rules_version: Mapped[int] = mapped_column(Integer, default=1)
     calculation_rules_version: Mapped[int] = mapped_column(Integer, default=1)
     calculation_readiness: Mapped[str] = mapped_column(Unicode(25), default="NOT_PRODUCTION_READY")
+    calculation_module_code: Mapped[str | None] = mapped_column(Unicode(80))   # module chosen on the Calculation tab
     is_demo_illustrative: Mapped[bool] = mapped_column(Boolean, default=False, server_default=text("0"))
     notes: Mapped[str | None] = mapped_column(Unicode(2000))
     based_on_version_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("methodology_versions.id"))
@@ -158,6 +159,7 @@ class MethodologyMonitoringRule(UUIDPrimaryKey, _VersionRule, Base):
     __table_args__ = (
         UniqueConstraint("methodology_version_id", "rule_code"),
         CheckConstraint(in_check("measurement_source", MEASUREMENT_SOURCES), name="measurement_source"),
+        CheckConstraint("data_level IS NULL OR data_level IN ('PROJECT', 'FARM', 'STRATUM', 'SAMPLING_POINT')", name="data_level"),
     )
     parameter: Mapped[str] = mapped_column(Unicode(120))
     measurement_source: Mapped[str] = mapped_column(Unicode(20))
@@ -165,6 +167,7 @@ class MethodologyMonitoringRule(UUIDPrimaryKey, _VersionRule, Base):
     frequency: Mapped[str | None] = mapped_column(Unicode(120))
     method: Mapped[str | None] = mapped_column(Unicode(1000))
     evidence_requirement: Mapped[str | None] = mapped_column(Unicode(1000))
+    data_level: Mapped[str | None] = mapped_column(Unicode(15))   # where the value is recorded; NULL = platform mapping
 
 
 class MethodologyCalculationRule(UUIDPrimaryKey, _VersionRule, Base):

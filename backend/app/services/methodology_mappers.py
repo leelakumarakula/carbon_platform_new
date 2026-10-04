@@ -46,7 +46,10 @@ def rule_out(kind: str, r: Any) -> RuleOut:
 def version_detail(db: Session, principal: Principal, m: Methodology, v: MethodologyVersion) -> VersionDetail:
     rs = msvc.rules(db, v.id)
     base = version_out(db, v)
+    req = msvc.readiness_request(db, v.id)
     return VersionDetail(**base.model_dump(), methodology_code=m.code, methodology_name=m.name,
+                         readiness_request={"requested_by": str(req.changed_by) if req.changed_by else None,
+                                            "requested_at": req.changed_at.isoformat(), "evidence": req.reason} if req else None,
                          rules=[rule_out(k, r) for k, items in rs.items() for r in items],
                          can_edit=principal.has(P.METHODOLOGIES_MANAGE) and v.status == "DRAFT",
                          can_submit=principal.has(P.METHODOLOGIES_MANAGE) and v.status == "DRAFT",

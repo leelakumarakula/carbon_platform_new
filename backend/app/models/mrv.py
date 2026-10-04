@@ -41,7 +41,10 @@ MEASUREMENT_CATEGORIES = ["SOIL", "CROP", "PLANTING", "HARVEST", "TILLAGE", "FER
                           "WATER_MANAGEMENT", "YIELD", "PRACTICE_CHANGE", "FUEL", "OTHER"]
 VALUE_TYPES = ["NUMBER", "TEXT", "DATE", "BOOLEAN", "CHOICE"]
 MEASUREMENT_LEVELS = ["PROJECT", "FARM", "STRATUM", "SAMPLING_POINT"]
-STRATUM_CHARACTERISTICS = ["SOIL_TYPE", "CROP", "LAND_USE", "MANAGEMENT_PRACTICE", "IRRIGATION", "GEOGRAPHY", "CLIMATE", "OTHER"]
+STRATUM_CHARACTERISTICS = ["SOIL_TYPE", "CROP", "LAND_USE", "MANAGEMENT_PRACTICE", "IRRIGATION", "GEOGRAPHY", "CLIMATE", "OTHER",
+                           # VM0042 Table 7 control-site similarity criteria
+                           "SOIL_TEXTURE", "SOIL_GROUP", "SLOPE_CLASS", "SOC_PERCENT", "ECOREGION", "PRECIPITATION_MM"]
+STRATUM_ROLES = ["PROJECT", "CONTROL"]
 EVIDENCE_TYPES = ["FIELD_PHOTO", "FIELD_NOTE", "PRACTICE_RECORD", "DOCUMENT", "GPS", "OBSERVATION"]
 EVIDENCE_ENTITIES = ["PROJECT", "FARM", "MONITORING_PERIOD", "SAMPLING_POINT", "FIELD_COLLECTION", "MONITORING_RECORD"]
 
@@ -134,14 +137,19 @@ class MonitoringPeriod(UUIDPrimaryKey, Base):
 
 
 class ProjectStratum(UUIDPrimaryKey, Base):
-    """A versioned stratum: a group of participating farms with shared characteristics. Geometry and area are the
-    SQL Server union of the member farms' current boundaries."""
+    """A versioned stratum: a group of farms with shared characteristics. Geometry and area are the SQL Server union of the
+    member farms' current boundaries. role PROJECT: participating farms. role CONTROL: a baseline control site (farms that keep
+    the baseline practices and are NOT project participants), linked to the PROJECT strata it represents."""
     __tablename__ = "project_strata"
     __table_args__ = (
         UniqueConstraint("record_id", "version"),
         CheckConstraint(in_check("status", ["DRAFT", "APPROVED", "SUPERSEDED", "RETIRED"]), name="status"),
         CheckConstraint(in_check("source", ["FARM_GROUPING", "IMPORTED"]), name="source"),
         CheckConstraint("criteria IS NULL OR ISJSON(criteria) = 1", name="criteria_json"),
+        CheckConstraint(in_check("role", STRATUM_ROLES), name="role"),
+        CheckConstraint("linked_stratum_record_ids IS NULL OR ISJSON(linked_stratum_record_ids) = 1", name="linked_json"),
+        CheckConstraint("(role = 'CONTROL' AND linked_stratum_record_ids IS NOT NULL) OR "
+                        "(role = 'PROJECT' AND linked_stratum_record_ids IS NULL)", name="links"),
         Index("uq_project_strata_current", "record_id", unique=True, mssql_where=text("is_current = 1")),
     )
     project_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("projects.id"), index=True)
@@ -155,6 +163,8 @@ class ProjectStratum(UUIDPrimaryKey, Base):
     geometry: Mapped[str | None] = mapped_column(Geography())
     area_hectares: Mapped[Decimal | None] = mapped_column(Numeric(14, 4))
     farm_boundary_ids: Mapped[str | None] = mapped_column(UnicodeText)  # JSON: exact farm boundary versions in the union
+    role: Mapped[str] = mapped_column(Unicode(10), default="PROJECT", server_default=text("'PROJECT'"))
+    linked_stratum_record_ids: Mapped[str | None] = mapped_column(UnicodeText)  # JSON: CONTROL only - project strata represented
     source: Mapped[str] = mapped_column(Unicode(15), default="FARM_GROUPING")
     status: Mapped[str] = mapped_column(Unicode(12), default="DRAFT")
     change_reason: Mapped[str | None] = mapped_column(Unicode(1000))
@@ -326,6 +336,8 @@ class FieldCollectionRecord(UUIDPrimaryKey, Base):
                         name="depth"),
         CheckConstraint("checklist IS NULL OR ISJSON(checklist) = 1", name="checklist_json"),
         CheckConstraint("field_rules IS NULL OR ISJSON(field_rules) = 1", name="field_rules_json"),
+        CheckConstraint("probe_diameter_mm IS NULL OR (probe_diameter_mm > 0 AND probe_diameter_mm <= 500)", name="probe_diameter"),
+        CheckConstraint("cores_count IS NULL OR cores_count BETWEEN 1 AND 200", name="cores_count"),
     )
     collection_code: Mapped[str] = mapped_column(Unicode(30), unique=True)
     sampling_point_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("sampling_points.id"), index=True)
@@ -347,6 +359,8 @@ class FieldCollectionRecord(UUIDPrimaryKey, Base):
     deviation_note: Mapped[str | None] = mapped_column(Unicode(1000))
     actual_depth_top_cm: Mapped[Decimal | None] = mapped_column(Numeric(6, 1))
     actual_depth_bottom_cm: Mapped[Decimal | None] = mapped_column(Numeric(6, 1))
+    probe_diameter_mm: Mapped[Decimal | None] = mapped_column(Numeric(6, 2))   # inside diameter of probe/auger (VM0042 Eq. 3: D)
+    cores_count: Mapped[int | None] = mapped_column(Integer)                    # cores composited into the sample (VM0042 Eq. 3: N)
     sample_quantity: Mapped[Decimal | None] = mapped_column(Numeric(10, 3))
     sample_unit: Mapped[str | None] = mapped_column(Unicode(20))
     observations: Mapped[str | None] = mapped_column(Unicode(2000))
