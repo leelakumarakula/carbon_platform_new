@@ -18,6 +18,10 @@ import type { GeoGeometry } from '../farms/farm.models';
 import type { LonLat } from './geo';
 import { GeoMap3d } from './geo-map-3d';
 
+export function prefersReducedMotion(): boolean {
+  return typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
 export interface MapLayer {
   geojson: GeoGeometry;
   color: string;
@@ -62,10 +66,10 @@ export interface MapPoint {
     .wrap { position: relative; }
     .map { width: 100%; border-radius: 8px; border: 1px solid var(--mat-sys-outline-variant); z-index: 0; }
     .hidden { display: none; }
-    .mode { position: absolute; top: 10px; right: 10px; z-index: 2; display: flex; border-radius: 6px; overflow: hidden;
+    .mode { position: absolute; top: 10px; right: 10px; z-index: 2; display: flex; border-radius: 10px; overflow: hidden;
       box-shadow: 0 1px 4px rgb(0 0 0 / 30%); }
-    .mode button { border: 0; padding: 6px 12px; background: #fff; color: #333; font: 600 12px/1 Roboto, sans-serif; cursor: pointer; }
-    .mode button.on { background: #2e7d32; color: #fff; }
+    .mode button { border: 0; padding: 7px 14px; background: #fff; color: var(--cp-forest); font: 600 12px/1 var(--cp-font); cursor: pointer; transition: background .2s, color .2s; }
+    .mode button.on { background: var(--cp-forest); color: #fff; }
     .hint { position: absolute; left: 50%; bottom: 12px; transform: translateX(-50%); z-index: 2; padding: 4px 10px; border-radius: 4px;
       background: rgb(0 0 0 / 65%); color: #fff; font: var(--mat-sys-body-small); pointer-events: none; }
   `,
@@ -142,21 +146,30 @@ export class GeoMap implements AfterViewInit, OnDestroy {
     if (!this.map) return;
     this.group.clearLayers();
     for (const l of layers) {
+      // Solid outlines trace themselves in (styles.scss `path.cp-shape`); dashed ones (overlaps, previews) keep their dash pattern.
       const shape = L.geoJSON(l.geojson as unknown as GeoJSON.GeoJsonObject, {
-        style: { color: l.color, weight: 2, dashArray: l.dashed ? '6 4' : undefined, fillOpacity: l.fillOpacity ?? 0.15 },
+        style: { color: l.color, weight: 2.5, dashArray: l.dashed ? '6 4' : undefined, fillOpacity: l.fillOpacity ?? 0.15,
+          className: l.dashed ? 'cp-shape-dashed' : 'cp-shape', lineJoin: 'round' },
       });
       if (l.label) shape.bindTooltip(l.label, { sticky: true });
       shape.addTo(this.group);
+      if (!l.dashed) shape.eachLayer((x) => (x as L.Path).getElement?.()?.setAttribute('pathLength', '1'));
     }
     for (const p of points) {
-      const m = L.circleMarker([p.lat, p.lon], { radius: 6, color: p.color ?? '#1565c0', weight: 2, fillOpacity: 0.8 });
-      if (p.label) m.bindTooltip(p.label);
+      // pulsing pin (CSS in styles.scss); the colour is passed as a custom property
+      const icon = L.divIcon({ className: '', iconSize: [14, 14], iconAnchor: [7, 7],
+        html: `<span class="cp-pin" style="--c:${(p.color ?? '#1565c0').replace(/[^#a-zA-Z0-9(),.%\s]/g, '')}"><i></i></span>` });
+      const m = L.marker([p.lat, p.lon], { icon, keyboard: false });
+      if (p.label) m.bindTooltip(p.label, { direction: 'top', offset: [0, -8] });
       m.addTo(this.group);
     }
     const key = JSON.stringify(layers.map((l) => l.geojson)) + JSON.stringify(points);
     const bounds = this.group.getBounds();
     if (key !== this.fittedFor && bounds.isValid()) {
-      this.map.fitBounds(bounds.pad(0.25), { maxZoom: 17, animate: false });
+      // First framing flies in from the overview; later changes (and hidden / zero-size maps) jump without animation.
+      const fly = this.fittedFor === '' && this.map.getSize().x > 0 && !prefersReducedMotion();
+      if (fly) this.map.flyToBounds(bounds.pad(0.25), { maxZoom: 17, duration: 1.2, easeLinearity: 0.2 });
+      else this.map.fitBounds(bounds.pad(0.25), { maxZoom: 17, animate: false });
       this.fittedFor = key;
     }
   }

@@ -108,9 +108,10 @@ interface ReceiptDraft { accepted: boolean; condition: string; seal: string; rea
     </mat-tab-group>
   `,
   styles: `
-    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 12px; }
-    .stat { display: flex; flex-direction: column; padding: 10px 14px; border-radius: 8px; background: var(--mat-sys-surface-container); font-size: 13px; }
-    .stat .n { font: var(--mat-sys-headline-small); }
+    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; margin-bottom: 18px; }
+    .stat { display: flex; flex-direction: column; gap: 4px; padding: 14px 18px; border-radius: var(--cp-radius); background: #fff;
+      border: 1px solid var(--cp-line); border-top: 3px solid var(--cp-lime); font-size: 13px; color: var(--cp-ink-2); }
+    .stat .n { font: 500 26px/1.15 var(--cp-font); color: var(--cp-forest); letter-spacing: -.01em; }
     .line { display: flex; gap: 8px; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--mat-sys-outline-variant); flex-wrap: wrap; }
     .grow { flex: 1; min-width: 240px; } .ship { border: 1px solid var(--mat-sys-outline-variant); border-radius: 8px; padding: 8px 12px; margin-bottom: 10px; }
     .item { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; padding: 4px 0; } input { padding: 4px; }

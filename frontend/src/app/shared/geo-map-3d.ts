@@ -19,6 +19,7 @@ import type { MapLayer, MapPoint } from './geo-map';
 
 /** MapLibre's worker and stylesheet are copied to /vendor/maplibre by angular.json (the bundler cannot locate the worker itself). */
 const VENDOR = 'vendor/maplibre/';
+const reducedMotion = () => typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 let cssRequested = false;
 
 function ensureCss(): void {
@@ -187,8 +188,16 @@ export class GeoMap3d implements AfterViewInit, OnDestroy {
     const key = JSON.stringify(layers.map((l) => l.geojson)) + JSON.stringify(points) + JSON.stringify(v);
     const b = boundsOf(layers.map((l) => l.geojson), [...points.map((p): LonLat => [p.lon, p.lat]), ...v]);
     if (b && key !== this.fittedFor) {
-      map.fitBounds(b, { padding: 60, maxZoom: 17, pitch: 60, bearing: -20, duration: 0 });
+      const first = this.fittedFor === '';
       this.fittedFor = key;
+      if (first && !reducedMotion()) {
+        // short entrance from straight above into the tilted view (orients the user; no continuous motion)
+        const cam = map.cameraForBounds(b, { padding: 60, maxZoom: 17, pitch: 60, bearing: -20 });
+        map.jumpTo({ center: cam?.center ?? map.getCenter(), zoom: Math.max(1, (cam?.zoom ?? 14) - 1.5), pitch: 0, bearing: 0 });
+        map.easeTo({ ...cam, pitch: 60, bearing: -20, duration: 1400, easing: (t) => 1 - (1 - t) ** 3 });
+      } else {
+        map.fitBounds(b, { padding: 60, maxZoom: 17, pitch: 60, bearing: -20, duration: 0 });
+      }
     }
   }
 }

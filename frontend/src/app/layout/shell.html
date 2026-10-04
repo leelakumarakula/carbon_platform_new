@@ -1,13 +1,15 @@
 <mat-sidenav-container class="shell">
   <mat-sidenav #drawer [mode]="isHandset() ? 'over' : 'side'" [opened]="!isHandset()" class="sidenav">
-    <div class="brand"><mat-icon>eco</mat-icon><span>Carbon Platform</span></div>
+    <a class="brand" routerLink="/dashboard" (click)="isHandset() && drawer.close()">
+      <span class="brand-text"><span class="brand-name">Carbon<b>Platform</b></span><span class="brand-tag">From soil to verified credit</span></span>
+    </a>
     <nav aria-label="Main">
       @for (section of nav(); track section.title) {
         <div class="nav-section">{{ section.title }}</div>
         <mat-nav-list>
           @for (item of section.items; track item.route) {
-            <a mat-list-item [routerLink]="item.route" routerLinkActive="active-link" #rla="routerLinkActive"
-               [activated]="rla.isActive" (click)="isHandset() && drawer.close()">
+            <a mat-list-item [routerLink]="item.route" routerLinkActive="active-link" #rla="routerLinkActive" class="nav-item"
+               [activated]="rla.isActive" [attr.aria-current]="rla.isActive ? 'page' : null" (click)="isHandset() && drawer.close()">
               <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
               <span matListItemTitle>{{ item.label }}</span>
             </a>
@@ -21,13 +23,14 @@
     <mat-toolbar class="topbar">
       @if (isHandset()) {
         <button mat-icon-button type="button" (click)="drawer.toggle()" aria-label="Toggle navigation"><mat-icon>menu</mat-icon></button>
+        <span class="mobile-brand">Carbon<b>Platform</b></span>
       }
       <span class="spacer"></span>
       @if (auth.isDemo()) {
         <span class="demo-flag" matTooltip="You are signed in with a DEMO account. Demo data is never mixed with real records.">DEMO</span>
       }
       <button mat-icon-button type="button" [matMenuTriggerFor]="notifMenu" (menuOpened)="openNotifications()" aria-label="Notifications"
-              matTooltip="Notifications">
+              matTooltip="Notifications" class="bell">
         <mat-icon [matBadge]="unread() || null" matBadgeSize="small" matBadgeColor="warn" aria-hidden="false">notifications</mat-icon>
       </button>
       <mat-menu #notifMenu="matMenu" xPosition="before" class="notif-menu">
@@ -45,10 +48,14 @@
           <div class="menu-head"><small>No notifications.</small></div>
         }
       </mat-menu>
-      <button mat-button type="button" [matMenuTriggerFor]="userMenu" class="user-button">
+      <span class="divider" aria-hidden="true"></span>
+      <button type="button" [matMenuTriggerFor]="userMenu" class="user-chip" aria-label="Account menu">
         <span class="avatar">{{ initials() }}</span>
-        <span class="user-name">{{ auth.user()?.full_name }}</span>
-        <mat-icon iconPositionEnd>expand_more</mat-icon>
+        <span class="who">
+          <span class="user-name">{{ auth.user()?.full_name }}</span>
+          <span class="user-role">{{ primaryRole() }}</span>
+        </span>
+        <mat-icon class="chev">expand_more</mat-icon>
       </button>
       <mat-menu #userMenu="matMenu" xPosition="before">
         <div class="menu-head" (click)="$event.stopPropagation()">
@@ -61,7 +68,7 @@
         <button mat-menu-item type="button" (click)="signOut()"><mat-icon>logout</mat-icon>Sign out</button>
       </mat-menu>
     </mat-toolbar>
-    <main class="content">
+    <main class="content cp-content">
       <router-outlet />
     </main>
   </mat-sidenav-content>

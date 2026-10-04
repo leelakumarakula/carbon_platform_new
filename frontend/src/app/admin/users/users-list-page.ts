@@ -18,6 +18,7 @@ import { P } from '../../core/auth/permissions';
 import { PageHeader } from '../../shared/page-header';
 import { PagedList } from '../../shared/paged-list';
 import { StateView } from '../../shared/state-view';
+import { label } from '../../farmer/farmer.models';
 import { StatusBadge } from '../../shared/status-badge';
 import { UsersApi } from '../admin.api';
 import { User, UserStatus } from '../admin.models';
@@ -36,13 +37,13 @@ import { User, UserStatus } from '../admin.models';
       <mat-form-field appearance="outline" subscriptSizing="dynamic">
         <mat-label>Search name, email or phone</mat-label>
         <input matInput formControlName="search" />
-        <mat-icon matSuffix>search</mat-icon>
+        <mat-icon matPrefix>search</mat-icon>
       </mat-form-field>
       <mat-form-field appearance="outline" subscriptSizing="dynamic">
         <mat-label>Status</mat-label>
         <mat-select formControlName="status">
           <mat-option [value]="null">Any</mat-option>
-          @for (s of statuses; track s) { <mat-option [value]="s">{{ s }}</mat-option> }
+          @for (s of statuses; track s) { <mat-option [value]="s">{{ label(s) }}</mat-option> }
         </mat-select>
       </mat-form-field>
       <mat-form-field appearance="outline" subscriptSizing="dynamic">
@@ -104,6 +105,7 @@ export class UsersListPage implements OnInit {
   protected readonly canManage = inject(AuthService).has(P.USERS_MANAGE);
 
   protected readonly columns = ['email', 'full_name', 'status', 'roles', 'orgs', 'last_login_at'];
+  protected readonly label = label;
   protected readonly statuses: UserStatus[] = ['ACTIVE', 'SUSPENDED', 'DEACTIVATED'];
   protected readonly filters = new FormGroup({
     search: new FormControl('', { nonNullable: true }),

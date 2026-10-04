@@ -44,6 +44,8 @@ export class Shell implements OnInit {
   protected readonly initials = computed(() =>
     (this.auth.user()?.full_name ?? '?').split(/\s+/).map((p) => p[0]).slice(0, 2).join('').toUpperCase(),
   );
+  /** First role, shown under the name in the top bar (the menu lists all of them). */
+  protected readonly primaryRole = computed(() => this.auth.user()?.roles?.[0]?.role_name ?? 'No role');
   protected readonly roleSummary = computed(() =>
     Array.from(new Set((this.auth.user()?.roles ?? []).map((r) => r.role_name))).join(', ') || 'No roles assigned',
   );

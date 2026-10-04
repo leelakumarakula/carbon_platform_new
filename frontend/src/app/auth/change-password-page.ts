@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
@@ -11,46 +10,52 @@ import { ApiError } from '../core/api/api.models';
 import { AuthService } from '../core/auth/auth.service';
 import { NotifyService } from '../core/notify.service';
 import { matchValidator, passwordPolicyValidator } from '../shared/forms';
+import { AuthLayout } from './auth-layout';
 
 @Component({
   selector: 'app-change-password-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatProgressBarModule],
+  imports: [ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatProgressBarModule, AuthLayout],
   template: `
-    <main class="auth-screen">
-      <mat-card class="auth-card" appearance="outlined">
-        @if (submitting()) { <mat-progress-bar mode="indeterminate" /> }
-        <mat-card-content>
-          <h1>Change your password</h1>
-          @if (auth.mustChangePassword()) {
-            <p class="notice">You signed in with a temporary password. Choose a new one to continue.</p>
-          }
-          <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
-            <mat-form-field appearance="outline" class="full">
-              <mat-label>Current password</mat-label>
-              <input matInput type="password" formControlName="current" autocomplete="current-password" />
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="full">
-              <mat-label>New password</mat-label>
-              <input matInput type="password" formControlName="next" autocomplete="new-password" />
-              <mat-hint>At least 12 characters, with letters and digits.</mat-hint>
-              @if (form.controls.next.hasError('policy')) { <mat-error>{{ form.controls.next.getError('policy') }}</mat-error> }
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="full">
-              <mat-label>Confirm new password</mat-label>
-              <input matInput type="password" formControlName="confirm" autocomplete="new-password" />
-            </mat-form-field>
-            @if (form.hasError('mismatch') && form.controls.confirm.touched) { <p class="form-error">The passwords do not match.</p> }
-            @if (error(); as e) { <p class="form-error" role="alert">{{ e }}</p> }
-            <div class="row-actions">
-              @if (!auth.mustChangePassword()) { <button mat-button type="button" (click)="cancel()">Cancel</button> }
-              <button mat-button type="button" (click)="signOut()">Sign out</button>
-              <button mat-flat-button type="submit" [disabled]="submitting()">Change password</button>
-            </div>
-          </form>
-        </mat-card-content>
-      </mat-card>
-    </main>
+    <app-auth-layout>
+      <h1>{{ auth.mustChangePassword() ? 'Set your password' : 'Change your password' }}</h1>
+      <p class="lead">
+        @if (auth.mustChangePassword()) { You signed in with a temporary password. Choose your own to continue. }
+        @else { Other sessions are signed out when you change it. }
+      </p>
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <mat-form-field appearance="outline" class="full">
+          <mat-label>Current password</mat-label>
+          <input matInput type="password" formControlName="current" autocomplete="current-password" />
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full">
+          <mat-label>New password</mat-label>
+          <input matInput type="password" formControlName="next" autocomplete="new-password" />
+          <mat-hint>At least 12 characters, with letters and digits.</mat-hint>
+          @if (form.controls.next.hasError('policy')) { <mat-error>{{ form.controls.next.getError('policy') }}</mat-error> }
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full">
+          <mat-label>Confirm new password</mat-label>
+          <input matInput type="password" formControlName="confirm" autocomplete="new-password" />
+        </mat-form-field>
+        @if (form.hasError('mismatch') && form.controls.confirm.touched) { <p class="form-error">The passwords do not match.</p> }
+        @if (error(); as e) { <p class="form-error" role="alert">{{ e }}</p> }
+        <button mat-flat-button class="full submit" type="submit" [disabled]="submitting()">Change password</button>
+        @if (submitting()) { <mat-progress-bar mode="indeterminate" class="bar" /> }
+        <div class="links">
+          @if (!auth.mustChangePassword()) { <button mat-button type="button" (click)="cancel()">Cancel</button> }
+          <button mat-button type="button" (click)="signOut()">Sign out</button>
+        </div>
+      </form>
+    </app-auth-layout>
+  `,
+  styles: `
+    h1 { margin: 0; font: 600 28px/1.2 var(--cp-font); color: var(--cp-navy); letter-spacing: -.015em; }
+    .lead { margin: 8px 0 26px; font: italic 15.5px/1.45 var(--cp-serif); color: var(--cp-maroon); }
+    .form-error { padding: 10px 12px; border-radius: 8px; background: #fdf0ee; border: 1px solid #f2cdc8; color: #8e1b1b; font-size: 13px; margin: 0 0 14px; }
+    .submit { height: 46px; font-size: 15px; margin-top: 4px; }
+    .bar { margin-top: 10px; border-radius: 4px; }
+    .links { display: flex; justify-content: center; gap: 4px; margin-top: 14px; }
   `,
 })
 export class ChangePasswordPage {

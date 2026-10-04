@@ -22,6 +22,7 @@ import { formatArea } from '../shared/geo';
 import { PageHeader } from '../shared/page-header';
 import { PagedList } from '../shared/paged-list';
 import { StateView } from '../shared/state-view';
+import { label } from '../farmer/farmer.models';
 import { StatusBadge } from '../shared/status-badge';
 import { FarmStatus, FarmSummary } from './farm.models';
 import { FarmsApi } from './farms.api';
@@ -46,13 +47,13 @@ function readView(): 'list' | 'map' {
     <form class="filters" [formGroup]="filters">
       <mat-form-field subscriptSizing="dynamic">
         <mat-label>Search code, name, village, farmer</mat-label>
-        <input matInput formControlName="search" /><mat-icon matSuffix>search</mat-icon>
+        <input matInput formControlName="search" /><mat-icon matPrefix>search</mat-icon>
       </mat-form-field>
       <mat-form-field subscriptSizing="dynamic">
         <mat-label>Status</mat-label>
         <mat-select formControlName="status">
           <mat-option [value]="null">Any</mat-option>
-          @for (s of statuses; track s) { <mat-option [value]="s">{{ s }}</mat-option> }
+          @for (s of statuses; track s) { <mat-option [value]="s">{{ label(s) }}</mat-option> }
         </mat-select>
       </mat-form-field>
       <mat-slide-toggle formControlName="overlaps">Open overlaps only</mat-slide-toggle>
@@ -70,7 +71,7 @@ function readView(): 'list' | 'map' {
       <div class="cards">
         @for (f of list.items(); track f.id) {
           <a class="card" [routerLink]="['/farms', f.id]">
-            <div class="row"><strong>{{ f.name }}</strong><app-status-badge [status]="badge(f.status)" [text]="f.status" /></div>
+            <div class="row"><strong>{{ f.name }}</strong><app-status-badge [status]="badge(f.status)" [text]="label(f.status)" /></div>
             <div class="muted small">{{ f.farm_code }} · {{ area(f.area_hectares) }} · {{ f.farmer_name }}</div>
             @if (f.open_overlaps) { <app-status-badge status="WARNING" [text]="f.open_overlaps + ' overlap flag(s)'" /> }
           </a>
@@ -101,7 +102,7 @@ function readView(): 'list' | 'map' {
           </ng-container>
           <ng-container matColumnDef="status">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
-            <td mat-cell *matCellDef="let f"><app-status-badge [status]="badge(f.status)" [text]="f.status" />
+            <td mat-cell *matCellDef="let f"><app-status-badge [status]="badge(f.status)" [text]="label(f.status)" />
               @if (f.open_overlaps) { <app-status-badge status="WARNING" [text]="f.open_overlaps + ' overlap'" /> }
               @if (f.environment === 'DEMO') { <app-status-badge status="DEMO" /> }</td>
           </ng-container>
@@ -132,6 +133,7 @@ export class FarmsListPage implements OnInit {
   /** Same rule as the /farms/new route guard. */
   private readonly auth = inject(AuthService);
   protected readonly canCreate = this.auth.has(P.FARMS_MANAGE) || this.auth.has(P.FARMERS_SELF);
+  protected readonly label = label;
   protected readonly statuses: FarmStatus[] = ['DRAFT', 'SUBMITTED', 'GIS_REVIEW', 'VERIFIED', 'REJECTED', 'INACTIVE'];
   protected readonly columns = ['farm_code', 'name', 'farmer', 'area_hectares', 'tenure', 'status'];
   protected readonly filters = new FormGroup({

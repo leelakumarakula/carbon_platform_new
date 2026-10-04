@@ -181,6 +181,9 @@ export const CONSENT_METHODS = ['PAPER_SIGNED', 'DIGITAL_SIGNATURE', 'VERBAL_REC
 export const FARMER_DOC_CATEGORIES = ['KYC_ID', 'CONSENT_FORM', 'AGREEMENT', 'BANK_PROOF', 'LAND_TITLE', 'LEASE_AGREEMENT',
   'LAND_RECORD', 'INPUT_RECORD', 'OTHER'] as const;
 
+const ACRONYMS = new Set(['KYC', 'GIS', 'QA', 'MRV', 'VVB', 'PDF', 'ID', 'OTP', 'SOC', 'NDVI', 'VCS', 'GPS', 'API', 'CSV']);
+
 export function label(code: string | null | undefined): string {
-  return (code ?? '').replace(/_/g, ' ').toLowerCase().replace(/^\w/, (c) => c.toUpperCase());
+  const words = (code ?? '').split('_').filter(Boolean);
+  return words.map((w, i) => ACRONYMS.has(w) ? w : i === 0 ? w.charAt(0) + w.slice(1).toLowerCase() : w.toLowerCase()).join(' ');
 }

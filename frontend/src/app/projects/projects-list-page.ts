@@ -36,7 +36,7 @@ import { ProjectsApi } from './projects.api';
     <form class="filters" [formGroup]="filters">
       <mat-form-field subscriptSizing="dynamic">
         <mat-label>Search code, name, region</mat-label>
-        <input matInput formControlName="search" /><mat-icon matSuffix>search</mat-icon>
+        <input matInput formControlName="search" /><mat-icon matPrefix>search</mat-icon>
       </mat-form-field>
       <mat-form-field subscriptSizing="dynamic">
         <mat-label>Status</mat-label>

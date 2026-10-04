@@ -45,11 +45,12 @@ import { MrvProjectSummary, mrvBadge } from './mrv.models';
     <p class="muted small">MRV ends at an approved dataset. Laboratory analysis, calculation, verification and issuance are later phases.</p>
   `,
   styles: `
-    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 16px; }
-    .stat { display: flex; flex-direction: column; padding: 12px 16px; border-radius: 8px; background: var(--mat-sys-surface-container); }
-    .stat .n { font: var(--mat-sys-headline-small); }
+    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; margin-bottom: 18px; }
+    .stat { display: flex; flex-direction: column; gap: 4px; padding: 14px 18px; border-radius: var(--cp-radius); background: #fff;
+      border: 1px solid var(--cp-line); border-top: 3px solid var(--cp-lime); font-size: 13px; color: var(--cp-ink-2); }
+    .stat .n { font: 500 26px/1.15 var(--cp-font); color: var(--cp-forest); letter-spacing: -.01em; }
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
-    .card { display: block; padding: 14px 16px; border-radius: 10px; border: 1px solid var(--mat-sys-outline-variant); color: inherit; text-decoration: none; }
+    .card { display: block; padding: 14px 16px; border-radius: 10px; border: 1px solid var(--cp-line); background: #fff; color: inherit; text-decoration: none; }
     .card:hover { border-color: var(--mat-sys-primary); }
     .head { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; } .name { margin: 4px 0; }
   `,

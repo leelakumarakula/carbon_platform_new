@@ -1,46 +1,102 @@
-<app-page-header [title]="'Welcome, ' + (auth.user()?.full_name ?? '')"
-                 subtitle="Agricultural carbon platform — farmer onboarding to credit retirement and payout." />
+<section class="hero">
+  <!-- carbon drawn down into the soil: drifting CO2 particles settle into layered soil bands under slowly flowing contours -->
+  <svg class="hero-art" viewBox="0 0 600 220" preserveAspectRatio="xMaxYMid slice" aria-hidden="true">
+    <g class="contours" fill="none" stroke="#ffffff" stroke-opacity=".08" stroke-width="1.2">
+      <path d="M0 120 C 120 80, 220 160, 340 110 S 520 50, 600 90" />
+      <path d="M40 70 C 150 30, 260 100, 380 60 S 540 10, 620 40" />
+      <path d="M80 26 C 180 -4, 300 56, 420 26 S 560 -14, 640 6" />
+    </g>
+    <rect x="0" y="176" width="600" height="14" fill="#ffffff" fill-opacity=".05" />
+    <rect x="0" y="190" width="600" height="14" fill="#ffffff" fill-opacity=".08" />
+    <rect x="0" y="204" width="600" height="16" fill="#8fb339" fill-opacity=".16" />
+    <g class="sprouts">
+      @for (x of sprouts; track x) {
+        <g class="sprout">
+          <path [attr.d]="'M' + x + ' 177 V158'" stroke="#b3cd6b" stroke-width="2" stroke-linecap="round" />
+          <path [attr.d]="'M' + x + ' 166 c-3 -9 -11 -11 -16 -10 c1 7 8 12 16 10 z'" fill="#8fb339" />
+          <path [attr.d]="'M' + x + ' 161 c3 -9 11 -12 16 -11 c-1 7 -8 13 -16 11 z'" fill="#b3cd6b" />
+        </g>
+      }
+    </g>
+    <g class="co2" fill="#d9ead0">
+      @for (pt of particles; track $index) {
+        <circle [attr.cx]="pt.x" cy="0" [attr.r]="pt.r" [style.animation-duration]="pt.d + 's'" [style.animation-delay]="pt.delay + 's'" />
+      }
+    </g>
+  </svg>
+  <div class="hero-text">
+    <span class="eyebrow">{{ today }}</span>
+    <h1>Welcome, {{ firstName() }}</h1>
+    <p class="tag">Here is where your carbon programme stands today.</p>
+    @if (auth.user()?.roles?.length) {
+      <div class="roles">
+        @for (g of auth.user()!.roles; track g.id) {
+          <span class="role"><mat-icon inline>badge</mat-icon>{{ g.role_name }}<small>{{ g.organization_name ?? 'Platform-wide' }}</small></span>
+        }
+      </div>
+    } @else {
+      <p class="no-roles">You have no roles yet. A Platform Admin can grant them.</p>
+    }
+  </div>
+</section>
 
 @if (kpis().length) {
   <section class="kpis" aria-label="Key figures">
     @for (k of kpis(); track k.label) {
       <a class="kpi" [routerLink]="k.link">
-        <mat-icon>{{ k.icon }}</mat-icon>
-        <div>
-          <div class="value">{{ k.value ?? '—' }}</div>
-          <div class="label">{{ k.label }}</div>
-        </div>
+        <span class="eyebrow">{{ k.label }}</span>
+        <span class="value"><app-count-up [value]="k.value" /></span>
+        <span class="lime-rule"></span>
+        <span class="caption">{{ k.caption }}</span>
+        <mat-icon class="kpi-icon">{{ k.icon }}</mat-icon>
       </a>
     }
   </section>
 }
 
-<section class="grid">
-  <mat-card appearance="outlined">
-    <mat-card-header><mat-card-title>Your access</mat-card-title></mat-card-header>
-    <mat-card-content>
-      @if (auth.user()?.roles?.length) {
-        <ul class="grants">
-          @for (g of auth.user()!.roles; track g.id) {
-            <li>
-              <span>{{ g.role_name }}</span>
-              <span class="muted">{{ g.organization_name ?? 'Platform-wide' }}</span>
-            </li>
-          }
-        </ul>
-      } @else {
-        <p class="muted">You have no roles yet. A Platform Admin can grant them.</p>
+<section class="journey" aria-label="Carbon project lifecycle">
+  <div class="journey-head">
+    <div>
+      <h2>Project lifecycle</h2>
+      <p class="sub">From a real farm to a verified credit and the farmer's payout — every step auditable.</p>
+    </div>
+    <span class="legend"><span class="key open"></span>Available to you<span class="key"></span>Other roles</span>
+  </div>
+  <div class="flow-scroll">
+    <ol class="flow">
+      @for (ph of phases; track ph.name) {
+        <li class="phase" aria-hidden="true" [style.grid-column]="ph.start + ' / span ' + ph.span"><span>{{ ph.name }}</span></li>
       }
-    </mat-card-content>
-  </mat-card>
+      @for (s of stages; track s.label; let i = $index) {
+        <li class="stop" [style.grid-column]="i + 1" [style.--i]="i">
+          @if (canOpen(s.route)) {
+            <a [routerLink]="s.route" class="step open">
+              <span class="dot"><mat-icon>{{ s.icon }}</mat-icon></span>
+              <span class="num">{{ (i + 1).toString().padStart(2, '0') }}</span>
+              <span class="label">{{ s.label }}</span>
+            </a>
+          } @else {
+            <span class="step" title="Not available for your role">
+              <span class="dot"><mat-icon>{{ s.icon }}</mat-icon></span>
+              <span class="num">{{ (i + 1).toString().padStart(2, '0') }}</span>
+              <span class="label">{{ s.label }}</span>
+            </span>
+          }
+        </li>
+      }
+    </ol>
+  </div>
+</section>
 
+<section class="grid">
   @if (shortcuts().length) {
-    <mat-card appearance="outlined">
+    <mat-card appearance="outlined" class="span">
       <mat-card-header><mat-card-title>Go to</mat-card-title></mat-card-header>
       <mat-card-content>
         <div class="links">
-          @for (s of shortcuts(); track s.route) {
-            <a [routerLink]="s.route"><mat-icon inline>{{ s.icon }}</mat-icon>{{ s.label }}</a>
+          @for (s of shortcuts(); track s.route + s.label) {
+            <a [routerLink]="s.route" class="tile"><span class="tile-ico"><mat-icon>{{ s.icon }}</mat-icon></span><span>{{ s.label }}</span>
+              <mat-icon class="go">arrow_forward</mat-icon></a>
           }
         </div>
       </mat-card-content>
@@ -55,12 +111,15 @@
           <ul class="activity">
             @for (a of items; track a.id) {
               <li>
-                <app-status-badge [status]="a.action" [text]="a.action" />
-                <div><small>{{ a.user_email ?? 'system' }} · {{ a.occurred_at | date: 'medium' }}</small></div>
+                <span class="node"></span>
+                <div>
+                  <strong>{{ human(a.action) }}</strong>
+                  <small>{{ a.user_email ?? 'system' }} · {{ a.occurred_at | date: 'medium' }}</small>
+                </div>
               </li>
             }
           </ul>
-          <a routerLink="/admin/audit">Open the audit log</a>
+          <a routerLink="/admin/audit" class="more">Open the audit log <mat-icon inline>arrow_forward</mat-icon></a>
         } @else {
           <p class="muted">No activity yet.</p>
         }

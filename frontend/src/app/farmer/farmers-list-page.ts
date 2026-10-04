@@ -20,7 +20,7 @@ import { PageHeader } from '../shared/page-header';
 import { PagedList } from '../shared/paged-list';
 import { StateView } from '../shared/state-view';
 import { StatusBadge } from '../shared/status-badge';
-import { FarmerStatus, FarmerSummary } from './farmer.models';
+import { FarmerStatus, FarmerSummary, label } from './farmer.models';
 import { FarmersApi } from './farmers.api';
 
 @Component({
@@ -36,13 +36,13 @@ import { FarmersApi } from './farmers.api';
       <mat-form-field subscriptSizing="dynamic">
         <mat-label>Search name, code, village, district</mat-label>
         <input matInput formControlName="search" />
-        <mat-icon matSuffix>search</mat-icon>
+        <mat-icon matPrefix>search</mat-icon>
       </mat-form-field>
       <mat-form-field subscriptSizing="dynamic">
         <mat-label>Status</mat-label>
         <mat-select formControlName="status">
           <mat-option [value]="null">Any</mat-option>
-          @for (s of statuses; track s) { <mat-option [value]="s">{{ s }}</mat-option> }
+          @for (s of statuses; track s) { <mat-option [value]="s">{{ label(s) }}</mat-option> }
         </mat-select>
       </mat-form-field>
     </form>
@@ -109,6 +109,7 @@ export class FarmersListPage implements OnInit {
   protected readonly canCreate = inject(AuthService).has(P.FARMERS_MANAGE);
   protected readonly handset = toSignal(inject(BreakpointObserver).observe('(max-width: 700px)').pipe(map((r) => r.matches)),
     { initialValue: false });
+  protected readonly label = label;
   protected readonly statuses: FarmerStatus[] = ['DRAFT', 'REGISTERED', 'KYC_PENDING', 'KYC_VERIFIED', 'ACTIVE', 'SUSPENDED'];
   protected readonly columns = ['farmer_code', 'full_name', 'village', 'org', 'farms', 'status'];
   protected readonly filters = new FormGroup({
