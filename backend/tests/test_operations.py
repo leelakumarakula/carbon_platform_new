@@ -149,7 +149,7 @@ def test_drill_refuses_without_disk_headroom(monkeypatch: pytest.MonkeyPatch) ->
 def test_manage_verify_restore_exit_codes(tmp_path: Any) -> None:
     import subprocess
     import sys
-    env = {**os.environ, "DATABASE_URL": "", "SQL_SERVER_DATABASE": TEST_DB}
+    env = {**os.environ, "SQL_SERVER_DATABASE": TEST_DB}   # conftest already points DATABASE_URL (if any) at TEST_DB
     report = tmp_path / "r.json"
     ok = subprocess.run([sys.executable, "manage.py", "verify-restore", "--database", TEST_DB, "--report", str(report)],  # noqa: S603
                         cwd=os.path.dirname(os.path.dirname(__file__)), env=env, capture_output=True, text=True, timeout=300)

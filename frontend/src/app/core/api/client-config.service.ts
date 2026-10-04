@@ -10,6 +10,15 @@ export interface MapConfig {
   attribution: string;
   max_zoom: number;
   subdomains: string[];
+  /** Elevation tiles for the 3D view (MAP_TERRAIN_* settings); absent = 3D without relief. */
+  terrain?: TerrainConfig | null;
+}
+
+export interface TerrainConfig {
+  tile_url: string;
+  encoding: 'terrarium' | 'mapbox';
+  max_zoom: number;
+  attribution: string;
 }
 
 export interface ClientConfig {

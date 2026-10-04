@@ -46,7 +46,7 @@ class Settings(BaseSettings):
     REFRESH_COOKIE_NAME: str = "cp_refresh"
     REFRESH_COOKIE_SECURE: bool = False
 
-    # Database: either a full DATABASE_URL or the SQL_SERVER_* parts.
+    # Database: either a full DATABASE_URL (split into the parts below by _split_database_url) or the SQL_SERVER_* parts.
     DATABASE_URL: str | None = None
     SQL_SERVER_HOST: str = "localhost"
     SQL_SERVER_PORT: int | None = 1433  # empty = let the driver choose (e.g. shared memory to a local instance)
@@ -132,6 +132,13 @@ class Settings(BaseSettings):
     MAP_TILE_ATTRIBUTION: str = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     MAP_TILE_MAX_ZOOM: int = 19
     MAP_TILE_SUBDOMAINS: str = ""
+    # 3D view terrain (elevation) tiles for the map components — display only, never used for any area or business rule.
+    # Default: the public AWS "Terrain Tiles" dataset (terrarium encoding), for development only; production sets a licensed /
+    # self-hosted DEM source. Empty URL = the 3D view still tilts / rotates, but without relief.
+    MAP_TERRAIN_URL: str = "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png"
+    MAP_TERRAIN_ENCODING: str = "terrarium"     # terrarium | mapbox (how elevation is packed in the PNG)
+    MAP_TERRAIN_MAX_ZOOM: int = 15
+    MAP_TERRAIN_ATTRIBUTION: str = 'Elevation: <a href="https://registry.opendata.aws/terrain-tiles/">AWS Terrain Tiles</a>'
 
     # MRV / sampling (technical tolerances, not methodology rules)
     # Field-collection PLATFORM DEFAULTS (decisions S1, S2) — not methodology requirements. A methodology version's SAMPLING
@@ -223,6 +230,28 @@ class Settings(BaseSettings):
             return init_settings, env_settings, file_secret_settings
         return init_settings, env_settings, dotenv_settings, file_secret_settings
 
+    @model_validator(mode="before")
+    @classmethod
+    def _split_database_url(cls, data: Any) -> Any:
+        """DATABASE_URL wins: it is split into the SQL_SERVER_* parts so create-db, `master` connections, backups / drills and the
+        `_test` database switch keep working from one URL. No user in the URL = Windows authentication."""
+        raw = data.get("DATABASE_URL") if isinstance(data, dict) else None
+        if not raw:
+            return data
+        from sqlalchemy.engine import make_url
+        u = make_url(raw)
+        if not u.drivername.startswith("mssql") or not u.host or not u.database:
+            raise ValueError("DATABASE_URL must look like mssql+pyodbc://[user:password]@host[\\instance][:port]/database?driver=...")
+        q = {k.lower(): v for k, v in u.query.items() if isinstance(v, str)}
+        driver = q.get("driver", "ODBC Driver 18 for SQL Server")
+        if re.fullmatch(r"ODBC Driver \d+", driver.strip(), re.IGNORECASE):   # "ODBC Driver 18" -> the installed driver's full name
+            driver = f"{driver.strip()} for SQL Server"
+        trusted = not u.username or q.get("trusted_connection", "").lower() == "yes"
+        return {**data, "SQL_SERVER_HOST": u.host, "SQL_SERVER_PORT": u.port, "SQL_SERVER_DATABASE": u.database,
+                "SQL_SERVER_USERNAME": None if trusted else u.username, "SQL_SERVER_PASSWORD": None if trusted else u.password,
+                "SQL_SERVER_DRIVER": driver, "SQL_SERVER_TRUSTED_CONNECTION": trusted,
+                "SQL_SERVER_TRUST_SERVER_CERTIFICATE": q.get("trustservercertificate", "yes").lower() == "yes"}
+
     @field_validator("SQL_SERVER_PORT", mode="before")
     @classmethod
     def _empty_port(cls, v: object) -> object:
@@ -296,6 +325,8 @@ class Settings(BaseSettings):
             if net.prefixlen == 0:
                 raise ValueError("TRUSTED_PROXIES must not trust every address (0.0.0.0/0 or ::/0) (D21)")
         _validate_rotation_keys(self.DATA_ENCRYPTION_KEY, self.DATA_ENCRYPTION_PREVIOUS_KEYS, self.JWT_KEY_ID, self.JWT_PREVIOUS_KEYS)
+        if self.MAP_TERRAIN_ENCODING not in ("terrarium", "mapbox"):
+            raise ValueError("MAP_TERRAIN_ENCODING must be 'terrarium' or 'mapbox'")
         if self.LOG_FORMAT not in ("json", "text"):
             raise ValueError("LOG_FORMAT must be 'json' or 'text'")
         if self.NOTIFICATION_EXTERNAL_DELIVERY != "disabled":
@@ -338,8 +369,6 @@ class Settings(BaseSettings):
         return self.APP_ENV.lower() == "production"
 
     def database_url(self, database: str | None = None) -> str | URL:
-        if self.DATABASE_URL and database is None:
-            return self.DATABASE_URL
         query = {"driver": self.SQL_SERVER_DRIVER}
         if self.SQL_SERVER_TRUST_SERVER_CERTIFICATE:
             query["TrustServerCertificate"] = "yes"

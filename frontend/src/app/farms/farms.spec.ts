@@ -8,7 +8,7 @@ import { AuthService } from '../core/auth/auth.service';
 import { permissionGuard } from '../core/auth/guards';
 import { NAVIGATION, visibleNavigation } from '../core/navigation/nav.config';
 import { ReadinessPanel } from '../shared/readiness-panel';
-import { formatArea, isKml, polygonFromVertices } from '../shared/geo';
+import { formatArea, isKml, parseLatLonLines, polygonFromVertices, validLatLon } from '../shared/geo';
 import { HISTORY_FIELDS, changedFields, toPayload } from './panels/history-fields';
 
 describe('geometry helpers', () => {
@@ -25,6 +25,18 @@ describe('geometry helpers', () => {
     expect(isKml('plot.kml', '')).toBe(true);
     expect(isKml('plot.txt', '<?xml version="1.0"?>\n<kml xmlns="x">')).toBe(true);
     expect(isKml('plot.geojson', '{"type":"Polygon"}')).toBe(false);
+  });
+
+  it('parses typed latitude / longitude corners into (lon, lat) and reports bad lines', () => {
+    const ok = parseLatLonLines('20.0063, 73.7910\n\n20.0063;73.7925\n20.0050\t73.7925\n 20.005 73.791 ');
+    expect(ok.errors).toEqual([]);
+    expect(ok.points).toEqual([[73.791, 20.0063], [73.7925, 20.0063], [73.7925, 20.005], [73.791, 20.005]]);
+    const bad = parseLatLonLines('20.0, 73.7\n91, 73.7\n20.0\nabc, 1');
+    expect(bad.points).toEqual([[73.7, 20.0]]);
+    expect(bad.errors.map((e) => e.slice(0, 7))).toEqual(['Line 2:', 'Line 3:', 'Line 4:']);
+    expect(validLatLon(-90, 180)).toBe(true);
+    expect(validLatLon(20, 181)).toBe(false);
+    expect(validLatLon(Number.NaN, 73)).toBe(false);
   });
 });
 

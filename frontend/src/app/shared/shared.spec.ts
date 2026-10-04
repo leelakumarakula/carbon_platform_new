@@ -4,6 +4,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 import { ApiError } from '../core/api/api.models';
 import { toParams } from '../core/api/api.service';
+import { fieldSummary } from '../core/notify.service';
 import { applyServerErrors, passwordPolicyProblem } from './forms';
 import { generateTemporaryPassword } from './password';
 import { ReasonDialog } from './reason-dialog';
@@ -67,5 +68,15 @@ describe('ReasonDialog', () => {
     c.form.controls['reason'].setValue('  left the company  ');
     c.submit();
     expect(close).toHaveBeenCalledWith({ reason: 'left the company', password: undefined });
+  });
+});
+
+describe('error notification field summary', () => {
+  it('names the refused fields of a 422 and stays empty otherwise', () => {
+    const e = new ApiError(422, 'VALIDATION_FAILED', 'The submitted data is invalid.', {
+      errors: [{ field: 'actual_depth_top_cm', message: 'Decimal input should have no more than 1 decimal place' }],
+    });
+    expect(fieldSummary(e)).toBe(' — Actual depth top cm: Decimal input should have no more than 1 decimal place');
+    expect(fieldSummary(new ApiError(409, 'CONFLICT', 'No.'))).toBe('');
   });
 });

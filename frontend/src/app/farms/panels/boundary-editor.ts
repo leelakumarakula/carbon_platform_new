@@ -1,24 +1,28 @@
-import { DatePipe } from '@angular/common';
+import { DatePipe, DecimalPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, input, output, signal } from '@angular/core';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { NotifyService } from '../../core/notify.service';
 import { GeoMap, MapLayer } from '../../shared/geo-map';
-import { LonLat, formatArea, isKml, polygonFromVertices } from '../../shared/geo';
+import { LonLat, formatArea, isKml, parseLatLonLines, polygonFromVertices, validLatLon } from '../../shared/geo';
 import { runAction } from '../../shared/run-action';
 import { Boundary, Farm, GeoGeometry, GeometryReport, Overlap } from '../farm.models';
 import { BoundarySaved, FarmsApi } from '../farms.api';
 
 /**
- * Draw (tap/click corners), walk with GPS, or upload GeoJSON/KML. Every candidate is validated by SQL Server
- * (validity, orientation, area) before it can be saved; saving creates a new boundary version.
+ * Draw (tap/click corners), type / paste latitude-longitude corners, walk with GPS, or upload GeoJSON/KML. Every candidate is
+ * validated by SQL Server (validity, orientation, area) before it can be saved; saving creates a new boundary version.
  */
 @Component({
   selector: 'app-boundary-editor',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DatePipe, MatButtonModule, MatIconModule, MatTooltipModule, GeoMap],
+  imports: [DatePipe, DecimalPipe, ReactiveFormsModule, MatButtonModule, MatFormFieldModule, MatIconModule, MatInputModule, MatTooltipModule,
+    GeoMap],
   template: `
     <div class="tab-body">
       @if (editable()) {
@@ -32,6 +36,32 @@ import { BoundarySaved, FarmsApi } from '../farms.api';
           <button mat-stroked-button type="button" (click)="file.click()"><mat-icon>upload_file</mat-icon> GeoJSON / KML</button>
           <button mat-flat-button type="button" (click)="validate()" [disabled]="busy() || (!candidate() && !uploaded())">Check boundary</button>
         </div>
+        <div class="coords">
+          <span class="muted small">Or enter corners as latitude / longitude (decimal degrees, WGS84), in order around the field.</span>
+          <div class="coord-row">
+            <mat-form-field subscriptSizing="dynamic"><mat-label>Latitude</mat-label>
+              <input matInput type="number" step="any" placeholder="20.0063" [formControl]="lat" data-testid="corner-lat" /></mat-form-field>
+            <mat-form-field subscriptSizing="dynamic"><mat-label>Longitude</mat-label>
+              <input matInput type="number" step="any" placeholder="73.7910" [formControl]="lon" (keyup.enter)="addTyped()" data-testid="corner-lon" />
+            </mat-form-field>
+            <button mat-stroked-button type="button" (click)="addTyped()" data-testid="add-corner"><mat-icon>add_location</mat-icon> Add corner</button>
+          </div>
+          <mat-form-field subscriptSizing="dynamic" class="paste"><mat-label>Paste several corners — one "latitude, longitude" per line</mat-label>
+            <textarea matInput rows="3" [formControl]="pasted" placeholder="20.0063, 73.7910&#10;20.0063, 73.7925&#10;20.0050, 73.7925" data-testid="corner-paste"></textarea>
+          </mat-form-field>
+          <div><button mat-stroked-button type="button" (click)="addPasted()" [disabled]="!pasted.value.trim()" data-testid="add-pasted">
+            <mat-icon>playlist_add</mat-icon> Add these corners</button></div>
+        </div>
+        @if (vertices().length) {
+          <div class="corners" data-testid="corners">
+            <span class="muted small">{{ vertices().length }} corner(s){{ vertices().length < 3 ? ' — at least 3 are needed' : '' }}</span>
+            @for (v of vertices(); track $index) {
+              <span class="corner">{{ $index + 1 }}. {{ v[1] | number: '1.4-7' }}, {{ v[0] | number: '1.4-7' }}
+                <button mat-icon-button type="button" (click)="remove($index)" [attr.aria-label]="'Remove corner ' + ($index + 1)"><mat-icon>close</mat-icon></button>
+              </span>
+            }
+          </div>
+        }
       } @else {
         <p class="muted">The boundary can only be changed while the farm is a DRAFT. Re-open the farm to correct it.</p>
       }
@@ -63,6 +93,11 @@ import { BoundarySaved, FarmsApi } from '../farms.api';
     h3 { font: var(--mat-sys-title-medium); margin: 20px 0 8px; }
     .line { display: flex; gap: 12px; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--mat-sys-outline-variant); }
     .grow { flex: 1; } .current { color: #1b5e20; font-weight: 600; }
+    .coords { display: flex; flex-direction: column; gap: 8px; margin-bottom: 8px; }
+    .coord-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .paste { width: 100%; max-width: 640px; }
+    .corners { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: center; margin-bottom: 8px; }
+    .corner { display: inline-flex; align-items: center; font-variant-numeric: tabular-nums; }
   `,
 })
 export class BoundaryEditor implements OnInit {
@@ -78,6 +113,10 @@ export class BoundaryEditor implements OnInit {
   protected readonly versions = signal<Boundary[]>([]);
   protected readonly busy = signal(false);
   protected readonly usedGps = signal(false);
+  protected readonly typed = signal(false);
+  protected readonly lat = new FormControl<number | null>(null);
+  protected readonly lon = new FormControl<number | null>(null);
+  protected readonly pasted = new FormControl('', { nonNullable: true });
   protected readonly area = formatArea;
   protected readonly editable = computed(() => this.farm().can_manage && this.farm().status === 'DRAFT');
   protected readonly candidate = computed<GeoGeometry | null>(() => polygonFromVertices(this.vertices()));
@@ -105,6 +144,38 @@ export class BoundaryEditor implements OnInit {
     this.vertices.update((v) => [...v, [p.lon, p.lat]]);
   }
 
+  addTyped(): void {
+    const lat = Number(this.lat.value);
+    const lon = Number(this.lon.value);
+    if (this.lat.value === null || this.lon.value === null || !validLatLon(lat, lon)) {
+      this.notify.error(new Error('Enter a latitude between −90 and 90 and a longitude between −180 and 180 (decimal degrees).'));
+      return;
+    }
+    this.typed.set(true);
+    this.add({ lat, lon });
+    this.lat.reset();
+    this.lon.reset();
+  }
+
+  addPasted(): void {
+    const { points, errors } = parseLatLonLines(this.pasted.value);
+    if (errors.length) {   // nothing is added until every line is usable
+      this.notify.error(new Error(errors.slice(0, 3).join(' ') + (errors.length > 3 ? ` (+${errors.length - 3} more)` : '')));
+      return;
+    }
+    if (!this.editable() || !points.length) return;
+    this.typed.set(true);
+    this.uploaded.set(null);
+    this.report.set(null);
+    this.vertices.update((v) => [...v, ...points]);
+    this.pasted.reset();
+  }
+
+  remove(index: number): void {
+    this.report.set(null);
+    this.vertices.update((v) => v.filter((_, i) => i !== index));
+  }
+
   undo(): void {
     this.report.set(null);
     this.vertices.update((v) => v.slice(0, -1));
@@ -115,6 +186,7 @@ export class BoundaryEditor implements OnInit {
     this.uploaded.set(null);
     this.report.set(null);
     this.usedGps.set(false);
+    this.typed.set(false);
   }
 
   gps(): void {
@@ -164,7 +236,8 @@ export class BoundaryEditor implements OnInit {
     const up = this.uploaded();
     const id = this.farm().id;
     const call = up ? this.api.uploadBoundary(id, up.file)
-      : this.api.saveBoundary(id, { geojson: this.candidate()!, source: this.usedGps() ? 'GPS_WALK' : 'DRAWN' });
+      // typed coordinates come from a survey / handheld GPS reading, so they are recorded as SURVEY
+      : this.api.saveBoundary(id, { geojson: this.candidate()!, source: this.usedGps() ? 'GPS_WALK' : this.typed() ? 'SURVEY' : 'DRAWN' });
     runAction(call, this.busy, this.notify, 'Boundary saved as a new version.', (res: BoundarySaved) => {
       this.clear();
       this.saved.emit(res.farm);

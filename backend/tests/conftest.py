@@ -13,8 +13,23 @@ from dataclasses import dataclass, field
 import pytest
 
 os.environ["APP_ENV"] = "test"
-os.environ["SQL_SERVER_DATABASE"] = os.environ.get("TEST_SQL_SERVER_DATABASE", "carbon_platform_test")
-os.environ["DATABASE_URL"] = ""
+
+
+def _test_database_url() -> str:
+    """Same server as DATABASE_URL (environment or backend/.env), database switched to <name>_test (or TEST_SQL_SERVER_DATABASE)."""
+    from dotenv import dotenv_values
+    from sqlalchemy.engine import make_url
+    raw = os.environ.get("DATABASE_URL") or dotenv_values(os.path.join(os.path.dirname(__file__), "..", ".env")).get("DATABASE_URL")
+    if not raw:
+        return ""
+    u = make_url(raw)
+    name = os.environ.get("TEST_SQL_SERVER_DATABASE") or f"{u.database}_test"
+    return u.set(database=name).render_as_string(hide_password=False)
+
+
+os.environ["DATABASE_URL"] = _test_database_url()
+if not os.environ["DATABASE_URL"]:
+    os.environ["SQL_SERVER_DATABASE"] = os.environ.get("TEST_SQL_SERVER_DATABASE", "carbon_platform_test")
 os.environ["LOGIN_RATE_LIMIT_PER_MINUTE"] = "1000"
 _STORAGE = tempfile.mkdtemp(prefix="cp-test-storage-")
 os.environ["LOCAL_STORAGE_ROOT"] = _STORAGE

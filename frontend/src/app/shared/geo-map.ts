@@ -8,6 +8,7 @@ import {
   inject,
   input,
   output,
+  signal,
   viewChild,
 } from '@angular/core';
 import * as L from 'leaflet';
@@ -15,6 +16,7 @@ import * as L from 'leaflet';
 import { ClientConfigService, MapConfig } from '../core/api/client-config.service';
 import type { GeoGeometry } from '../farms/farm.models';
 import type { LonLat } from './geo';
+import { GeoMap3d } from './geo-map-3d';
 
 export interface MapLayer {
   geojson: GeoGeometry;
@@ -31,12 +33,42 @@ export interface MapPoint {
   color?: string;
 }
 
-/** Reusable map (spec §28 "reusable map components"). Display-only unless the parent listens to mapClick. */
+/**
+ * Reusable map (spec §28 "reusable map components"). Display-only unless the parent listens to mapClick.
+ * 2D (Leaflet) is the working view: drawing and clicks happen there. The 3D toggle opens a view-only MapLibre view with terrain
+ * (GeoMap3d, loaded on first use); the 2D map is kept alive underneath so nothing is lost when switching back.
+ */
 @Component({
   selector: 'app-geo-map',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `<div #host class="map" [style.height]="height()" role="region" aria-label="Map"></div>`,
-  styles: `.map { width: 100%; border-radius: 8px; border: 1px solid var(--mat-sys-outline-variant); z-index: 0; }`,
+  imports: [GeoMap3d],
+  template: `
+    <div class="wrap">
+      <div #host class="map" [class.hidden]="mode() === '3d'" [style.height]="height()" role="region" aria-label="Map"></div>
+      @if (mode() === '3d') {
+        <app-geo-map-3d [layers]="layers()" [points]="points()" [drawing]="drawing()" [height]="height()" [center]="center()" />
+        @if (drawing() !== null) { <div class="hint">3D is view-only — switch to 2D to add or change corners.</div> }
+      }
+      @if (allow3d()) {
+        <div class="mode" role="group" aria-label="Map view">
+          <button type="button" [class.on]="mode() === '2d'" [attr.aria-pressed]="mode() === '2d'" (click)="setMode('2d')">2D</button>
+          <button type="button" [class.on]="mode() === '3d'" [attr.aria-pressed]="mode() === '3d'" (click)="setMode('3d')"
+            data-testid="map-3d">3D</button>
+        </div>
+      }
+    </div>
+  `,
+  styles: `
+    .wrap { position: relative; }
+    .map { width: 100%; border-radius: 8px; border: 1px solid var(--mat-sys-outline-variant); z-index: 0; }
+    .hidden { display: none; }
+    .mode { position: absolute; top: 10px; right: 10px; z-index: 2; display: flex; border-radius: 6px; overflow: hidden;
+      box-shadow: 0 1px 4px rgb(0 0 0 / 30%); }
+    .mode button { border: 0; padding: 6px 12px; background: #fff; color: #333; font: 600 12px/1 Roboto, sans-serif; cursor: pointer; }
+    .mode button.on { background: #2e7d32; color: #fff; }
+    .hint { position: absolute; left: 50%; bottom: 12px; transform: translateX(-50%); z-index: 2; padding: 4px 10px; border-radius: 4px;
+      background: rgb(0 0 0 / 65%); color: #fff; font: var(--mat-sys-body-small); pointer-events: none; }
+  `,
 })
 export class GeoMap implements AfterViewInit, OnDestroy {
   readonly layers = input<MapLayer[]>([]);
@@ -44,7 +76,10 @@ export class GeoMap implements AfterViewInit, OnDestroy {
   readonly drawing = input<LonLat[] | null>(null);
   readonly height = input('360px');
   readonly center = input<[number, number]>([20.0, 73.8]); // lat, lon
+  /** Offer the 2D / 3D switch (on by default). */
+  readonly allow3d = input(true);
   readonly mapClick = output<{ lat: number; lon: number }>();
+  protected readonly mode = signal<'2d' | '3d'>('2d');
 
   private readonly host = viewChild.required<ElementRef<HTMLDivElement>>('host');
   private readonly clientConfig = inject(ClientConfigService);
@@ -81,6 +116,18 @@ export class GeoMap implements AfterViewInit, OnDestroy {
       this.map.off();
       this.map.remove();
       this.map = undefined;
+    }
+  }
+
+  protected setMode(mode: '2d' | '3d'): void {
+    if (mode === this.mode()) return;
+    this.mode.set(mode);
+    if (mode === '2d') {   // Leaflet was hidden (display:none) while 3D showed: resize and re-frame once visible again
+      setTimeout(() => {
+        this.map?.invalidateSize({ animate: false });
+        this.fittedFor = '';
+        this.render(this.layers(), this.points());
+      }, 0);
     }
   }
 
