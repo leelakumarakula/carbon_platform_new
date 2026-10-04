@@ -31,6 +31,7 @@ os.environ["DATABASE_URL"] = _test_database_url()
 if not os.environ["DATABASE_URL"]:
     os.environ["SQL_SERVER_DATABASE"] = os.environ.get("TEST_SQL_SERVER_DATABASE", "carbon_platform_test")
 os.environ["LOGIN_RATE_LIMIT_PER_MINUTE"] = "1000"
+os.environ["WEATHER_PROVIDER"] = os.environ["SOIL_PROVIDER"] = "none"     # tests never call the internet (fakes are injected)
 _STORAGE = tempfile.mkdtemp(prefix="cp-test-storage-")
 os.environ["LOCAL_STORAGE_ROOT"] = _STORAGE
 

@@ -6,6 +6,9 @@ import { ApiService } from '../core/api/api.service';
 import {
   Boundary,
   Evidence,
+  ExternalDataView,
+  ExternalFetchKind,
+  ExternalObservation,
   Farm,
   FarmStatus,
   FarmSummary,
@@ -72,5 +75,8 @@ export class FarmsApi {
     this.api.post(`${this.base}/${id}/evidence/${eid}/review`, { status, notes });
   uploadDocument = (id: string, file: File, category: string, title: string): Observable<{ id: string }> =>
     this.api.upload(`${this.base}/${id}/documents`, file, { category, title });
+  externalData = (id: string): Observable<ExternalDataView> => this.api.get(`${this.base}/${id}/external-data`);
+  fetchExternalData = (id: string, kind: ExternalFetchKind, period: { period_start: string | null; period_end: string | null }):
+    Observable<ExternalObservation> => this.api.post(`${this.base}/${id}/external-data/${kind}`, period);
   transition = (id: string, endpoint: string, reason: string): Observable<Farm> => this.api.post(`${this.base}/${id}/${endpoint}`, { reason });
 }

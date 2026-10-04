@@ -26,17 +26,19 @@ import { FARM_ACTIONS, FARM_DOC_CATEGORIES, Farm, Overlap } from './farm.models'
 import { FarmsApi } from './farms.api';
 import { BoundaryEditor } from './panels/boundary-editor';
 import { FarmEvidencePanel } from './panels/farm-evidence-panel';
+import { FarmExternalDataPanel } from './panels/farm-external-data-panel';
 import { FarmHistoryPanel } from './panels/farm-history-panel';
 import { FarmOverlapsPanel } from './panels/farm-overlaps-panel';
 import { FarmOwnershipPanel } from './panels/farm-ownership-panel';
 
-const TABS = ['overview', 'boundary', 'ownership', 'history', 'evidence', 'overlaps', 'documents'];
+const TABS = ['overview', 'boundary', 'ownership', 'history', 'evidence', 'overlaps', 'documents', 'external'];
 
 @Component({
   selector: 'app-farm-detail-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [DatePipe, RouterLink, MatTabsModule, MatCardModule, MatButtonModule, MatIconModule, PageHeader, StateView, StatusBadge, ReadinessPanel,
-    DocumentsPanel, GeoMap, BoundaryEditor, FarmOwnershipPanel, FarmHistoryPanel, FarmEvidencePanel, FarmOverlapsPanel],
+    DocumentsPanel, GeoMap, BoundaryEditor, FarmOwnershipPanel, FarmHistoryPanel, FarmEvidencePanel, FarmOverlapsPanel,
+    FarmExternalDataPanel],
   template: `
     <app-state-view [loading]="loading()" [error]="error()" (retry)="load()" />
     @if (farm(); as f) {
@@ -94,6 +96,9 @@ const TABS = ['overview', 'boundary', 'ownership', 'history', 'evidence', 'overl
               <app-documents-panel [documents]="f.documents" [categories]="categories" [canUpload]="f.can_manage" [uploadFn]="uploadFn" (uploaded)="load()" />
             </div>
           </ng-template>
+        </mat-tab>
+        <mat-tab label="External data">
+          <ng-template matTabContent><app-farm-external-data-panel [farm]="f" /></ng-template>
         </mat-tab>
       </mat-tab-group>
     }

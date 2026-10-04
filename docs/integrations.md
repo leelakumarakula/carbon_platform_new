@@ -5,11 +5,14 @@ never presented as a real external confirmation, and the UI labels DEMO data and
 
 | Interface | Status | Implementations | Setting |
 |---|---|---|---|
-| Object storage | in use (Phase 2) | `LocalFileStorage` (development). S3 / MinIO pending | `STORAGE_BACKEND`, `LOCAL_STORAGE_ROOT`, `OBJECT_STORAGE_*` |
+| Object storage | in use (Phase 2, 12B) | `LocalFileStorage` (development); `S3ObjectStorage` for MinIO / S3 (`app/integrations/s3.py`, SigV4, SSE-S3) — required in production | `STORAGE_BACKEND`, `LOCAL_STORAGE_ROOT`, `OBJECT_STORAGE_*` |
 | Malware scanner | in use (Phase 2) | `SignatureScanner` (EICAR test signature only). Real antivirus engine pending | `MALWARE_SCANNER` |
 | Basemap tiles | in use (D6) | any XYZ tile source; OpenStreetMap public tiles by default (development only) | `MAP_TILE_*` |
 | Notifications | in use | in-app only. Email, SMS and WhatsApp adapters pending | — |
-| Satellite, weather, land records | planned (Phase 6+); Phase 5 records no satellite data — field evidence only | mock + real | `SATELLITE_PROVIDER` |
+| Weather | in use — **evidence only** (farm "External data" tab) | `OpenMeteoWeather`: Open-Meteo historical API (ERA5 reanalysis, daily rain, Tmax/Tmin, ET0), no key | `WEATHER_PROVIDER=open-meteo\|none` |
+| Soil reference | in use — **evidence only** | `SoilGrids`: ISRIC SoilGrids 2.0 REST (modelled 250 m means, 0–30 cm: SOC, pH, clay, sand, silt, bulk density, N, CEC), no key | `SOIL_PROVIDER=soilgrids\|none` |
+| Satellite (NDVI) | built — **evidence only**, off until configured | `CopernicusNdvi`: Copernicus Data Space Sentinel Hub Statistical API on Sentinel-2 L2A, 10-day cloud-masked NDVI over the farm polygon (free OAuth client) | `SATELLITE_PROVIDER=copernicus`, `COPERNICUS_CLIENT_ID`, `COPERNICUS_CLIENT_SECRET` (secret) |
+| Land records | interface only | `NoLandRecords`: no public API exists (state portals are browse-only); land records are uploaded as farm documents | `LAND_RECORDS_PROVIDER=manual` |
 | Laboratory (LIMS) | interface only (Phase 6): `LimsAdapter` (submit manifest, fetch results, acknowledge) in `app/integrations/lims.py`; `NoLimsAdapter` raises `LimsNotConfigured` | manual entry in the laboratory workspace (source MANUAL); a real LIMS would import as `LIMS_IMPORT` with an external result ID. There is no mock result source | — |
 | Verification (VVB/ACVA) | planned (Phase 8) | workflow only; the platform is not the verifier | — |
 | Registry | in use (Phase 9A, 9B): `RegistryAdapter` in `app/integrations/registry.py` (register_project, submit_issuance_request, get_submission_status, get_issuances, submit_document, parse_serial_range; 9B: transfer_credits, retire_credits, get_credit_inventory — manual reconciliation only, MISMATCH recorded, never auto-fixed) | `ManualRegistryAdapter` only — never simulates (raises `ManualActionRequired`; operators record references with evidence). Selected per registry account (`adapter_code`). A Verra / Gold Standard / CCTS adapter is added only with a contracted API. The API-mode paths are exercised with a TEST-only adapter injected in tests (never registered) | `registry_accounts.adapter_code` |
@@ -20,3 +23,10 @@ never presented as a real external confirmation, and the UI labels DEMO data and
 **Methodologies are not an integration.** Rules are entered by methodology specialists from the authoritative source
 and approved by a second person (docs/methodology-engine.md). The platform does not fetch or interpret methodology
 documents automatically.
+
+**External farm reference data is evidence only** (`app/integrations/geodata.py`, `app/services/external_data_service.py`).
+A user with farms.manage or farms.review fetches it on request for the farm's current boundary (centroid; the polygon for NDVI).
+Each fetch is an append-only row in `farm_external_observations` (trigger) with provider, dataset, period, boundary version, the
+request without credentials, a normalised summary and the SHA-256 of the provider's raw response, and is audited
+(`FARM_EXTERNAL_DATA_FETCHED`). No workflow, readiness check, verification or calculation reads it. The provider is called before
+anything is written, so an outage (`503 EXTERNAL_PROVIDER_UNAVAILABLE`) leaves nothing behind. Tests never call the internet.

@@ -20,7 +20,7 @@ from sqlalchemy.engine import URL
 SECRET_SETTINGS = ("SECRET_KEY", "JWT_SECRET", "JWT_PREVIOUS_KEYS", "DATA_ENCRYPTION_KEY", "DATA_ENCRYPTION_PREVIOUS_KEYS",
                    "DATABASE_URL", "SQL_SERVER_PASSWORD", "REDIS_URL", "RATE_LIMIT_REDIS_URL", "OBJECT_STORAGE_SECRET_KEY",
                    "OBJECT_STORAGE_DELETE_SECRET_KEY", "ANTIVIRUS_API_KEY", "SMTP_PASSWORD", "METRICS_TOKEN",
-                   "BOOTSTRAP_ADMIN_PASSWORD", "DEMO_USER_PASSWORD")
+                   "BOOTSTRAP_ADMIN_PASSWORD", "DEMO_USER_PASSWORD", "COPERNICUS_CLIENT_SECRET")
 _SQL_NAME = re.compile(r"[A-Za-z_][A-Za-z0-9_]{0,127}")
 # Provider names that denote a simulated / test implementation (D38): never acceptable in production.
 MOCK_PROVIDER_NAMES = frozenset({"mock", "fake", "test", "stub", "dummy", "simulated", "simulator", "demo"})
@@ -174,10 +174,22 @@ class Settings(BaseSettings):
     OBJECT_STORAGE_CA_CERT: str | None = None             # CA bundle for a private TLS endpoint
     OBJECT_STORAGE_TIMEOUT_SECONDS: int = 30
     # D38: runtime providers are MANUAL (no simulated provider exists at runtime; test doubles live in the test suite only).
-    SATELLITE_PROVIDER: str = "manual"   # satellite evidence is recorded manually
+    SATELLITE_PROVIDER: str = "manual"   # manual | copernicus (Sentinel-2 NDVI via Copernicus Data Space; needs COPERNICUS_CLIENT_*)
     LAB_PROVIDER: str = "manual"         # laboratories use the laboratory workspace (NoLimsAdapter)
     REGISTRY_PROVIDER: str = "manual"
     PAYMENT_PROVIDER: str = "manual"   # Phase 10 D15 / D33: manual until a contracted provider exists; no mock provider at all
+    # External farm reference data (evidence only: fetched on request, stored append-only, never an input to a workflow or a calculation).
+    WEATHER_PROVIDER: str = "open-meteo"      # open-meteo (historical reanalysis, no key) | none
+    SOIL_PROVIDER: str = "soilgrids"          # soilgrids (ISRIC SoilGrids 2.0, no key) | none
+    LAND_RECORDS_PROVIDER: str = "manual"     # no public land-records API exists; land records are uploaded as documents
+    OPEN_METEO_ARCHIVE_URL: str = "https://archive-api.open-meteo.com/v1/archive"
+    SOILGRIDS_URL: str = "https://rest.isric.org/soilgrids/v2.0/properties/query"
+    COPERNICUS_TOKEN_URL: str = "https://identity.dataspace.copernicus.eu/auth/realms/CDSE/protocol/openid-connect/token"  # noqa: S105
+    COPERNICUS_STATISTICS_URL: str = "https://sh.dataspace.copernicus.eu/api/v1/statistics"
+    COPERNICUS_CLIENT_ID: str | None = None
+    COPERNICUS_CLIENT_SECRET: str | None = None
+    SATELLITE_MAX_CLOUD_PCT: int = 30
+    EXTERNAL_DATA_TIMEOUT_SECONDS: int = 30
 
     # Phase 12A background jobs. SQL Server is the system of record; REDIS_URL is only the Celery broker (transport). Without it,
     # jobs stay QUEUED in SQL Server (publication is retried by the recovery tick) and lazy expiry keeps the platform correct.
@@ -252,7 +264,7 @@ class Settings(BaseSettings):
                 "SQL_SERVER_DRIVER": driver, "SQL_SERVER_TRUSTED_CONNECTION": trusted,
                 "SQL_SERVER_TRUST_SERVER_CERTIFICATE": q.get("trustservercertificate", "yes").lower() == "yes"}
 
-    @field_validator("SQL_SERVER_PORT", "METRICS_TOKEN", mode="before")
+    @field_validator("SQL_SERVER_PORT", "METRICS_TOKEN", "COPERNICUS_CLIENT_ID", "COPERNICUS_CLIENT_SECRET", mode="before")
     @classmethod
     def _empty_is_unset(cls, v: object) -> object:
         return None if v == "" else v                                # `METRICS_TOKEN=` as in .env.example = unset (endpoint disabled)
@@ -339,12 +351,22 @@ class Settings(BaseSettings):
             raise ValueError("BACKUP_URL must be an s3:// URL (SQL Server 2022 BACKUP TO URL, S3-compatible object storage)")
         if self.SECRETS_DIR and not Path(self.SECRETS_DIR).is_dir():
             raise ValueError("SECRETS_DIR does not exist or is not a directory")
+        if self.WEATHER_PROVIDER not in ("open-meteo", "none") or self.SOIL_PROVIDER not in ("soilgrids", "none"):
+            raise ValueError("WEATHER_PROVIDER must be 'open-meteo' or 'none'; SOIL_PROVIDER must be 'soilgrids' or 'none'")
+        if self.SATELLITE_PROVIDER == "copernicus" and not (self.COPERNICUS_CLIENT_ID and self.COPERNICUS_CLIENT_SECRET):
+            raise ValueError("SATELLITE_PROVIDER=copernicus needs COPERNICUS_CLIENT_ID and COPERNICUS_CLIENT_SECRET")
+        for name in ("OPEN_METEO_ARCHIVE_URL", "SOILGRIDS_URL", "COPERNICUS_TOKEN_URL", "COPERNICUS_STATISTICS_URL"):
+            if not str(getattr(self, name)).startswith("https://"):
+                raise ValueError(f"{name} must be an https:// URL")
+        if not 0 <= self.SATELLITE_MAX_CLOUD_PCT <= 100 or not 1 <= self.EXTERNAL_DATA_TIMEOUT_SECONDS <= 120:
+            raise ValueError("SATELLITE_MAX_CLOUD_PCT must be 0-100 and EXTERNAL_DATA_TIMEOUT_SECONDS 1-120")
         if not self.is_production:
             return
         # ---- production only
         if self.LOG_FORMAT != "json":
             raise ValueError("Production logs must be structured JSON (D44)")
-        for name in ("SATELLITE_PROVIDER", "LAB_PROVIDER", "REGISTRY_PROVIDER", "PAYMENT_PROVIDER"):
+        for name in ("SATELLITE_PROVIDER", "LAB_PROVIDER", "REGISTRY_PROVIDER", "PAYMENT_PROVIDER", "WEATHER_PROVIDER", "SOIL_PROVIDER",
+                     "LAND_RECORDS_PROVIDER"):
             if str(getattr(self, name)).strip().lower() in MOCK_PROVIDER_NAMES:
                 raise ValueError(f"{name}={getattr(self, name)!r}: simulated providers are not allowed in production (D38)")
         if self.RATE_LIMIT_BACKEND != "redis":

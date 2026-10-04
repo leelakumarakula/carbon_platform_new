@@ -174,3 +174,79 @@ export const FARM_ACTIONS: Record<string, { label: string; endpoint: string; rev
   DRAFT: { label: 'Re-open for correction', endpoint: 'reopen', review: false },
   INACTIVE: { label: 'Make inactive', endpoint: 'inactivate', review: false, danger: true },
 };
+
+/** External reference data (weather, soil, satellite NDVI, land records). Reference evidence only: never changes status or calculations. */
+export type ExternalDataType = 'WEATHER' | 'SOIL' | 'SATELLITE_NDVI' | 'LAND_RECORD';
+export type ExternalFetchKind = 'weather' | 'soil' | 'satellite-ndvi' | 'land-records';
+export const EXTERNAL_FETCH_KIND: Record<ExternalDataType, ExternalFetchKind> = {
+  WEATHER: 'weather', SOIL: 'soil', SATELLITE_NDVI: 'satellite-ndvi', LAND_RECORD: 'land-records',
+};
+
+export interface ExternalProvider {
+  data_type: ExternalDataType;
+  provider: string;
+  label: string;
+  enabled: boolean;
+  note: string | null;
+}
+
+export interface WeatherDay {
+  date: string;
+  precipitation_mm: number | null;
+  temp_max_c: number | null;
+  temp_min_c: number | null;
+  et0_mm: number | null;
+}
+
+export interface SoilLayer {
+  property: string;
+  label: string;
+  depth: string;
+  value: number | null;
+  unit: string;
+}
+
+export interface NdviInterval {
+  from: string;
+  to: string;
+  mean: number | null;
+  min: number | null;
+  max: number | null;
+  stdev: number | null;
+  sample_count: number | null;
+  no_data_count: number | null;
+}
+
+/** `summary` shape depends on data_type: WEATHER daily + totals, SOIL layers, SATELLITE_NDVI intervals. */
+export interface ExternalSummary {
+  daily?: WeatherDay[];
+  totals?: { days: number; precipitation_mm: number | null; et0_mm: number | null; temp_max_mean_c: number | null; temp_min_mean_c: number | null };
+  layers?: SoilLayer[];
+  intervals?: NdviInterval[];
+  max_cloud_pct?: number;
+  [key: string]: unknown;
+}
+
+export interface ExternalObservation {
+  id: string;
+  data_type: ExternalDataType;
+  provider: string;
+  dataset: string;
+  period_start: string | null;
+  period_end: string | null;
+  latitude: number;
+  longitude: number;
+  boundary_version: number | null;
+  summary: ExternalSummary;
+  sha256: string;
+  fetched_at: string;
+  fetched_by_name: string | null;
+  environment: 'LIVE' | 'DEMO';
+}
+
+export interface ExternalDataView {
+  can_fetch: boolean;
+  has_boundary: boolean;
+  providers: ExternalProvider[];
+  observations: ExternalObservation[];
+}

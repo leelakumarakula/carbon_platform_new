@@ -342,3 +342,44 @@ class NearbyFarm(BaseModel):
 
 
 __all__ = ["ChecklistItem", "TransitionReadiness"]
+
+
+# ---------- external reference data (evidence only)
+ExternalDataType = Literal["WEATHER", "SOIL", "SATELLITE_NDVI", "LAND_RECORD"]
+
+
+class ExternalFetchIn(BaseModel):
+    period_start: date | None = None
+    period_end: date | None = None
+
+
+class ExternalProviderOut(BaseModel):
+    data_type: ExternalDataType
+    provider: str
+    label: str
+    enabled: bool
+    note: str | None = None
+
+
+class ExternalObservationOut(BaseModel):
+    id: uuid.UUID
+    data_type: ExternalDataType
+    provider: str
+    dataset: str
+    period_start: date | None
+    period_end: date | None
+    latitude: float
+    longitude: float
+    boundary_version: int | None
+    summary: dict[str, Any]
+    sha256: str
+    fetched_at: UtcDatetime
+    fetched_by_name: str | None
+    environment: str
+
+
+class ExternalDataOut(BaseModel):
+    can_fetch: bool
+    has_boundary: bool
+    providers: list[ExternalProviderOut]
+    observations: list[ExternalObservationOut]
