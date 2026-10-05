@@ -15,6 +15,12 @@ class TerrainConfigOut(BaseModel):
     attribution: str
 
 
+class SatelliteConfigOut(BaseModel):
+    tile_url: str
+    max_zoom: int
+    attribution: str
+
+
 class MapConfigOut(BaseModel):
     provider: str
     tile_url: str
@@ -22,18 +28,21 @@ class MapConfigOut(BaseModel):
     max_zoom: int
     subdomains: list[str]
     terrain: TerrainConfigOut | None = None   # 3D view elevation tiles; None = 3D without relief
+    satellite: SatelliteConfigOut | None = None   # 3D view imagery; None = street map only
 
 
 class ClientConfigOut(BaseModel):
     map: MapConfigOut
 
 
-@router.get("/client", response_model=ClientConfigOut, summary="Non-secret client configuration (basemap and terrain tiles)")
+@router.get("/client", response_model=ClientConfigOut, summary="Non-secret client configuration (basemap, terrain and imagery tiles)")
 def client_config(_: ActivePrincipal) -> ClientConfigOut:
     s = get_settings()
     terrain = TerrainConfigOut(tile_url=s.MAP_TERRAIN_URL, encoding=s.MAP_TERRAIN_ENCODING, max_zoom=s.MAP_TERRAIN_MAX_ZOOM,
                                attribution=s.MAP_TERRAIN_ATTRIBUTION) if s.MAP_TERRAIN_URL.strip() else None
+    satellite = SatelliteConfigOut(tile_url=s.MAP_SATELLITE_URL, max_zoom=s.MAP_SATELLITE_MAX_ZOOM,
+                                   attribution=s.MAP_SATELLITE_ATTRIBUTION) if s.MAP_SATELLITE_URL.strip() else None
     return ClientConfigOut(map=MapConfigOut(provider=s.MAP_TILE_PROVIDER, tile_url=s.MAP_TILE_URL, attribution=s.MAP_TILE_ATTRIBUTION,
                                             max_zoom=s.MAP_TILE_MAX_ZOOM,
                                             subdomains=[x.strip() for x in s.MAP_TILE_SUBDOMAINS.split(",") if x.strip()],
-                                            terrain=terrain))
+                                            terrain=terrain, satellite=satellite))

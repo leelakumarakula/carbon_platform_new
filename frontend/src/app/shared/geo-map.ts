@@ -131,6 +131,7 @@ export class GeoMap implements AfterViewInit, OnDestroy {
         this.map?.invalidateSize({ animate: false });
         this.fittedFor = '';
         this.render(this.layers(), this.points());
+        this.renderDrawing(this.drawing());
       }, 0);
     }
   }
@@ -181,5 +182,11 @@ export class GeoMap implements AfterViewInit, OnDestroy {
     const latlngs = vertices.map(([lon, lat]) => L.latLng(lat, lon));
     L.polyline(latlngs.length > 2 ? [...latlngs, latlngs[0]] : latlngs, { color: '#e65100', weight: 2, dashArray: '4 4' }).addTo(this.drawGroup);
     latlngs.forEach((ll, i) => L.circleMarker(ll, { radius: i === 0 ? 7 : 5, color: '#e65100', fillOpacity: 1 }).addTo(this.drawGroup));
+    // Typed / pasted / GPS corners can lie outside the view: bring them in. Clicked corners are already visible, so no jump.
+    if (this.map.getSize().x === 0) return;   // hidden (3D shown); setMode('2d') re-renders once visible
+    const drawn = L.latLngBounds(latlngs);
+    if (this.map.getBounds().contains(drawn)) return;
+    if (latlngs.length === 1) this.map.panTo(latlngs[0], { animate: false });
+    else this.map.fitBounds(drawn.pad(0.25), { maxZoom: 17, animate: false });
   }
 }
