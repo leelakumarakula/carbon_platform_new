@@ -1,5 +1,5 @@
 import { DatePipe, DecimalPipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, input, output, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -83,6 +83,8 @@ export class DocumentsPanel {
   readonly categories = input<readonly string[]>([]);
   readonly canUpload = input(false);
   readonly uploadFn = input<UploadFn | null>(null);
+  /** Category to preselect (e.g. LAND_RECORD when arriving from the land-records card); ignored when not offered. */
+  readonly presetCategory = input<string | null>(null);
   readonly uploaded = output<string>();
 
   private readonly docs = inject(DocumentsApi);
@@ -94,6 +96,13 @@ export class DocumentsPanel {
     category: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
     title: new FormControl('', { nonNullable: true }),
   });
+
+  constructor() {
+    effect(() => {
+      const c = this.presetCategory();
+      if (c && this.categories().includes(c)) this.form.controls.category.setValue(c);
+    });
+  }
 
   pick(files: FileList | null): void {
     this.file.set(files?.[0] ?? null);
@@ -109,7 +118,8 @@ export class DocumentsPanel {
       next: (r) => {
         this.busy.set(false);
         this.file.set(null);
-        this.form.reset({ category: '', title: '' });
+        const c = this.presetCategory();
+        this.form.reset({ category: c && this.categories().includes(c) ? c : '', title: '' });
         this.notify.success('Document uploaded.');
         this.uploaded.emit(r.id);
       },

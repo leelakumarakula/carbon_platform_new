@@ -80,3 +80,21 @@ describe('error notification field summary', () => {
     expect(fieldSummary(new ApiError(409, 'CONFLICT', 'No.'))).toBe('');
   });
 });
+
+describe('DocumentsPanel', () => {
+  it('preselects an offered category (e.g. LAND_RECORD from the land-records card) and ignores one that is not offered', async () => {
+    const { provideHttpClient } = await import('@angular/common/http');
+    const { DocumentsPanel } = await import('./documents-panel');
+    TestBed.configureTestingModule({ providers: [provideHttpClient()] });
+    const f = TestBed.createComponent(DocumentsPanel);
+    f.componentRef.setInput('categories', ['LAND_TITLE', 'LAND_RECORD', 'OTHER']);
+    f.componentRef.setInput('canUpload', true);
+    f.componentRef.setInput('presetCategory', 'LAND_RECORD');
+    f.detectChanges();
+    const form = (f.componentInstance as unknown as { form: FormGroup }).form;
+    expect(form.value.category).toBe('LAND_RECORD');
+    f.componentRef.setInput('presetCategory', 'KYC_ID');
+    f.detectChanges();
+    expect(form.value.category).toBe('LAND_RECORD');
+  });
+});

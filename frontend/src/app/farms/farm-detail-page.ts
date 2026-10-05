@@ -93,7 +93,8 @@ const TABS = ['overview', 'boundary', 'ownership', 'history', 'evidence', 'overl
         <mat-tab [label]="'Documents (' + f.documents.length + ')'">
           <ng-template matTabContent>
             <div class="tab-body">
-              <app-documents-panel [documents]="f.documents" [categories]="categories" [canUpload]="f.can_manage" [uploadFn]="uploadFn" (uploaded)="load()" />
+              <app-documents-panel [documents]="f.documents" [categories]="categories" [canUpload]="f.can_manage" [uploadFn]="uploadFn"
+                [presetCategory]="categoryParam() ?? null" (uploaded)="load()" />
             </div>
           </ng-template>
         </mat-tab>
@@ -123,6 +124,7 @@ export class FarmDetailPage {
   protected readonly busy = signal(false);
   protected readonly tab = signal(0);
   private readonly tabParam = toSignal(this.route.queryParamMap.pipe(map((q) => q.get('tab'))));
+  protected readonly categoryParam = toSignal(this.route.queryParamMap.pipe(map((q) => q.get('category'))));
   protected readonly label = label;
   protected readonly area = formatArea;
   protected readonly categories = FARM_DOC_CATEGORIES;

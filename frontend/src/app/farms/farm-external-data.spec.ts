@@ -1,13 +1,14 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { Router, provideRouter } from '@angular/router';
 
 import { ExternalDataView, ExternalObservation, Farm } from './farm.models';
 import { FarmExternalDataPanel, monthlyWeather } from './panels/farm-external-data-panel';
 
 const FARM = { id: 'f1', current_boundary: { version: 2 } } as unknown as Farm;
 const URL = '/api/v1/farms/f1/external-data';
+const OWN = '/api/v1/farms/f1/ownership';
 const SHA = 'a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2';
 
 function obs(over: Partial<ExternalObservation>): ExternalObservation {
@@ -54,11 +55,12 @@ describe('FarmExternalDataPanel', () => {
   });
   afterEach(() => http.verify());
 
-  async function render(v: ExternalDataView) {
+  async function render(v: ExternalDataView, farm: Farm = FARM, owners: unknown[] = []) {
     const f = TestBed.createComponent(FarmExternalDataPanel);
-    f.componentRef.setInput('farm', FARM);
+    f.componentRef.setInput('farm', farm);
     f.detectChanges();
     http.expectOne(URL).flush(v);
+    http.expectOne(OWN).flush(owners);
     await f.whenStable();
     f.detectChanges();
     return f;
@@ -70,7 +72,8 @@ describe('FarmExternalDataPanel', () => {
     expect(text).toContain("It never changes a farm's status, verification or any calculation.");
     expect(el.querySelectorAll('[data-provider]').length).toBe(4);
     expect(text).toContain('Configure Copernicus credentials to enable');
-    expect(text).toContain('No public land-records API');
+    expect(el.querySelector('[data-testid="land-status"]')?.textContent).toContain('Missing');
+    expect(text).toContain('No land record yet');
     expect(el.querySelector<HTMLButtonElement>('[data-testid="fetch-satellite-ndvi"]')?.disabled).toBe(true);
     expect(el.querySelector('[data-testid="fetch-land-records"]')).toBeNull();
     expect(el.querySelector('[data-observation="WEATHER"]')).not.toBeNull();
@@ -104,6 +107,44 @@ describe('FarmExternalDataPanel', () => {
     expect(card).toContain('at most 10% of the plot under cloud');
     expect(card).toContain('Skipped (plot under cloud): 2026-02-01 (74.07%)');
     expect(el.querySelector('[data-testid="lst"]')?.textContent).toContain('39.1 °C');
+  });
+
+  it('land records card shows the tenure documents, ownership review and links to upload', async () => {
+    const doc = { id: 'd1', entity_type: 'farm', entity_id: 'f1', category: 'LAND_RECORD', title: '7/12 extract survey 445', sensitivity: 'INTERNAL',
+      status: 'ACTIVE', current_version: 1, environment: 'LIVE', created_at: '2026-10-01T08:00:00Z', versions: [], scan_state: 'NOT_SCANNED' };
+    const photo = { ...doc, id: 'd2', category: 'FIELD_PHOTO', title: 'Field photo' };
+    const farm = { ...FARM, can_manage: true, documents: [doc, photo] } as unknown as Farm;
+    const owner = { id: 'o1', owner_type: 'INDIVIDUAL', owner_farmer_id: null, owner_name: 'Asha Patil', operator_relationship: 'OWNER',
+      ownership_share_pct: null, title_reference: '7/12-445', evidence_document_id: 'd1', valid_from: null, valid_to: null, end_reason: null,
+      is_current: true, verification_status: 'PENDING', review_notes: null, recorded_at: '2026-10-01T08:00:00Z' };
+    const f = await render(view({ observations: [] }), farm, [owner]);
+    const el = f.nativeElement as HTMLElement;
+    expect(el.querySelector('[data-testid="land-status"]')?.textContent).toContain('Uploaded · awaiting GIS review');
+    expect(el.querySelector('[data-testid="land-docs"]')?.textContent).toContain('7/12 extract survey 445');
+    expect(el.querySelector('[data-testid="land-docs"]')?.textContent).not.toContain('Field photo');     // only tenure documents
+    expect(el.querySelector('[data-testid="land-owner"]')?.textContent).toContain('Asha Patil · 7/12-445');
+    const router = TestBed.inject(Router);
+    const nav = vi.spyOn(router, 'navigate').mockResolvedValue(true);
+    el.querySelector<HTMLButtonElement>('[data-testid="upload-land-record"]')!.click();
+    expect(nav).toHaveBeenCalledWith([], { queryParams: { tab: 'documents', category: 'LAND_RECORD' }, queryParamsHandling: 'merge' });
+    // once GIS verifies the ownership that cites the document, the card turns green
+    f.componentRef.setInput('farm', { ...farm });
+    f.detectChanges();
+    http.expectOne(URL).flush(view({ observations: [] }));
+    http.expectOne(OWN).flush([{ ...owner, verification_status: 'VERIFIED' }]);
+    await f.whenStable();
+    f.detectChanges();
+    expect(el.querySelector('[data-testid="land-status"]')?.textContent).toContain('Verified');
+    // a verified farm whose ownership was recorded without the document: says so and explains how to link it
+    f.componentRef.setInput('farm', { ...farm, status: 'VERIFIED' });
+    f.detectChanges();
+    http.expectOne(URL).flush(view({ observations: [] }));
+    http.expectOne(OWN).flush([{ ...owner, verification_status: 'VERIFIED', evidence_document_id: null }]);
+    await f.whenStable();
+    f.detectChanges();
+    expect(el.querySelector('[data-testid="land-status"]')?.textContent).toContain('Uploaded · not linked to ownership');
+    expect(el.querySelector('[data-testid="land-hint"]')?.textContent).toContain('reopen the farm');
+    expect(el.querySelector('[data-testid="land-owner"]')?.textContent).toContain('no document linked');
   });
 
   it('fetches weather for the chosen period and reloads', async () => {

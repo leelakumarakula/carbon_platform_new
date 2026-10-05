@@ -1,5 +1,6 @@
 import { DatePipe, DecimalPipe, JsonPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatExpansionModule } from '@angular/material/expansion';
@@ -16,8 +17,11 @@ import { runAction } from '../../shared/run-action';
 import { StateView } from '../../shared/state-view';
 import { StatusBadge } from '../../shared/status-badge';
 import {
-  EXTERNAL_FETCH_KIND, ExternalDataType, ExternalDataView, ExternalObservation, ExternalProvider, Farm, NdviInterval, WeatherDay,
+  EXTERNAL_FETCH_KIND, ExternalDataType, ExternalDataView, ExternalObservation, ExternalProvider, Farm, NdviInterval, Ownership, WeatherDay,
 } from '../farm.models';
+
+/** Document categories that evidence land tenure (the same set the ownership record accepts, minus OTHER). */
+export const LAND_DOC_CATEGORIES = ['LAND_RECORD', 'LAND_TITLE', 'LEASE_AGREEMENT'];
 import { FarmsApi } from '../farms.api';
 
 const TYPES: ExternalDataType[] = ['WEATHER', 'SOIL', 'SATELLITE_NDVI', 'LAND_RECORD'];
@@ -125,6 +129,33 @@ function ndviChart(intervals: NdviInterval[]): NdviChart | null {
         <div class="providers">
           @for (p of v.providers; track p.data_type) {
             <div class="provider" [attr.data-provider]="p.data_type">
+              @if (p.data_type === 'LAND_RECORD' && !p.enabled) {
+                @let lr = landRecords();
+                <div class="head"><strong>Land records</strong>
+                  <app-status-badge [status]="lr.status" [text]="lr.text" data-testid="land-status" /></div>
+                <div class="muted small">Uploaded documents · no public land-records API</div>
+                @if (lr.docs.length) {
+                  <ul class="land small" data-testid="land-docs">
+                    @for (d of lr.docs; track d.id) {
+                      <li><mat-icon inline>description</mat-icon> {{ d.title }} <span class="muted">· {{ label(d.category) }} · {{ d.created_at | date: 'mediumDate' }}</span></li>
+                    }
+                  </ul>
+                } @else {
+                  <div class="small pnote">No land record yet. Upload the 7/12 extract, title deed or lease, then record the ownership with it.</div>
+                }
+                @if (lr.hint) { <div class="small pnote" data-testid="land-hint">{{ lr.hint }}</div> }
+                @for (o of lr.owners; track o.id) {
+                  <div class="small owner" data-testid="land-owner">Ownership: {{ o.owner_name }}{{ o.title_reference ? ' · ' + o.title_reference : '' }} ·
+                    <strong>{{ label(o.verification_status) }}</strong>{{ o.evidence_document_id ? '' : ' · no document linked' }}</div>
+                }
+                <div class="row-actions land-actions">
+                  @if (farm().can_manage) {
+                    <button mat-stroked-button type="button" data-testid="upload-land-record" (click)="openDocuments()">
+                      <mat-icon>upload_file</mat-icon> Upload land record</button>
+                  }
+                  <button mat-button type="button" data-testid="open-ownership" (click)="openTab('ownership')">Ownership</button>
+                </div>
+              } @else {
               <div class="head"><strong>{{ p.label }}</strong>
                 <app-status-badge [status]="p.enabled ? 'ACTIVE' : 'DEACTIVATED'" [text]="p.enabled ? 'Enabled' : 'Not enabled'" /></div>
               <div class="muted small">{{ p.provider }}</div>
@@ -140,6 +171,7 @@ function ndviChart(intervals: NdviInterval[]): NdviChart | null {
                   <button mat-stroked-button type="button" [attr.data-testid]="'fetch-' + kind(p.data_type)" (click)="fetch(p)"
                           [disabled]="busy() || !p.enabled || !rangeOk(p.data_type)"><mat-icon>cloud_download</mat-icon> {{ fetchLabel(p.data_type) }}</button>
                 </div>
+              }
               }
             </div>
           }
@@ -265,6 +297,9 @@ function ndviChart(intervals: NdviInterval[]): NdviChart | null {
   `,
   styles: `
     .note mat-icon { vertical-align: -2px; margin-right: 4px; }
+    .land { margin: 8px 0 4px; padding-left: 0; list-style: none; } .land li { margin: 3px 0; } .land mat-icon { vertical-align: -2px; }
+    .owner { margin: 4px 0; }
+    .land-actions { justify-content: flex-start; align-items: center; }
     .providers { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 12px 0; }
     .provider { border: 1px solid var(--mat-sys-outline-variant); border-radius: 8px; padding: 12px; background: var(--mat-sys-surface);
       display: flex; flex-direction: column; gap: 4px; min-width: 0; }
@@ -294,6 +329,32 @@ function ndviChart(intervals: NdviInterval[]): NdviChart | null {
 export class FarmExternalDataPanel {
   readonly farm = input.required<Farm>();
   private readonly api = inject(FarmsApi);
+  private readonly router = inject(Router);
+  protected readonly label = label;
+  protected readonly owners = signal<Ownership[]>([]);
+  /** The land-records card: the farm's tenure documents and current ownership verification (no external API exists). */
+  protected readonly landRecords = computed(() => {
+    const docs = (this.farm().documents ?? []).filter((d) => LAND_DOC_CATEGORIES.includes(d.category) && d.status !== 'DELETED');
+    const owners = this.owners().filter((o) => o.is_current);
+    const ids = new Set(docs.map((d) => d.id));
+    const linked = (o: Ownership) => !!o.evidence_document_id && ids.has(o.evidence_document_id);
+    let status = 'WARNING', text = 'Missing', hint = '';
+    if (docs.length) {
+      if (owners.some((o) => o.verification_status === 'VERIFIED' && linked(o))) {
+        [status, text] = ['ACTIVE', 'Verified'];
+      } else if (owners.some((o) => linked(o))) {
+        [status, text] = ['INFO', 'Uploaded · awaiting GIS review'];
+      } else if (owners.length) {
+        [status, text] = ['INFO', 'Uploaded · not linked to ownership'];
+        hint = this.farm().status === 'DRAFT' ? 'Record the ownership with this document as evidence on the Ownership tab.'
+          : 'The ownership was recorded without this document. To link it, reopen the farm, record the ownership with the document and have GIS verify it again.';
+      } else {
+        [status, text] = ['INFO', 'Uploaded · record the ownership'];
+        hint = 'Record the ownership on the Ownership tab and choose this document as evidence.';
+      }
+    }
+    return { docs, owners, status, text, hint };
+  });
   private readonly notify = inject(NotifyService);
   protected readonly view = signal<ExternalDataView | null>(null);
   protected readonly loading = signal(true);
@@ -326,6 +387,11 @@ export class FarmExternalDataPanel {
   constructor() {
     // Reload when the farm changes or a new boundary version is saved (has_boundary / centroid change).
     reloadOn(() => [this.farm().id, this.farm().current_boundary?.version], () => this.load());
+    reloadOn(() => [this.farm()], () => this.loadOwners());   // the page reloads the farm after ownership / document changes
+  }
+
+  private loadOwners(): void {
+    this.api.ownership(this.farm().id).subscribe({ next: (o) => this.owners.set(o), error: () => this.owners.set([]) });
   }
 
   load(): void {
@@ -361,6 +427,14 @@ export class FarmExternalDataPanel {
 
   period(o: ExternalObservation): string {
     return o.period_start || o.period_end ? `${o.period_start ?? '…'} → ${o.period_end ?? '…'}` : o.dataset;
+  }
+
+  protected openDocuments(): void {
+    void this.router.navigate([], { queryParams: { tab: 'documents', category: 'LAND_RECORD' }, queryParamsHandling: 'merge' });
+  }
+
+  protected openTab(tab: string): void {
+    void this.router.navigate([], { queryParams: { tab, category: null }, queryParamsHandling: 'merge' });
   }
 
   protected perScene(o: ExternalObservation): boolean {

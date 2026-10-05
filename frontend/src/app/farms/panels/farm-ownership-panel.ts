@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, computed, effect, inject, input, output, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
@@ -15,6 +15,8 @@ import { StatusBadge } from '../../shared/status-badge';
 import { Farm, Ownership } from '../farm.models';
 import { FarmsApi } from '../farms.api';
 
+const EVIDENCE_CATEGORIES = ['LAND_RECORD', 'LAND_TITLE', 'LEASE_AGREEMENT', 'OTHER'];
+
 /** Who owns or holds rights to the land — recorded separately because the farmer may not be the owner. */
 @Component({
   selector: 'app-farm-ownership-panel',
@@ -29,6 +31,8 @@ import { FarmsApi } from '../farms.api';
             {{ o.ownership_share_pct ? '· ' + o.ownership_share_pct + '%' : '' }}
             <div class="muted small">{{ o.title_reference ?? 'no title reference' }} · {{ o.valid_from ?? '—' }} → {{ o.valid_to ?? 'current' }}
               @if (o.end_reason) { · ended: {{ o.end_reason }} }</div>
+            <div class="small" [class.muted]="!o.evidence_document_id" data-testid="ownership-evidence">
+              Evidence: {{ o.evidence_document_id ? docTitle(o.evidence_document_id) : 'no document linked' }}</div>
             @if (o.review_notes) { <div class="muted small">Review: {{ o.review_notes }}</div> }
           </div>
           <app-status-badge [status]="o.verification_status === 'VERIFIED' ? 'ACTIVE' : o.verification_status === 'REJECTED' ? 'FAILED' : 'INFO'"
@@ -56,6 +60,14 @@ import { FarmsApi } from '../farms.api';
           <mat-form-field><mat-label>Share %</mat-label><input matInput type="number" min="0.01" max="100" formControlName="share" /></mat-form-field>
           <mat-form-field><mat-label>Title / survey reference</mat-label><input matInput formControlName="title_reference" /></mat-form-field>
           <mat-form-field><mat-label>Valid from</mat-label><input matInput type="date" formControlName="valid_from" /></mat-form-field>
+          <mat-form-field><mat-label>Evidence document</mat-label>
+            <mat-select formControlName="evidence_document_id" data-testid="ownership-evidence-select">
+              <mat-option [value]="null">None</mat-option>
+              @for (d of evidenceDocs(); track d.id) { <mat-option [value]="d.id">{{ d.title }} · {{ label(d.category) }}</mat-option> }
+            </mat-select>
+            <mat-hint>{{ evidenceDocs().length ? 'The 7/12 extract, title deed or lease the GIS specialist will check.'
+              : 'Upload the land record in the Documents tab first.' }}</mat-hint>
+          </mat-form-field>
           <div class="row-actions span-all"><button mat-flat-button type="submit" [disabled]="busy() || form.invalid">Record ownership</button></div>
         </form>
       }
@@ -87,7 +99,23 @@ export class FarmOwnershipPanel implements OnInit {
     share: new FormControl<number | null>(null),
     title_reference: new FormControl('', { nonNullable: true }),
     valid_from: new FormControl('', { nonNullable: true }),
+    evidence_document_id: new FormControl<string | null>(null),
   });
+  /** Documents the server accepts as ownership evidence (land record, title, lease, other), newest land record first. */
+  protected readonly evidenceDocs = computed(() => (this.farm().documents ?? [])
+    .filter((d) => EVIDENCE_CATEGORIES.includes(d.category) && d.status !== 'DELETED')
+    .sort((a, b) => Number(b.category !== 'OTHER') - Number(a.category !== 'OTHER') || b.created_at.localeCompare(a.created_at)));
+
+  constructor() {
+    effect(() => {   // preselect the newest land document when the form is empty
+      const first = this.evidenceDocs()[0];
+      if (first && !this.form.controls.evidence_document_id.value) this.form.controls.evidence_document_id.setValue(first.id);
+    });
+  }
+
+  protected docTitle(id: string): string {
+    return (this.farm().documents ?? []).find((d) => d.id === id)?.title ?? 'document';
+  }
 
   ngOnInit(): void {
     this.load();
@@ -103,9 +131,10 @@ export class FarmOwnershipPanel implements OnInit {
     runAction(this.api.addOwnership(this.farm().id, {
       owner_type: v.owner_type, owner_farmer_id: self ? this.farm().farmer_id : null, owner_name: self ? null : v.owner_name.trim() || null,
       operator_relationship: v.operator_relationship, ownership_share_pct: v.share, title_reference: v.title_reference.trim() || null,
-      valid_from: v.valid_from || null,
+      valid_from: v.valid_from || null, evidence_document_id: v.evidence_document_id || null,
     }), this.busy, this.notify, 'Ownership recorded.', () => {
-      this.form.reset({ owner_type: 'FARMER', operator_relationship: 'OWNER', owner_name: '', share: null, title_reference: '', valid_from: '' });
+      this.form.reset({ owner_type: 'FARMER', operator_relationship: 'OWNER', owner_name: '', share: null, title_reference: '', valid_from: '',
+        evidence_document_id: this.evidenceDocs()[0]?.id ?? null });
       this.load();
       this.changed.emit();
     });
