@@ -139,6 +139,11 @@ class Settings(BaseSettings):
     MAP_TERRAIN_ENCODING: str = "terrarium"     # terrarium | mapbox (how elevation is packed in the PNG)
     MAP_TERRAIN_MAX_ZOOM: int = 15
     MAP_TERRAIN_ATTRIBUTION: str = 'Elevation: <a href="https://registry.opendata.aws/terrain-tiles/">AWS Terrain Tiles</a>'
+    # 3D view satellite imagery draped on the terrain — display only. Default: Esri World Imagery, for development only
+    # (production use needs an ArcGIS licence or a licensed / self-hosted imagery source). Empty URL = no satellite option.
+    MAP_SATELLITE_URL: str = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+    MAP_SATELLITE_MAX_ZOOM: int = 18
+    MAP_SATELLITE_ATTRIBUTION: str = "Imagery &copy; Esri, Maxar, Earthstar Geographics, and the GIS User Community"
 
     # MRV / sampling (technical tolerances, not methodology rules)
     # Field-collection PLATFORM DEFAULTS (decisions S1, S2) — not methodology requirements. A methodology version's SAMPLING
