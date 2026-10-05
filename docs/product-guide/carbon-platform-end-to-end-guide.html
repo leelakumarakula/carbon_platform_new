@@ -1,0 +1,1166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Carbon dMRV Platform: End-to-End Product and Test Guide</title>
+<style>
+  @page { size: A4; margin: 18mm 16mm 18mm 16mm;
+    @bottom-center { content: "Page " counter(page) " of " counter(pages); font: 8.5pt "Segoe UI", Arial, sans-serif; color: #6b7280; }
+    @top-right { content: "Carbon dMRV Platform · End-to-End Product and Test Guide"; font: 8pt "Segoe UI", Arial, sans-serif; color: #9ca3af; } }
+  @page :first { margin: 0; @bottom-center { content: none; } @top-right { content: none; } }
+  :root { --ink:#1f2933; --muted:#52606d; --line:#d9e2ec; --brand:#0b6e4f; --brand2:#12805c; --soft:#e8f5ef; --warn:#b45309; --warnbg:#fff7ed;
+          --bad:#b42318; --badbg:#fef3f2; --info:#1d4ed8; --infobg:#eff6ff; }
+  * { box-sizing: border-box; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { margin: 0; font: 10pt/1.5 "Segoe UI", Arial, sans-serif; color: var(--ink); background: #fff; }
+  h1, h2, h3, h4 { color: #102a43; line-height: 1.25; margin: 0; }
+  h1 { font-size: 20pt; color: var(--brand); border-bottom: 2.5px solid var(--brand); padding-bottom: 6px; margin: 0 0 14px; }
+  h2 { font-size: 13.5pt; margin: 20px 0 8px; color: var(--brand); }
+  h3 { font-size: 11pt; margin: 14px 0 6px; }
+  h4 { font-size: 10pt; margin: 10px 0 4px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+  p { margin: 0 0 8px; }
+  ul, ol { margin: 0 0 8px; padding-left: 20px; }
+  li { margin: 2px 0; }
+  code { font-family: Consolas, "Courier New", monospace; font-size: 8.8pt; background: #f0f4f8; padding: 0 3px; border-radius: 3px; }
+  table { width: 100%; border-collapse: collapse; margin: 6px 0 12px; font-size: 8.9pt; page-break-inside: auto; }
+  tr { page-break-inside: avoid; }
+  thead { display: table-header-group; }
+  th { background: #102a43; color: #fff; text-align: left; font-weight: 600; padding: 5px 7px; }
+  td { border-bottom: 1px solid var(--line); padding: 4.5px 7px; vertical-align: top; }
+  tbody tr:nth-child(even) td { background: #f8fafc; }
+  .chapter { page-break-before: always; }
+  .avoid { page-break-inside: avoid; }
+  .muted { color: var(--muted); }
+  .small { font-size: 8.6pt; }
+  .callout { border-left: 4px solid var(--brand); background: var(--soft); padding: 8px 12px; margin: 8px 0 12px; border-radius: 0 6px 6px 0; page-break-inside: avoid; }
+  .callout.warn { border-color: var(--warn); background: var(--warnbg); }
+  .callout.bad { border-color: var(--bad); background: var(--badbg); }
+  .callout.info { border-color: var(--info); background: var(--infobg); }
+  .callout b:first-child { display: block; margin-bottom: 2px; }
+  .neg { color: var(--bad); font-weight: 600; }
+  .ok { color: var(--brand2); font-weight: 600; }
+  .chip { display: inline-block; border: 1px solid #9fb3c8; border-radius: 10px; padding: 0 7px; font-size: 8.2pt; margin: 1px 2px; background: #fff; white-space: nowrap; }
+  .chip.g { border-color: var(--brand2); color: var(--brand); background: var(--soft); }
+  .arrow { color: #829ab1; margin: 0 1px; }
+  .stagehead { display: flex; gap: 10px; align-items: center; margin: 0 0 10px; }
+  .stagehead .no { flex: 0 0 auto; width: 34px; height: 34px; border-radius: 8px; background: var(--brand); color: #fff; font-weight: 700; font-size: 13pt;
+                   display: flex; align-items: center; justify-content: center; }
+  .stagehead h1 { border: 0; margin: 0; padding: 0; }
+  .facts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 0 0 10px; }
+  .fact { border: 1px solid var(--line); border-radius: 6px; padding: 7px 10px; page-break-inside: avoid; }
+  .fact h4 { margin: 0 0 3px; }
+  .fact p, .fact ul { margin: 0; font-size: 9.2pt; }
+  /* cover */
+  .cover { height: 297mm; padding: 34mm 22mm 20mm; background: linear-gradient(160deg, #0b6e4f 0%, #0f4c3a 55%, #102a43 100%); color: #fff;
+           display: flex; flex-direction: column; page-break-after: always; }
+  .cover .kicker { letter-spacing: .18em; text-transform: uppercase; font-size: 9.5pt; opacity: .85; }
+  .cover h1 { color: #fff; border: 0; font-size: 31pt; line-height: 1.12; margin: 14px 0 12px; padding: 0; }
+  .cover .sub { font-size: 13pt; opacity: .92; max-width: 140mm; }
+  .cover .flow { margin-top: 26mm; display: flex; flex-wrap: wrap; gap: 6px; max-width: 160mm; }
+  .cover .flow span { background: rgba(255,255,255,.13); border: 1px solid rgba(255,255,255,.35); border-radius: 14px; padding: 3px 10px; font-size: 9.5pt; }
+  .cover .meta { margin-top: auto; border-top: 1px solid rgba(255,255,255,.35); padding-top: 10px; font-size: 9.5pt; display: grid; grid-template-columns: 1fr 1fr; gap: 4px 20px; }
+  .cover .meta b { opacity: .75; font-weight: 600; }
+  /* toc */
+  .toc { columns: 2; column-gap: 26px; font-size: 9.6pt; }
+  .toc div { break-inside: avoid; padding: 2px 0; border-bottom: 1px dotted var(--line); }
+  .toc .n { display: inline-block; width: 26px; color: var(--brand); font-weight: 700; }
+  /* lifecycle diagram */
+  .lifecycle { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; margin: 10px 0 12px; }
+  .lc { border: 1.5px solid var(--brand2); border-radius: 8px; padding: 6px 8px; background: #fff; page-break-inside: avoid; position: relative; }
+  .lc .t { font-weight: 700; color: var(--brand); font-size: 9.3pt; padding-right: 34px; }
+  .lc .d { font-size: 8.2pt; color: var(--muted); line-height: 1.35; }
+  .lc .s { position: absolute; top: 5px; right: 7px; font-size: 7.8pt; color: #829ab1; font-weight: 700; }
+  .lc.ph2 { border-color: #2563eb; } .lc.ph2 .t { color: #1d4ed8; }
+  .lc.ph3 { border-color: #b45309; } .lc.ph3 .t { color: #b45309; }
+  .lc.ph4 { border-color: #7c3aed; } .lc.ph4 .t { color: #6d28d9; }
+  .legend { font-size: 8.4pt; color: var(--muted); margin-bottom: 10px; }
+  .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin: 0 4px -1px 10px; }
+  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 10px 0 14px; }
+  .kpi { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; text-align: center; }
+  .kpi .v { font-size: 17pt; font-weight: 700; color: var(--brand); line-height: 1.1; }
+  .kpi .l { font-size: 8.2pt; color: var(--muted); }
+  .chain { font-size: 8.8pt; line-height: 1.9; }
+</style>
+</head>
+<body>
+
+<!-- ============================== COVER ============================== -->
+<section class="cover">
+  <div class="kicker">Product overview · Operating model · Test guide</div>
+  <h1>Carbon dMRV Platform<br>End-to-End Product and Test Guide</h1>
+  <div class="sub">How the platform turns farm-level soil and land-management data into verified, issued and sold carbon credits, and pays farmers their share, with each stage explained and its tests listed.</div>
+  <div class="flow">
+    <span>Catalog</span><span>Methodology</span><span>Farmer</span><span>Farm</span><span>Project</span><span>Monitoring (MRV)</span>
+    <span>Field sampling</span><span>Laboratory</span><span>Calculation</span><span>Verification</span><span>Registry issuance</span>
+    <span>Credit ledger</span><span>Marketplace</span><span>Retirement</span><span>Revenue sharing</span><span>Farmer payout</span>
+  </div>
+  <div class="meta">
+    <div><b>Document</b><br>End-to-End Product and Test Guide</div>
+    <div><b>Version / date</b><br>1.0 · 5 October 2026</div>
+    <div><b>Build tested</b><br>Branch <code style="background:rgba(255,255,255,.15);color:#fff">feature/vm0042</code>, local test environment</div>
+    <div><b>Classification</b><br>Internal: for management review</div>
+  </div>
+</section>
+
+<!-- ============================== CONTENTS ============================== -->
+<section>
+  <h1>Contents</h1>
+  <div class="toc">
+    <div><span class="n">1</span>Executive summary</div>
+    <div><span class="n">2</span>What the platform does</div>
+    <div><span class="n">3</span>Organizations, roles and separation of duties</div>
+    <div><span class="n">4</span>Controls that apply everywhere</div>
+    <div><span class="n">5</span>How to read the stage chapters</div>
+    <div><span class="n">S0</span>Environment and access</div>
+    <div><span class="n">S1</span>Catalog: standards and activities</div>
+    <div><span class="n">S2</span>Methodology and calculation module</div>
+    <div><span class="n">S3</span>Farmer onboarding</div>
+    <div><span class="n">S4</span>Farm registration and GIS verification</div>
+    <div><span class="n">S5</span>Project and eligibility</div>
+    <div><span class="n">S6</span>Methodology selection and lock</div>
+    <div><span class="n">S7</span>MRV planning, strata and control sites</div>
+    <div><span class="n">S8</span>Monitoring periods, sampling and field collection</div>
+    <div><span class="n">S9</span>Laboratory analysis</div>
+    <div><span class="n">S10</span>Monitoring data and dataset QA</div>
+    <div><span class="n">S11</span>Carbon calculation and internal QA</div>
+    <div><span class="n">S12</span>Independent verification (VVB)</div>
+    <div><span class="n">S13</span>Registry submission and issuance</div>
+    <div><span class="n">S14</span>Credit ledger</div>
+    <div><span class="n">S15</span>Marketplace, delivery and retirement</div>
+    <div><span class="n">S16</span>Revenue sharing, settlement and farmer payouts</div>
+    <div><span class="n">S17</span>Farmer self-service</div>
+    <div><span class="n">6</span>Supported methodologies</div>
+    <div><span class="n">7</span>External data, land records and maps</div>
+    <div><span class="n">8</span>Test evidence and results</div>
+    <div><span class="n">9</span>Known limitations and open decisions</div>
+    <div><span class="n">A</span>Appendix A: test accounts</div>
+    <div><span class="n">B</span>Appendix B: negative-test checklist</div>
+    <div><span class="n">C</span>Appendix C: troubleshooting</div>
+    <div><span class="n">D</span>Appendix D: glossary</div>
+  </div>
+
+  <h2>About this document</h2>
+  <p>The document covers three things:</p>
+  <ul>
+    <li><b>The product.</b> What the platform does at each stage of the carbon-credit lifecycle, and who does it.</li>
+    <li><b>The controls.</b> The approval, audit and data-integrity rules that make the output defensible to a verifier, a registry and a buyer.</li>
+    <li><b>The test procedure.</b> How a tester walks the full lifecycle in the application, what they should see at every step, and which actions must be <i>refused</i>.</li>
+  </ul>
+  <p>The test results in Chapter 8 come from complete runs of the lifecycle on the local test environment on 4–5 October 2026, using dedicated test accounts.</p>
+  <div class="callout warn"><b>Important status note</b>
+  All carbon calculation modules are labelled <b>Not production ready</b> until a methodology expert has reviewed each one against the official methodology document and the platform has recorded that sign-off. The test credits in this document were issued against a test registry organization and are not real credits. See Chapter 9.</div>
+</section>
+
+<!-- ============================== 1 EXEC SUMMARY ============================== -->
+<section class="chapter">
+  <h1>1. Executive summary</h1>
+  <p>The Carbon dMRV Platform is a digital <b>measurement, reporting and verification (dMRV)</b> system for nature-based carbon projects, focused on agriculture and smallholder farmers. It covers the whole lifecycle in one application:</p>
+  <ul>
+    <li>registering farmers and their land;</li>
+    <li>measuring soil carbon and farm practices in the field and in the laboratory;</li>
+    <li>calculating emission reductions and removals under recognised methodologies;</li>
+    <li>verification by an independent body;</li>
+    <li>recording registry issuance;</li>
+    <li>selling and retiring the credits;</li>
+    <li>paying farmers their share of the revenue.</li>
+  </ul>
+
+  <div class="kpis">
+    <div class="kpi"><div class="v">17</div><div class="l">lifecycle stages, from catalog to farmer payout</div></div>
+    <div class="kpi"><div class="v">13</div><div class="l">calculation modules across Verra, Gold Standard and India CCTS</div></div>
+    <div class="kpi"><div class="v">24</div><div class="l">distinct business roles with enforced separation of duties</div></div>
+    <div class="kpi"><div class="v">705</div><div class="l">automated tests passing (552 backend + 153 frontend)</div></div>
+  </div>
+
+  <h2>What was demonstrated</h2>
+  <ul>
+    <li><b>Complete lifecycle, end to end.</b> A VM0042 soil-carbon project went through every stage:
+      <ul>
+        <li>farmer and farm onboarding;</li>
+        <li>two soil-sampling campaigns with control sites, and laboratory analysis;</li>
+        <li>a calculation of <b>24 VCU</b>;</li>
+        <li>independent verification of 24 tCO2e;</li>
+        <li>registry issuance of 24 VCU, confirmed by a second person, and entry into the credit ledger;</li>
+        <li>a sale of 10 VCU to a buyer for INR 8,500, of which the buyer retired 4 VCU;</li>
+        <li>a revenue settlement, with a <b>farmer payout of INR 4,200</b>, paid and reconciled against the bank statement and visible to the farmer in their own login.</li>
+      </ul></li>
+    <li><b>Every methodology option calculates.</b> All 13 methodology options (one calculation module each) were run end to end. These include Gold Standard soil carbon (five variants), tree planting on farms, biochar, India CCTS afforestation and mangroves, rice methane and Gold Standard afforestation.</li>
+    <li><b>Separation of duties holds.</b> Every negative test passed: the person who submits a record can never approve it. This covers methodology approval, farmer KYC, farm verification, eligibility, field records, lab results, calculations, issuance, ledger openings, buyer payments and settlements.</li>
+  </ul>
+
+  <h2>What remains before production use</h2>
+  <ul>
+    <li>Expert sign-off of each calculation module against the official methodology (the platform workflow for this exists; the reviews have not been done).</li>
+    <li>Gold Standard Paris-alignment status for vintages from 2026 onwards. The platform enforces this gate today.</li>
+    <li>A decision on splitting one farm into several strata (research is complete; the decision is pending).</li>
+    <li>Production infrastructure items listed in Chapter 9: malware-scanning engine, multi-factor sign-in, shared rate-limit store and live payment and registry integrations.</li>
+  </ul>
+</section>
+
+<!-- ============================== 2 WHAT IT DOES ============================== -->
+<section class="chapter">
+  <h1>2. What the platform does</h1>
+  <h2>2.1 The problem it solves</h2>
+  <p>Carbon credits from agriculture depend on proving, field by field, that a change in practice stored more carbon in the soil or cut emissions. The proof must survive three reviewers:</p>
+  <ul>
+    <li>an independent <b>verification body (VVB)</b>;</li>
+    <li>a <b>registry</b> (Verra, Gold Standard or India's CCTS);</li>
+    <li>the <b>buyer</b>.</li>
+  </ul>
+  <p>Each needs to trace every credit back to a sample taken at a known GPS point on a known farm, analysed by a named laboratory, under a fixed version of the rules. Spreadsheets cannot keep that chain intact. The platform keeps every link as a database record that cannot be silently changed afterwards.</p>
+
+  <h2>2.2 The lifecycle at a glance</h2>
+  <div class="legend">Colour by phase: <i style="background:#12805c"></i>Set-up and onboarding <i style="background:#2563eb"></i>Measurement (MRV) <i style="background:#b45309"></i>Quantify, verify, issue <i style="background:#7c3aed"></i>Commercial and payout</div>
+  <div class="lifecycle">
+    <div class="lc"><span class="s">S1</span><div class="t">Catalog</div><div class="d">Standards (VCS, GS, CCTS) and project activities.</div></div>
+    <div class="lc"><span class="s">S2</span><div class="t">Methodology</div><div class="d">Versioned rules plus calculation module; author ≠ approver.</div></div>
+    <div class="lc"><span class="s">S3</span><div class="t">Farmer</div><div class="d">Registration, KYC, consent, activation.</div></div>
+    <div class="lc"><span class="s">S4</span><div class="t">Farm</div><div class="d">Boundary, ownership, land records, overlap check, GIS verification.</div></div>
+    <div class="lc"><span class="s">S5</span><div class="t">Project</div><div class="d">Farms join with carbon rights; eligibility review.</div></div>
+    <div class="lc"><span class="s">S6</span><div class="t">Methodology lock</div><div class="d">Rules engine evaluates; specialist recommends; project locks.</div></div>
+    <div class="lc ph2"><span class="s">S7</span><div class="t">MRV plan and strata</div><div class="d">Monitoring plan, strata, control sites.</div></div>
+    <div class="lc ph2"><span class="s">S8</span><div class="t">Sampling and field work</div><div class="d">Periods, sampling design, GPS points, field collection.</div></div>
+    <div class="lc ph2"><span class="s">S9</span><div class="t">Laboratory</div><div class="d">Sealed samples, custody, analysis, independent lab QA.</div></div>
+    <div class="lc ph2"><span class="s">S10</span><div class="t">Dataset QA</div><div class="d">Farm activity data; frozen, hashed dataset approved by QA.</div></div>
+    <div class="lc ph3"><span class="s">S11</span><div class="t">Calculation</div><div class="d">Readiness, frozen inputs, methodology equations, QA approval.</div></div>
+    <div class="lc ph3"><span class="s">S12</span><div class="t">Verification</div><div class="d">VVB assignment, conflict-of-interest declaration, package, decision.</div></div>
+    <div class="lc ph3"><span class="s">S13</span><div class="t">Registry</div><div class="d">Submission, registry acceptance, issuance with serial numbers.</div></div>
+    <div class="lc ph3"><span class="s">S14</span><div class="t">Credit ledger</div><div class="d">Issued batches enter an append-only ownership ledger.</div></div>
+    <div class="lc ph4"><span class="s">S15</span><div class="t">Marketplace</div><div class="d">Buyer KYC, listing, order, payment, delivery, retirement.</div></div>
+    <div class="lc ph4"><span class="s">S16–17</span><div class="t">Revenue and payouts</div><div class="d">Benefit sharing, settlement, bank-verified payouts, farmer view.</div></div>
+  </div>
+
+  <h2>2.3 The evidence chain</h2>
+  <p>At any point a reviewer can follow a credit back to its source. In the application this is the <b>Lineage</b> view, available on lab results, calculation runs, verification decisions, issuance batches, orders and payouts:</p>
+  <div class="callout info chain">
+    Farmer payout <span class="arrow">→</span> settlement run <span class="arrow">→</span> revenue record <span class="arrow">→</span> order and payment <span class="arrow">→</span> ledger transfer <span class="arrow">→</span> credit batch (vintage, serial range) <span class="arrow">→</span> registry issuance <span class="arrow">→</span> registry submission (SHA-256 snapshot) <span class="arrow">→</span> VVB decision <span class="arrow">→</span> verification package <span class="arrow">→</span> calculation report <span class="arrow">→</span> approved calculation run <span class="arrow">→</span> frozen inputs <span class="arrow">→</span> laboratory result <span class="arrow">→</span> sealed sample <span class="arrow">→</span> field collection (GPS, photo) <span class="arrow">→</span> sampling point <span class="arrow">→</span> stratum <span class="arrow">→</span> farm <span class="arrow">→</span> farmer
+  </div>
+
+  <h2>2.4 Technology in one paragraph</h2>
+  <p>The platform has three layers:</p>
+  <ul>
+    <li><b>Web application:</b> Angular, served to the browser.</li>
+    <li><b>Server API:</b> Python/FastAPI.</li>
+    <li><b>Database:</b> Microsoft SQL Server, whose geography engine measures farm areas, detects overlapping boundaries and validates GPS points.</li>
+  </ul>
+  <p>Calculations use exact decimal arithmetic, and every step records which methodology equation produced it. Documents are stored with a SHA-256 checksum, and key tables are protected by database triggers so that history cannot be edited or deleted.</p>
+</section>
+
+<!-- ============================== 3 ROLES ============================== -->
+<section class="chapter">
+  <h1>3. Organizations, roles and separation of duties</h1>
+  <p>Every user belongs to an organization and holds one or more roles. A role grants permissions, such as "approve KYC" or "confirm payment". The menu only shows the pages a user's permissions allow, and the server re-checks every request.</p>
+
+  <h2>3.1 Organization types</h2>
+  <table>
+    <thead><tr><th style="width:22%">Organization</th><th>Responsibility in the lifecycle</th><th style="width:22%">Test organization</th></tr></thead>
+    <tbody>
+      <tr><td><b>Platform</b></td><td>Runs the platform: administration, catalog, methodology specialists, marketplace compliance.</td><td>PLATFORM</td></tr>
+      <tr><td><b>Project developer</b></td><td>Onboards farmers and farms, runs projects and monitoring, calculates, submits to verification and the registry, sells credits, pays farmers.</td><td>DEV: Green Farms Developer</td></tr>
+      <tr><td><b>Farmer group / FPO</b></td><td>Farmer organization; farmers sign in to see their farms, projects and payouts.</td><td>E2EFPO</td></tr>
+      <tr><td><b>Laboratory</b></td><td>Receives sealed samples, analyses them, performs independent lab QA. Sees no farmer names or GPS locations.</td><td>LAB: Soil Test Lab</td></tr>
+      <tr><td><b>VVB / ACVA</b></td><td>Independent validation and verification body. Sees only the package it was assigned, through a separate restricted interface.</td><td>VVB: Verify Co</td></tr>
+      <tr><td><b>Registry</b></td><td>External counterparty (Verra, Gold Standard, CCTS). Its responses are recorded with reference numbers and PDF evidence.</td><td>E2EREG: test registry</td></tr>
+      <tr><td><b>Buyer</b></td><td>Buys credits on the marketplace after KYC; holds and retires them.</td><td>BUY: Buyer Co</td></tr>
+    </tbody>
+  </table>
+
+  <h2>3.2 Roles and what each one does</h2>
+  <table>
+    <thead><tr><th style="width:26%">Role</th><th style="width:16%">Organization</th><th>Main responsibilities</th></tr></thead>
+    <tbody>
+      <tr><td>Platform Admin</td><td>Platform</td><td>Organizations, users, roles, consent types, standards and activities catalog, audit log, background jobs, security center.</td></tr>
+      <tr><td>Methodology Specialist (×2)</td><td>Platform</td><td>One writes a methodology version and its rules; a second approves it. Recommends the methodology for a project.</td></tr>
+      <tr><td>Marketplace Compliance</td><td>Platform</td><td>Verifies buyer KYC.</td></tr>
+      <tr><td>Project Manager</td><td>Developer</td><td>Registers farmers and farms, creates projects, confirms the methodology lock, proposes the VVB, records benefit-sharing terms and costs.</td></tr>
+      <tr><td>QA Officer</td><td>Developer</td><td>Approves KYC, carbon rights, eligibility, MRV plan, datasets and calculations; confirms issuances, ledger openings and deliveries.</td></tr>
+      <tr><td>GIS Specialist</td><td>Developer</td><td>Verifies farm boundaries and ownership, accepts project boundaries, approves strata and sampling designs.</td></tr>
+      <tr><td>MRV Manager</td><td>Developer</td><td>Creates the monitoring plan, periods, strata, sampling designs, records monitoring data, prepares datasets, engages the laboratory.</td></tr>
+      <tr><td>Field Supervisor</td><td>Developer</td><td>Assigns sampling points to collectors, accepts field records, ships samples.</td></tr>
+      <tr><td>Field Collector / Agent</td><td>Developer</td><td>Collects samples at assigned points on a phone (GPS, photos, checklist), registers and seals samples. Approves nothing.</td></tr>
+      <tr><td>Calculation Analyst</td><td>Developer</td><td>Runs calculations: readiness check, input freeze, execution, response to QA findings.</td></tr>
+      <tr><td>Registry Manager</td><td>Developer</td><td>Registry accounts, project registration, issuance submissions, records issuance.</td></tr>
+      <tr><td>Credit Manager</td><td>Developer</td><td>Opens issued batches in the ledger, creates marketplace listings.</td></tr>
+      <tr><td>Finance Manager (×4 in test)</td><td>Developer</td><td>Approves listings, confirms buyer payments, approves costs and sharing terms, calculates and approves settlements, approves and executes payouts, reconciles.</td></tr>
+      <tr><td>Lab Manager / Lab QA</td><td>Laboratory</td><td>Accepts engagements; a separate person performs independent QA of results.</td></tr>
+      <tr><td>Lab Technician</td><td>Laboratory</td><td>Receives samples, checks seals, registers, analyses, uploads the lab report.</td></tr>
+      <tr><td>VVB Reviewer (×2)</td><td>VVB</td><td>Accepts assignments with a conflict-of-interest declaration, reviews the package, raises findings. The decision is recorded by a reviewer who did not raise findings on that package.</td></tr>
+      <tr><td>Buyer</td><td>Buyer</td><td>Buyer profile and KYC, orders, payment proof, holdings, retirement requests.</td></tr>
+      <tr><td>Farmer</td><td>Farmer group</td><td>Self-service: own profile, farms, project participation and payouts.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>3.3 Separation of duties (the "four-eyes" principle)</h2>
+  <p>The platform enforces that <b>whoever submits or records something can never approve or confirm it</b>. The server enforces this, not the screen: a missing button is a convenience, and the server would refuse the action anyway with the code <code>SEPARATION_OF_DUTIES</code>.</p>
+  <table class="avoid">
+    <thead><tr><th>Action</th><th>Done by</th><th>Must be approved / confirmed by a different person</th></tr></thead>
+    <tbody>
+      <tr><td>Methodology version</td><td>Author specialist</td><td>Second specialist</td></tr>
+      <tr><td>Calculation module production readiness</td><td>Requesting specialist</td><td>Second specialist</td></tr>
+      <tr><td>Farmer KYC</td><td>Project manager</td><td>QA officer</td></tr>
+      <tr><td>Farm verification</td><td>Submitter</td><td>GIS specialist</td></tr>
+      <tr><td>Project eligibility, carbon rights</td><td>Project manager</td><td>QA officer</td></tr>
+      <tr><td>Methodology confirmation</td><td>Recommended by a specialist</td><td>Confirmed by the project manager (the recommender cannot lock)</td></tr>
+      <tr><td>MRV plan, stratum, sampling design, dataset</td><td>MRV manager</td><td>QA officer / GIS specialist</td></tr>
+      <tr><td>Field record</td><td>Collector</td><td>Supervisor</td></tr>
+      <tr><td>Lab engagement / lab result</td><td>Proposer / technician</td><td>Lab manager / lab QA</td></tr>
+      <tr><td>Calculation run</td><td>Analyst</td><td>QA officer</td></tr>
+      <tr><td>VVB findings and decision</td><td>VVB reviewer who raised findings</td><td>Second VVB reviewer records the decision</td></tr>
+      <tr><td>Registry issuance, ledger opening</td><td>Registry / credit manager</td><td>QA officer</td></tr>
+      <tr><td>Listing, buyer payment</td><td>Credit manager / buyer</td><td>Seller finance</td></tr>
+      <tr><td>Settlement, payout</td><td>Finance calculator</td><td>A second finance manager approves; a third executes</td></tr>
+      <tr><td>Farmer bank account</td><td>Project manager adds</td><td>Finance verifies</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ============================== 4 CONTROLS ============================== -->
+<section class="chapter">
+  <h1>4. Controls that apply everywhere</h1>
+  <div class="facts">
+    <div class="fact"><h4>Audit trail</h4><p>Every action is logged with the user, time, organization and the <b>reason</b> they typed. Audit tables are append-only, enforced by database triggers. See <b>Administration → Audit log</b>.</p></div>
+    <div class="fact"><h4>Reasons required</h4><p>Almost every state change asks for a reason of at least 3 characters, which is kept in the history.</p></div>
+    <div class="fact"><h4>"Still needed" checklists</h4><p>Detail pages show what is missing before the next step is allowed. Errors name the business rule, e.g. <code>REQUIREMENTS_NOT_MET</code>, and the field at fault.</p></div>
+    <div class="fact"><h4>Status history</h4><p>Projects, farms, periods, runs and other records keep a full status history: who moved it, when and why.</p></div>
+    <div class="fact"><h4>Frozen, hashed snapshots</h4><p>Datasets, calculation inputs, calculation reports, verification packages and registry submissions are frozen and fingerprinted with SHA-256. Any later change is detected.</p></div>
+    <div class="fact"><h4>Immutable approved records</h4><p>An approved methodology version, an approved lab result or an issued batch is never edited. Changes create a new version that supersedes the old one, and both stay visible.</p></div>
+    <div class="fact"><h4>Documents</h4><p>The file type is detected from the content, not the file name. Every file gets a SHA-256 checksum and a malware-scan hook, and suspicious files go to <b>Document quarantine</b>. KYC and bank documents are restricted.</p></div>
+    <div class="fact"><h4>Personal data protection</h4><p>KYC ID numbers are stored only as a keyed fingerprint plus the last 4 digits (shown as ••••9012). Bank account numbers are encrypted. Labs, VVBs and buyers never see farmer names, contacts or GPS locations.</p></div>
+    <div class="fact"><h4>Sign-in security</h4><p>Passwords have at least 12 characters with letters and digits. A temporary password must be changed at first sign-in. Accounts lock for 15 minutes after 5 failures. Sign-in is rate-limited, sessions are short-lived and refresh tokens rotate.</p></div>
+    <div class="fact"><h4>Organization isolation</h4><p>Users only see records of their own organization. A record outside their scope returns "not found", so its existence is not revealed.</p></div>
+    <div class="fact"><h4>Environments</h4><p>Records carry an environment (LIVE / TEST / DEMO). Calculation modules not yet signed off are blocked in production.</p></div>
+    <div class="fact"><h4>No silent recalculation</h4><p>A recalculation after verification or issuance creates a new run and invalidates the old package; nothing already issued is changed.</p></div>
+  </div>
+</section>
+
+<!-- ============================== 5 HOW TO READ ============================== -->
+<section>
+  <h2>5. How to read the stage chapters</h2>
+  <p>Each stage chapter (S0–S17) follows the same layout:</p>
+  <ul>
+    <li><b>Purpose:</b> why the stage exists.</li>
+    <li><b>Who:</b> the roles involved.</li>
+    <li><b>Steps:</b> the actions in order, with the screen to use and the expected result.</li>
+    <li><b>Controls:</b> what the platform checks or enforces.</li>
+    <li><b>Output:</b> what the stage hands to the next one.</li>
+    <li><b>How to test:</b> positive checks marked <span class="ok">✔</span>, and negative tests marked <span class="neg">✖ must be refused</span>. A refusal is a pass: it proves the control works.</li>
+  </ul>
+  <p>Screen names in <b>bold</b> match the application menu exactly, e.g. <b>Projects → MRV</b>. The example values are the ones used in the recorded test runs.</p>
+  <div class="callout info"><b>Tester tips</b>
+  <ul style="margin:0">
+    <li>Keep two or three browser windows open (normal, private and a second browser). Each holds its own sign-in, so testers can act as different people side by side.</li>
+    <li>Date boxes use month/day/year.</li>
+    <li>For field work, use the phone view (F12, then Ctrl+Shift+M in the browser).</li>
+  </ul></div>
+</section>
+
+<!-- ============================== S0 ============================== -->
+<section class="chapter">
+  <div class="stagehead"><div class="no">S0</div><h1>Environment and access</h1></div>
+  <div class="facts">
+    <div class="fact"><h4>Purpose</h4><p>Bring up a working environment with organizations and user accounts so that each role can be exercised.</p></div>
+    <div class="fact"><h4>Who</h4><p>System administrator (command line, once), then Platform Admin (in the application).</p></div>
+  </div>
+  <h3>Steps</h3>
+  <table>
+    <thead><tr><th style="width:5%">#</th><th style="width:20%">Who</th><th>Action</th><th style="width:28%">Expected result</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>System admin</td><td>Create the SQL Server database, fill in the settings file (database address, secret keys), run <code>manage.py setup</code>. This runs all database migrations and loads reference data.</td><td>About 140 tables; 96 permissions, 21 system roles, the PLATFORM organization and the "Personal data processing" consent type.</td></tr>
+      <tr><td>2</td><td>System admin</td><td>Run <code>manage.py bootstrap-admin</code>.</td><td>The first Platform Admin, with a temporary password.</td></tr>
+      <tr><td>3</td><td>System admin</td><td>Start the backend and the web application; open the site.</td><td>Sign-in page.</td></tr>
+      <tr><td>4</td><td>Platform Admin</td><td>Sign in, set a new password.</td><td>Forced password change, then the dashboard.</td></tr>
+      <tr><td>5</td><td>Platform Admin</td><td><b>Administration → Organizations</b>: create Developer, Laboratory, VVB, Buyer, Registry and Farmer-group organizations.</td><td>Organizations listed and active.</td></tr>
+      <tr><td>6</td><td>Platform Admin</td><td><b>Administration → Users → New user</b>: one user per role (Appendix A), each with a temporary password.</td><td>Users created; each must change password at first sign-in.</td></tr>
+    </tbody>
+  </table>
+  <h3>How to test</h3>
+  <ul>
+    <li><span class="ok">✔</span> Sign in as the project manager: the menu shows only project-developer pages (Field operations, Projects, MRV …), not Administration.</li>
+    <li><span class="ok">✔</span> A user with a temporary password cannot use any page until the password is changed.</li>
+    <li><span class="neg">✖</span> Five wrong passwords lock the account for 15 minutes, and the error message does not reveal whether the email exists.</li>
+    <li><span class="neg">✖</span> A lab technician opening the MRV page directly by address gets "You don't have access to this page".</li>
+  </ul>
+</section>
+
+<!-- ============================== S1 ============================== -->
+<section>
+  <div class="stagehead" style="margin-top:22px"><div class="no">S1</div><h1>Catalog: standards and activities</h1></div>
+  <div class="facts">
+    <div class="fact"><h4>Purpose</h4><p>Define the carbon standards the platform works with, and the project activities offered under each. Everything downstream (methodology candidates, project set-up) filters on this catalog.</p></div>
+    <div class="fact"><h4>Who / where</h4><p>Platform Admin · <b>Projects → Standards &amp; activities</b>; <b>Administration → Consent types</b>.</p></div>
+  </div>
+  <table>
+    <thead><tr><th style="width:5%">#</th><th>Action</th><th style="width:34%">Expected result</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Check <b>Administration → Consent types</b>.</td><td>"Personal data processing" (DATA_PROCESSING, v1) is Active. It is required to activate a farmer.</td></tr>
+      <tr><td>2</td><td>Add standard: Code <code>VCS</code>, Name "Verified Carbon Standard", Programme owner "Verra", Type Voluntary. Similarly <code>GS</code> (Gold Standard) and CCTS (Bureau of Energy Efficiency, compliance) as needed.</td><td>Standard listed.</td></tr>
+      <tr><td>3</td><td>Add activity: Code <code>IALM</code>, "Improved agricultural land management", <b>Offered under</b> ✔ Verified Carbon Standard. Others: <code>AGR-SOC</code> (GS), <code>ARR</code> (VCS) …</td><td>The activity shows "Offered under: Verified Carbon Standard".</td></tr>
+    </tbody>
+  </table>
+  <ul>
+    <li><span class="ok">✔</span> An activity not linked to a standard never appears later in project set-up or methodology candidates.</li>
+    <li><span class="neg">✖</span> A non-admin user does not see <b>Standards &amp; activities</b> in the menu.</li>
+  </ul>
+</section>
+
+<!-- ============================== S2 ============================== -->
+<section class="chapter">
+  <div class="stagehead"><div class="no">S2</div><h1>Methodology and calculation module</h1></div>
+  <div class="facts">
+    <div class="fact"><h4>Purpose</h4><p>Encode a carbon methodology (e.g. Verra VM0042 v2.2) as a versioned, approved set of rules: when it applies, what must be monitored, how samples are taken. Then attach the <b>calculation module</b> that implements its equations.</p></div>
+    <div class="fact"><h4>Who / where</h4><p>Methodology Specialist 1 (author), Methodology Specialist 2 (approver) · <b>Projects → Methodologies</b>.</p></div>
+  </div>
+  <h3>Steps</h3>
+  <table>
+    <thead><tr><th style="width:5%">#</th><th style="width:13%">Who</th><th>Action</th><th style="width:30%">Expected result</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Spec. 1</td><td><b>Add a methodology</b>: Code <code>VM0042</code>, Name "Improved Agricultural Land Management", Standard VCS, Activity IALM.</td><td>Methodology created.</td></tr>
+      <tr><td>2</td><td>Spec. 1</td><td>New draft version, label <code>2.2</code>. Details: Effective from 10/21/2025; Source "Verra VM0042 v2.2".</td><td>Draft version.</td></tr>
+      <tr><td>3</td><td>Spec. 1</td><td><b>Calculation tab → Calculation module</b>: choose "VM0042 v2.2 – SOC measure &amp; remeasure (QA2) + default-factor emissions (QA3)" → <b>Use this module</b>.</td><td>The draft receives 8 calculation rules, 13 monitoring rules (organic carbon and soil mass from the lab; fertiliser, fuel, lime, residue burning, irrigation per farm; risk rating per project) and a sampling rule (minimum 3 samples per stratum, core details required).</td></tr>
+      <tr><td>4</td><td>Spec. 1</td><td><b>Applicability tab</b>: rule A1 <code>standard_code EQUALS "VCS"</code>, rule A2 <code>activity_code EQUALS "IALM"</code>, each "Not applicable" if it fails.</td><td>Two rules.</td></tr>
+      <tr><td>5</td><td>Spec. 1</td><td><b>Submit for approval</b>.</td><td>Status <b>In review</b>.</td></tr>
+      <tr><td>6</td><td>Spec. 2</td><td>Open the version → <b>Approve</b>.</td><td>Status <b>Approved</b>; all rules become read-only. "Calculation: Not production ready" is shown.</td></tr>
+      <tr><td>7</td><td>Spec. 1 → 2</td><td>(Production only, after the expert review.) <b>Request production readiness</b> with the expert's evidence summary; Spec. 2 approves.</td><td>Module allowed in production.</td></tr>
+    </tbody>
+  </table>
+  <h3>Controls</h3>
+  <ul>
+    <li>An approved version is immutable; changes need a new version.</li>
+    <li>A version can only be offered to projects that start on or after its effective date.</li>
+    <li>The Calculation tab lists every data item the module needs and every interpretation of the methodology text it uses, so the expert reviewer can check each one.</li>
+    <li>One version holds one module. A methodology with several modules (e.g. Gold Standard SOC) uses labels such as <code>1.0-ZT</code> and <code>1.0-CC-A3</code>.</li>
+  </ul>
+  <h3>How to test</h3>
+  <ul>
+    <li><span class="neg">✖</span> The author tries <b>Approve</b> on their own submission: refused.</li>
+    <li><span class="neg">✖</span> Editing a rule on the approved version: not possible.</li>
+    <li><span class="ok">✔</span> The module can be switched while the version is a draft, and the generated rules change with it.</li>
+  </ul>
+</section>
+
+<!-- ============================== S3 ============================== -->
+<section class="chapter">
+  <div class="stagehead"><div class="no">S3</div><h1>Farmer onboarding</h1></div>
+  <div class="facts">
+    <div class="fact"><h4>Purpose</h4><p>Register each participating farmer with verified identity (KYC) and recorded consent to process their personal data, before they can join a project.</p></div>
+    <div class="fact"><h4>Who / where</h4><p>Project Manager, QA Officer · <b>Field operations → Farmers</b>.</p></div>
+  </div>
+  <table>
+    <thead><tr><th style="width:5%">#</th><th style="width:12%">Who</th><th>Action</th><th style="width:30%">Expected result</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>PM</td><td><b>Register farmer</b>: managing organization, full name "Ramesh Patil", phone, village Pimpalgaon, district Nashik, state Maharashtra, country IN.</td><td>Code <code>FRM-2026-000001</code>, status <b>Draft</b>.</td></tr>
+      <tr><td>2</td><td>PM</td><td>Move to <b>Registered</b>.</td><td>Registered.</td></tr>
+      <tr><td>3</td><td>PM</td><td><b>KYC</b> tab: upload ID document (PDF/PNG/JPG), ID type, ID number <code>1234 5678 9012</code> → submit.</td><td><b>KYC pending</b>; number shown as <code>••••9012</code>.</td></tr>
+      <tr><td>4</td><td>QA</td><td>Same farmer → KYC → <b>Approve</b>.</td><td><b>KYC verified</b>.</td></tr>
+      <tr><td>5</td><td>PM</td><td><b>Consents</b> tab: "Personal data processing", text version v1, captured by "Paper signed" → <b>Record consent</b>.</td><td>Consent recorded; checklist item ticked.</td></tr>
+      <tr><td>6</td><td>PM</td><td><b>Activate</b>.</td><td>Status <b>Active</b>.</td></tr>
+      <tr><td>7</td><td>PM</td><td>(Before payouts) Add the farmer's bank account; Finance verifies it.</td><td>Primary verified bank account; only last 4 digits shown.</td></tr>
+      <tr><td>8</td><td>PM</td><td>(Optional) Link a farmer login to the profile, for self-service.</td><td>Farmer sees "My farm" pages.</td></tr>
+    </tbody>
+  </table>
+  <ul>
+    <li><span class="neg">✖</span> The PM tries to approve the KYC they submitted: refused or no button.</li>
+    <li><span class="neg">✖</span> <b>Activate</b> without verified KYC and recorded consent: blocked; the "still needed" checklist names what is missing.</li>
+    <li><span class="ok">✔</span> The full ID number is never displayed again after submission.</li>
+  </ul>
+</section>
+
+<!-- ============================== S4 ============================== -->
+<section>
+  <div class="stagehead" style="margin-top:22px"><div class="no">S4</div><h1>Farm registration and GIS verification</h1></div>
+  <div class="facts">
+    <div class="fact"><h4>Purpose</h4><p>Record each farm's exact boundary, ownership and land records. Check that it does not overlap other farms, and have a GIS specialist verify it. Credits are only ever claimed on verified land.</p></div>
+    <div class="fact"><h4>Who / where</h4><p>Project Manager, GIS Specialist · <b>Field operations → Farms</b>.</p></div>
+  </div>
+  <table>
+    <thead><tr><th style="width:5%">#</th><th style="width:12%">Who</th><th>Action</th><th style="width:30%">Expected result</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>PM</td><td><b>New farm</b>: farmer, farm name "Pimpalgaon plot 1", land tenure Owned, declared area 2 ha, location → <b>Create farm and draw boundary</b>.</td><td><code>FARM-2026-000001</code>, <b>Draft</b>.</td></tr>
+      <tr><td>2</td><td>PM</td><td><b>Boundary</b> tab: click corners on the map, paste coordinates, or import GeoJSON/KML → <b>Check boundary</b> → <b>Save as new boundary version</b>.</td><td>"Measured by SQL Server ≈ 2.2 ha". Boundary versions are kept.</td></tr>
+      <tr><td>3</td><td>PM</td><td><b>Documents</b> tab: upload the land record (e.g. 7/12 extract) as category LAND_RECORD.</td><td>Document stored with checksum.</td></tr>
+      <tr><td>4</td><td>PM</td><td><b>Ownership</b> tab: owner type Farmer, relationship Owner, share 100 %, title/survey reference, valid from, and <b>Evidence document</b> (the newest land record is preselected) → save.</td><td>Ownership record showing "Evidence: 7/12 extract …".</td></tr>
+      <tr><td>5</td><td>PM</td><td><b>Submit</b>.</td><td><b>Submitted</b>; the overlap check runs against all other farms.</td></tr>
+      <tr><td>6</td><td>GIS</td><td>Ownership → <b>Verify</b> the record; header → <b>Start review</b>; <b>Overlaps</b> tab → clear or resolve anything listed; <b>Verify</b>.</td><td>Farm <b>Verified</b>; land-records card shows "Verified".</td></tr>
+    </tbody>
+  </table>
+  <h3>Supporting information on the farm page</h3>
+  <ul>
+    <li><b>History</b> tab: land use, crops and practices by year (historical and proposed), used for baseline and eligibility.</li>
+    <li><b>Map</b>: opens in <b>3D</b> by default (terrain view). The boundary editor stays 2D for precise drawing, and browsers without 3D support fall back to 2D automatically.</li>
+    <li><b>External data</b> tab: weather, soil reference and satellite indicators (Chapter 7). These are for reference only and never feed the calculation.</li>
+    <li><b>Land-records card</b>: shows one of Missing, Uploaded (ownership to be recorded), Awaiting GIS review, Not linked to ownership, or Verified, with a hint and buttons for the next action.</li>
+  </ul>
+  <ul>
+    <li><span class="neg">✖</span> The submitter looks for <b>Verify</b>: not available.</li>
+    <li><span class="neg">✖</span> Uploading a file renamed to <code>.pdf</code> that is not a PDF: rejected (the type is detected from the content).</li>
+    <li><span class="ok">✔</span> A second farm drawn across the first one is flagged in <b>Overlaps</b> and cannot be verified until resolved.</li>
+  </ul>
+</section>
+
+<!-- ============================== S5 ============================== -->
+<section class="chapter">
+  <div class="stagehead"><div class="no">S5</div><h1>Project and eligibility</h1></div>
+  <div class="facts">
+    <div class="fact"><h4>Purpose</h4><p>Group verified farms into a carbon project. Each farm's carbon rights must be documented. The project's standard, activity, crediting period and baseline are recorded, and it passes an eligibility review.</p></div>
+    <div class="fact"><h4>Who / where</h4><p>Project Manager, GIS Specialist, QA Officer · <b>Projects → Projects</b>.</p></div>
+  </div>
+  <table>
+    <thead><tr><th style="width:5%">#</th><th style="width:12%">Who</th><th>Action</th><th style="width:30%">Expected result</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>PM</td><td><b>New project</b>: organization, name "Nashik soil carbon pilot", country IN, region Maharashtra, planned start 11/01/2025.</td><td><code>PRJ-2026-000001</code>, <b>Draft</b>.</td></tr>
+      <tr><td>2</td><td>PM</td><td><b>Start data collection</b>.</td><td><b>Data collection</b>.</td></tr>
+      <tr><td>3</td><td>PM</td><td><b>Farms</b> tab: add the verified farm with its agreement/evidence reference (e.g. "Participation agreement clause 4").</td><td>Farm listed with a "Rights" chip.</td></tr>
+      <tr><td>4</td><td>PM</td><td><b>Boundary</b> tab: view the project area.</td><td>Area computed by SQL Server from member farms.</td></tr>
+      <tr><td>5</td><td>PM</td><td><b>Team</b> tab: add QA officer and other team members.</td><td>Team listed.</td></tr>
+      <tr><td>6</td><td>PM</td><td><b>Standard &amp; activity</b> tab: select VCS and IALM.</td><td>Both "(current)".</td></tr>
+      <tr><td>7</td><td>PM</td><td><b>Crediting &amp; baseline</b>: crediting period 11/01/2025–10/31/2035; baseline period and description "Conventional tillage, residue burning".</td><td>Both recorded.</td></tr>
+      <tr><td>8</td><td>PM</td><td><b>Submit for eligibility review</b>.</td><td><b>Eligibility review</b>.</td></tr>
+      <tr><td>9</td><td>GIS</td><td><b>Boundary</b> tab → <b>Accept boundary</b>.</td><td>Review: Accepted.</td></tr>
+      <tr><td>10</td><td>QA</td><td><b>Carbon rights</b> tab → <b>Verify</b>; then <b>Approve eligibility</b>.</td><td><b>Standard selected</b>.</td></tr>
+      <tr><td>11</td><td>PM</td><td><b>Confirm activity</b>.</td><td><b>Activity selected</b>.</td></tr>
+    </tbody>
+  </table>
+  <ul>
+    <li><span class="neg">✖</span> The PM looks for <b>Approve eligibility</b> on their own submission: not shown.</li>
+    <li><span class="neg">✖</span> Adding an unverified farm to the project: refused (<code>FARM_NOT_VERIFIED</code>).</li>
+    <li><span class="neg">✖</span> Adding a farm that conflicts with another project (overlapping participation): refused until the conflict is acknowledged with a note (<code>CONFLICTS_REQUIRE_ACKNOWLEDGEMENT</code>); the conflict is then reviewed during eligibility.</li>
+    <li><span class="neg">✖</span> Approving eligibility while a participating farm still has an OPEN overlap flag: refused (<code>REQUIREMENTS_NOT_MET</code>). The GIS specialist must first clear or confirm the flag on the farm's <b>Overlaps</b> tab.</li>
+    <li><span class="neg">✖</span> Carbon-rights shares for one farm totalling more than 100 %: refused.</li>
+  </ul>
+</section>
+
+<!-- ============================== S6 ============================== -->
+<section>
+  <div class="stagehead" style="margin-top:22px"><div class="no">S6</div><h1>Methodology selection and lock</h1></div>
+  <div class="facts">
+    <div class="fact"><h4>Purpose</h4><p>Decide which approved methodology version governs the project. The rules engine proposes candidates, a specialist recommends one, and the project locks on it. From then on all monitoring follows that version.</p></div>
+    <div class="fact"><h4>Who / where</h4><p>Project Manager, Methodology Specialist · Project → <b>Methodology</b> tab.</p></div>
+  </div>
+  <table>
+    <thead><tr><th style="width:5%">#</th><th style="width:12%">Who</th><th>Action</th><th style="width:34%">Expected result</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>PM</td><td><b>Evaluate candidates</b>.</td><td>"VM0042 2.2: Applicable", with each rule shown (A1 ✔, A2 ✔). Status <b>Methodology review</b>.</td></tr>
+      <tr><td>2</td><td>Spec. 1</td><td>Expand the candidate → <b>Recommend</b>.</td><td>"Recommended by …".</td></tr>
+      <tr><td>3</td><td>PM</td><td><b>Confirm &amp; lock</b>.</td><td>Lock card "VM0042 2.2"; status <b>Methodology confirmed</b>.</td></tr>
+    </tbody>
+  </table>
+  <ul>
+    <li><span class="neg">✖</span> The recommending specialist tries <b>Confirm &amp; lock</b>: not allowed.</li>
+    <li><span class="neg">✖</span> Re-evaluating after the recommendation and then locking: refused with <code>EVALUATION_OUTDATED</code>; a fresh recommendation is required.</li>
+    <li><span class="ok">✔</span> <b>Status history</b> shows: Draft → Data collection → Eligibility review → Standard selected → Activity selected → Methodology review → Methodology confirmed.</li>
+    <li><span class="ok">✔</span> A project starting before the version's effective date gets no candidate for that version.</li>
+  </ul>
+</section>
+
+<!-- ============================== S7 ============================== -->
+<section class="chapter">
+  <div class="stagehead"><div class="no">S7</div><h1>MRV planning, strata and control sites</h1></div>
+  <div class="facts">
+    <div class="fact"><h4>Purpose</h4><p>Plan the monitoring the methodology requires. Divide the project land into <b>strata</b> (areas with similar soil and climate, sampled separately) and, where the methodology requires a baseline from comparable land, register <b>control sites</b>.</p></div>
+    <div class="fact"><h4>Who / where</h4><p>MRV Manager, QA Officer, GIS Specialist · <b>Projects → MRV</b> → project.</p></div>
+  </div>
+  <table>
+    <thead><tr><th style="width:5%">#</th><th style="width:12%">Who</th><th>Action</th><th style="width:32%">Expected result</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>MRV</td><td><b>Create MRV plan</b>: frequency Annual, approach Measure-and-remeasure, dates, required evidence "Field photos, GPS, lab report" → create → <b>Submit for approval</b>.</td><td>The methodology's monitoring rules are added automatically; <b>Submitted</b>.</td></tr>
+      <tr><td>2</td><td>QA</td><td><b>MRV plans</b> → <b>Approve</b>.</td><td>Approved; project <b>MRV planned</b>.</td></tr>
+      <tr><td>3</td><td>MRV</td><td><b>Stratification</b>: project stratum <code>S1</code>, tick the project farm(s), characteristics SOIL_TEXTURE, SOIL_GROUP, PRECIPITATION_MM (e.g. 750).</td><td>Stratum draft.</td></tr>
+      <tr><td>4</td><td>MRV</td><td>(VM0042) Switch to <b>Control site</b>: create C1, C2, C3, one non-project farm each, <b>Represents S1</b>, with the same texture and soil group and rainfall within 100 mm.</td><td>Control strata draft.</td></tr>
+      <tr><td>5</td><td>GIS</td><td>Approve each stratum.</td><td>Checklist: "3 of at least 3" control sites; "Every stratum has a control site".</td></tr>
+    </tbody>
+  </table>
+  <h3>Controls</h3>
+  <ul>
+    <li>MRV is only possible on a project whose methodology is locked.</li>
+    <li>Control sites must be verified farms of the same organization that are <i>not</i> in the project. Their sampling points are placed inside the control farm, not the project boundary.</li>
+    <li>If the methodology leaves something unconfigured, a yellow <code>CONFIGURATION_REQUIRED</code> note appears. The approver must explicitly acknowledge it, and the acknowledgement is audited.</li>
+  </ul>
+  <div class="callout warn"><b>Open decision: strata inside a farm</b>
+  Today a stratum is built from whole farms (each farm belongs to one stratum). VM0042 allows, and the rice methodology VM0051 requires, splitting a single field into several strata when soil or management differs within it. Research with methodology quotes is complete; the proposal is to allow stratum polygons drawn inside farms while keeping whole-farm strata as the default. This is awaiting a management decision (Chapter 9).</div>
+  <ul>
+    <li><span class="neg">✖</span> A stratum approved by the person who created it: refused.</li>
+    <li><span class="neg">✖</span> A control site that matches the project stratum poorly (different soil group, or rainfall more than 100 mm apart): flagged; the calculation reports <code>CONTROL_SITES_REQUIRED</code>.</li>
+  </ul>
+</section>
+
+<!-- ============================== S8 ============================== -->
+<section class="chapter">
+  <div class="stagehead"><div class="no">S8</div><h1>Monitoring periods, sampling and field collection</h1></div>
+  <div class="facts">
+    <div class="fact"><h4>Purpose</h4><p>Define the monitoring periods and generate statistically placed sampling points. Field collectors then visit each point with a phone and record GPS, depth, core details, a photo and a checklist.</p></div>
+    <div class="fact"><h4>Who / where</h4><p>MRV Manager, GIS Specialist, Field Supervisor, Field Collector · <b>Projects → MRV</b>; <b>Field operations → Field work</b> (phone).</p></div>
+  </div>
+  <table>
+    <thead><tr><th style="width:5%">#</th><th style="width:12%">Who</th><th>Action</th><th style="width:30%">Expected result</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>MRV</td><td><b>Monitoring periods</b>: <b>Period 0</b>, purpose BASELINE, 2025-11-01 → 2026-05-31 (the sampling at time zero), and <b>Period 1</b>, purpose MONITORING, 2026-06-01 → 2027-05-31 (the re-measurement). For each: <b>Mark planned</b> → <b>Start period</b> → <b>Open data collection</b>.</td><td>Periods in <b>Data collection</b>; project <b>Monitoring</b>.</td></tr>
+      <tr><td>2</td><td>MRV</td><td><b>Sampling design</b> per period: code, type (stratified random / systematic grid), method "Soil auger", depth 0–50 cm, target precision and confidence, number of samples per stratum and per control site (e.g. 3).</td><td>Draft design.</td></tr>
+      <tr><td>3</td><td>GIS</td><td><b>Approve design</b>.</td><td>Approved.</td></tr>
+      <tr><td>4</td><td>MRV</td><td><b>Generate sampling points</b>.</td><td>"Points generated (SQL Server validated)"; points shown on the map inside each farm.</td></tr>
+      <tr><td>5</td><td>Supervisor</td><td><b>Points &amp; assignments</b> → select unassigned → choose collector → <b>Assign</b>.</td><td>Assigned.</td></tr>
+      <tr><td>6</td><td>Collector</td><td><b>Field work</b> (phone) → <b>Start collection</b> on each point: coordinates, time, depth 0/50, <b>probe inside diameter</b> (e.g. 21.5 mm), <b>number of cores</b> (e.g. 4), checklist, photo → <b>Save &amp; submit</b>.</td><td>Records <b>Submitted</b>.</td></tr>
+      <tr><td>7</td><td>Supervisor</td><td><b>Accept</b> each record (or return it with a reason).</td><td>Records <b>Accepted</b>.</td></tr>
+    </tbody>
+  </table>
+  <h3>Controls</h3>
+  <ul>
+    <li>Collectors see and change only their own assigned points and approve nothing.</li>
+    <li>Field records are validated: no future dates, whole-number depths, and a location consistent with the planned point. Relocating a point needs an approval.</li>
+    <li>Core details (probe diameter, number of cores) are mandatory where the methodology requires them; they are needed to compute soil mass.</li>
+  </ul>
+  <ul>
+    <li><span class="neg">✖</span> The collector tries to accept their own record: not allowed.</li>
+    <li><span class="neg">✖</span> Submitting a field record with a future collection date: refused (<code>REQUIREMENTS_NOT_MET</code>, "a collection time that is not in the future"). A draft may be saved incomplete; the checks run at submission.</li>
+    <li><span class="ok">✔</span> Point generation on a farm too small for the requested count: <code>INSUFFICIENT_AREA</code>.</li>
+  </ul>
+</section>
+
+<!-- ============================== S9 ============================== -->
+<section class="chapter">
+  <div class="stagehead"><div class="no">S9</div><h1>Laboratory analysis</h1></div>
+  <div class="facts">
+    <div class="fact"><h4>Purpose</h4><p>Analyse soil samples under an unbroken chain of custody. Samples are registered and sealed in the field, shipped, received with a seal check, analysed, and QA-approved by a second lab person.</p></div>
+    <div class="fact"><h4>Who / where</h4><p>MRV Manager, Collector, Supervisor (developer side) · Lab Manager, Lab Technician, Lab QA (lab side) · <b>MRV → Samples &amp; laboratory</b>; <b>Laboratory</b>.</p></div>
+  </div>
+  <table>
+    <thead><tr><th style="width:5%">#</th><th style="width:12%">Who</th><th>Action</th><th style="width:30%">Expected result</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>MRV</td><td>Propose a <b>lab engagement</b>: laboratory "Soil Test Lab", tick the parameters (VM0042: organic carbon <code>V42_OC</code>, soil mass <code>V42_SOIL_MASS</code>).</td><td>Proposed.</td></tr>
+      <tr><td>2</td><td>Lab manager</td><td><b>Laboratory → Engagements</b> → <b>Accept</b>.</td><td><b>Active</b>.</td></tr>
+      <tr><td>3</td><td>Collector</td><td>On each accepted field record register <b>two depth samples</b> (0–30 cm and 30–50 cm), e.g. "Topsoil core", 500 g, label BAG-01, then seal (SEAL-0001).</td><td>Samples <code>SMP-2026-…</code> <b>Sealed</b>; one lab test per parameter created automatically.</td></tr>
+      <tr><td>4</td><td>Supervisor</td><td>Create shipment to the lab, add samples, <b>Dispatch</b>.</td><td>Dispatched.</td></tr>
+      <tr><td>5</td><td>Lab tech</td><td><b>Incoming</b>: for each sample record the seal observed and condition → <b>Record receipt</b>; <b>Samples</b>: accession number → <b>Register</b>.</td><td>Received; Registered.</td></tr>
+      <tr><td>6</td><td>Lab tech</td><td><b>Worklist</b> → each test → <b>Start test</b> → method (e.g. Walkley-Black), value (organic carbon e.g. 12.5 g/kg; dry fine-earth mass e.g. 280 g), unit, time → <b>Save result</b> → upload the PDF lab report → <b>Submit for QA</b>.</td><td>Submitted.</td></tr>
+      <tr><td>7</td><td>Lab QA</td><td><b>Laboratory → QA</b> → <b>Review</b> → <b>Start QA review</b> (12 automatic checks) → decision APPROVED with notes.</td><td>Results <b>Approved</b>; samples <b>Analysed</b>.</td></tr>
+      <tr><td>8</td><td>MRV</td><td><b>Lineage</b> on a result.</td><td>Result → test → sample → field record → point → farm → project.</td></tr>
+    </tbody>
+  </table>
+  <h3>Controls</h3>
+  <ul>
+    <li>The engagement is two-sided: the proposer cannot accept it.</li>
+    <li>The lab sees only the samples shipped to it, through an allow-listed interface: no farmer, farm or GPS data.</li>
+    <li>A seal mismatch at receipt fails the lab QA custody check; lab QA cannot approve a result with a failed check (<code>QA_CHECKS_FAILED</code>) and must reject it.</li>
+    <li>A result cannot be submitted without its PDF report (<code>REPORT_REQUIRED</code>). Approved results are immutable; corrections create a new version.</li>
+    <li>Custody events and QA reviews are append-only.</li>
+  </ul>
+  <ul>
+    <li><span class="neg">✖</span> The lab technician tries to approve their own result: refused.</li>
+    <li><span class="neg">✖</span> Recording a receipt with a seal number different from the one applied in the field: lab QA custody check fails ("seal number observed at receipt differs from the seal applied in the field").</li>
+    <li><span class="neg">✖</span> Submitting a result without the PDF report: refused (<code>REPORT_REQUIRED</code>).</li>
+    <li><span class="neg">✖</span> Lab QA approving a result whose automatic checks failed: refused (<code>QA_CHECKS_FAILED</code>).</li>
+    <li><span class="neg">✖</span> The lab technician opens the MRV page: "You don't have access to this page".</li>
+  </ul>
+</section>
+
+<!-- ============================== S10 ============================== -->
+<section class="chapter">
+  <div class="stagehead"><div class="no">S10</div><h1>Monitoring data and dataset QA</h1></div>
+  <div class="facts">
+    <div class="fact"><h4>Purpose</h4><p>Record the non-laboratory data the methodology needs: farm activity (fertiliser, diesel, residue burning, irrigation), project-level factors (e.g. risk rating), and per-stratum or per-tree values. Then freeze the period's data into a QA-approved dataset.</p></div>
+    <div class="fact"><h4>Who / where</h4><p>MRV Manager, QA Officer · <b>MRV → Monitoring data</b>; <b>Datasets &amp; QA</b>.</p></div>
+  </div>
+  <table>
+    <thead><tr><th style="width:5%">#</th><th style="width:12%">Who</th><th>Action</th><th style="width:30%">Expected result</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>MRV</td><td><b>Monitoring data</b>, per farm, phase <b>BASELINE</b>: one record per historical year (2023, 2024, 2025), e.g. synthetic N fertiliser kg, diesel litres, residue burnt kg.</td><td>Records listed.</td></tr>
+      <tr><td>2</td><td>MRV</td><td>Per farm, phase <b>PROJECT</b>, observed inside Period 1: the same activities under the new practice.</td><td>Recorded.</td></tr>
+      <tr><td>3</td><td>MRV</td><td>Project level: e.g. <code>V42_NPR</code> = 12 (% non-permanence risk). Other methodologies record at <b>Stratum</b> or <b>Sampling point</b> level (e.g. trees alive, biomass).</td><td>Recorded.</td></tr>
+      <tr><td>4</td><td>MRV</td><td><b>Datasets &amp; QA</b>: choose the period → <b>Create dataset version</b> → <b>Submit for QA</b>.</td><td>Submitted: a frozen, SHA-256 hashed snapshot of every record, sample result and stratum.</td></tr>
+      <tr><td>5</td><td>QA</td><td><b>Start QA review</b> (15 automatic checks) → QA result PASS → <b>Approve dataset</b>.</td><td>Dataset and period <b>Approved</b>.</td></tr>
+    </tbody>
+  </table>
+  <ul>
+    <li><span class="ok">✔</span> The QA review warns "analysis pending" only for points whose lab results are not yet approved.</li>
+    <li><span class="neg">✖</span> The MRV manager approving their own dataset: refused.</li>
+    <li><span class="ok">✔</span> Changing a record after the dataset was submitted does not change the frozen snapshot; a new dataset version is needed.</li>
+  </ul>
+  <div class="callout warn"><b>Known issue (workaround in place)</b> After a dataset has been submitted, do not press <b>Open data collection</b> on that period again; it can leave the period stuck. Testers should avoid this until it is fixed.</div>
+</section>
+
+<!-- ============================== S11 ============================== -->
+<section>
+  <div class="stagehead" style="margin-top:22px"><div class="no">S11</div><h1>Carbon calculation and internal QA</h1></div>
+  <div class="facts">
+    <div class="fact"><h4>Purpose</h4><p>Apply the locked methodology's equations to the approved data and produce the credit quantity. Every step is traceable to an equation and to the frozen inputs.</p></div>
+    <div class="fact"><h4>Who / where</h4><p>Calculation Analyst, QA Officer · <b>Projects → Calculations</b>.</p></div>
+  </div>
+  <table>
+    <thead><tr><th style="width:5%">#</th><th style="width:12%">Who</th><th>Action</th><th style="width:34%">Expected result</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Analyst</td><td>Choose project and <b>Period 1</b>; review the readiness panel.</td><td>No blockers; only the warning <code>NOT_PRODUCTION_READY: non-production use only</code>.</td></tr>
+      <tr><td>2</td><td>Analyst</td><td><b>New calculation run</b> → <b>Check readiness &amp; freeze inputs</b>.</td><td>Inputs frozen with SHA-256.</td></tr>
+      <tr><td>3</td><td>Analyst</td><td><b>Execute</b>.</td><td>Step-by-step outputs, each citing its equation. For VM0042: reference soil mass; SOC stocks per stratum and campaign; emissions per source; SOC change; uncertainty; buffer; <b>VCU_TOTAL</b> (whole tonnes, rounded down).</td></tr>
+      <tr><td>4</td><td>QA</td><td>Calculation QA: <b>Findings</b> if needed (analyst responds, QA resolves) → <b>Approve</b>.</td><td>Run <b>Approved</b>; outputs re-verified against their hashes.</td></tr>
+      <tr><td>5</td><td>Analyst / QA</td><td>Generate the <b>calculation report</b> (PDF) and <b>internal verification readiness</b>.</td><td>Report with content and PDF hashes; readiness <b>READY</b> with a frozen package manifest.</td></tr>
+    </tbody>
+  </table>
+  <h3>Typical blockers (the readiness panel explains each one)</h3>
+  <table class="avoid">
+    <thead><tr><th style="width:36%">Code</th><th>Meaning</th></tr></thead>
+    <tbody>
+      <tr><td><code>PREVIOUS_PERIOD_REQUIRED</code></td><td>The baseline (Period 0) dataset is not approved.</td></tr>
+      <tr><td><code>CONTROL_SITES_REQUIRED</code></td><td>Fewer than 3 sampled control sites (VM0042).</td></tr>
+      <tr><td><code>INSUFFICIENT_SAMPLES</code></td><td>Too few samples in a stratum and campaign.</td></tr>
+      <tr><td><code>DEPTH_INCREMENTS_REQUIRED</code> / <code>SAMPLING_DEPTH_INSUFFICIENT</code></td><td>Only one depth layer, or sampled too shallow (e.g. zero tillage needs 50 cm).</td></tr>
+      <tr><td><code>MISSING_REQUIRED_INPUT</code></td><td>A required data item is missing, e.g. core details or an emission factor.</td></tr>
+      <tr><td><code>MODULE_NOT_SELECTED</code></td><td>The methodology version has no calculation module.</td></tr>
+      <tr><td><code>DENSITY_EXCEEDED</code></td><td>VM0047 census approach used with more than 50 trees per hectare.</td></tr>
+    </tbody>
+  </table>
+  <ul>
+    <li><span class="neg">✖</span> The analyst approving their own run: refused.</li>
+    <li><span class="neg">✖</span> In the production environment, a module without production-readiness sign-off: blocked.</li>
+    <li><span class="ok">✔</span> Any change to an input after the freeze is detected before execution, and the run refuses to execute.</li>
+    <li><span class="ok">✔</span> An open blocking finding invalidates a READY readiness immediately.</li>
+  </ul>
+</section>
+
+<!-- ============================== S12 ============================== -->
+<section class="chapter">
+  <div class="stagehead"><div class="no">S12</div><h1>Independent verification (VVB)</h1></div>
+  <div class="facts">
+    <div class="fact"><h4>Purpose</h4><p>Have an accredited independent body review the evidence package and state whether the reductions are verified, and in what quantity.</p></div>
+    <div class="fact"><h4>Who / where</h4><p>Project Manager, VVB Reviewer · Project → <b>Verification</b> tab; <b>Verification → VVB workspace</b>.</p></div>
+  </div>
+  <table>
+    <thead><tr><th style="width:5%">#</th><th style="width:12%">Who</th><th>Action</th><th style="width:32%">Expected result</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>PM</td><td>Propose a VVB assignment for the period: VVB organization "Verify Co".</td><td>Assignment <b>Proposed</b>.</td></tr>
+      <tr><td>2</td><td>VVB</td><td><b>VVB workspace</b> → <b>Accept</b> with a conflict-of-interest declaration.</td><td><b>Accepted</b>; project status <b>Verification</b>.</td></tr>
+      <tr><td>3</td><td>PM</td><td><b>Submit package</b> (requires READY internal readiness).</td><td>Submission created from the frozen manifest.</td></tr>
+      <tr><td>4</td><td>VVB</td><td>Open the package: calculation report, outputs, evidence documents. Raise <b>findings</b> or <b>corrective action requests</b> if needed; the project responds.</td><td>Allow-listed view: no farmer names, contacts or bank data.</td></tr>
+      <tr><td>5</td><td>VVB (2nd reviewer if findings were raised)</td><td><b>Decision</b>: outcome VERIFIED (or not), rationale, <b>verified quantity</b> (e.g. 24 tCO2e), and the verification report PDF.</td><td>Decision code (e.g. <code>VDEC-2026-000002</code>); project <b>Verified</b>.</td></tr>
+    </tbody>
+  </table>
+  <h3>Controls</h3>
+  <ul>
+    <li>The VVB interface is separate and scoped to the accepted assignment. Anything else returns "not found".</li>
+    <li>A decision is immutable and tied by hash to the exact package it reviewed.</li>
+    <li>If the project recalculates, the old submission is superseded. A new package and a new decision are required, as happened in the recorded test run (Chapter 8).</li>
+    <li>The VVB raises and closes findings; the project can only respond. A VVB reviewer who raised findings on a package cannot record its decision: a second reviewer of the same VVB must (<code>SEPARATION_OF_DUTIES</code>).</li>
+  </ul>
+  <ul>
+    <li><span class="neg">✖</span> Submitting a package before the calculation is approved and readiness is READY: refused (<code>NO_READY_PACKAGE</code>).</li>
+    <li><span class="neg">✖</span> The VVB reviewer who raised findings records the decision: refused.</li>
+    <li><span class="neg">✖</span> A VVB user from another VVB organization opening the package: not found.</li>
+  </ul>
+</section>
+
+<!-- ============================== S13 ============================== -->
+<section>
+  <div class="stagehead" style="margin-top:22px"><div class="no">S13</div><h1>Registry submission and issuance</h1></div>
+  <div class="facts">
+    <div class="fact"><h4>Purpose</h4><p>Submit the verified period to the carbon registry and record the registry's acceptance and the issuance: quantity, vintage and serial number ranges, backed by the registry's own documents.</p></div>
+    <div class="fact"><h4>Who / where</h4><p>Registry Manager, QA Officer · <b>Registry → Registry</b>.</p></div>
+  </div>
+  <table>
+    <thead><tr><th style="width:5%">#</th><th style="width:13%">Who</th><th>Action</th><th style="width:30%">Expected result</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Registry mgr</td><td>Record the <b>registry account</b> and the <b>project registration</b> (registry project ID plus registry response PDF).</td><td>Account Active; registration Registered.</td></tr>
+      <tr><td>2</td><td>Registry mgr</td><td>Create an <b>issuance submission</b> for the verified period; attach required documents (e.g. PDD).</td><td>Draft; eligibility re-checked (current VVB decision, approved run).</td></tr>
+      <tr><td>3</td><td>Registry mgr</td><td><b>Freeze</b> the submission.</td><td>Snapshot frozen with SHA-256.</td></tr>
+      <tr><td>4</td><td>Registry mgr</td><td><b>Record submitted</b> (registry reference plus receipt PDF), then <b>Record response</b>: ACCEPTED (acknowledgement PDF).</td><td>Submitted → Accepted.</td></tr>
+      <tr><td>5</td><td>Registry mgr</td><td><b>Record issuance</b>: registry issuance ID, date, quantity 24 VCU, vintage 2026, serial range (e.g. …-0001 to …-0024), issuance statement PDF.</td><td>Issuance <b>Recorded</b>.</td></tr>
+      <tr><td>6</td><td>QA</td><td><b>Confirm</b> the issuance against the registry statement.</td><td>Issuance <b>Confirmed</b>; batch <b>Issued</b>; project <b>Issued</b>.</td></tr>
+    </tbody>
+  </table>
+  <ul>
+    <li><span class="neg">✖</span> The registry manager confirming their own issuance: refused (HTTP 403).</li>
+    <li><span class="neg">✖</span> Recording (or confirming) issuances that together exceed the VVB-stated verified quantity: refused (<code>QUANTITY_EXCEEDS_VERIFIED</code>).</li>
+    <li><span class="ok">✔</span> Registry references and the frozen snapshot cannot be changed afterwards (database triggers).</li>
+  </ul>
+</section>
+
+<!-- ============================== S14 ============================== -->
+<section class="chapter">
+  <div class="stagehead"><div class="no">S14</div><h1>Credit ledger</h1></div>
+  <div class="facts">
+    <div class="fact"><h4>Purpose</h4><p>Track ownership of every issued credit in an append-only ledger. Credits can be reserved, transferred and retired, and can never be double-spent.</p></div>
+    <div class="fact"><h4>Who / where</h4><p>Credit Manager, QA Officer · <b>Registry → Issued credits</b>; <b>Credit ledger</b>; buyers: <b>Credits → My credits</b>.</p></div>
+  </div>
+  <table>
+    <thead><tr><th style="width:5%">#</th><th style="width:13%">Who</th><th>Action</th><th style="width:34%">Expected result</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Credit mgr</td><td><b>Issued credits</b> → the issued batch → <b>Open in ledger</b>.</td><td>Opening requested.</td></tr>
+      <tr><td>2</td><td>QA</td><td><b>Confirm</b> the opening.</td><td>24 VCU <b>Available</b> in the developer's inventory, by serial range.</td></tr>
+    </tbody>
+  </table>
+  <h3>Controls</h3>
+  <ul>
+    <li>Ledger entries are append-only, and database triggers enforce conservation: credits in equal credits out.</li>
+    <li>A position can be consumed only once. A retired credit is final: no un-retirement and no reversal.</li>
+    <li>Concurrent operations on the same credits use row locks; the loser of a race is refused cleanly.</li>
+  </ul>
+  <ul>
+    <li><span class="neg">✖</span> The credit manager confirming their own opening: refused (HTTP 403).</li>
+    <li><span class="ok">✔</span> Inventory balances always add up to the issued quantity (available + reserved + transferred + retired).</li>
+  </ul>
+</section>
+
+<!-- ============================== S15 ============================== -->
+<section>
+  <div class="stagehead" style="margin-top:22px"><div class="no">S15</div><h1>Marketplace, delivery and retirement</h1></div>
+  <div class="facts">
+    <div class="fact"><h4>Purpose</h4><p>Sell credits to KYC-verified buyers at a fixed price, record payment, deliver the credits into the buyer's holding and support retirement against a registry certificate.</p></div>
+    <div class="fact"><h4>Who / where</h4><p>Buyer, Marketplace Compliance, Credit Manager, Finance, QA (custodian) · <b>Marketplace</b> menu.</p></div>
+  </div>
+  <table>
+    <thead><tr><th style="width:5%">#</th><th style="width:13%">Who</th><th>Action</th><th style="width:30%">Expected result</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Buyer</td><td><b>Buyer profile</b>: legal name, country, upload KYC document → <b>Submit KYC</b>.</td><td>KYC submitted.</td></tr>
+      <tr><td>2</td><td>Compliance</td><td><b>KYC review</b> → <b>Verify</b>.</td><td><b>KYC verified</b>.</td></tr>
+      <tr><td>3</td><td>Credit mgr</td><td><b>Listings</b> → new listing: batch and serial range, 20 VCU at INR 850, payment window 24 h → <b>Submit</b>.</td><td>Listing pending approval.</td></tr>
+      <tr><td>4</td><td>Finance</td><td><b>Approve</b> the listing.</td><td>Listing <b>Active</b>; visible on the marketplace.</td></tr>
+      <tr><td>5</td><td>Buyer</td><td>Order 10 VCU.</td><td>Order <b>Placed</b>, total INR 8,500; credits reserved.</td></tr>
+      <tr><td>6</td><td>Buyer</td><td>Upload bank-transfer proof and record the payment (reference, exact amount).</td><td>Payment <b>Pending confirmation</b>.</td></tr>
+      <tr><td>7</td><td>Finance</td><td><b>Payments</b> → <b>Confirm</b> payment received.</td><td>Order <b>Paid</b> → <b>Transfer pending</b>.</td></tr>
+      <tr><td>8</td><td>QA (custodian)</td><td>Complete the delivery transfer.</td><td>Order <b>Completed</b>; buyer holds 10 VCU (<b>My credits</b>); order confirmation PDF and lineage available.</td></tr>
+      <tr><td>9</td><td>Buyer</td><td>Request retirement of 4 VCU: beneficiary and reason (e.g. "Voluntary claim FY2026").</td><td>Retirement <b>Requested</b>.</td></tr>
+      <tr><td>10</td><td>QA (custodian)</td><td>Record the registry retirement reference, date and certificate PDF → <b>Retire</b>.</td><td>4 VCU <b>Retired</b> (final); buyer holds 6 available.</td></tr>
+    </tbody>
+  </table>
+  <ul>
+    <li><span class="neg">✖</span> The buyer confirming their own payment: refused (HTTP 403).</li>
+    <li><span class="neg">✖</span> A buyer without verified KYC placing an order: refused.</li>
+    <li><span class="ok">✔</span> The public listing discloses no farmer, farm, location, KYC, lab or calculation-internal data.</li>
+    <li><span class="ok">✔</span> Refunds (before delivery) release the reservation; credits never leave the seller.</li>
+  </ul>
+</section>
+
+<!-- ============================== S16 ============================== -->
+<section class="chapter">
+  <div class="stagehead"><div class="no">S16</div><h1>Revenue sharing, settlement and farmer payouts</h1></div>
+  <div class="facts">
+    <div class="fact"><h4>Purpose</h4><p>Turn sales revenue into farmer payments under an approved benefit-sharing agreement, with a reproducible settlement calculation, bank-verified payouts and reconciliation against the bank statement.</p></div>
+    <div class="fact"><h4>Who / where</h4><p>Project Manager, Finance Managers 1–4 · <b>Finance → Revenue &amp; costs</b>, <b>Revenue sharing</b>, <b>Settlements</b>, <b>Payouts</b>.</p></div>
+  </div>
+  <table>
+    <thead><tr><th style="width:5%">#</th><th style="width:12%">Who</th><th>Action</th><th style="width:32%">Expected result</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Finance</td><td><b>Revenue &amp; costs</b>: check the revenue recognised from the sale.</td><td>INR 8,500 for the project and period.</td></tr>
+      <tr><td>2</td><td>PM → Fin.</td><td><b>Revenue sharing</b>: farmer share 60 %, deduct approved costs, rounding Half-up, effective date, source "Benefit-sharing agreement clause 4" → submit; finance approves.</td><td>Sharing version <b>Approved</b>.</td></tr>
+      <tr><td>3</td><td>PM → Fin.</td><td><b>Allocation</b> across project farms (e.g. 100 % to the one farm, basis "by area") → submit; finance approves.</td><td>Allocation <b>Approved</b>.</td></tr>
+      <tr><td>4</td><td>PM → Fin.</td><td>Record a project <b>cost</b>: "Soil sampling and laboratory analysis", INR 1,500, with invoice PDF; finance approves.</td><td>Cost <b>Approved</b>.</td></tr>
+      <tr><td>5</td><td>Finance 2</td><td><b>Settlements</b> → create → <b>Calculate</b> → <b>Verify</b> → <b>Submit</b>.</td><td>Gross 8,500 − costs 1,500 = <b>distributable 7,000</b>; farmers 60 % = <b>4,200</b>; developer 2,800. "Independently reproducible: yes".</td></tr>
+      <tr><td>6</td><td>Finance 3</td><td><b>Approve</b> the settlement.</td><td>Settlement <b>Approved</b>.</td></tr>
+      <tr><td>7</td><td>Finance 2</td><td>Create payouts from the settlement → submit.</td><td>Payout INR 4,200 to the farmer, <b>Pending approval</b>.</td></tr>
+      <tr><td>8</td><td>PM → Fin.</td><td>Add the farmer's bank account; finance verifies it (e.g. penny-drop).</td><td>Primary verified account.</td></tr>
+      <tr><td>9</td><td>Finance 3</td><td><b>Approve</b> the payout.</td><td>Approved (bank account referenced by last 4 digits).</td></tr>
+      <tr><td>10</td><td>Finance 4</td><td><b>Initiate</b> the payment, then <b>Confirm paid</b> with the bank transfer reference (NEFT) and evidence PDF.</td><td>Payout <b>Paid</b>.</td></tr>
+      <tr><td>11</td><td>Finance</td><td><b>Reconcile</b> against the bank statement (reference, amount, date, statement PDF).</td><td>Result <b>MATCHED</b>; payout <b>Reconciled</b>; settlement <b>Completed</b>.</td></tr>
+    </tbody>
+  </table>
+  <ul>
+    <li><span class="neg">✖</span> The finance manager who calculated the settlement tries to approve it: refused.</li>
+    <li><span class="neg">✖</span> Approving a payout when the farmer has no verified bank account: refused with <code>BANK_ACCOUNT_NOT_VERIFIED</code>.</li>
+    <li><span class="neg">✖</span> The approver executing the same payout: refused (executor ≠ approver ≠ calculator).</li>
+    <li><span class="ok">✔</span> A failed payout is never edited; it is replaced by a new payout linked to the failed one.</li>
+    <li><span class="ok">✔</span> If the bank account changes between approval and execution, the payout goes <b>On hold</b>.</li>
+  </ul>
+</section>
+
+<!-- ============================== S17 ============================== -->
+<section>
+  <div class="stagehead" style="margin-top:22px"><div class="no">S17</div><h1>Farmer self-service</h1></div>
+  <div class="facts">
+    <div class="fact"><h4>Purpose</h4><p>Give farmers transparent access to their own data: profile, farms, project participation and payments.</p></div>
+    <div class="fact"><h4>Who / where</h4><p>Farmer login linked to the farmer profile · <b>My farm</b> menu: My farmer profile, My farms, My projects, My payouts.</p></div>
+  </div>
+  <ul>
+    <li><span class="ok">✔</span> <b>My payouts</b> shows the INR 4,200 payout with status Reconciled.</li>
+    <li><span class="neg">✖</span> A farmer cannot see other farmers, the project-wide view, or any internal page (MRV, calculations, finance).</li>
+  </ul>
+</section>
+
+<!-- ============================== 6 METHODOLOGIES ============================== -->
+<section class="chapter">
+  <h1>6. Supported methodologies</h1>
+  <p>The platform ships <b>13 calculation modules</b>, one for each methodology option below. Each module encodes the official methodology's equations step by step and declares the data it needs. When a methodology is set up, the code and version label must be entered exactly as below so that the module can be attached.</p>
+  <table>
+    <thead><tr><th style="width:21%">Methodology</th><th style="width:14%">Code / label</th><th>Scope of the module</th><th style="width:22%">Key data recorded</th><th style="width:11%">Credit output</th></tr></thead>
+    <tbody>
+      <tr><td><b>Verra VM0042 v2.2</b> Improved Agricultural Land Management</td><td><code>VM0042</code> / 2.2</td><td>Soil organic carbon by measure-and-remeasure (Quantification Approach 2) with control sites; emissions by default factors (Approach 3).</td><td>Lab organic carbon and soil mass at two depths; farm fertiliser, fuel, lime, burning; risk rating</td><td>VCU_TOTAL</td></tr>
+      <tr><td><b>Gold Standard SOC Framework v1.0</b> (402)</td><td><code>GS402</code> / 1.0[-suffix]</td><td>Five modules: Zero tillage (Approach 1, measured); Improved tillage (Approach 1 measured, or Approach 3 with IPCC factors); Cover crops (Approach 1, or Approach 3 with national factors).</td><td>Lab samples (A1) or SOC reference and stock-change factors (A3); farm activities; yields</td><td>GS_VER_TOTAL</td></tr>
+      <tr><td><b>Verra VM0047 v1.1</b> Afforestation, reforestation, revegetation</td><td><code>VM0047</code> / 1.1</td><td>Census-based approach: trees planted on farmland, at most 50 trees/ha.</td><td>Tree census; per sampled tree: alive, biomass, burned; root-shoot ratio</td><td>VCU_TOTAL</td></tr>
+      <tr><td><b>Verra VM0044 v1.2</b> Biochar</td><td><code>VM0044</code> / 1.2</td><td>Biochar production and application in soil and non-soil uses.</td><td>Batches produced/applied, carbon content, H/C ratio, temperature, technology</td><td>VCU_TOTAL</td></tr>
+      <tr><td><b>India CCTS FR05.002</b> Afforestation/reforestation</td><td><code>BM-FR05.002</code> / 1.0</td><td>CDM A/R-based tool chain for India's Carbon Credit Trading Scheme.</td><td>Plot biomass, plot area, baseline stocks, shrubs, leakage</td><td>LCCC</td></tr>
+      <tr><td><b>India CCTS FR05.001</b> Mangroves</td><td><code>BM-FR05.001</code> / 1.0</td><td>Mangrove afforestation/reforestation.</td><td>As above, plus planting year per stratum</td><td>LCCC</td></tr>
+      <tr><td><b>Verra VM0051 v1.1</b> Rice cultivation</td><td><code>VM0051</code> / 1.1</td><td>Methane from improved rice water management (Quantification Approach 3).</td><td>Per farm and season: area, days, water regime, straw, N; ≥3 baseline years; region</td><td>CREDITS</td></tr>
+      <tr><td><b>India CCTS AG04.002</b> Rice</td><td><code>BM-AG04.002</code> / 1.0</td><td>Rice methane under CCTS.</td><td>As VM0051</td><td>CREDITS</td></tr>
+      <tr><td><b>Gold Standard A/R v2.1</b> (403)</td><td><code>GS403</code> / 2.1</td><td>Afforestation/reforestation with volume-based biomass.</td><td>Plot volume, plot area, baseline, leakage, burning, prior issuance</td><td>GSVER_PROJECT</td></tr>
+    </tbody>
+  </table>
+  <div class="callout info"><b>Gold Standard Paris alignment</b>
+  Under Gold Standard rule GS 119, vintages from 1 January 2026 can only be credited under a Paris-aligned methodology. Both Gold Standard modules enforce this. Without a project-level record that Gold Standard has approved the transition (<code>GS_PAA</code> / <code>GA_PAA</code> = YES), credits for 2026+ vintages are set to zero. In production, YES must only be recorded after Gold Standard approval.</div>
+</section>
+
+<!-- ============================== 7 EXTERNAL DATA ============================== -->
+<section>
+  <h1 style="margin-top:24px">7. External data, land records and maps</h1>
+  <h2>7.1 External data sources</h2>
+  <p>The farm page's <b>External data</b> tab shows independent reference data for each farm. It helps the GIS specialist and project team plausibility-check what farmers declare. It is <b>reference only</b>: it is never used as a calculation input, because the methodologies require measured or documented data.</p>
+  <table>
+    <thead><tr><th style="width:20%">Source</th><th style="width:28%">What it provides</th><th>How it is used</th><th style="width:12%">Cost / key</th></tr></thead>
+    <tbody>
+      <tr><td><b>Open-Meteo</b> (historical weather)</td><td>Rainfall and temperature history at the farm location.</td><td>Checks the rainfall characteristic of strata (control sites must be within 100 mm of the project stratum) and supports climate-zone selection for default factors.</td><td>Free, no key</td></tr>
+      <tr><td><b>ISRIC SoilGrids</b></td><td>Modelled soil properties (organic carbon, texture, bulk density, pH) for the farm location.</td><td>Indicates soil texture and group for stratification and helps plan sampling. It is <i>not</i> a substitute for laboratory analysis.</td><td>Free, no key</td></tr>
+      <tr><td><b>Microsoft Planetary Computer</b> (Sentinel-2, Landsat)</td><td>Per-farm vegetation index (NDVI), moisture index (NDMI), cloud cover over the plot, land surface temperature.</td><td>Satellite evidence of cropping and cover-crop activity over time, to cross-check declared practices.</td><td>Free, no key</td></tr>
+    </tbody>
+  </table>
+  <p class="small muted">Satellite scenes with more than 10 % cloud over the plot are excluded, and at most 6 recent scenes are shown. Automated tests never call these services.</p>
+
+  <h2>7.2 Land records</h2>
+  <p>Land records (e.g. the 7/12 extract in Maharashtra, title deeds, lease agreements) are uploaded as farm documents and linked as <b>evidence</b> to the ownership record. The GIS specialist verifies the ownership against the document. The land-records card on the farm page shows which step is next:</p>
+  <table class="avoid">
+    <thead><tr><th style="width:30%">Card status</th><th>Meaning and next action</th></tr></thead>
+    <tbody>
+      <tr><td>Missing</td><td>No land record uploaded. Upload one (category LAND_RECORD).</td></tr>
+      <tr><td>Uploaded: record the ownership</td><td>Document present, no ownership record yet. Record ownership and pick the document as evidence.</td></tr>
+      <tr><td>Awaiting GIS review</td><td>Ownership recorded with evidence; GIS specialist to verify.</td></tr>
+      <tr><td>Not linked to ownership</td><td>The farm is verified but its ownership has no document attached. Link the evidence.</td></tr>
+      <tr><td>Verified</td><td>Ownership verified against the land record.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>7.3 Maps</h2>
+  <ul>
+    <li>Farm, project, stratum and sampling-point maps open in <b>3D</b> (terrain) by default; users can switch to 2D.</li>
+    <li>The boundary editor opens in 2D for precise drawing; devices without 3D support fall back to 2D automatically.</li>
+    <li>All areas, overlaps and point positions are computed by SQL Server's geography engine, not in the browser.</li>
+  </ul>
+</section>
+
+<!-- ============================== 8 TEST EVIDENCE ============================== -->
+<section class="chapter">
+  <h1>8. Test evidence and results</h1>
+  <h2>8.1 Automated test suites</h2>
+  <table class="avoid">
+    <thead><tr><th>Suite</th><th>Scope</th><th style="width:16%">Result</th></tr></thead>
+    <tbody>
+      <tr><td>Backend (pytest, separate test database)</td><td>Business rules, separation of duties, security (tokens, lockout, cross-organization access, file spoofing), append-only triggers, concurrency (no double-spend), every calculation module including methodology worked examples.</td><td class="ok">552 passed</td></tr>
+      <tr><td>Frontend (Vitest)</td><td>Screens and workflows: farm, ownership evidence, external data, maps (3D default and fallback), MRV records, calculations, marketplace, finance.</td><td class="ok">153 passed; production build succeeds</td></tr>
+    </tbody>
+  </table>
+
+  <h2>8.2 Full lifecycle run: VM0042 soil carbon (project PRJ-2026-000004)</h2>
+  <p>Performed through the platform's own API, with 24 separate test accounts, in the order of the stage chapters.</p>
+  <table>
+    <thead><tr><th style="width:24%">Stage</th><th>What happened</th><th style="width:16%">Outcome</th></tr></thead>
+    <tbody>
+      <tr><td>Onboarding (S1–S6)</td><td>Catalog, VM0042 v2.2 with module approved by a second specialist; farmer KYC and consent; farms verified; project eligible; methodology recommended and locked.</td><td class="ok">Pass</td></tr>
+      <tr><td>MRV (S7–S10)</td><td>Project stratum plus 3 control sites; baseline and monitoring periods; sampling points generated; field collection with core details; 2 depth samples per record, sealed, shipped, received, analysed, lab-QA approved; farm activity data; both datasets approved.</td><td class="ok">Pass</td></tr>
+      <tr><td>Calculation (S11)</td><td>Readiness clean (only the "not production ready" warning); inputs frozen; executed; QA approved.</td><td class="ok">24 VCU</td></tr>
+      <tr><td>Verification (S12)</td><td>VVB accepted with COI declaration. After a recalculation the first package was superseded, a new package was submitted and the VVB issued decision <code>VDEC-2026-000002</code>: VERIFIED, 24 tCO2e.</td><td class="ok">Verified 24 tCO2e</td></tr>
+      <tr><td>Registry (S13)</td><td>Submission frozen, submitted, accepted; issuance of 24 VCU (vintage 2026, serial range) recorded and confirmed by QA. The recorder's own confirmation was refused.</td><td class="ok">24 VCU issued</td></tr>
+      <tr><td>Ledger (S14)</td><td>Batch opened and confirmed by a second person; 24 VCU available.</td><td class="ok">Pass</td></tr>
+      <tr><td>Marketplace (S15)</td><td>Buyer KYC verified; 20 VCU listed at INR 850; 10 VCU ordered (INR 8,500); payment confirmed by seller finance (the buyer's own confirmation was refused); delivered; 4 VCU retired with certificate.</td><td class="ok">Sold 10, retired 4</td></tr>
+      <tr><td>Finance (S16)</td><td>60 % sharing, allocation, cost INR 1,500; settlement 8,500 − 1,500 = 7,000 distributable, reproducible; farmer payout INR 4,200 (approval refused until the bank account was verified); paid by NEFT; reconciled MATCHED.</td><td class="ok">INR 4,200 reconciled</td></tr>
+      <tr><td>Farmer view (S17)</td><td>Farmer login sees the payout under <b>My payouts</b>.</td><td class="ok">Pass</td></tr>
+    </tbody>
+  </table>
+
+  <h2>8.3 Every methodology option, calculated end to end</h2>
+  <p>For each option, a methodology version was created and approved with its module, a project was locked on it, the data was recorded and approved, and the calculation was executed.</p>
+  <table class="avoid">
+    <thead><tr><th>Methodology option</th><th style="width:22%">Credits calculated</th></tr></thead>
+    <tbody>
+      <tr><td>VM0042 v2.2: measure &amp; remeasure + default-factor emissions</td><td>24 VCU</td></tr>
+      <tr><td>GS402 Zero tillage, Approach 1 (measured)</td><td>16 GS VER</td></tr>
+      <tr><td>GS402 Improved tillage, Approach 1 (measured)</td><td>11 GS VER</td></tr>
+      <tr><td>GS402 Cover crops, Approach 1 (measured)</td><td>11 GS VER</td></tr>
+      <tr><td>GS402 Improved tillage, Approach 3 (IPCC factors)</td><td>0 *</td></tr>
+      <tr><td>GS402 Cover crops, Approach 3 (national factors)</td><td>0 *</td></tr>
+      <tr><td>VM0047 v1.1 census-based (trees on farms)</td><td>6 VCU</td></tr>
+      <tr><td>VM0044 v1.2 Biochar</td><td>249 VCU</td></tr>
+      <tr><td>CCTS FR05.002 Afforestation / reforestation</td><td>270 LCCC</td></tr>
+      <tr><td>CCTS FR05.001 Mangroves</td><td>280 LCCC</td></tr>
+      <tr><td>VM0051 v1.1 Rice (Approach 3)</td><td>3 credits</td></tr>
+      <tr><td>CCTS AG04.002 Rice</td><td>3 credits</td></tr>
+      <tr><td>GS403 v2.1 Afforestation / reforestation</td><td>127 GS VER</td></tr>
+    </tbody>
+  </table>
+  <p class="small muted">* Correct and expected: the test entered stock-change factors without their ± uncertainty, so the methodology's default uncertainty applies, and on a small test plot the uncertainty deduction removes the whole gain. With the ± values from the IPCC tables, the same module produces credits. The test figures come from small synthetic plots and are not forecasts of real project yields.</p>
+
+  <h2>8.4 Defects found and fixed during testing</h2>
+  <table class="avoid">
+    <thead><tr><th style="width:38%">Issue found</th><th>Fix</th></tr></thead>
+    <tbody>
+      <tr><td>Control-site sampling points could not be placed (clipped to the project boundary).</td><td>Control strata are now sampled inside their own farms; regression test added.</td></tr>
+      <tr><td>Calculation input freeze failed for per-stratum data.</td><td>Database migration 0023 allows stratum-level inputs.</td></tr>
+      <tr><td>Area-based modules missed stratum areas.</td><td>The dataset snapshot now includes all approved strata.</td></tr>
+      <tr><td>Dataset QA warned "analysis pending" even after results were approved.</td><td>The warning counts only points still awaiting analysis.</td></tr>
+      <tr><td>Only one Gold Standard SOC option could be set up per methodology.</td><td>Version labels such as <code>1.0-ZT</code> allow all five side by side.</td></tr>
+      <tr><td>Ownership form had no way to attach the land record; land-records card misleading for verified farms.</td><td>Evidence picker added; card shows "Not linked to ownership" with guidance.</td></tr>
+      <tr><td>Maps always opened in 2D.</td><td>3D by default, with automatic 2D fallback.</td></tr>
+      <tr><td>Project status moved to <b>Verification</b> only at package submission, not when the VVB accepted the assignment (found by the guide walkthrough, 8.5).</td><td>Status is now updated at acceptance; regression test added.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section style="page-break-before:always">
+  <h2 style="margin-top:0">8.5 Guide walkthrough re-test (5 October 2026)</h2>
+  <p>After this guide was written, the complete procedure in chapters S0–S17 was run again from scratch, exactly as written, on a new farmer, five new farms and a new VM0042 project. Every "must be refused" test in Appendix B was included. The run used the same role accounts, plus new buyer, farmer and second VVB-reviewer accounts created through <b>Administration</b> as described in S0.</p>
+  <div class="kpis">
+    <div class="kpi"><div class="v">263</div><div class="l">steps and checks executed</div></div>
+    <div class="kpi"><div class="v">0</div><div class="l">failures in the final run</div></div>
+    <div class="kpi"><div class="v">48 / 48</div><div class="l">refusal tests correctly refused</div></div>
+    <div class="kpi"><div class="v">24 VCU</div><div class="l">calculated, verified, issued; INR 4,200 paid to the farmer</div></div>
+  </div>
+  <p><b>What the walkthrough found and how it was handled:</b></p>
+  <ul>
+    <li><b>One defect, fixed:</b> the project status moved to Verification only when the package was submitted, instead of when the VVB accepted. Corrected, with a regression test.</li>
+    <li><b>Four controls stricter than first described, now documented above:</b>
+      <ul>
+        <li>eligibility cannot be approved while a farm has an open overlap flag;</li>
+        <li>a lab result cannot be submitted without its PDF report;</li>
+        <li>an issuance above the verified quantity is refused when recorded, not only when confirmed;</li>
+        <li>the VVB reviewer who raised findings cannot record the decision.</li>
+      </ul></li>
+    <li><b>One correction to this guide:</b> the platform has 13 calculation modules (one per methodology option), not 14.</li>
+  </ul>
+</section>
+
+<!-- ============================== 9 LIMITATIONS ============================== -->
+<section class="chapter">
+  <h1>9. Known limitations and open decisions</h1>
+  <h2>9.1 Before real credits can be issued</h2>
+  <table>
+    <thead><tr><th style="width:30%">Item</th><th>Detail</th><th style="width:20%">Owner</th></tr></thead>
+    <tbody>
+      <tr><td><b>Expert sign-off of calculation modules</b></td><td>All 13 modules are "Not production ready". A qualified methodology expert must check each against the official document, including every listed interpretation, and the sign-off is recorded in the platform (request and second approval). Until then calculations are blocked in production.</td><td>Methodology team + external expert</td></tr>
+      <tr><td><b>Gold Standard Paris alignment</b></td><td>2026+ vintages under GS402/GS403 are zero unless Gold Standard approves the transition.</td><td>Management / Gold Standard</td></tr>
+      <tr><td><b>Within-farm strata</b></td><td>Decide whether to support strata drawn inside farms (needed for heterogeneous fields; required by VM0051). Research is complete.</td><td>Management decision pending</td></tr>
+      <tr><td><b>VM0047 v1.1 details</b></td><td>Equations specific to v1.1 should be re-checked against the official PDF.</td><td>Methodology team</td></tr>
+    </tbody>
+  </table>
+
+  <h2>9.2 Production infrastructure</h2>
+  <ul>
+    <li><b>Malware scanning:</b> the scanning hook exists; a real antivirus engine must be connected (development detects only the EICAR test file).</li>
+    <li><b>Multi-factor sign-in:</b> data model ready; enrolment flow not yet built.</li>
+    <li><b>Rate limiting:</b> in-memory today; a shared store (Redis) is needed before running more than one server.</li>
+    <li><b>Payments and registries:</b> buyer payments, farmer payouts and registry submissions are recorded manually with references and PDF evidence. Live bank and registry integrations are not connected.</li>
+    <li><b>Encryption-key rotation:</b> rotating the data encryption key needs a re-encryption job (not built). The key must be kept in a secret store with a backup.</li>
+    <li><b>Known bug:</b> re-opening data collection on a period whose dataset was already submitted can leave the period stuck (S10).</li>
+  </ul>
+
+  <h2>9.3 Not in scope of the current build</h2>
+  <ul>
+    <li>VM0047 area-based approach; rice Quantification Approaches 1 and 2.</li>
+    <li>Use of external satellite or soil data as calculation inputs (reference only, by design).</li>
+  </ul>
+</section>
+
+<!-- ============================== APPENDICES ============================== -->
+<section class="chapter">
+  <h1>Appendix A: test accounts</h1>
+  <p>The recorded test runs used dedicated accounts named <code>e2e.&lt;role&gt;@cc.example.com</code> in the local test environment. Passwords are held by the test team and are not reproduced here.</p>
+  <table>
+    <thead><tr><th style="width:24%">Account</th><th style="width:22%">Organization</th><th>Role</th></tr></thead>
+    <tbody>
+      <tr><td>e2e.admin</td><td>PLATFORM</td><td>Platform Admin</td></tr>
+      <tr><td>e2e.meth1 / e2e.meth2</td><td>Platform staff</td><td>Methodology Specialist (author / approver)</td></tr>
+      <tr><td>e2e.comp</td><td>Platform staff</td><td>Marketplace Compliance</td></tr>
+      <tr><td>e2e.pm</td><td>DEV</td><td>Project Manager</td></tr>
+      <tr><td>e2e.qa</td><td>DEV</td><td>QA Officer</td></tr>
+      <tr><td>e2e.gis</td><td>DEV</td><td>GIS Specialist</td></tr>
+      <tr><td>e2e.mrv</td><td>DEV</td><td>MRV Manager</td></tr>
+      <tr><td>e2e.sup / e2e.col</td><td>DEV</td><td>Field Supervisor / Field Agent</td></tr>
+      <tr><td>e2e.analyst</td><td>DEV</td><td>Calculation Analyst</td></tr>
+      <tr><td>e2e.registry / e2e.credit</td><td>DEV</td><td>Registry Manager / Credit Manager</td></tr>
+      <tr><td>e2e.fin, fin2, fin3, fin4</td><td>DEV</td><td>Finance Manager (approver, calculator, second approver, executor)</td></tr>
+      <tr><td>e2e.labmgr / e2e.labqa / e2e.labtech</td><td>LAB</td><td>Lab Manager / Lab Manager (QA) / Lab Technician</td></tr>
+      <tr><td>e2e.vvb (+ a second reviewer)</td><td>VVB</td><td>VVB Reviewer</td></tr>
+      <tr><td>e2e.buyer</td><td>BUY</td><td>Buyer</td></tr>
+      <tr><td>e2e.farmer</td><td>E2EFPO</td><td>Farmer (linked to farmer profile "Asha Patil")</td></tr>
+    </tbody>
+  </table>
+
+  <h1 style="margin-top:22px">Appendix B: negative-test checklist</h1>
+  <p>Each line must be <b>refused</b> by the platform. Tick when confirmed.</p>
+  <table>
+    <thead><tr><th style="width:5%">☐</th><th style="width:8%">Stage</th><th>Attempt</th><th style="width:28%">Expected refusal</th></tr></thead>
+    <tbody>
+      <tr><td>☐</td><td>S0</td><td>Lab technician opens the MRV page</td><td>No access</td></tr>
+      <tr><td>☐</td><td>S0</td><td>Five wrong passwords</td><td>Account locked 15 min</td></tr>
+      <tr><td>☐</td><td>S2</td><td>Methodology author approves own version</td><td>Separation of duties</td></tr>
+      <tr><td>☐</td><td>S3</td><td>PM approves own KYC submission</td><td>Separation of duties</td></tr>
+      <tr><td>☐</td><td>S3</td><td>Activate farmer without KYC/consent</td><td>Requirements not met</td></tr>
+      <tr><td>☐</td><td>S4</td><td>Farm submitter verifies own farm</td><td>No Verify action</td></tr>
+      <tr><td>☐</td><td>S4</td><td>Upload a fake PDF (wrong content type)</td><td>File rejected</td></tr>
+      <tr><td>☐</td><td>S5</td><td>PM approves own eligibility submission</td><td>Not shown / refused</td></tr>
+      <tr><td>☐</td><td>S5</td><td>Add a farm with an open boundary conflict, no acknowledgement</td><td>CONFLICTS_REQUIRE_ACKNOWLEDGEMENT</td></tr>
+      <tr><td>☐</td><td>S5</td><td>Approve eligibility with an OPEN overlap flag</td><td>REQUIREMENTS_NOT_MET</td></tr>
+      <tr><td>☐</td><td>S6</td><td>Recommending specialist locks the methodology</td><td>Not allowed</td></tr>
+      <tr><td>☐</td><td>S6</td><td>Lock after re-evaluation</td><td>EVALUATION_OUTDATED</td></tr>
+      <tr><td>☐</td><td>S7</td><td>Stratum creator approves own stratum</td><td>Separation of duties</td></tr>
+      <tr><td>☐</td><td>S8</td><td>Collector accepts own field record</td><td>Not allowed</td></tr>
+      <tr><td>☐</td><td>S9</td><td>Lab technician approves own result</td><td>Refused</td></tr>
+      <tr><td>☐</td><td>S9</td><td>Submit a lab result without the PDF report</td><td>REPORT_REQUIRED</td></tr>
+      <tr><td>☐</td><td>S9</td><td>Receipt with wrong seal number, then lab QA approves</td><td>Custody FAIL; QA_CHECKS_FAILED</td></tr>
+      <tr><td>☐</td><td>S10</td><td>MRV manager approves own dataset</td><td>Separation of duties</td></tr>
+      <tr><td>☐</td><td>S11</td><td>Analyst approves own calculation</td><td>Separation of duties</td></tr>
+      <tr><td>☐</td><td>S12</td><td>Submit package before readiness is READY</td><td>NO_READY_PACKAGE</td></tr>
+      <tr><td>☐</td><td>S12</td><td>VVB reviewer who raised findings records the decision</td><td>Separation of duties</td></tr>
+      <tr><td>☐</td><td>S13</td><td>Registry manager confirms own issuance</td><td>HTTP 403</td></tr>
+      <tr><td>☐</td><td>S13</td><td>Record an issuance above the verified quantity</td><td>QUANTITY_EXCEEDS_VERIFIED</td></tr>
+      <tr><td>☐</td><td>S14</td><td>Credit manager confirms own ledger opening</td><td>HTTP 403</td></tr>
+      <tr><td>☐</td><td>S15</td><td>Buyer confirms own payment</td><td>HTTP 403</td></tr>
+      <tr><td>☐</td><td>S15</td><td>Unverified buyer places an order</td><td>Refused</td></tr>
+      <tr><td>☐</td><td>S16</td><td>Settlement calculator approves own settlement</td><td>Separation of duties</td></tr>
+      <tr><td>☐</td><td>S16</td><td>Payout approval without verified bank account</td><td>BANK_ACCOUNT_NOT_VERIFIED</td></tr>
+      <tr><td>☐</td><td>S16</td><td>PM verifies the bank account they added</td><td>Refused</td></tr>
+      <tr><td>☐</td><td>S16</td><td>Payout approver executes the payout</td><td>Separation of duties</td></tr>
+      <tr><td>☐</td><td>S17</td><td>Farmer opens another farmer's data</td><td>Not found</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="chapter">
+  <h1>Appendix C: troubleshooting</h1>
+  <table>
+    <thead><tr><th style="width:36%">What you see</th><th>What to do</th></tr></thead>
+    <tbody>
+      <tr><td>"Too many sign-in attempts"</td><td>For testing, raise the sign-in rate limit in the server settings and restart the backend.</td></tr>
+      <tr><td>A button is missing</td><td>Wrong user for that step (see the role table), or it is your own submission (separation of duties).</td></tr>
+      <tr><td><code>REQUIREMENTS_NOT_MET</code></td><td>Read the "still needed" checklist on the page.</td></tr>
+      <tr><td>No methodology candidate</td><td>The version is not Approved, its effective-from date is after the project start, or the standard/activity does not match.</td></tr>
+      <tr><td><code>EVALUATION_OUTDATED</code></td><td>Candidates were re-evaluated after the recommendation; the specialist must recommend again.</td></tr>
+      <tr><td>"Invalid data" on field collection</td><td>The message names the field: usually GPS accuracy (leave empty), depth (whole numbers) or a future date.</td></tr>
+      <tr><td><code>INSUFFICIENT_AREA</code> on point generation</td><td>Reduce the sample count or use a larger boundary.</td></tr>
+      <tr><td>Seal mismatch at lab receipt</td><td>The seal observed must equal the seal applied in the field.</td></tr>
+      <tr><td><code>REPORT_REQUIRED</code> when submitting a lab result</td><td>Attach the PDF lab report to the result, then submit again.</td></tr>
+      <tr><td>Calculation blocker</td><td>See the blocker table in S11; the readiness panel names the stratum or data item.</td></tr>
+      <tr><td>Gold Standard credits are zero for 2026+</td><td>Paris-alignment gate: record <code>GS_PAA</code>/<code>GA_PAA</code> = YES only after Gold Standard approval.</td></tr>
+      <tr><td>Approach 3 credits are zero</td><td>Stock-change factors entered without ± uncertainty; record the ± values from the source tables.</td></tr>
+    </tbody>
+  </table>
+
+  <h1 style="margin-top:22px">Appendix D: glossary</h1>
+  <table>
+    <thead><tr><th style="width:22%">Term</th><th>Meaning</th></tr></thead>
+    <tbody>
+      <tr><td>dMRV</td><td>Digital measurement, reporting and verification.</td></tr>
+      <tr><td>Methodology</td><td>The official rulebook (e.g. Verra VM0042) that defines when a project qualifies and how its credits are calculated.</td></tr>
+      <tr><td>Calculation module</td><td>The platform's implementation of a methodology's equations, attached to a methodology version.</td></tr>
+      <tr><td>SOC</td><td>Soil organic carbon.</td></tr>
+      <tr><td>Stratum</td><td>An area with similar conditions (soil, climate, management) that is sampled and calculated as one unit.</td></tr>
+      <tr><td>Control site</td><td>Comparable land outside the project, used under VM0042 to measure what would have happened without the project (the baseline).</td></tr>
+      <tr><td>Monitoring period</td><td>The time window for which data is collected and credits are calculated; Period 0 is the baseline sampling.</td></tr>
+      <tr><td>Dataset</td><td>The frozen, QA-approved collection of all monitoring data for a period.</td></tr>
+      <tr><td>Uncertainty deduction</td><td>Credits removed when measurement uncertainty is above the methodology's threshold.</td></tr>
+      <tr><td>Buffer</td><td>Share of credits set aside in a pooled reserve against future reversal (non-permanence risk).</td></tr>
+      <tr><td>VVB / ACVA</td><td>Validation and Verification Body (Verra, Gold Standard) / Accredited Carbon Verification Agency (India CCTS).</td></tr>
+      <tr><td>VCU / GS VER / CCC</td><td>Credit units: Verified Carbon Unit (Verra), Gold Standard Verified Emission Reduction, Carbon Credit Certificate (India CCTS).</td></tr>
+      <tr><td>Vintage</td><td>The year in which the reduction or removal happened.</td></tr>
+      <tr><td>Retirement</td><td>Permanent use of a credit to claim an offset; it can never be resold.</td></tr>
+      <tr><td>Separation of duties</td><td>The rule that the person who submits something cannot approve it.</td></tr>
+      <tr><td>SHA-256 hash</td><td>A digital fingerprint; any change to the data changes the fingerprint, so tampering is detectable.</td></tr>
+      <tr><td>KYC</td><td>Know Your Customer: identity verification of farmers and buyers.</td></tr>
+    </tbody>
+  </table>
+  <p class="muted small" style="margin-top:16px">End of document.</p>
+</section>
+
+</body>
+</html>

@@ -442,6 +442,17 @@ def test_decision_report_sod_quantity_status_lineage_and_supersession(client: Te
     assert _audit(db, "VERIFICATION_DECISION_SUPERSEDED")
 
 
+def test_accepting_an_assignment_on_a_calculated_project_starts_verification(client: TestClient, db: Session) -> None:
+    k = calc_scenario(db, client, 79.62, 24.62, "9160 2001 3001")
+    _ready(client, db, k)
+    assert _project(db, k).status == "CALCULATED"
+    org, v1, _ = _vvb(db, client)
+    a = _propose(client, k, org).json()
+    assert _project(db, k).status == "CALCULATED"           # a proposal alone does not start verification
+    client.post(f"{VVB}/assignments/{a['id']}/accept", headers=v1.headers, json={"coi_declaration": COI})
+    assert _project(db, k).status == "VERIFICATION"         # C2: the acceptance itself moves the aggregate status
+
+
 def test_not_verified_decision_keeps_project_in_verification(client: TestClient, db: Session) -> None:
     k = calc_scenario(db, client, 79.60, 24.60, "9160 2000 3000")
     a, s, org, v1, _, _ = _submitted(client, db, k)

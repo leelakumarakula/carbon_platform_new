@@ -368,7 +368,8 @@ class Settings(BaseSettings):
             raise ValueError("WEATHER_PROVIDER must be 'open-meteo' or 'none'; SOIL_PROVIDER must be 'soilgrids' or 'none'")
         if self.SATELLITE_PROVIDER == "copernicus" and not (self.COPERNICUS_CLIENT_ID and self.COPERNICUS_CLIENT_SECRET):
             raise ValueError("SATELLITE_PROVIDER=copernicus needs COPERNICUS_CLIENT_ID and COPERNICUS_CLIENT_SECRET")
-        if self.SATELLITE_PROVIDER not in ("manual", "planetary-computer", "copernicus"):
+        if self.SATELLITE_PROVIDER not in ("manual", "planetary-computer", "copernicus") and \
+                self.SATELLITE_PROVIDER.strip().lower() not in MOCK_PROVIDER_NAMES:      # simulated names: refused in production below (D38)
             raise ValueError("SATELLITE_PROVIDER must be manual, planetary-computer or copernicus")
         if not 0 <= self.SATELLITE_PLOT_MAX_CLOUD_PCT <= 100 or not 1 <= self.SATELLITE_MAX_SCENES <= 20:
             raise ValueError("SATELLITE_PLOT_MAX_CLOUD_PCT must be 0-100 and SATELLITE_MAX_SCENES 1-20")

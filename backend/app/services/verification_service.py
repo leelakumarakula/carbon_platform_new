@@ -337,6 +337,7 @@ def decisions(db: Session, assignment_id: uuid.UUID) -> list[VerificationDecisio
 
 # ---------------------------------------------------------------- aggregate project status (C2)
 def _sync_project(db: Session, ctx: RequestContext, p: Project, verified: bool) -> None:
+    db.flush()                                      # sessions do not autoflush: the caller's assignment change must be visible
     has_accepted = db.scalars(select(VerificationAssignment).where(VerificationAssignment.project_id == p.id,
                                                                    VerificationAssignment.status.in_(("ACCEPTED", "COMPLETED")))).first()
     if p.status == "CALCULATED" and (has_accepted or verified):
