@@ -23,6 +23,15 @@ describe('3D map helpers', () => {
     expect(relief.layers.map((l) => l.id)).toEqual(['base', 'hillshade']);
   });
 
+  it('adds satellite imagery only when configured, and shows either it or the basemap', () => {
+    expect(style3d(BASE, 'satellite').layers.map((l) => l.id)).toEqual(['base']);   // nothing configured: basemap only
+    const sat = { ...BASE, satellite: { tile_url: 'https://img.example/{z}/{y}/{x}', max_zoom: 18, attribution: 'Imagery' } };
+    const s = style3d(sat, 'satellite');
+    expect(s.sources['satellite']).toMatchObject({ type: 'raster', tiles: ['https://img.example/{z}/{y}/{x}'], maxzoom: 18 });
+    expect(s.layers.map((l) => [l.id, l.layout?.visibility])).toEqual([['base', 'none'], ['satellite', 'visible']]);
+    expect(style3d(sat, 'map').layers.map((l) => [l.id, l.layout?.visibility])).toEqual([['base', 'visible'], ['satellite', 'none']]);
+  });
+
   it('frames polygons, multipolygons and extra points', () => {
     expect(boundsOf([])).toBeNull();
     const b = boundsOf([
