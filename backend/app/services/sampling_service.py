@@ -510,6 +510,8 @@ def generate_points(db: Session, ctx: RequestContext, principal: Principal, desi
         assert st is not None
         bids = [uuid.UUID(x) for x in json.loads(st.farm_boundary_ids or "[]")]
         box = gen.bbox_of(_coords_of(db, bids))
+        # control sites lie outside the project by definition: their points are kept inside their own farms only
+        within = project_boundary.id if project_boundary and getattr(st, "role", "PROJECT") != "CONTROL" else None
         seed = dv.random_seed + i * 7919
         accepted: list[tuple[float, float, uuid.UUID, uuid.UUID]] = []
         attempts = 0
@@ -519,7 +521,7 @@ def generate_points(db: Session, ctx: RequestContext, principal: Principal, desi
             shrink = 1.0
             for _ in range(12):
                 _take(db, gen.grid_candidates(box, float(st.area_hectares or 0) * 10_000, alloc.sample_count, seed, shrink), bids, accepted,
-                      alloc.sample_count, mp.id, min_dist, project_boundary.id if project_boundary else None)
+                      alloc.sample_count, mp.id, min_dist, within)
                 if len(accepted) >= alloc.sample_count:
                     break
                 accepted.clear()
@@ -528,7 +530,7 @@ def generate_points(db: Session, ctx: RequestContext, principal: Principal, desi
         else:
             for batch in gen.random_candidates(box, seed, max(20, alloc.sample_count * 10)):
                 attempts += len(batch)
-                _take(db, batch, bids, accepted, alloc.sample_count, mp.id, min_dist, project_boundary.id if project_boundary else None)
+                _take(db, batch, bids, accepted, alloc.sample_count, mp.id, min_dist, within)
                 if len(accepted) >= alloc.sample_count or attempts >= limit:
                     break
         if len(accepted) < alloc.sample_count:

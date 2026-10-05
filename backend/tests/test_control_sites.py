@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from app.services.project_farm_service import _is_control_farm
 from tests.phase2 import square
 from tests.phase3 import verified_farm
-from tests.phase5 import MRV, SIZE, MrvCtx, approved_plan, approved_stratum, locked_project
+from tests.phase5 import MRV, SIZE, MrvCtx, approved_design, approved_plan, approved_stratum, collecting_period, locked_project
 
 LON, LAT = 77.10, 21.40
 
@@ -80,3 +80,19 @@ def test_control_site_similarity_and_distance_checked_at_approval(client: TestCl
     # a revision keeps the role and the links
     v2 = client.patch(f"{MRV}/strata/{fixed['id']}", headers=c.mrv.headers, json={"name": "Control renamed", "reason": "rename"}).json()
     assert v2["role"] == "CONTROL" and [x["code"] for x in v2["linked_strata"]] == ["S1"]
+
+
+def test_sampling_points_are_generated_inside_control_sites(client: TestClient, db: Session, c: MrvCtx) -> None:
+    """A control site lies outside the project boundary by definition: its points stay inside its own farm (regression: they were
+    clipped to the project boundary, so no point could be placed and VM0042 sampling was impossible)."""
+    s1 = approved_stratum(client, c, "S1", [c.farms[0]["id"]])
+    near = _control_farm(client, c, LON + 0.02, LAT)
+    cs = _create(client, c, "C1", [near["id"]], [s1["id"]])
+    assert client.post(f"{MRV}/strata/{cs['id']}/approve", headers=c.t.gis.headers, json={"reason": "control ok"}).status_code == 200
+    mp = collecting_period(client, c)
+    d = approved_design(client, c, mp["id"], [{"stratum_id": s1["id"], "sample_count": 2}, {"stratum_id": cs["id"], "sample_count": 3}])
+    r = client.post(f"{MRV}/sampling-designs/{d['id']}/generate-points", headers=c.mrv.headers)
+    assert r.status_code == 201, r.text
+    pts = r.json()["points"]
+    assert sum(1 for p in pts if p["stratum_id"] == cs["id"]) == 3 and all(p["farm_id"] == near["id"] for p in pts if p["stratum_id"] == cs["id"])
+    assert all(p["farm_id"] == c.farms[0]["id"] for p in pts if p["stratum_id"] == s1["id"])

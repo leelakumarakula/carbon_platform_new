@@ -90,7 +90,8 @@ class _CctsAr(CalculationModule):
     calculation_rules_version = 0
     readiness = fw.NOT_PRODUCTION_READY
     mangrove: ClassVar[bool] = False
-    sampling_parameters: ClassVar[dict[str, Any]] = {"quantification_approach": "PLOT_SAMPLING", "min_samples_per_stratum": 2,
+    sampling_parameters: ClassVar[dict[str, Any]] = {"quantification_approach": "OTHER",
+                                                     "sampling_method": "PLOT_SAMPLING", "min_samples_per_stratum": 2,
                                                      "statistical_design": "STRATIFIED_RANDOM"}
     assumptions = ASSUMPTIONS
 

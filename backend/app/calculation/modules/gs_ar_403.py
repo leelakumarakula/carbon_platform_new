@@ -122,7 +122,8 @@ class Gs403V21(CalculationModule):
     rules: ClassVar[dict[str, str]] = {r["rule_code"]: r["step"] for r in CALC_RULES}
     calculation_rule_definitions = CALC_RULES
     monitoring_rule_definitions = MONITORING_RULES
-    sampling_parameters: ClassVar[dict[str, Any]] = {"quantification_approach": "FOREST_INVENTORY", "min_samples_per_stratum": 2,
+    sampling_parameters: ClassVar[dict[str, Any]] = {"quantification_approach": "OTHER",
+                                                     "sampling_method": "FOREST_INVENTORY", "min_samples_per_stratum": 2,
                                                      "target_precision_pct": 20, "confidence_level_pct": 90}
     assumptions = ASSUMPTIONS
     variables = (

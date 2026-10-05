@@ -45,6 +45,7 @@ from app.models import (
 )
 from app.models.base import utcnow
 from app.models.documents import DocumentCategory
+from app.models.mrv import QUANTIFICATION
 from app.repositories import gis
 from app.schemas.mrv import DatasetIn, MeasurementIn, MonitoringRecordAmend, MonitoringRecordIn, PeriodIn, PlanIn, PlanUpdate, QaCheck
 from app.security.permissions import P
@@ -130,6 +131,8 @@ def create_plan(db: Session, ctx: RequestContext, principal: Principal, data: Pl
         raise Conflict("A plan version is already being prepared. Edit or withdraw it first.", error_code="PLAN_IN_PROGRESS")
     req = requirements(db, v)
     method_q = req.value("quantification_approach")
+    if method_q and method_q not in QUANTIFICATION:   # a methodology-specific approach (e.g. census-based) is an OTHER plan approach
+        method_q = "OTHER"
     if method_q and data.quantification_approach and data.quantification_approach != method_q:
         raise ValidationFailed(f"The methodology version sets the quantification approach to {method_q}.", error_code="METHODOLOGY_REQUIREMENT")
     current = approved_plan(db, p.id)
@@ -410,6 +413,17 @@ def is_laboratory_parameter(db: Session, m: MrvPlanMeasurement) -> bool:
     return measurement_source(db, m) == "LABORATORY"
 
 
+def _points_awaiting_analysis(db: Session, cols: list[FieldCollectionRecord], m: MrvPlanMeasurement) -> int:
+    """Collected points with no APPROVED laboratory result yet for the measurement's monitoring rule (any sample of the collection)."""
+    if not cols or m.monitoring_rule_id is None:
+        return len({c.sampling_point_id for c in cols})
+    from app.models import LabResult, LabSample
+    done = set(db.scalars(select(LabSample.field_collection_id).join(LabResult, LabResult.sample_id == LabSample.id).where(
+        LabSample.field_collection_id.in_([c.id for c in cols]), LabResult.methodology_monitoring_rule_id == m.monitoring_rule_id,
+        LabResult.status == "APPROVED")).all())
+    return len({c.sampling_point_id for c in cols if c.id not in done})
+
+
 def _refuse_sample_analysis_value(db: Session, m: MrvPlanMeasurement) -> None:
     src = measurement_source(db, m)
     if src == "LABORATORY":
@@ -642,8 +656,16 @@ def build_snapshot(db: Session, ds: MrvDataset) -> dict[str, Any]:
     cols = [c for c in ss.collections_of_period(db, mp.id) if c.status == "ACCEPTED"]
     recs = monitoring_records(db, mp.id)
     evid = evidence_for(db, ds.project_id, mp.id)
-    strata_ids = sorted({str(x.stratum_id) for x in pts})
+    strata_ids = sorted({str(x.stratum_id) for x in pts} | {str(r.stratum_id) for r in recs if r.stratum_id})
     strata = {str(s.id): s for s in (db.get(ProjectStratum, uuid.UUID(i)) for i in strata_ids) if s}
+    # methods without sampling (default factors, per-stratum records) still need every current approved stratum and its area;
+    # one version per stratum record, never two
+    have = {s.record_id for s in strata.values()}
+    for s in db.scalars(select(ProjectStratum).where(ProjectStratum.project_id == ds.project_id, ProjectStratum.is_current == True,  # noqa: E712
+                                                     ProjectStratum.status == "APPROVED")).all():
+        if s.record_id not in have:
+            strata[str(s.id)] = s
+            have.add(s.record_id)
     plan_ms = measurements(db, plan.id)
     roles = {m.id: data_role(db, m) for m in plan_ms}
     return {
@@ -862,7 +884,10 @@ def qa_checks(db: Session, ds: MrvDataset) -> list[QaCheck]:
         src = measurement_source(db, m)
         if src == "LABORATORY":
             # decision V2: authoritative only as an approved Phase 6 laboratory result — reported, never filled in here
-            analysis.append(f"{m.code} ({m.name}): AWAITING_ANALYSIS for {len(collected_points)} collected sample(s) — no value is entered")
+            waiting = _points_awaiting_analysis(db, cols, m)
+            if waiting:
+                analysis.append(f"{m.code} ({m.name}): AWAITING_ANALYSIS for {waiting} of {len(collected_points)} collected sample(s) "
+                                "— no approved laboratory result yet")
         elif src == "UNCLASSIFIED":
             unclassified.append(f"CONFIGURATION_REQUIRED: measurement source of {m.code} not declared by the methodology version")
         elif m.level == "FARM":

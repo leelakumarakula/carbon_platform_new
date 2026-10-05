@@ -407,7 +407,7 @@ def compatible_modules(db: Session, principal: Principal, version_id: uuid.UUID)
     """Registered modules with their compatibility for this version (same methodology code and version label)."""
     from app.calculation import registry
     m, v = get_version(db, principal, version_id)
-    return m, v, [(mod, mod.methodology_code == m.code and mod.version_label == v.version_label) for mod in registry.modules()]
+    return m, v, [(mod, registry.implements(mod, m.code, v.version_label)) for mod in registry.modules()]
 
 
 def select_calculation_module(db: Session, ctx: RequestContext, principal: Principal, version_id: uuid.UUID, module_code: str | None,
@@ -430,7 +430,7 @@ def select_calculation_module(db: Session, ctx: RequestContext, principal: Princ
     mod = registry.by_code(module_code)
     if mod is None:
         raise NotFound("No such calculation module.", error_code="MODULE_NOT_FOUND")
-    if mod.methodology_code != m.code or mod.version_label != v.version_label:
+    if not registry.implements(mod, m.code, v.version_label):
         raise ValidationFailed(f"Module {mod.code} implements {mod.methodology_code} {mod.version_label}, not {m.code} {v.version_label}.",
                                error_code="MODULE_NOT_FOR_VERSION")
     current = rules(db, v.id)

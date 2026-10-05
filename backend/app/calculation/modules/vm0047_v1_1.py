@@ -150,8 +150,9 @@ class Vm0047V11Census(CalculationModule):
     rules: ClassVar[dict[str, str]] = {r["rule_code"]: r["step"] for r in CALC_RULES}
     calculation_rule_definitions = CALC_RULES
     monitoring_rule_definitions = MONITORING_RULES
-    sampling_parameters: ClassVar[dict[str, Any]] = {"quantification_approach": "CENSUS_BASED", "min_samples_per_stratum": 2,
-                                                     "statistical_design": "STRATIFIED_SYSTEMATIC"}
+    sampling_parameters: ClassVar[dict[str, Any]] = {"quantification_approach": "OTHER",
+                                                     "sampling_method": "CENSUS_BASED", "min_samples_per_stratum": 2,
+                                                     "statistical_design": "SYSTEMATIC_GRID"}
     assumptions = ASSUMPTIONS
     variables = (
         Variable("N", "MONITORING_RECORD", "units", "STRATUM", rule_code="V47_N"),

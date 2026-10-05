@@ -14,7 +14,8 @@ the locked version exactly. Registered modules:
 All are NOT_PRODUCTION_READY until their production-readiness approval is recorded.
 
 Several modules may implement the same methodology version (one per activity module / approach): the version's Calculation-tab
-choice (`calculation_module_code`) decides which one `resolve` returns.
+choice (`calculation_module_code`) decides which one `resolve` returns. A version label may extend the module's label ("1.0-ZT") so
+the same official version can be set up once per module.
 
 A module declared with `calculation_rules_version = 0` is version-bound: a methodology version selects it on its Calculation tab
 (which copies the module's rule set and is approved with the version), and `bind()` then pins the module to that version's
@@ -46,9 +47,19 @@ def by_code(code: str) -> CalculationModule | None:
     return next((m for m in _MODULES if m.code == code), None)
 
 
+def implements(module: CalculationModule, methodology_code: str, version_label: str) -> bool:
+    """A module implements a methodology version when the codes are equal and the version label is the module's label, or extends it
+    with a suffix ("1.0-ZT", "1.0 cover crops"): one official version may be set up several times on the platform, each set-up
+    choosing a different module (e.g. GS 402 v1.0 with the zero-tillage or the cover-crops activity module)."""
+    if module.methodology_code != methodology_code:
+        return False
+    label, base = version_label.strip(), module.version_label
+    return label == base or (label.startswith(base) and label[len(base):][:1] in ("-", " ", "_", "/"))
+
+
 def resolve(methodology_code: str, version_label: str, selected: str | None = None) -> CalculationModule | None:
     """The module for a methodology version: the selected one when it implements the version, otherwise the first registered."""
-    found = [m for m in _MODULES if m.methodology_code == methodology_code and m.version_label == version_label]
+    found = [m for m in _MODULES if implements(m, methodology_code, version_label)]
     return next((m for m in found if m.code == selected), found[0] if found else None)
 
 

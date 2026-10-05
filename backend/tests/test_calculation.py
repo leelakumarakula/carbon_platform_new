@@ -47,6 +47,7 @@ from tests.calc_fixture import (
 from tests.conftest import Actor, login, make_org, make_user
 from tests.phase2 import staff
 from tests.phase3 import PR
+from tests.phase5 import MRV
 from tests.phase6 import LABV, PDF, SOC_RULE, TEXT_RULE, now_iso, qa
 
 
@@ -447,3 +448,14 @@ def test_database_triggers_protect_calculation_history() -> None:
             assert msg in str(e2.value)
             if t2.is_active:
                 t2.rollback()
+
+
+def test_dataset_qa_analysis_warning_clears_when_results_are_approved(client: TestClient, db: Session) -> None:
+    """The "awaiting laboratory analysis" warning counts only collected points without an APPROVED result for the parameter."""
+    k = calc_scenario(db, client, 77.45, 22.45, "8450 2000 3000", approve_results=1, approve_ds=False)
+    c = k.x.c
+    ds = client.post(f"{MRV}/datasets", headers=c.mrv.headers, json={"monitoring_period_id": k.x.period["id"]}).json()
+    client.post(f"{MRV}/datasets/{ds['id']}/submit", headers=c.mrv.headers, json={"reason": "collection complete"})
+    client.post(f"{MRV}/qa/{ds['id']}/start", headers=c.t.qa.headers)
+    check = next(x for x in client.get(f"{MRV}/qa/{ds['id']}", headers=c.t.qa.headers).json()["checks"] if x["key"] == "sample_analysis_pending")
+    assert check["result"] == "WARN" and "1 of 2 collected sample(s)" in check["details"][0]      # one of two points approved

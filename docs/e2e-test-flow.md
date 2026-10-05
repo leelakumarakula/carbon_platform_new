@@ -277,7 +277,8 @@ until Stage J8.
    meth2@ **Approves**.
 
 ### J2. Farms, project, control sites
-- Stages C–F as before, but lock the project on **VM0042 2.2**.
+- Stages C–F as before, but with **planned start `11/01/2025`** and crediting period `11/01/2025`–`10/31/2035`, then lock the project on **VM0042 2.2**.
+  The start must be on or after the version's effective date (`10/21/2025`), otherwise VM0042 is not offered as a candidate.
 - Create **3 more verified farms** of the same organization that do **not** join the project — they become control sites.
 - **MRV → Stratification**:
   - project stratum `S1` (your project farm), characteristics `SOIL_TEXTURE`, `SOIL_GROUP`, `PRECIPITATION_MM` (e.g. `750`);
@@ -286,7 +287,7 @@ until Stage J8.
     control site".
 
 ### J3. Two monitoring periods
-1. **Period 0** — purpose **BASELINE**, e.g. `2025-06-01`–`2026-05-31`: the sampling at t0.
+1. **Period 0** — purpose **BASELINE**, `2025-11-01`–`2026-05-31` (from the project start): the sampling at t0. Its field collections are dated inside the period (e.g. `05/20/2026`).
 2. **Period 1** — purpose **MONITORING**, e.g. `2026-06-01`–`2027-05-31`: the re-measurement (the calculation is run for this one).
 For **each** period: a sampling design that allocates **3 samples to S1 and to each control site**, depth `0`–`50` cm; generate points;
 assign them to col@.
@@ -335,7 +336,9 @@ Run K1–K3 once, then follow **one** of the two paths: **K4 measured** (Approac
    - standard `GS` · `Gold Standard for the Global Goals` · owner `Gold Standard Foundation` · Voluntary;
    - activity `AGR-SOC` · `Agriculture - soil organic carbon`, offered under Gold Standard.
 2. **Methodologies → Add**: Code exactly **`GS402`**, standard Gold Standard, activity `AGR-SOC`.
-3. Draft version: label exactly **`1.0`**, effective from `01/01/2020`, source `Gold Standard SOC Framework Methodology v1.0`.
+3. Draft version: label **`1.0`**, or `1.0-` plus a suffix when you set up several options side by side (each version holds one
+   module, and a label can be used only once per methodology). Examples: `1.0-ZT` for zero tillage, `1.0-CC-A3` for cover crops with
+   factors. Effective from `01/01/2020`, source `Gold Standard SOC Framework Methodology v1.0`.
 4. **Calculation tab → Calculation module**: the dropdown shows five GS402 options. Choose one:
 
 | Your project | Module |
@@ -355,7 +358,7 @@ Stages C–F as before, locking the project on **GS402 1.0**. In **MRV → Strat
 project farm; gis@ approves it. Gold Standard has **no control sites**: the baseline is the project's own state at the project start.
 
 ### K3. Two monitoring periods and farm activity
-1. **Period 0**, purpose BASELINE (e.g. `2025-06-01`–`2026-05-31`) and **Period 1**, purpose MONITORING (`2026-06-01`–`2027-05-31`).
+1. **Period 0**, purpose BASELINE (from the project start, e.g. `2025-11-01`–`2026-05-31`, with a project start of `11/01/2025`) and **Period 1**, purpose MONITORING (`2026-06-01`–`2027-05-31`).
    The calculation runs on Period 1.
 2. **Monitoring data**, per farm:
    - phase **BASELINE**, one record per historical year (up to 5 years before the project start): `GS_FERT_N` (kg N),
@@ -438,7 +441,7 @@ Stages C–F. Lock the project on **VM0047 1.1**, then create stratum `S1` (the 
 2. Generate the points.
 3. **Monitoring data** (level *Sampling point*), for each point:
    - `V47_ALIVE`: `1` alive, `0` dead or not found;
-   - `V47_AGB`: kg dry matter from the allometric equation, e.g. `48` (alive trees only; `0` below the size threshold);
+   - `V47_AGB`: kg dry matter from the allometric equation, e.g. `48` (`0` below the size threshold, and `0` for a dead tree);
    - `V47_BURNED`: `0` or `1`.
 4. Also record:
    - `V47_N` for S1 again (`400`);

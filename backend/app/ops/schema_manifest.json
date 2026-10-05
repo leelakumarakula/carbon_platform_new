@@ -1284,7 +1284,7 @@
   "verification_submissions.uq_verification_submissions_submission_code",
   "workflow_events.pk_workflow_events"
  ],
- "head": "0022",
+ "head": "0023",
  "indexes": [
   "activities.pk_activities",
   "activities.uq_activities_code",

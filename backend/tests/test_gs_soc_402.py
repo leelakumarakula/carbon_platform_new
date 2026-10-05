@@ -246,3 +246,25 @@ def test_paris_alignment_gate_for_2026_vintages() -> None:
     s.rows = [r for r in s.rows if r["variable"] != "PAA"]
     res = fw.execute(Gs402ZeroTillageA1(), s.done(Gs402ZeroTillageA1()))
     assert _out(res, "PAA_BLOCKED_SHARE") == 1 and _out(res, "GS_VER_TOTAL") == 0 and _out(res, "BUFFER") == 0
+
+
+def test_one_official_version_can_be_set_up_once_per_module() -> None:
+    zt = registry.by_code("GS402-ZT-A1")
+    assert zt is not None
+    assert registry.implements(zt, "GS402", "1.0") and registry.implements(zt, "GS402", "1.0-ZT") and registry.implements(zt, "GS402", "1.0 zero tillage")
+    assert not registry.implements(zt, "GS402", "1.01") and not registry.implements(zt, "GS402", "11.0") and not registry.implements(zt, "GS403", "1.0")
+    assert registry.resolve("GS402", "1.0-CC", "GS402-CC-A1").code == "GS402-CC-A1"   # type: ignore[union-attr]
+
+
+def test_every_module_declares_settings_the_mrv_plan_accepts() -> None:
+    """A module's sampling settings become the version's SAMPLING rule; its quantification approach must be one the MRV plan stores
+    (regression: CENSUS_BASED / PLOT_SAMPLING / FOREST_INVENTORY made plan creation fail on the database constraint)."""
+    from app.models.mrv import MEASUREMENT_LEVELS, QUANTIFICATION
+    for m in registry.modules():
+        approach = m.sampling_parameters.get("quantification_approach")
+        assert approach is None or approach in QUANTIFICATION, (m.code, approach)
+        design = m.sampling_parameters.get("statistical_design")
+        assert design is None or design in ("STRATIFIED_RANDOM", "SIMPLE_RANDOM", "SYSTEMATIC_GRID", "OTHER"), (m.code, design)
+        for d in m.monitoring_rule_definitions:
+            assert d.get("data_level") in (None, *MEASUREMENT_LEVELS), (m.code, d["rule_code"])
+            assert len(d["rule_code"]) <= 40 and len(d.get("frequency") or "") <= 120 and len(d.get("unit") or "") <= 40, (m.code, d["rule_code"])
