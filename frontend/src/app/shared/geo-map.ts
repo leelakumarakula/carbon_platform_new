@@ -4,6 +4,7 @@ import {
   Component,
   ElementRef,
   OnDestroy,
+  OnInit,
   effect,
   inject,
   input,
@@ -37,10 +38,20 @@ export interface MapPoint {
   color?: string;
 }
 
+/** True when the browser can create a WebGL context (needed by the 3D view). */
+export function supportsWebGl(): boolean {
+  try {
+    const c = document.createElement('canvas');
+    return !!(c.getContext('webgl2') ?? c.getContext('webgl'));
+  } catch {
+    return false;
+  }
+}
+
 /**
  * Reusable map (spec §28 "reusable map components"). Display-only unless the parent listens to mapClick.
- * 2D (Leaflet) is the working view: drawing and clicks happen there. The 3D toggle opens a view-only MapLibre view with terrain
- * (GeoMap3d, loaded on first use); the 2D map is kept alive underneath so nothing is lost when switching back.
+ * Views open in 3D (a view-only MapLibre view with terrain, GeoMap3d) unless `defaultMode` is '2d' or the browser has no WebGL; 2D
+ * (Leaflet) is the working view where drawing and clicks happen, and it stays alive underneath so nothing is lost when switching.
  */
 @Component({
   selector: 'app-geo-map',
@@ -50,7 +61,8 @@ export interface MapPoint {
     <div class="wrap">
       <div #host class="map" [class.hidden]="mode() === '3d'" [style.height]="height()" role="region" aria-label="Map"></div>
       @if (mode() === '3d') {
-        <app-geo-map-3d [layers]="layers()" [points]="points()" [drawing]="drawing()" [height]="height()" [center]="center()" />
+        <app-geo-map-3d [layers]="layers()" [points]="points()" [drawing]="drawing()" [height]="height()" [center]="center()"
+                        (failed)="fallBack($event)" />
         @if (drawing() !== null) { <div class="hint">3D is view-only — switch to 2D to add or change corners.</div> }
       }
       @if (allow3d()) {
@@ -74,7 +86,7 @@ export interface MapPoint {
       background: rgb(0 0 0 / 65%); color: #fff; font: var(--mat-sys-body-small); pointer-events: none; }
   `,
 })
-export class GeoMap implements AfterViewInit, OnDestroy {
+export class GeoMap implements OnInit, AfterViewInit, OnDestroy {
   readonly layers = input<MapLayer[]>([]);
   readonly points = input<MapPoint[]>([]);
   readonly drawing = input<LonLat[] | null>(null);
@@ -82,6 +94,8 @@ export class GeoMap implements AfterViewInit, OnDestroy {
   readonly center = input<[number, number]>([20.0, 73.8]); // lat, lon
   /** Offer the 2D / 3D switch (on by default). */
   readonly allow3d = input(true);
+  /** View shown first: 3D for viewing; editors where the user draws or clicks pass '2d'. */
+  readonly defaultMode = input<'2d' | '3d'>('3d');
   readonly mapClick = output<{ lat: number; lon: number }>();
   protected readonly mode = signal<'2d' | '3d'>('2d');
 
@@ -99,6 +113,16 @@ export class GeoMap implements AfterViewInit, OnDestroy {
       this.render(layers, points);
     });
     effect(() => this.renderDrawing(this.drawing()));
+  }
+
+  ngOnInit(): void {
+    if (this.allow3d() && this.defaultMode() === '3d' && supportsWebGl()) this.mode.set('3d');
+  }
+
+  /** The 3D view could not start: show the 2D map (kept alive underneath) instead of an error. */
+  protected fallBack(reason: string): void {
+    console.warn('3D map unavailable, showing 2D:', reason);
+    this.setMode('2d');
   }
 
   ngAfterViewInit(): void {

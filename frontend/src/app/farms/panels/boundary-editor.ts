@@ -65,7 +65,7 @@ import { BoundarySaved, FarmsApi } from '../farms.api';
       } @else {
         <p class="muted">The boundary can only be changed while the farm is a DRAFT. Re-open the farm to correct it.</p>
       }
-      <app-geo-map [layers]="layers()" [drawing]="vertices()" height="420px" (mapClick)="add($event)" />
+      <app-geo-map [layers]="layers()" [drawing]="vertices()" height="420px" defaultMode="2d" (mapClick)="add($event)" />
       @if (report(); as r) {
         <div class="report">
           <strong>Measured by SQL Server: {{ area(r.area_hectares) }}</strong>

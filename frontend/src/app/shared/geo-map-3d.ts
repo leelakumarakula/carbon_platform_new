@@ -6,6 +6,7 @@ import {
   OnDestroy,
   effect,
   inject,
+  output,
   input,
   signal,
   viewChild,
@@ -119,6 +120,8 @@ export class GeoMap3d implements AfterViewInit, OnDestroy {
   readonly drawing = input<LonLat[] | null>(null);
   readonly height = input('360px');
   readonly center = input<[number, number]>([20.0, 73.8]); // lat, lon
+  /** Emitted when the 3D view cannot start (no WebGL, files missing); the 2D map takes over. */
+  readonly failed = output<string>();
 
   protected readonly loading = signal(true);
   protected readonly error = signal<string | null>(null);
@@ -181,6 +184,7 @@ export class GeoMap3d implements AfterViewInit, OnDestroy {
     } catch (e) {
       this.loading.set(false);
       this.error.set(`The 3D view could not start: ${e instanceof Error ? e.message : 'unknown error'}. Use 2D meanwhile.`);
+      this.failed.emit(this.error() ?? '3D view failed');
     }
   }
 
