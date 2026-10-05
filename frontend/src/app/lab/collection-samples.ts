@@ -26,7 +26,8 @@ import { Sample, labBadge } from './lab.models';
     @for (s of samples(); track s.id) {
       <div class="sample">
         <div><strong class="mono">{{ s.sample_code }}</strong> <app-status-badge [status]="badge(s.status)" [text]="label(s.status)" />
-          <span class="small muted"> · {{ s.laboratory_org_name }} · {{ s.test_count }} test(s){{ s.seal_number ? ' · seal ' + s.seal_number : '' }}</span></div>
+          <span class="small muted" [attr.data-testid]="'sample-depth-' + s.sample_code"> · {{ +s.depth_top_cm }}–{{ +s.depth_bottom_cm }} cm · {{ s.laboratory_org_name }}
+            · {{ s.test_count }} test(s){{ s.seal_number ? ' · seal ' + s.seal_number : '' }}</span></div>
         @if (s.can_seal) {
           <p class="small">Write <strong class="mono">{{ s.sample_code }}</strong> on the container, then seal it.</p>
           <div class="row">
@@ -47,8 +48,17 @@ import { Sample, labBadge } from './lab.models';
             <mat-form-field subscriptSizing="dynamic"><mat-label>Unit</mat-label><input matInput [(ngModel)]="quantityUnit" /></mat-form-field>
             <mat-form-field subscriptSizing="dynamic"><mat-label>Container label</mat-label><input matInput [(ngModel)]="containerLabel" /></mat-form-field>
           </div>
-          <p class="small muted">Depth is taken from the field record. The sample code is issued on registration; write it on the container before sealing.</p>
-          <button mat-flat-button type="button" [disabled]="busy() || description.trim().length < 2" (click)="register()" data-testid="register-sample">
+          <div class="row">
+            <mat-form-field subscriptSizing="dynamic"><mat-label>Depth top (cm)</mat-label>
+              <input matInput type="number" min="0" [(ngModel)]="depthTop" data-testid="sample-depth-top" /></mat-form-field>
+            <mat-form-field subscriptSizing="dynamic"><mat-label>Depth bottom (cm)</mat-label>
+              <input matInput type="number" min="0" [(ngModel)]="depthBottom" data-testid="sample-depth-bottom" /></mat-form-field>
+          </div>
+          <p class="small muted">Leave the depth empty to use the field record's whole depth. For a depth increment (e.g. 0–30 and 30–50 cm, as VM0042
+            requires) register one sample per increment. The sample code is issued on registration; write it on the container before sealing.</p>
+          @if (depthError()) { <p class="small error">{{ depthError() }}</p> }
+          <button mat-flat-button type="button" [disabled]="busy() || description.trim().length < 2 || !!depthError()" (click)="register()"
+            data-testid="register-sample">
             Register sample</button>
         </div>
       </details>
@@ -59,7 +69,7 @@ import { Sample, labBadge } from './lab.models';
   styles: `h3 { margin: 16px 0 8px; font: var(--mat-sys-title-small); } .mono { font-family: monospace; }
     .sample { padding: 6px 0; border-bottom: 1px solid var(--mat-sys-outline-variant); max-width: 640px; }
     .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; } .row button { min-height: 44px; }
-    .stack { display: flex; flex-direction: column; gap: 8px; max-width: 640px; margin-top: 8px; } .register { margin: 8px 0 16px; }`,
+    .stack { display: flex; flex-direction: column; gap: 8px; max-width: 640px; margin-top: 8px; } .register { margin: 8px 0 16px; } .error { color: var(--mat-sys-error); }`,
 })
 export class CollectionSamples implements OnInit {
   readonly collectionId = input.required<string>();
@@ -78,6 +88,18 @@ export class CollectionSamples implements OnInit {
   protected quantity: number | null = null;
   protected quantityUnit = 'g';
   protected containerLabel = '';
+  protected readonly depthTopS = signal<number | null>(null);
+  protected readonly depthBottomS = signal<number | null>(null);
+  protected get depthTop(): number | null { return this.depthTopS(); }
+  protected set depthTop(v: number | null) { this.depthTopS.set(v === null || (v as unknown) === '' ? null : Number(v)); }
+  protected get depthBottom(): number | null { return this.depthBottomS(); }
+  protected set depthBottom(v: number | null) { this.depthBottomS.set(v === null || (v as unknown) === '' ? null : Number(v)); }
+  protected readonly depthError = computed(() => {
+    const t = this.depthTopS(), b = this.depthBottomS();
+    if ((t === null) !== (b === null)) return 'Enter both depth top and depth bottom, or neither.';
+    if (t !== null && b !== null && (t < 0 || b <= t)) return 'Depth bottom must be greater than depth top.';
+    return '';
+  });
 
   ngOnInit(): void {
     this.load();
@@ -89,8 +111,13 @@ export class CollectionSamples implements OnInit {
 
   protected register(): void {
     const body = { field_collection_id: this.collectionId(), description: this.description.trim(), quantity: this.quantity,
-      quantity_unit: this.quantity === null ? null : this.quantityUnit.trim() || null, container_label: this.containerLabel.trim() || null };
-    runAction(this.api.register(body), this.busy, this.notify, 'Sample registered — label the container and seal it.', () => this.load());
+      quantity_unit: this.quantity === null ? null : this.quantityUnit.trim() || null, container_label: this.containerLabel.trim() || null,
+      ...(this.depthTopS() !== null ? { depth_top_cm: this.depthTopS(), depth_bottom_cm: this.depthBottomS() } : {}) };
+    runAction(this.api.register(body), this.busy, this.notify, 'Sample registered — label the container and seal it.', () => {
+      this.depthTopS.set(null);
+      this.depthBottomS.set(null);
+      this.load();
+    });
   }
 
   protected seal(s: Sample): void {

@@ -1,0 +1,55 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [4 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 5 0 R >>
+endobj
+5 0 obj
+<< /Length 989 >>
+stream
+BT
+/F1 9 Tf 12 TL 50 792 Td
+(ORDER CONFIRMATION) Tj T*
+(This document confirms a marketplace order. It is NOT a tax invoice; no tax or fee is calculated.) Tj T*
+() Tj T*
+(Order: ORD-2026-000002    Placed: 2026-10-05    Status: COMPLETED) Tj T*
+(Buyer: Guide Buyer 161311 Pvt Ltd \(BUY161311\)) Tj T*
+(Seller \(payee\): Green Farms Developer \(DEV\)) Tj T*
+(Delivery: INTERNAL ledger transfer) Tj T*
+() Tj T*
+(Items:) Tj T*
+(  ORD-2026-000002-1  listing LST-2026-000002  batch CB-2026-000002  vintage 2026  quantity 10 credits) Tj T*
+(    x  850.0000 INR  =  8500.0000 INR) Tj T*
+() Tj T*
+(Total: 8500.0000 INR \(gross; no fee, commission or tax\)) Tj T*
+(Payment: PAY-2026-000002  reference BANK-G161311  confirmed 2026-10-05) Tj T*
+() Tj T*
+(Credit quantities are registry-issued credits recorded in the platform's credit ledger; ownership) Tj T*
+(  changes only when the) Tj T*
+(ledger transfer is completed by the custodian \(second person\).) Tj T*
+1 0 0 1 50 30 Tm
+(Page 1 of 1) Tj
+ET
+endstream
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000121 00000 n 
+0000000218 00000 n 
+0000000344 00000 n 
+trailer
+<< /Size 6 /Root 1 0 R >>
+startxref
+1384
+%%EOF

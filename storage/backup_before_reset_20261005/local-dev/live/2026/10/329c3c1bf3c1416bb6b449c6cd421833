@@ -1,0 +1,526 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [4 0 R 6 0 R 8 0 R 10 0 R 12 0 R 14 0 R 16 0 R] /Count 7 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 5 0 R >>
+endobj
+5 0 obj
+<< /Length 3907 >>
+stream
+BT
+/F1 9 Tf 12 TL 50 792 Td
+(CALCULATION REPORT) Tj T*
+(*** Calculated tCO2e ó not verified, not issued ***) Tj T*
+(*** VM0042 v2.2 - SOC measure & remeasure \(QA2\) + default-factor emissions \(QA3\) ***) Tj T*
+() Tj T*
+(Run CALC-2026-000016 \(APPROVED at generation\) ∑ approved 2026-10-05T10:41:54.183716Z by user) Tj T*
+(  d137a9fb-14ac-4dc0-824a-be3264b8dc89) Tj T*
+(Project PRJ-2026-000035 \(LIVE\) ∑ reporting period #2 Period 1 2026-06-01..2027-05-31) Tj T*
+(Crediting period: not specified) Tj T*
+(Methodology VM0042 v2.2-G160939 ∑ calculation rules v1 ∑ monitoring rules v1) Tj T*
+(Module VM0042-V2.2-QA2-QA3 1.0.0 \(NOT_PRODUCTION_READY\) ∑ engine calc-framework-1.0) Tj T*
+(Dataset MRV-2026-P035-M2-V1 v1 ∑ snapshot SHA-256) Tj T*
+(  63bb372e8a93d05318c4463a25ce65d1e929dff93a3cfc3ab7bab6f85a6797b3) Tj T*
+(Input SHA-256  9c17af0e476ff5efbb6094db6767b537d138ce6a435251b4edba232fbdde80b1) Tj T*
+(Output SHA-256 31f8f5cf73d46834137a3d6f9e7ffec2799321586449a6ef0e4afe28cfc61ee4) Tj T*
+(RESULT: 24 VCU \(t CO2e\)  ó  Calculated tCO2e ó not verified, not issued) Tj T*
+() Tj T*
+(CALCULATION RULES) Tj T*
+(  V42-BSL [BASELINE] VM0042 v2.2 Eq. 3, ß8.2.1.6, Eq. 46; Eqs. 6-9, 14, 16-23, 32 Baseline:) Tj T*
+(    control-site SOC stocks \(ESM\) and baseline emissions) Tj T*
+(  V42-PRJ [PROJECT] VM0042 v2.2 Eq. 3, ß8.2.1.6, Eq. 47; ß8.3 Project: project-strata SOC stocks \(ESM\)) Tj T*
+(    and project emissions) Tj T*
+(  V42-ER [EMISSIONS] VM0042 v2.2 Eqs. 52, 53, 57, 58, 59 Emission reductions per source \(fuel, liming,) Tj T*
+(    N2O, biomass burning\)) Tj T*
+(  V42-CR [REMOVALS] VM0042 v2.2 Eqs. 46, 47 \(x 44/12\) SOC stock change, project and baseline \(t CO2e\)) Tj T*
+(  V42-LK [LEAKAGE] VM0042 v2.2 ß8.4, Eqs. 39, 42 Leakage \(sources 8.4.1-8.4.4 not applicable\)) Tj T*
+(  V42-UNC [UNCERTAINTY] VM0042 v2.2 Eqs. 70, 71, 74 Approach 2 sampling uncertainty deduction) Tj T*
+(  V42-ADJ [ADJUSTMENT] VM0042 v2.2 Eqs. 44, 45, 75, 76 Uncertainty applied to stock changes;) Tj T*
+(    non-permanence buffer) Tj T*
+(  V42-NET [NET] VM0042 v2.2 Eqs. 37-43, 77-79 Net reductions and removals; VCUs \(whole tonnes, rounded) Tj T*
+(    down\)) Tj T*
+() Tj T*
+(STEPS) Tj T*
+(  BASELINE: IMPLEMENTED V42-BSL) Tj T*
+(  PROJECT: IMPLEMENTED V42-PRJ) Tj T*
+(  EMISSIONS: IMPLEMENTED V42-ER) Tj T*
+(  REMOVALS: IMPLEMENTED V42-CR) Tj T*
+(  LEAKAGE: IMPLEMENTED V42-LK) Tj T*
+(  UNCERTAINTY: IMPLEMENTED V42-UNC) Tj T*
+(  ADJUSTMENT: IMPLEMENTED V42-ADJ) Tj T*
+(  NET: IMPLEMENTED V42-NET) Tj T*
+() Tj T*
+(CONSTANTS) Tj T*
+(  C_TO_CO2 = 3.666666666666666666666666666666667 t CO2/t C \(44/12 \(VM0042 v2.2 ß8.5.1\)\)) Tj T*
+(  N2ON_TO_N2O = 1.571428571428571428571428571428571 t N2O/t N2O-N \(44/28 \(VM0042 v2.2 Eqs. 18, 22, 23\)\)) Tj T*
+(  GWP_CH4 = 28 t CO2e/t CH4 \(VCS Standard v5.0 ß3.14.4 Table 9 \(IPCC AR5\)\)) Tj T*
+(  GWP_N2O = 265 t CO2e/t N2O \(VCS Standard v5.0 ß3.14.4 Table 9 \(IPCC AR5\)\)) Tj T*
+(  EF_DIESEL = 0.002886 t CO2e/L \(VM0042 v2.2 parameter EF_CO2,j \(diesel\)\)) Tj T*
+(  EF_GASOLINE = 0.002810 t CO2e/L \(VM0042 v2.2 parameter EF_CO2,j \(gasoline\)\)) Tj T*
+(  EF_LIMESTONE = 0.12 t C/t \(VM0042 v2.2 Eq. 9\)) Tj T*
+(  EF_DOLOMITE = 0.13 t C/t \(VM0042 v2.2 Eq. 9\)) Tj T*
+(  EF1_WET_SYN = 0.016 kg N2O-N/kg N \(IPCC 2019 Refinement Vol. 4 Ch. 11 Table 11.1 \(wet climate,) Tj T*
+(    synthetic\)\)) Tj T*
+(  EF1_WET_OTHER = 0.006 kg N2O-N/kg N \(IPCC 2019 Refinement Vol. 4 Ch. 11 Table 11.1 \(wet climate,) Tj T*
+(    other N inputs\)\)) Tj T*
+(  EF1_DRY = 0.005 kg N2O-N/kg N \(IPCC 2019 Refinement Vol. 4 Ch. 11 Table 11.1 \(dry climate, all N) Tj T*
+(    inputs\)\)) Tj T*
+(  EF4_WET = 0.014 kg N2O-N/kg N volatilised \(IPCC 2019 Refinement Vol. 4 Ch. 11 Table 11.3 \(wet) Tj T*
+(    climate\)\)) Tj T*
+(  EF4_DRY = 0.005 kg N2O-N/kg N volatilised \(IPCC 2019 Refinement Vol. 4 Ch. 11 Table 11.3 \(dry) Tj T*
+(    climate\)\)) Tj T*
+1 0 0 1 50 30 Tm
+(Page 1 of 7) Tj
+ET
+endstream
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 7 0 R >>
+endobj
+7 0 obj
+<< /Length 5510 >>
+stream
+BT
+/F1 9 Tf 12 TL 50 792 Td
+(  EF5 = 0.011 kg N2O-N/kg N leached \(IPCC 2019 Refinement Vol. 4 Ch. 11 Table 11.3\)) Tj T*
+(  FRAC_GASF = 0.11 fraction \(IPCC 2019 Refinement Vol. 4 Ch. 11 Table 11.3 \(aggregated synthetic\)\)) Tj T*
+(  FRAC_GASM = 0.21 fraction \(IPCC 2019 Refinement Vol. 4 Ch. 11 Table 11.3\)) Tj T*
+(  FRAC_LEACH = 0.24 fraction \(IPCC 2019 Refinement Vol. 4 Ch. 11 Table 11.3 FracLEACH-\(H\); 0 in dry) Tj T*
+(    climates without non-drip irrigation\)) Tj T*
+(  WET_PRECIP_MM = 1000 mm \(IPCC 2019 Refinement Vol. 4 Ch. 11 Table 11.1 note 4 \(tropical: wet if) Tj T*
+(    annual precipitation > 1000 mm\)\)) Tj T*
+(  EF_BB_CH4 = 2.7 g CH4/kg d.m. burnt \(IPCC 2019 Refinement Vol. 4 Ch. 2 Table 2.5 \(agricultural) Tj T*
+(    residues\)\)) Tj T*
+(  EF_BB_N2O = 0.07 g N2O/kg d.m. burnt \(IPCC 2019 Refinement Vol. 4 Ch. 2 Table 2.5 \(agricultural) Tj T*
+(    residues\)\)) Tj T*
+(  CF_RICE = 0.80 fraction \(IPCC 2019 Refinement Vol. 4 Ch. 2 Table 2.6 \(rice residues\)\)) Tj T*
+(  CF_WHEAT = 0.90 fraction \(IPCC 2019 Refinement Vol. 4 Ch. 2 Table 2.6 \(wheat residues\)\)) Tj T*
+(  CF_OTHER = 0.80 fraction \(IPCC 2019 Refinement Vol. 4 Ch. 2 Table 2.6 \(maize/sugarcane 0.80;) Tj T*
+(    conservative for other crops\)\)) Tj T*
+() Tj T*
+(INPUTS \(frozen\)) Tj T*
+(  #1 OC_T = 11.300000 g/kg [LAB_RESULT SMP-2026-000219 v1] FIELD-2026-000141 v1 ∑ SP-2026-000152 ∑ C2) Tj T*
+(    v1 sha 014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #2 OC_T = 6.100000 g/kg [LAB_RESULT SMP-2026-000220 v1] FIELD-2026-000141 v1 ∑ SP-2026-000152 ∑ C2 v1) Tj T*
+(    sha 014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #3 OC_T = 11.000000 g/kg [LAB_RESULT SMP-2026-000221 v1] FIELD-2026-000142 v1 ∑ SP-2026-000153 ∑ C2) Tj T*
+(    v1 sha 014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #4 OC_T = 6.000000 g/kg [LAB_RESULT SMP-2026-000222 v1] FIELD-2026-000142 v1 ∑ SP-2026-000153 ∑ C2 v1) Tj T*
+(    sha 014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #5 OC_T = 11.400000 g/kg [LAB_RESULT SMP-2026-000223 v1] FIELD-2026-000143 v1 ∑ SP-2026-000154 ∑ C2) Tj T*
+(    v1 sha 014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #6 OC_T = 6.100000 g/kg [LAB_RESULT SMP-2026-000224 v1] FIELD-2026-000143 v1 ∑ SP-2026-000154 ∑ C2 v1) Tj T*
+(    sha 014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #7 OC_T = 11.300000 g/kg [LAB_RESULT SMP-2026-000225 v1] FIELD-2026-000144 v1 ∑ SP-2026-000155 ∑ C1) Tj T*
+(    v1 sha 014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #8 OC_T = 6.100000 g/kg [LAB_RESULT SMP-2026-000226 v1] FIELD-2026-000144 v1 ∑ SP-2026-000155 ∑ C1 v1) Tj T*
+(    sha 014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #9 OC_T = 11.000000 g/kg [LAB_RESULT SMP-2026-000227 v1] FIELD-2026-000145 v1 ∑ SP-2026-000156 ∑ C1) Tj T*
+(    v1 sha 014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #10 OC_T = 6.000000 g/kg [LAB_RESULT SMP-2026-000228 v1] FIELD-2026-000145 v1 ∑ SP-2026-000156 ∑ C1) Tj T*
+(    v1 sha 014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #11 OC_T = 11.400000 g/kg [LAB_RESULT SMP-2026-000229 v1] FIELD-2026-000146 v1 ∑ SP-2026-000157 ∑ C1) Tj T*
+(    v1 sha 014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #12 OC_T = 6.100000 g/kg [LAB_RESULT SMP-2026-000230 v1] FIELD-2026-000146 v1 ∑ SP-2026-000157 ∑ C1) Tj T*
+(    v1 sha 014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #13 OC_T = 11.300000 g/kg [LAB_RESULT SMP-2026-000231 v1] FIELD-2026-000147 v1 ∑ SP-2026-000158 ∑ C3) Tj T*
+(    v1 sha 014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #14 OC_T = 6.100000 g/kg [LAB_RESULT SMP-2026-000232 v1] FIELD-2026-000147 v1 ∑ SP-2026-000158 ∑ C3) Tj T*
+(    v1 sha 014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #15 OC_T = 11.000000 g/kg [LAB_RESULT SMP-2026-000233 v1] FIELD-2026-000148 v1 ∑ SP-2026-000159 ∑ C3) Tj T*
+(    v1 sha 014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #16 OC_T = 6.000000 g/kg [LAB_RESULT SMP-2026-000234 v1] FIELD-2026-000148 v1 ∑ SP-2026-000159 ∑ C3) Tj T*
+(    v1 sha 014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #17 OC_T = 11.400000 g/kg [LAB_RESULT SMP-2026-000235 v1] FIELD-2026-000149 v1 ∑ SP-2026-000160 ∑ C3) Tj T*
+(    v1 sha 014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #18 OC_T = 6.100000 g/kg [LAB_RESULT SMP-2026-000236 v1] FIELD-2026-000149 v1 ∑ SP-2026-000160 ∑ C3) Tj T*
+(    v1 sha 014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #19 OC_T = 12.600000 g/kg [LAB_RESULT SMP-2026-000237 v1] FIELD-2026-000150 v1 ∑ SP-2026-000161 ∑ S1) Tj T*
+(    v1 sha 014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #20 OC_T = 6.600000 g/kg [LAB_RESULT SMP-2026-000238 v1] FIELD-2026-000150 v1 ∑ SP-2026-000161 ∑ S1) Tj T*
+(    v1 sha 014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #21 OC_T = 12.200000 g/kg [LAB_RESULT SMP-2026-000239 v1] FIELD-2026-000151 v1 ∑ SP-2026-000162 ∑ S1) Tj T*
+(    v1 sha 014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #22 OC_T = 6.500000 g/kg [LAB_RESULT SMP-2026-000240 v1] FIELD-2026-000151 v1 ∑ SP-2026-000162 ∑ S1) Tj T*
+1 0 0 1 50 30 Tm
+(Page 2 of 7) Tj
+ET
+endstream
+endobj
+8 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 9 0 R >>
+endobj
+9 0 obj
+<< /Length 5762 >>
+stream
+BT
+/F1 9 Tf 12 TL 50 792 Td
+(    v1 sha 014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #23 OC_T = 12.900000 g/kg [LAB_RESULT SMP-2026-000241 v1] FIELD-2026-000152 v1 ∑ SP-2026-000163 ∑ S1) Tj T*
+(    v1 sha 014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #24 OC_T = 6.400000 g/kg [LAB_RESULT SMP-2026-000242 v1] FIELD-2026-000152 v1 ∑ SP-2026-000163 ∑ S1) Tj T*
+(    v1 sha 014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #25 MASS_T = 285.000000 g [LAB_RESULT SMP-2026-000219 v1] FIELD-2026-000141 v1 ∑ SP-2026-000152 ∑ C2) Tj T*
+(    v1 sha 014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #26 MASS_T = 203.000000 g [LAB_RESULT SMP-2026-000220 v1] FIELD-2026-000141 v1 ∑ SP-2026-000152 ∑ C2) Tj T*
+(    v1 sha 014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #27 MASS_T = 286.000000 g [LAB_RESULT SMP-2026-000221 v1] FIELD-2026-000142 v1 ∑ SP-2026-000153 ∑ C2) Tj T*
+(    v1 sha 014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #28 MASS_T = 204.000000 g [LAB_RESULT SMP-2026-000222 v1] FIELD-2026-000142 v1 ∑ SP-2026-000153 ∑ C2) Tj T*
+(    v1 sha 014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #29 MASS_T = 284.000000 g [LAB_RESULT SMP-2026-000223 v1] FIELD-2026-000143 v1 ∑ SP-2026-000154 ∑ C2) Tj T*
+(    v1 sha 014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #30 MASS_T = 199.000000 g [LAB_RESULT SMP-2026-000224 v1] FIELD-2026-000143 v1 ∑ SP-2026-000154 ∑ C2) Tj T*
+(    v1 sha 014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #31 MASS_T = 285.000000 g [LAB_RESULT SMP-2026-000225 v1] FIELD-2026-000144 v1 ∑ SP-2026-000155 ∑ C1) Tj T*
+(    v1 sha 014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #32 MASS_T = 203.000000 g [LAB_RESULT SMP-2026-000226 v1] FIELD-2026-000144 v1 ∑ SP-2026-000155 ∑ C1) Tj T*
+(    v1 sha 014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #33 MASS_T = 286.000000 g [LAB_RESULT SMP-2026-000227 v1] FIELD-2026-000145 v1 ∑ SP-2026-000156 ∑ C1) Tj T*
+(    v1 sha 014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #34 MASS_T = 204.000000 g [LAB_RESULT SMP-2026-000228 v1] FIELD-2026-000145 v1 ∑ SP-2026-000156 ∑ C1) Tj T*
+(    v1 sha 014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #35 MASS_T = 284.000000 g [LAB_RESULT SMP-2026-000229 v1] FIELD-2026-000146 v1 ∑ SP-2026-000157 ∑ C1) Tj T*
+(    v1 sha 014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #36 MASS_T = 199.000000 g [LAB_RESULT SMP-2026-000230 v1] FIELD-2026-000146 v1 ∑ SP-2026-000157 ∑ C1) Tj T*
+(    v1 sha 014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #37 MASS_T = 285.000000 g [LAB_RESULT SMP-2026-000231 v1] FIELD-2026-000147 v1 ∑ SP-2026-000158 ∑ C3) Tj T*
+(    v1 sha 014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #38 MASS_T = 203.000000 g [LAB_RESULT SMP-2026-000232 v1] FIELD-2026-000147 v1 ∑ SP-2026-000158 ∑ C3) Tj T*
+(    v1 sha 014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #39 MASS_T = 286.000000 g [LAB_RESULT SMP-2026-000233 v1] FIELD-2026-000148 v1 ∑ SP-2026-000159 ∑ C3) Tj T*
+(    v1 sha 014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #40 MASS_T = 204.000000 g [LAB_RESULT SMP-2026-000234 v1] FIELD-2026-000148 v1 ∑ SP-2026-000159 ∑ C3) Tj T*
+(    v1 sha 014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #41 MASS_T = 284.000000 g [LAB_RESULT SMP-2026-000235 v1] FIELD-2026-000149 v1 ∑ SP-2026-000160 ∑ C3) Tj T*
+(    v1 sha 014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #42 MASS_T = 199.000000 g [LAB_RESULT SMP-2026-000236 v1] FIELD-2026-000149 v1 ∑ SP-2026-000160 ∑ C3) Tj T*
+(    v1 sha 014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #43 MASS_T = 282.000000 g [LAB_RESULT SMP-2026-000237 v1] FIELD-2026-000150 v1 ∑ SP-2026-000161 ∑ S1) Tj T*
+(    v1 sha 014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #44 MASS_T = 201.000000 g [LAB_RESULT SMP-2026-000238 v1] FIELD-2026-000150 v1 ∑ SP-2026-000161 ∑ S1) Tj T*
+(    v1 sha 014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #45 MASS_T = 288.000000 g [LAB_RESULT SMP-2026-000239 v1] FIELD-2026-000151 v1 ∑ SP-2026-000162 ∑ S1) Tj T*
+(    v1 sha 014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #46 MASS_T = 206.000000 g [LAB_RESULT SMP-2026-000240 v1] FIELD-2026-000151 v1 ∑ SP-2026-000162 ∑ S1) Tj T*
+(    v1 sha 014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #47 MASS_T = 284.000000 g [LAB_RESULT SMP-2026-000241 v1] FIELD-2026-000152 v1 ∑ SP-2026-000163 ∑ S1) Tj T*
+(    v1 sha 014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #48 MASS_T = 199.000000 g [LAB_RESULT SMP-2026-000242 v1] FIELD-2026-000152 v1 ∑ SP-2026-000163 ∑ S1) Tj T*
+(    v1 sha 014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #49 OC_T0 = 11.200000 g/kg [LAB_RESULT SMP-2025-000195 v1] C2 v1 sha) Tj T*
+(    014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #50 OC_T0 = 6.100000 g/kg [LAB_RESULT SMP-2025-000196 v1] C2 v1 sha) Tj T*
+(    014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #51 OC_T0 = 11.000000 g/kg [LAB_RESULT SMP-2025-000197 v1] C2 v1 sha) Tj T*
+(    014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #52 OC_T0 = 6.000000 g/kg [LAB_RESULT SMP-2025-000198 v1] C2 v1 sha) Tj T*
+1 0 0 1 50 30 Tm
+(Page 3 of 7) Tj
+ET
+endstream
+endobj
+10 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 11 0 R >>
+endobj
+11 0 obj
+<< /Length 4734 >>
+stream
+BT
+/F1 9 Tf 12 TL 50 792 Td
+(    014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #53 OC_T0 = 11.500000 g/kg [LAB_RESULT SMP-2025-000199 v1] C2 v1 sha) Tj T*
+(    014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #54 OC_T0 = 6.200000 g/kg [LAB_RESULT SMP-2025-000200 v1] C2 v1 sha) Tj T*
+(    014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #55 OC_T0 = 11.200000 g/kg [LAB_RESULT SMP-2025-000201 v1] C1 v1 sha) Tj T*
+(    014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #56 OC_T0 = 6.100000 g/kg [LAB_RESULT SMP-2025-000202 v1] C1 v1 sha) Tj T*
+(    014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #57 OC_T0 = 11.000000 g/kg [LAB_RESULT SMP-2025-000203 v1] C1 v1 sha) Tj T*
+(    014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #58 OC_T0 = 6.000000 g/kg [LAB_RESULT SMP-2025-000204 v1] C1 v1 sha) Tj T*
+(    014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #59 OC_T0 = 11.500000 g/kg [LAB_RESULT SMP-2025-000205 v1] C1 v1 sha) Tj T*
+(    014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #60 OC_T0 = 6.200000 g/kg [LAB_RESULT SMP-2025-000206 v1] C1 v1 sha) Tj T*
+(    014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #61 OC_T0 = 11.200000 g/kg [LAB_RESULT SMP-2025-000207 v1] C3 v1 sha) Tj T*
+(    014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #62 OC_T0 = 6.100000 g/kg [LAB_RESULT SMP-2025-000208 v1] C3 v1 sha) Tj T*
+(    014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #63 OC_T0 = 11.000000 g/kg [LAB_RESULT SMP-2025-000209 v1] C3 v1 sha) Tj T*
+(    014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #64 OC_T0 = 6.000000 g/kg [LAB_RESULT SMP-2025-000210 v1] C3 v1 sha) Tj T*
+(    014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #65 OC_T0 = 11.500000 g/kg [LAB_RESULT SMP-2025-000211 v1] C3 v1 sha) Tj T*
+(    014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #66 OC_T0 = 6.200000 g/kg [LAB_RESULT SMP-2025-000212 v1] C3 v1 sha) Tj T*
+(    014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #67 OC_T0 = 11.000000 g/kg [LAB_RESULT SMP-2025-000213 v1] S1 v1 sha) Tj T*
+(    014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #68 OC_T0 = 6.000000 g/kg [LAB_RESULT SMP-2025-000214 v1] S1 v1 sha) Tj T*
+(    014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #69 OC_T0 = 10.500000 g/kg [LAB_RESULT SMP-2025-000215 v1] S1 v1 sha) Tj T*
+(    014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #70 OC_T0 = 6.200000 g/kg [LAB_RESULT SMP-2025-000216 v1] S1 v1 sha) Tj T*
+(    014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #71 OC_T0 = 11.400000 g/kg [LAB_RESULT SMP-2025-000217 v1] S1 v1 sha) Tj T*
+(    014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #72 OC_T0 = 5.900000 g/kg [LAB_RESULT SMP-2025-000218 v1] S1 v1 sha) Tj T*
+(    014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #73 MASS_T0 = 284.000000 g [LAB_RESULT SMP-2025-000195 v1] C2 v1 sha) Tj T*
+(    014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #74 MASS_T0 = 202.000000 g [LAB_RESULT SMP-2025-000196 v1] C2 v1 sha) Tj T*
+(    014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #75 MASS_T0 = 287.000000 g [LAB_RESULT SMP-2025-000197 v1] C2 v1 sha) Tj T*
+(    014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #76 MASS_T0 = 204.000000 g [LAB_RESULT SMP-2025-000198 v1] C2 v1 sha) Tj T*
+(    014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #77 MASS_T0 = 283.000000 g [LAB_RESULT SMP-2025-000199 v1] C2 v1 sha) Tj T*
+(    014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #78 MASS_T0 = 200.000000 g [LAB_RESULT SMP-2025-000200 v1] C2 v1 sha) Tj T*
+(    014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #79 MASS_T0 = 284.000000 g [LAB_RESULT SMP-2025-000201 v1] C1 v1 sha) Tj T*
+(    014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #80 MASS_T0 = 202.000000 g [LAB_RESULT SMP-2025-000202 v1] C1 v1 sha) Tj T*
+(    014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #81 MASS_T0 = 287.000000 g [LAB_RESULT SMP-2025-000203 v1] C1 v1 sha) Tj T*
+(    014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #82 MASS_T0 = 204.000000 g [LAB_RESULT SMP-2025-000204 v1] C1 v1 sha) Tj T*
+1 0 0 1 50 30 Tm
+(Page 4 of 7) Tj
+ET
+endstream
+endobj
+12 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 13 0 R >>
+endobj
+13 0 obj
+<< /Length 4628 >>
+stream
+BT
+/F1 9 Tf 12 TL 50 792 Td
+(    014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #83 MASS_T0 = 283.000000 g [LAB_RESULT SMP-2025-000205 v1] C1 v1 sha) Tj T*
+(    014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #84 MASS_T0 = 200.000000 g [LAB_RESULT SMP-2025-000206 v1] C1 v1 sha) Tj T*
+(    014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #85 MASS_T0 = 284.000000 g [LAB_RESULT SMP-2025-000207 v1] C3 v1 sha) Tj T*
+(    014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #86 MASS_T0 = 202.000000 g [LAB_RESULT SMP-2025-000208 v1] C3 v1 sha) Tj T*
+(    014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #87 MASS_T0 = 287.000000 g [LAB_RESULT SMP-2025-000209 v1] C3 v1 sha) Tj T*
+(    014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #88 MASS_T0 = 204.000000 g [LAB_RESULT SMP-2025-000210 v1] C3 v1 sha) Tj T*
+(    014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #89 MASS_T0 = 283.000000 g [LAB_RESULT SMP-2025-000211 v1] C3 v1 sha) Tj T*
+(    014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #90 MASS_T0 = 200.000000 g [LAB_RESULT SMP-2025-000212 v1] C3 v1 sha) Tj T*
+(    014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #91 MASS_T0 = 280.000000 g [LAB_RESULT SMP-2025-000213 v1] S1 v1 sha) Tj T*
+(    014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #92 MASS_T0 = 200.000000 g [LAB_RESULT SMP-2025-000214 v1] S1 v1 sha) Tj T*
+(    014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #93 MASS_T0 = 290.000000 g [LAB_RESULT SMP-2025-000215 v1] S1 v1 sha) Tj T*
+(    014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #94 MASS_T0 = 205.000000 g [LAB_RESULT SMP-2025-000216 v1] S1 v1 sha) Tj T*
+(    014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #95 MASS_T0 = 285.000000 g [LAB_RESULT SMP-2025-000217 v1] S1 v1 sha) Tj T*
+(    014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #96 MASS_T0 = 198.000000 g [LAB_RESULT SMP-2025-000218 v1] S1 v1 sha) Tj T*
+(    014ea4d637a57aaffe7c0a9f5ccb14229d3e8990d68f246246a05feefb973e77) Tj T*
+(  #97 AREA = 2.6121 ha [STRATUM_AREA C1 v1] C1 v1) Tj T*
+(  #98 AREA = 2.6121 ha [STRATUM_AREA C2 v1] C2 v1) Tj T*
+(  #99 AREA = 2.6121 ha [STRATUM_AREA C3 v1] C3 v1) Tj T*
+(  #100 AREA = 2.6122 ha [STRATUM_AREA S1 v1] S1 v1) Tj T*
+(  #101 PRECIP = 750 mm [STRATUM_CHARACTERISTIC C1:PRECIPITATION_MM] C1 v1) Tj T*
+(  #102 PRECIP = 750 mm [STRATUM_CHARACTERISTIC C2:PRECIPITATION_MM] C2 v1) Tj T*
+(  #103 PRECIP = 750 mm [STRATUM_CHARACTERISTIC C3:PRECIPITATION_MM] C3 v1) Tj T*
+(  #104 PRECIP = 750 mm [STRATUM_CHARACTERISTIC S1:PRECIPITATION_MM] S1 v1) Tj T*
+(  #105 FSN = 120.000000 kg N [MONITORING_RECORD V42_FSN v1] ) Tj T*
+(  #106 FSN = 90.000000 kg N [MONITORING_RECORD V42_FSN v1] ) Tj T*
+(  #107 FSN = 130.000000 kg N [MONITORING_RECORD V42_FSN v1] ) Tj T*
+(  #108 FSN = 110.000000 kg N [MONITORING_RECORD V42_FSN v1] ) Tj T*
+(  #109 DIESEL = 35.000000 L [MONITORING_RECORD V42_DIESEL v1] ) Tj T*
+(  #110 DIESEL = 60.000000 L [MONITORING_RECORD V42_DIESEL v1] ) Tj T*
+(  #111 DIESEL = 60.000000 L [MONITORING_RECORD V42_DIESEL v1] ) Tj T*
+(  #112 NPR = 12.000000 % [MONITORING_RECORD V42_NPR v1] ) Tj T*
+(  #113 C_TO_CO2 = 3.666666666666666666666666666666667 t CO2/t C [MODULE_CONSTANT C_TO_CO2] ) Tj T*
+(  #114 N2ON_TO_N2O = 1.571428571428571428571428571428571 t N2O/t N2O-N [MODULE_CONSTANT N2ON_TO_N2O] ) Tj T*
+(  #115 GWP_CH4 = 28 t CO2e/t CH4 [MODULE_CONSTANT GWP_CH4] ) Tj T*
+(  #116 GWP_N2O = 265 t CO2e/t N2O [MODULE_CONSTANT GWP_N2O] ) Tj T*
+(  #117 EF_DIESEL = 0.002886 t CO2e/L [MODULE_CONSTANT EF_DIESEL] ) Tj T*
+(  #118 EF_GASOLINE = 0.002810 t CO2e/L [MODULE_CONSTANT EF_GASOLINE] ) Tj T*
+(  #119 EF_LIMESTONE = 0.12 t C/t [MODULE_CONSTANT EF_LIMESTONE] ) Tj T*
+(  #120 EF_DOLOMITE = 0.13 t C/t [MODULE_CONSTANT EF_DOLOMITE] ) Tj T*
+(  #121 EF1_WET_SYN = 0.016 kg N2O-N/kg N [MODULE_CONSTANT EF1_WET_SYN] ) Tj T*
+(  #122 EF1_WET_OTHER = 0.006 kg N2O-N/kg N [MODULE_CONSTANT EF1_WET_OTHER] ) Tj T*
+(  #123 EF1_DRY = 0.005 kg N2O-N/kg N [MODULE_CONSTANT EF1_DRY] ) Tj T*
+(  #124 EF4_WET = 0.014 kg N2O-N/kg N volatilised [MODULE_CONSTANT EF4_WET] ) Tj T*
+(  #125 EF4_DRY = 0.005 kg N2O-N/kg N volatilised [MODULE_CONSTANT EF4_DRY] ) Tj T*
+(  #126 EF5 = 0.011 kg N2O-N/kg N leached [MODULE_CONSTANT EF5] ) Tj T*
+(  #127 FRAC_GASF = 0.11 fraction [MODULE_CONSTANT FRAC_GASF] ) Tj T*
+1 0 0 1 50 30 Tm
+(Page 5 of 7) Tj
+ET
+endstream
+endobj
+14 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 15 0 R >>
+endobj
+15 0 obj
+<< /Length 4958 >>
+stream
+BT
+/F1 9 Tf 12 TL 50 792 Td
+(  #128 FRAC_GASM = 0.21 fraction [MODULE_CONSTANT FRAC_GASM] ) Tj T*
+(  #129 FRAC_LEACH = 0.24 fraction [MODULE_CONSTANT FRAC_LEACH] ) Tj T*
+(  #130 WET_PRECIP_MM = 1000 mm [MODULE_CONSTANT WET_PRECIP_MM] ) Tj T*
+(  #131 EF_BB_CH4 = 2.7 g CH4/kg d.m. burnt [MODULE_CONSTANT EF_BB_CH4] ) Tj T*
+(  #132 EF_BB_N2O = 0.07 g N2O/kg d.m. burnt [MODULE_CONSTANT EF_BB_N2O] ) Tj T*
+(  #133 CF_RICE = 0.80 fraction [MODULE_CONSTANT CF_RICE] ) Tj T*
+(  #134 CF_WHEAT = 0.90 fraction [MODULE_CONSTANT CF_WHEAT] ) Tj T*
+(  #135 CF_OTHER = 0.80 fraction [MODULE_CONSTANT CF_OTHER] ) Tj T*
+() Tj T*
+(OUTPUTS) Tj T*
+(  #1 BASELINE REF_MASS_1a60a40e = 1922.280809176932174179211924443242 Mg/ha \(rule V42-BSL; inputs [49,) Tj T*
+(    50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 73, 74, 75, 76, 77, 78, 79, 80,) Tj T*
+(    81, 82, 83, 84, 85, 86, 87, 88, 89, 90]; outputs []\)) Tj T*
+(  #2 BASELINE SOC_BAS_PREV_1a60a40e = 21.99041048047676482654529442921151 Mg C/ha \(rule V42-BSL; inputs) Tj T*
+(    [49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 73, 74, 75, 76, 77, 78,) Tj T*
+(    79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90]; outputs []\)) Tj T*
+(  #3 BASELINE SOC_BAS_CURR_1a60a40e = 22.01097454973578671389128323400182 Mg C/ha \(rule V42-BSL; inputs) Tj T*
+(    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 25, 26, 27, 28, 29, 30, 31, 32, 33,) Tj T*
+(    34, 35, 36, 37, 38, 39, 40, 41, 42]; outputs []\)) Tj T*
+(  #4 BASELINE E_BAS_FUEL = 0.173160000000 t CO2e \(rule V42-BSL; inputs [101, 102, 103, 104, 105, 106,) Tj T*
+(    107, 108, 109, 110, 111]; outputs []\)) Tj T*
+(  #5 BASELINE E_BAS_LIME = 0.00000000000000000000000000000000000 t CO2e \(rule V42-BSL; inputs [101,) Tj T*
+(    102, 103, 104, 105, 106, 107, 108, 109, 110, 111]; outputs []\)) Tj T*
+(  #6 BASELINE E_BAS_N2O_FERT = 0.2773414285714285714285714285714285 t CO2e \(rule V42-BSL; inputs [101,) Tj T*
+(    102, 103, 104, 105, 106, 107, 108, 109, 110, 111]; outputs []\)) Tj T*
+(  #7 BASELINE E_BAS_CH4_BB = 0.000 t CO2e \(rule V42-BSL; inputs [101, 102, 103, 104, 105, 106, 107,) Tj T*
+(    108, 109, 110, 111]; outputs []\)) Tj T*
+(  #8 BASELINE E_BAS_N2O_BB = 0.0000 t CO2e \(rule V42-BSL; inputs [101, 102, 103, 104, 105, 106, 107,) Tj T*
+(    108, 109, 110, 111]; outputs []\)) Tj T*
+(  #9 PROJECT SOC_PRO_PREV_1a60a40e = 21.43500015341139569694079256345667 Mg C/ha \(rule V42-PRJ; inputs) Tj T*
+(    [67, 68, 69, 70, 71, 72, 91, 92, 93, 94, 95, 96]; outputs []\)) Tj T*
+(  #10 PROJECT SOC_PRO_CURR_1a60a40e = 24.62254300431261446706324240340463 Mg C/ha \(rule V42-PRJ; inputs) Tj T*
+(    [19, 20, 21, 22, 23, 24, 43, 44, 45, 46, 47, 48]; outputs []\)) Tj T*
+(  #11 PROJECT E_PRO_FUEL = 0.101010000000 t CO2e \(rule V42-PRJ; inputs [101, 102, 103, 104, 105, 106,) Tj T*
+(    107, 108, 109, 110, 111]; outputs []\)) Tj T*
+(  #12 PROJECT E_PRO_LIME = 0.00000000000000000000000000000000000 t CO2e \(rule V42-PRJ; inputs [101,) Tj T*
+(    102, 103, 104, 105, 106, 107, 108, 109, 110, 111]; outputs []\)) Tj T*
+(  #13 PROJECT E_PRO_N2O_FERT = 0.2080060714285714285714285714285714 t CO2e \(rule V42-PRJ; inputs [101,) Tj T*
+(    102, 103, 104, 105, 106, 107, 108, 109, 110, 111]; outputs []\)) Tj T*
+(  #14 PROJECT E_PRO_CH4_BB = 0.000 t CO2e \(rule V42-PRJ; inputs [101, 102, 103, 104, 105, 106, 107,) Tj T*
+(    108, 109, 110, 111]; outputs []\)) Tj T*
+(  #15 PROJECT E_PRO_N2O_BB = 0.0000 t CO2e \(rule V42-PRJ; inputs [101, 102, 103, 104, 105, 106, 107,) Tj T*
+(    108, 109, 110, 111]; outputs []\)) Tj T*
+(  #16 EMISSIONS ER_FUEL = 0.072150000000 t CO2e \(rule V42-ER; inputs []; outputs [4, 11]\)) Tj T*
+(  #17 EMISSIONS ER_LIME = 0.00000000000000000000000000000000000 t CO2e \(rule V42-ER; inputs []; outputs) Tj T*
+(    [5, 12]\)) Tj T*
+(  #18 EMISSIONS ER_N2O_FERT = 0.0693353571428571428571428571428571 t CO2e \(rule V42-ER; inputs [];) Tj T*
+(    outputs [6, 13]\)) Tj T*
+(  #19 EMISSIONS ER_CH4_BB = 0.000 t CO2e \(rule V42-ER; inputs []; outputs [7, 14]\)) Tj T*
+(  #20 EMISSIONS ER_N2O_BB = 0.0000 t CO2e \(rule V42-ER; inputs []; outputs [8, 15]\)) Tj T*
+(  #21 EMISSIONS ER_SOURCES = 0.1414853571428571428571428571428571 t CO2e \(rule V42-ER; inputs [];) Tj T*
+(    outputs [16, 17, 18, 19, 20]\)) Tj T*
+(  #22 REMOVALS DCO2_SOIL_WP = 30.53049792878860012815083273034423 t CO2e \(rule V42-CR; inputs [100,) Tj T*
+(    113]; outputs [9, 10]\)) Tj T*
+(  #23 REMOVALS DCO2_SOIL_BSL = 0.1969640263008622384590371715352419 t CO2e \(rule V42-CR; inputs [100,) Tj T*
+(    113]; outputs [2, 3]\)) Tj T*
+(  #24 LEAKAGE LK_TOTAL = 0 t CO2e \(rule V42-LK; inputs []; outputs [21, 22]\)) Tj T*
+(  #25 UNCERTAINTY UNC_VARIANCE = 6.059967883146182239445935421723651 \(t CO2e/ha\)^2 \(rule V42-UNC;) Tj T*
+(    inputs []; outputs [22, 23]\)) Tj T*
+(  #26 UNCERTAINTY UNC_DF = 4.275453699210298284018883813183671 degrees of freedom \(rule V42-UNC; inputs) Tj T*
+1 0 0 1 50 30 Tm
+(Page 6 of 7) Tj
+ET
+endstream
+endobj
+16 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 17 0 R >>
+endobj
+17 0 obj
+<< /Length 2527 >>
+stream
+BT
+/F1 9 Tf 12 TL 50 792 Td
+(    []; outputs [22, 23]\)) Tj T*
+(  #27 UNCERTAINTY UNC_T = 0.461929214670 t-value \(one-sided 66.67 %\) \(rule V42-UNC; inputs []; outputs) Tj T*
+(    [26]\)) Tj T*
+(  #28 UNCERTAINTY UNC_PCT = 9.792509626853470398553586354277101 % \(rule V42-UNC; inputs []; outputs) Tj T*
+(    [22, 23, 25, 27]\)) Tj T*
+(  #29 ADJUSTMENT DCO2_WP_ADJ = 27.54079597998567707305778760690713 t CO2e \(rule V42-ADJ; inputs [];) Tj T*
+(    outputs [22, 23, 28]\)) Tj T*
+(  #30 ADJUSTMENT DCO2_BSL_ADJ = 0.1776763050639121023766597228492908 t CO2e \(rule V42-ADJ; inputs [];) Tj T*
+(    outputs [22, 23, 28]\)) Tj T*
+(  #31 ADJUSTMENT NPR_PCT = 12.000000 % \(rule V42-ADJ; inputs [112]; outputs []\)) Tj T*
+(  #32 ADJUSTMENT BUFFER_ER = 0 t CO2e \(rule V42-ADJ; inputs [112]; outputs [29, 30]\)) Tj T*
+(  #33 ADJUSTMENT BUFFER_CR = 3.283574360990611796481735346086941 t CO2e \(rule V42-ADJ; inputs [112];) Tj T*
+(    outputs [29, 30]\)) Tj T*
+(  #34 NET ER_T = 0.1414853571428571428571428571428571 t CO2e \(rule V42-NET; inputs []; outputs [21, 24,) Tj T*
+(    29, 30]\)) Tj T*
+(  #35 NET CR_T = 27.36311967492176497068112788405784 t CO2e \(rule V42-NET; inputs []; outputs [21, 24,) Tj T*
+(    29, 30]\)) Tj T*
+(  #36 NET ER_NET = 0.1414853571428571428571428571428571 t CO2e \(rule V42-NET; inputs []; outputs [24,) Tj T*
+(    34]\)) Tj T*
+(  #37 NET CR_NET = 27.36311967492176497068112788405784 t CO2e \(rule V42-NET; inputs []; outputs [24,) Tj T*
+(    35]\)) Tj T*
+(  #38 NET VCU_ER = 0.1414853571428571428571428571428571 t CO2e \(rule V42-NET; inputs []; outputs [32,) Tj T*
+(    36]\)) Tj T*
+(  #39 NET VCU_CR = 24.07954531393115317419939253797090 t CO2e \(rule V42-NET; inputs []; outputs [33,) Tj T*
+(    37]\)) Tj T*
+(  #40 NET REVERSAL = 0 t CO2e \(rule V42-NET; inputs []; outputs [38, 39]\)) Tj T*
+(  #41 NET VCU_TOTAL = 24 VCU \(t CO2e\) \(rule V42-NET; inputs []; outputs [38, 39]\) FINAL) Tj T*
+() Tj T*
+(QA REVIEWS) Tj T*
+(  PASS 2026-10-05T10:41:53.935966Z by user d137a9fb-14ac-4dc0-824a-be3264b8dc89: independent checks pass) Tj T*
+() Tj T*
+(FINDINGS) Tj T*
+(  CFND-2026-000002 CLARIFICATION BLOCKING RESOLVED: Confirm the bulk-density basis) Tj T*
+() Tj T*
+(MRV evidence items: 12 \(checksums in the canonical JSON\)) Tj T*
+() Tj T*
+(Generator calc-report-1.0+text-pdf-1.0. This report is a deterministic rendering of the canonical JSON) Tj T*
+(  content.) Tj T*
+(Calculated tCO2e is not verified and not issued. This report is not a verification report.) Tj T*
+1 0 0 1 50 30 Tm
+(Page 7 of 7) Tj
+ET
+endstream
+endobj
+xref
+0 18
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000161 00000 n 
+0000000258 00000 n 
+0000000384 00000 n 
+0000004343 00000 n 
+0000004469 00000 n 
+0000010031 00000 n 
+0000010157 00000 n 
+0000015971 00000 n 
+0000016099 00000 n 
+0000020886 00000 n 
+0000021014 00000 n 
+0000025695 00000 n 
+0000025823 00000 n 
+0000030834 00000 n 
+0000030962 00000 n 
+trailer
+<< /Size 18 /Root 1 0 R >>
+startxref
+33542
+%%EOF

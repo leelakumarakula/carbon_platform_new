@@ -190,7 +190,35 @@ describe('Laboratory screens', () => {
       const el = f.nativeElement as HTMLElement;
       expect(!!el.querySelector('[data-testid="register-sample"]')).toBe(registrable);
       if (registrable) expect(el.querySelector('[data-testid="seal-SMP-2026-000001"]')).not.toBeNull();
+      if (registrable) expect(el.querySelector('[data-testid="sample-depth-SMP-2026-000001"]')?.textContent).toContain('0–30 cm');
       f.destroy();
     }
+  });
+
+  it('registers one sample per depth increment (VM0042) and refuses an inverted depth', async () => {
+    signIn(['lab.sample_register']);
+    const f = TestBed.createComponent(CollectionSamples);
+    f.componentRef.setInput('collectionId', 'c1');
+    f.componentRef.setInput('collectionStatus', 'ACCEPTED');
+    f.detectChanges();
+    http.expectOne((r) => r.url === '/api/v1/lab/samples' && r.method === 'GET').flush([]);
+    const cmp = f.componentInstance as unknown as { depthTop: number | null; depthBottom: number | null; depthError(): string; register(): void };
+    cmp.depthTop = 30;
+    expect(cmp.depthError()).toContain('both');
+    cmp.depthBottom = 20;
+    expect(cmp.depthError()).toContain('greater');
+    cmp.depthBottom = 50;
+    expect(cmp.depthError()).toBe('');
+    cmp.register();
+    const req = http.expectOne((r) => r.url === '/api/v1/lab/samples' && r.method === 'POST');
+    expect(req.request.body).toMatchObject({ field_collection_id: 'c1', depth_top_cm: 30, depth_bottom_cm: 50 });
+    req.flush({});
+    http.expectOne((r) => r.url === '/api/v1/lab/samples' && r.method === 'GET').flush([]);
+    expect(cmp.depthTop).toBeNull();                          // cleared for the next increment
+    cmp.register();                                           // no depth: the field record's whole depth
+    const whole = http.expectOne((r) => r.url === '/api/v1/lab/samples' && r.method === 'POST');
+    expect(whole.request.body.depth_top_cm).toBeUndefined();
+    whole.flush({});
+    http.expectOne((r) => r.url === '/api/v1/lab/samples' && r.method === 'GET').flush([]);
   });
 });
