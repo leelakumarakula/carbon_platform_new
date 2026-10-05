@@ -208,14 +208,24 @@ function ndviChart(intervals: NdviInterval[]): NdviChart | null {
                     </table></div>
                   }
                   @case ('SATELLITE_NDVI') {
-                    @if (it.o.summary.max_cloud_pct !== undefined) { <p class="muted small">Scenes with up to {{ it.o.summary.max_cloud_pct }}% cloud cover.</p> }
+                    @if (it.o.summary.max_cloud_pct !== undefined) {
+                      <p class="muted small">{{ perScene(it.o) ? 'Scenes with at most ' + it.o.summary.max_cloud_pct + '% of the plot under cloud or shadow.'
+                        : 'Scenes with up to ' + it.o.summary.max_cloud_pct + '% cloud cover.' }}</p>
+                    }
+                    @if (it.o.summary.land_surface_temperature; as t) {
+                      <p class="small" data-testid="lst">Land surface temperature {{ t.mean_c | number: '1.1-1' }} °C (min {{ t.min_c | number: '1.1-1' }}, max
+                        {{ t.max_c | number: '1.1-1' }}) on {{ t.date }} · Landsat, {{ t.pixel_count }} pixels</p>
+                    }
                     <div class="two">
                       <div class="table-wrap"><table class="table">
-                        <thead><tr><th>Interval</th><th class="num">Mean</th><th class="num">Min</th><th class="num">Max</th><th class="num">Valid pixels</th></tr></thead>
+                        <thead><tr><th>{{ perScene(it.o) ? 'Scene date' : 'Interval' }}</th><th class="num">NDVI mean</th><th class="num">Min</th><th class="num">Max</th>
+                          @if (perScene(it.o)) { <th class="num">NDMI</th><th class="num">Plot cloud</th> }<th class="num">Valid pixels</th></tr></thead>
                         <tbody>@for (n of it.o.summary.intervals ?? []; track $index) {
-                          <tr><td>{{ n.from }} – {{ n.to }}</td><td class="num">{{ ndvi(n.mean) }}</td><td class="num">{{ ndvi(n.min) }}</td>
-                            <td class="num">{{ ndvi(n.max) }}</td><td class="num">{{ valid(n) }}</td></tr>
-                        } @empty { <tr><td colspan="5" class="muted">No intervals returned.</td></tr> }</tbody>
+                          <tr><td>{{ n.from === n.to ? n.from : n.from + ' – ' + n.to }}</td><td class="num">{{ ndvi(n.mean) }}</td><td class="num">{{ ndvi(n.min) }}</td>
+                            <td class="num">{{ ndvi(n.max) }}</td>
+                            @if (perScene(it.o)) { <td class="num">{{ ndvi(n.ndmi_mean ?? null) }}</td><td class="num">{{ n.plot_cloud_pct ?? '—' }}%</td> }
+                            <td class="num">{{ valid(n) }}</td></tr>
+                        } @empty { <tr><td [attr.colspan]="perScene(it.o) ? 7 : 5" class="muted">No clear scene in this period.</td></tr> }</tbody>
                       </table></div>
                       @if (it.ndvi; as c) {
                         <figure class="chart">
@@ -234,10 +244,13 @@ function ndviChart(intervals: NdviInterval[]): NdviChart | null {
                               <circle class="dot" [attr.cx]="p.x" [attr.cy]="p.y" r="4"><title>{{ p.title }}</title></circle>
                             }
                           </svg>
-                          <figcaption class="muted small">Mean NDVI per interval</figcaption>
+                          <figcaption class="muted small">Mean NDVI per {{ perScene(it.o) ? 'clear scene' : 'interval' }}</figcaption>
                         </figure>
                       }
                     </div>
+                    @if (it.o.summary.skipped?.length) {
+                      <p class="muted small">Skipped (plot under cloud): {{ skippedText(it.o) }}</p>
+                    }
                   }
                   @default { <pre class="small raw">{{ it.o.summary | json }}</pre> }
                 }
@@ -348,6 +361,14 @@ export class FarmExternalDataPanel {
 
   period(o: ExternalObservation): string {
     return o.period_start || o.period_end ? `${o.period_start ?? '…'} → ${o.period_end ?? '…'}` : o.dataset;
+  }
+
+  protected perScene(o: ExternalObservation): boolean {
+    return o.provider === 'planetary-computer';
+  }
+
+  protected skippedText(o: ExternalObservation): string {
+    return (o.summary.skipped ?? []).map((x) => x.date + (x.plot_cloud_pct === null ? '' : ' (' + x.plot_cloud_pct + '%)')).join(', ');
   }
 
   ndvi(v: number | null): string {

@@ -43,11 +43,17 @@ def adapter_for(data_type: str) -> tuple[geodata.GeoDataAdapter | None, str, str
         return (b, b.provider, b.label, "Modelled regional estimates — not a laboratory measurement.") if s.SOIL_PROVIDER == "soilgrids" else \
             (None, "none", b.label, "Soil data is switched off (SOIL_PROVIDER=none).")
     if data_type == "SATELLITE_NDVI":
+        if s.SATELLITE_PROVIDER == "planetary-computer":
+            pc = geodata.PlanetaryComputerSatellite(s.PLANETARY_COMPUTER_STAC_URL, s.PLANETARY_COMPUTER_DATA_URL, s.SATELLITE_PLOT_MAX_CLOUD_PCT,
+                                                     s.SATELLITE_MAX_SCENES, timeout)
+            return pc, pc.provider, pc.label, ("Free Microsoft Planetary Computer data (no key); values averaged inside the boundary are "
+                                               "reference evidence, not field measurements.")
         label = geodata.CopernicusNdvi.label
         if s.SATELLITE_PROVIDER == "copernicus" and s.COPERNICUS_CLIENT_ID and s.COPERNICUS_CLIENT_SECRET:
             return (geodata.CopernicusNdvi(s.COPERNICUS_TOKEN_URL, s.COPERNICUS_STATISTICS_URL, s.COPERNICUS_CLIENT_ID,
                                            s.COPERNICUS_CLIENT_SECRET, s.SATELLITE_MAX_CLOUD_PCT, timeout), "copernicus", label, None)
-        return None, "manual", label, "Configure SATELLITE_PROVIDER=copernicus with a free Copernicus Data Space OAuth client to enable."
+        return None, "manual", label, ("Set SATELLITE_PROVIDER=planetary-computer (free, no key) or copernicus (with a Copernicus Data Space "
+                                       "OAuth client) to enable.")
     return None, "manual", geodata.NoLandRecords.label, ("No public land-records API exists: upload the land record (e.g. 7/12 extract) "
                                                          "in the Documents tab.")
 

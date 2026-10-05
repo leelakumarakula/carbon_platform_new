@@ -241,6 +241,98 @@ class CopernicusNdvi:
                        request, _sha(body))
 
 
+# ---------------------------------------------------------------- satellite: Microsoft Planetary Computer (no key)
+NDVI_EXPR = "(B08-B04)/(B08+B04)"
+NDMI_EXPR = "(B08-B11)/(B08+B11)"
+LST_EXPR = "lwir11*0.00341802+149.0-273.15"          # Landsat Collection 2 Level-2 surface temperature, kelvin scale -> degrees C
+CLOUD_CLASSES = (3, 8, 9, 10)                        # Sentinel-2 scene classification: cloud shadow, cloud medium / high, cirrus
+
+
+def band_stats(doc: dict[str, Any]) -> dict[str, Any]:
+    """The single band's statistics of a Planetary Computer `item/statistics` response (keyed by the expression or asset)."""
+    stats = ((doc.get("properties") or {}).get("statistics") or {})
+    return next(iter(stats.values()), {}) if isinstance(stats, dict) and stats else {}
+
+
+def cloud_pct(doc: dict[str, Any]) -> float | None:
+    """Share (%) of the plot's pixels classed cloud / shadow / cirrus, from the categorical SCL histogram [[counts], [classes]]."""
+    hist = band_stats(doc).get("histogram") or []
+    if len(hist) != 2 or not hist[0]:
+        return None
+    counts = {round(c): n for n, c in zip(hist[0], hist[1], strict=False) if _num(n) is not None and _num(c) is not None}
+    total = sum(counts.values())
+    return round(100 * sum(n for c, n in counts.items() if c in CLOUD_CLASSES) / total, 2) if total else None
+
+
+class PlanetaryComputerSatellite:
+    """Sentinel-2 L2A NDVI + NDMI and Landsat 8/9 land-surface temperature, averaged inside the farm boundary on the server (no image is
+    downloaded), from the free Microsoft Planetary Computer STAC + data APIs (no key). The least cloudy scenes of the period are checked;
+    a scene whose cloud / shadow share inside the plot exceeds the limit is skipped and listed."""
+    provider, label = "planetary-computer", "Sentinel-2 NDVI / NDMI + Landsat surface temperature (Microsoft Planetary Computer)"
+
+    def __init__(self, stac_url: str, data_url: str, plot_max_cloud_pct: int, max_scenes: int, timeout: int) -> None:
+        self.stac_url, self.data_url, self.max_cloud, self.max_scenes, self.timeout = stac_url.rstrip("/"), data_url.rstrip("/"), \
+            plot_max_cloud_pct, max_scenes, timeout
+
+    def _post(self, url: str, payload: dict[str, Any], raw: list[bytes]) -> Any:
+        body = _http(url, data=json.dumps(payload).encode(), headers={"Content-Type": "application/json"}, timeout=self.timeout)
+        raw.append(body)
+        return _json(body)
+
+    def _search(self, collection: str, req: FetchRequest, raw: list[bytes], extra: dict[str, Any]) -> list[dict[str, Any]]:
+        assert req.period_start is not None and req.period_end is not None
+        doc = self._post(f"{self.stac_url}/search", {
+            "collections": [collection], "intersects": req.geometry, "limit": self.max_scenes,
+            "datetime": f"{req.period_start.isoformat()}T00:00:00Z/{req.period_end.isoformat()}T23:59:59Z",
+            "sortby": [{"field": "properties.eo:cloud_cover", "direction": "asc"}], **extra}, raw)
+        return list(doc.get("features") or []) if isinstance(doc, dict) else []
+
+    def _stats(self, collection: str, item: str, req: FetchRequest, raw: list[bytes], **params: str) -> dict[str, Any]:
+        q = urllib.parse.urlencode({"collection": collection, "item": item, "max_size": "1024", **params})
+        doc = self._post(f"{self.data_url}/item/statistics?{q}", {"type": "Feature", "properties": {}, "geometry": req.geometry}, raw)
+        return doc if isinstance(doc, dict) else {}
+
+    def fetch(self, req: FetchRequest) -> Fetched:
+        assert req.geometry is not None and req.period_start is not None and req.period_end is not None
+        raw: list[bytes] = []
+        intervals, skipped = [], []
+        for f in self._search("sentinel-2-l2a", req, raw, {"query": {"eo:cloud_cover": {"lt": 80}}}):
+            day = str((f.get("properties") or {}).get("datetime", ""))[:10]
+            cloud = cloud_pct(self._stats("sentinel-2-l2a", f["id"], req, raw, assets="SCL", categorical="true"))
+            if cloud is None or cloud > self.max_cloud:
+                skipped.append({"date": day, "scene": f["id"], "plot_cloud_pct": cloud})
+                continue
+            nd = band_stats(self._stats("sentinel-2-l2a", f["id"], req, raw, expression=NDVI_EXPR, asset_as_band="true"))
+            nm = band_stats(self._stats("sentinel-2-l2a", f["id"], req, raw, expression=NDMI_EXPR, asset_as_band="true"))
+
+            def r(s: dict[str, Any], k: str) -> float | None:
+                v = _num(s.get(k))
+                return round(v, 4) if v is not None else None
+            intervals.append({"from": day, "to": day, "scene": f["id"], "mean": r(nd, "mean"), "min": r(nd, "min"), "max": r(nd, "max"),
+                              "stdev": r(nd, "std"), "median": r(nd, "median"), "sample_count": int(_num(nd.get("count")) or 0),
+                              "no_data_count": int(_num(nd.get("masked_pixels")) or 0), "ndmi_mean": r(nm, "mean"), "plot_cloud_pct": cloud})
+        best: dict[str, dict[str, Any]] = {}            # a plot on a tile edge is seen by two tiles on the same day: keep the fuller one
+        for row in intervals:
+            if row["from"] not in best or row["sample_count"] > best[row["from"]]["sample_count"]:
+                best[row["from"]] = row
+        intervals = sorted(best.values(), key=lambda x: x["from"])
+        lst = None
+        landsat = {"query": {"eo:cloud_cover": {"lt": 30}, "platform": {"in": ["landsat-8", "landsat-9"]}}}
+        for f in self._search("landsat-c2-l2", req, raw, landsat)[:1]:
+            s = band_stats(self._stats("landsat-c2-l2", f["id"], req, raw, expression=LST_EXPR, asset_as_band="true"))
+            if _num(s.get("mean")) is not None:
+                lst = {"date": str((f.get("properties") or {}).get("datetime", ""))[:10], "scene": f["id"], "mean_c": round(float(s["mean"]), 2),
+                       "min_c": round(float(s.get("min") or 0), 2), "max_c": round(float(s.get("max") or 0), 2),
+                       "pixel_count": int(_num(s.get("count")) or 0)}
+        request = {"stac_url": self.stac_url, "data_url": self.data_url, "collections": ["sentinel-2-l2a", "landsat-c2-l2"],
+                   "max_scenes": self.max_scenes, "plot_max_cloud_pct": self.max_cloud, "from": req.period_start.isoformat(),
+                   "to": req.period_end.isoformat(), "geometry_sha256": _sha(json.dumps(req.geometry, sort_keys=True).encode())}
+        summary = {"intervals": intervals, "max_cloud_pct": self.max_cloud, "skipped": skipped, "land_surface_temperature": lst,
+                   "note": "Modelled from satellite imagery averaged inside the boundary - reference evidence, not a field measurement."}
+        return Fetched(self.provider, "Sentinel-2 L2A NDVI / NDMI per clear scene; Landsat C2 L2 surface temperature", summary, request,
+                       _sha(b"".join(raw)))
+
+
 # ---------------------------------------------------------------- land records: no public API
 class NoLandRecords:
     provider, label = "manual", "Land records (no public API — upload documents)"

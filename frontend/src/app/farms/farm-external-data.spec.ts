@@ -88,6 +88,24 @@ describe('FarmExternalDataPanel', () => {
     expect(text).toContain('Field Agent');
   });
 
+  it('shows Planetary Computer scenes with NDMI, plot cloud, surface temperature and skipped scenes', async () => {
+    const pc = obs({ id: 'p1', data_type: 'SATELLITE_NDVI', provider: 'planetary-computer', dataset: 'Sentinel-2 L2A NDVI / NDMI',
+      summary: { max_cloud_pct: 10, intervals: [
+        { from: '2026-03-04', to: '2026-03-04', scene: 'S2C_X', mean: 0.246, min: 0.03, max: 0.5, stdev: 0.1, sample_count: 306, no_data_count: 0,
+          ndmi_mean: 0.0039, plot_cloud_pct: 0 },
+      ], skipped: [{ date: '2026-02-01', scene: 'S2C_Y', plot_cloud_pct: 74.07 }],
+      land_surface_temperature: { date: '2026-03-29', scene: 'LC09', mean_c: 39.06, min_c: 37.1, max_c: 41.3, pixel_count: 36 } } });
+    const el = (await render(view({ observations: [pc] }))).nativeElement as HTMLElement;
+    const card = el.querySelector('[data-observation="SATELLITE_NDVI"]')?.textContent ?? '';
+    expect(card).toContain('Scene date');
+    expect(card).toContain('2026-03-04');
+    expect(card).toContain('0.246');
+    expect(card).toContain('0.004');                       // NDMI
+    expect(card).toContain('at most 10% of the plot under cloud');
+    expect(card).toContain('Skipped (plot under cloud): 2026-02-01 (74.07%)');
+    expect(el.querySelector('[data-testid="lst"]')?.textContent).toContain('39.1 °C');
+  });
+
   it('fetches weather for the chosen period and reloads', async () => {
     const f = await render(view({ observations: [] }));
     const el = f.nativeElement as HTMLElement;

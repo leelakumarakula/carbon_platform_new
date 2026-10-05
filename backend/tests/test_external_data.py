@@ -1,6 +1,7 @@
 """External farm reference data (weather, soil, satellite NDVI, land records): provider parsing, the evidence-only API, RBAC,
 append-only storage. No test reaches the internet: providers are replaced by TEST doubles or a fake transport."""
 import json
+import urllib.parse
 import uuid
 from datetime import date, timedelta
 from typing import Any
@@ -199,3 +200,44 @@ def test_runtime_defaults_never_simulate(monkeypatch: pytest.MonkeyPatch) -> Non
         Settings(**{**base, "WEATHER_PROVIDER": "mock"})
     with pytest.raises(ValueError, match="https"):
         Settings(**{**base, "SOILGRIDS_URL": "http://rest.isric.org/x"})
+
+
+# ---------------------------------------------------------------- Microsoft Planetary Computer satellite adapter (offline, recorded shapes)
+def test_planetary_computer_adapter_parses_scenes_cloud_and_temperature(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Responses shaped exactly like the live STAC search / item-statistics answers: the cloudy scene is skipped and listed, the clear
+    one yields NDVI + NDMI statistics, Landsat yields the surface temperature; nothing touches the network."""
+    def stats(key: str, **v: float) -> dict:
+        return {"type": "Feature", "properties": {"statistics": {key: v}}}
+    scenes = {"features": [{"id": "S2-CLOUDY", "properties": {"datetime": "2026-02-01T05:00:00Z"}},
+                           {"id": "S2-CLEAR", "properties": {"datetime": "2026-03-04T05:00:00Z"}},
+                           {"id": "S2-CLEAR-EDGE", "properties": {"datetime": "2026-03-04T05:00:10Z"}}]}   # same day, second tile
+    landsat = {"features": [{"id": "LC09-1", "properties": {"datetime": "2026-03-29T05:00:00Z"}}]}
+    calls: list[str] = []
+
+    def fake_http(url: str, *, data: bytes | None = None, headers: dict | None = None, timeout: int) -> bytes:
+        calls.append(url)
+        if url.endswith("/search"):
+            body = json.loads(data or b"{}")
+            return json.dumps(scenes if body["collections"] == ["sentinel-2-l2a"] else landsat).encode()
+        if "assets=SCL" in url:
+            hist = [[60.0, 21.0], [8.0, 4.0]] if "S2-CLOUDY" in url else [[14.0, 46.0, 21.0], [4.0, 5.0, 6.0]]
+            return json.dumps({"type": "Feature", "properties": {"statistics": {"SCL_b1": {"histogram": hist}}}}).encode()
+        if "landsat-c2-l2" in url:
+            return json.dumps(stats("lwir11", mean=39.06, min=37.12, max=41.32, count=36.0)).encode()
+        if "B11" in urllib.parse.unquote(url):
+            return json.dumps(stats("ndmi", mean=0.0039, min=-0.1, max=0.2, count=306.0)).encode()
+        if "S2-CLEAR-EDGE" in url:
+            return json.dumps(stats("ndvi", mean=0.31, min=0.1, max=0.4, std=0.05, median=0.3, count=40.0, masked_pixels=0.0)).encode()
+        return json.dumps(stats("ndvi", mean=0.2068, min=0.0254, max=0.4756, std=0.1014, median=0.2105, count=306.0, masked_pixels=0.0)).encode()
+
+    monkeypatch.setattr(geodata, "_http", fake_http)
+    a = geodata.PlanetaryComputerSatellite("https://pc.example/stac", "https://pc.example/data", 10, 6, 30)
+    g = {"type": "Polygon", "coordinates": [[[73.8, 20.0], [73.8015, 20.0], [73.8015, 20.0015], [73.8, 20.0015], [73.8, 20.0]]]}
+    r = a.fetch(geodata.FetchRequest(20.0007, 73.8007, g, date(2026, 1, 1), date(2026, 3, 31)))
+    s = r.summary
+    assert s["skipped"] == [{"date": "2026-02-01", "scene": "S2-CLOUDY", "plot_cloud_pct": 74.07}]           # 60 of 81 plot pixels cloud
+    (i,) = s["intervals"]
+    assert (i["from"], i["mean"], i["ndmi_mean"], i["plot_cloud_pct"], i["sample_count"]) == ("2026-03-04", 0.2068, 0.0039, 0.0, 306)
+    assert s["land_surface_temperature"]["mean_c"] == 39.06 and s["land_surface_temperature"]["date"] == "2026-03-29"
+    assert r.provider == "planetary-computer" and len(r.raw_sha256) == 64 and all(u.startswith("https://pc.example/") for u in calls)
+    assert geodata.cloud_pct({"properties": {"statistics": {}}}) is None

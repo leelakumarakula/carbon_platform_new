@@ -51,6 +51,7 @@ copy ..\.env.example .env
 | `BOOTSTRAP_ADMIN_EMAIL` | your admin email, e.g. `admin@cc.example.com` |
 | `BOOTSTRAP_ADMIN_PASSWORD` | a temporary password: **12+ characters, letters and digits** (you change it at first sign-in) |
 | `LOGIN_RATE_LIMIT_PER_MINUTE` | `100` (you'll switch users a lot when testing; the default 10 locks you out) |
+| `SATELLITE_PROVIDER` | `planetary-computer` (optional). This enables the farm's **External data → satellite** card with free Microsoft Planetary Computer data, no key needed: Sentinel-2 NDVI / NDMI, plot cloud %, and Landsat surface temperature. Leave it as `manual` to keep the card off. |
 
 Generate the keys:
 ```powershell

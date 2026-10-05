@@ -183,7 +183,7 @@ class Settings(BaseSettings):
     OBJECT_STORAGE_CA_CERT: str | None = None             # CA bundle for a private TLS endpoint
     OBJECT_STORAGE_TIMEOUT_SECONDS: int = 30
     # D38: runtime providers are MANUAL (no simulated provider exists at runtime; test doubles live in the test suite only).
-    SATELLITE_PROVIDER: str = "manual"   # manual | copernicus (Sentinel-2 NDVI via Copernicus Data Space; needs COPERNICUS_CLIENT_*)
+    SATELLITE_PROVIDER: str = "manual"   # manual | planetary-computer (Microsoft, no key) | copernicus (needs COPERNICUS_CLIENT_*)
     LAB_PROVIDER: str = "manual"         # laboratories use the laboratory workspace (NoLimsAdapter)
     REGISTRY_PROVIDER: str = "manual"
     PAYMENT_PROVIDER: str = "manual"   # Phase 10 D15 / D33: manual until a contracted provider exists; no mock provider at all
@@ -198,6 +198,10 @@ class Settings(BaseSettings):
     COPERNICUS_CLIENT_ID: str | None = None
     COPERNICUS_CLIENT_SECRET: str | None = None
     SATELLITE_MAX_CLOUD_PCT: int = 30
+    PLANETARY_COMPUTER_STAC_URL: str = "https://planetarycomputer.microsoft.com/api/stac/v1"
+    PLANETARY_COMPUTER_DATA_URL: str = "https://planetarycomputer.microsoft.com/api/data/v1"
+    SATELLITE_PLOT_MAX_CLOUD_PCT: int = 10     # a scene is skipped when more than this share of the plot is cloud / shadow
+    SATELLITE_MAX_SCENES: int = 6              # least-cloudy scenes checked per fetch (each costs 3 statistics calls)
     EXTERNAL_DATA_TIMEOUT_SECONDS: int = 30
 
     # Phase 12A background jobs. SQL Server is the system of record; REDIS_URL is only the Celery broker (transport). Without it,
@@ -364,7 +368,12 @@ class Settings(BaseSettings):
             raise ValueError("WEATHER_PROVIDER must be 'open-meteo' or 'none'; SOIL_PROVIDER must be 'soilgrids' or 'none'")
         if self.SATELLITE_PROVIDER == "copernicus" and not (self.COPERNICUS_CLIENT_ID and self.COPERNICUS_CLIENT_SECRET):
             raise ValueError("SATELLITE_PROVIDER=copernicus needs COPERNICUS_CLIENT_ID and COPERNICUS_CLIENT_SECRET")
-        for name in ("OPEN_METEO_ARCHIVE_URL", "SOILGRIDS_URL", "COPERNICUS_TOKEN_URL", "COPERNICUS_STATISTICS_URL"):
+        if self.SATELLITE_PROVIDER not in ("manual", "planetary-computer", "copernicus"):
+            raise ValueError("SATELLITE_PROVIDER must be manual, planetary-computer or copernicus")
+        if not 0 <= self.SATELLITE_PLOT_MAX_CLOUD_PCT <= 100 or not 1 <= self.SATELLITE_MAX_SCENES <= 20:
+            raise ValueError("SATELLITE_PLOT_MAX_CLOUD_PCT must be 0-100 and SATELLITE_MAX_SCENES 1-20")
+        for name in ("OPEN_METEO_ARCHIVE_URL", "SOILGRIDS_URL", "COPERNICUS_TOKEN_URL", "COPERNICUS_STATISTICS_URL", "PLANETARY_COMPUTER_STAC_URL",
+                     "PLANETARY_COMPUTER_DATA_URL"):
             if not str(getattr(self, name)).startswith("https://"):
                 raise ValueError(f"{name} must be an https:// URL")
         if not 0 <= self.SATELLITE_MAX_CLOUD_PCT <= 100 or not 1 <= self.EXTERNAL_DATA_TIMEOUT_SECONDS <= 120:

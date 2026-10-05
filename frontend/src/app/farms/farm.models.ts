@@ -215,7 +215,14 @@ export interface NdviInterval {
   stdev: number | null;
   sample_count: number | null;
   no_data_count: number | null;
+  /** Planetary Computer: one row per clear Sentinel-2 scene (from = to = scene date). */
+  scene?: string;
+  ndmi_mean?: number | null;
+  plot_cloud_pct?: number | null;
 }
+
+/** Landsat 8/9 land-surface temperature averaged inside the boundary (Planetary Computer). */
+export interface SurfaceTemperature { date: string; scene: string; mean_c: number; min_c: number; max_c: number; pixel_count: number }
 
 /** `summary` shape depends on data_type: WEATHER daily + totals, SOIL layers, SATELLITE_NDVI intervals. */
 export interface ExternalSummary {
@@ -224,6 +231,9 @@ export interface ExternalSummary {
   layers?: SoilLayer[];
   intervals?: NdviInterval[];
   max_cloud_pct?: number;
+  skipped?: { date: string; scene: string; plot_cloud_pct: number | null }[];
+  land_surface_temperature?: SurfaceTemperature | null;
+  note?: string;
   [key: string]: unknown;
 }
 
