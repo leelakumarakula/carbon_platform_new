@@ -190,6 +190,7 @@ describe('Laboratory screens', () => {
       const el = f.nativeElement as HTMLElement;
       expect(!!el.querySelector('[data-testid="register-sample"]')).toBe(registrable);
       if (registrable) expect(el.querySelector('[data-testid="seal-SMP-2026-000001"]')).not.toBeNull();
+      if (registrable) expect(el.querySelector('[data-testid="sample-depth-SMP-2026-000001"]')?.textContent).toContain('0–30 cm');
       f.destroy();
     }
   });

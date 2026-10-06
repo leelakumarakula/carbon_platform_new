@@ -1,830 +1,361 @@
-# Test walkthrough — who logs in, what they fill, who verifies next
+# End-to-end test walkthrough (clean database, VM0042, your users)
 
-A step-by-step script for the test team. Follow the steps **in order**. Every step says:
+Follow it top to bottom. Each step gives **who** signs in, **where** to click (exact screen labels), **what to enter**, and **✅ what you
+should see**. 🔎 marks a test that must be **refused**; a refusal is a pass.
 
-- **LOGIN** — which test user signs in (switch browser window or sign out and in),
-- **TYPE** — what kind of step it is:
-  - **FILL**: enter data and submit;
-  - **VERIFY**: a second person checks someone else's work;
-  - **APPROVE**: a second person approves it;
-  - **NEGATIVE CHECK**: try something that must be **refused**;
-- **GO TO** — the menu and tab,
-- **ENTER** — the values to type,
-- **CLICK** — the buttons,
-- **YOU SHOULD SEE** — the expected result,
-- **NEXT** — who logs in for the next step.
+Database state at the start (reset 5 Oct 2026): only users, organizations, roles and the consent type "Personal data processing" exist.
+Everything else is empty and numbering starts at `…-000001`.
 
-Field rules and allowed values for every form are in [e2e-test-guide.md](e2e-test-guide.md). This walkthrough only gives the order and the values.
-
-**Every action button asks for a reason** — type `ok test` (3+ characters). **Date boxes are month/day/year** (`06/01/2026` = 1 June 2026).
-
-Keep 2–3 browser windows open (normal, Incognito, another browser) so you can switch users quickly.
+**General tips**
+- Use 2–3 browser windows (normal, private, second browser) to be several people at once.
+- Every action asks for a reason: type 3 or more characters.
+- Dates are entered as month/day/year.
+- A red message shows a rule code (e.g. `SEPARATION_OF_DUTIES`) and the field at fault; detail pages have a "still needed" checklist.
 
 ---
 
-## The whole flow at a glance
+## Stage 0: users you still need to create (as admin, `charana@vayublue.com`)
 
-| Stage | Logins in order | What happens |
-|---|---|---|
-| 0 Setup | leelak | Create organizations and users |
-| 1 Catalog | leelak | Standard and activity |
-| 2 Methodology | ms1 → ms2 | ms1 writes the methodology and picks the module; ms2 approves |
-| 3 Farmer | pm → qa → pm | pm registers and submits KYC; qa verifies KYC; pm activates |
-| 4 Farm | pm → gis | pm records farm, boundary, ownership; gis verifies |
-| 5 Project | pm → gis → qa → pm | pm builds and submits; gis accepts boundary; qa verifies rights and approves; pm confirms activity |
-| 6 Methodology lock | ms1 → pm | ms1 recommends; pm locks |
-| 7 MRV | mrv → qa → mrv → gis → sup | plan, approval, period, stratum, approval |
-| 8 Data | mrv → qa | factor values and dataset; qa approves |
-| 9 Calculation | analyst → qa | run; qa approves |
-| 10 Verification | qa → analyst → qa → analyst → qa → pm → vvb → pm → vvb | internal finding, report, readiness; VVB accepts and decides |
-| 11 Registry | pm → qa | account, registration, submission, issuance; qa confirms |
-| 12 Ledger | credits → qa → credits → qa → credits → qa → buyer → qa | open, retire, transfer, buyer retires |
-| 13 Marketplace | buyer → compliance → credits → fin1 → buyer → fin1 → qa → buyer | KYC, listing, order, payment, delivery |
-| 14 Payout | pm → fin1 → pm → fin1 → pm → fin1 → fin2 → fin1 → fin2 → fin3 → fin2 | sharing, allocation, bank, settlement, payout |
+You have pm@, qa@, gis@, mrv@, sup@, col@, analyst@, meth1@, meth2@, labmgr@, labtech@, labqa@, vvb@. The later stages also need these.
+Create them now or when you reach the stage: **Administration → Users → New user** (temporary password; each changes it at first sign-in).
 
-Test users (create the **bold** ones in Stage 0):
-
-| Login | Role | Organization |
-|---|---|---|
-| leelak@vayublue.com | Platform Admin | platform |
-| ms1@yopmail.com, ms2@yopmail.com | Methodology Specialist | platform |
-| pm@yopmail.com | Project Manager | varsapradaya_developer |
-| qa@yopmail.com | QA Officer | varsapradaya_developer |
-| gis@yopmail.com | GIS Specialist | varsapradaya_developer |
-| mrv@yopmail.com | MRV Manager | varsapradaya_developer |
-| sup@yopmail.com | Field Supervisor | varsapradaya_developer |
-| analyst@yopmail.com | Calculation Analyst | varsapradaya_developer |
-| vvb@yopmail.com | VVB / ACVA Reviewer | verify_co |
-| **credits@yopmail.com** | Credit Manager | varsapradaya_developer |
-| **fin1@yopmail.com**, **fin2@yopmail.com**, **fin3@yopmail.com** | Finance / Payout Manager | varsapradaya_developer |
-| **buyer@yopmail.com** | Buyer | Test Buyer |
-| **compliance@yopmail.com** | Marketplace Compliance Officer | platform |
-
-Several testers on one database: use your tester number (`01`, `02`, …) wherever a step says *+ tester no.*
-
----
-
-## Stage 0 — Setup
-
-### 0.1 · LOGIN `leelak` · FILL — Create the organizations
-**GO TO:** Administration → Organizations → **New organization**
-
-| Organization | Code | Type |
-|---|---|---|
-| Test Registry | `TESTREG` | Registry |
-| Test Buyer | `TESTBUYER` | Buyer |
-
-Country `IN`; other fields empty. **CLICK:** Create (once per organization).
-
-**YOU SHOULD SEE:** both organizations listed as Active.
-
-**NEXT:** stay as `leelak`.
-
-### 0.2 · LOGIN `leelak` · FILL — Create the new users
-**GO TO:** Administration → Users → **New user**
-
-| Email | Full name | Organization | Add role |
+| Email | Organization | Role | Needed from |
 |---|---|---|---|
-| `credits@yopmail.com` | `credit_test` | varsapradaya_developer | Credit Manager |
-| `fin1@yopmail.com` | `finance_one` | varsapradaya_developer | Finance / Payout Manager |
-| `fin2@yopmail.com` | `finance_two` | varsapradaya_developer | Finance / Payout Manager |
-| `fin3@yopmail.com` | `finance_three` | varsapradaya_developer | Finance / Payout Manager |
-| `buyer@yopmail.com` | `buyer_test` | Test Buyer | Buyer |
-| `compliance@yopmail.com` | `compliance_test` | None (platform staff) | Marketplace Compliance Officer |
+| registry@cc.example.com | Green Farms Developer (DEV) | Registry Manager | Stage 13 |
+| credit@cc.example.com | DEV | Credit Manager | Stage 14 |
+| fin1@cc.example.com | DEV | Finance Manager | Stage 15 (approves listing, payment, costs, sharing; reconciles) |
+| fin2@cc.example.com | DEV | Finance Manager | Stage 16 (calculates the settlement) |
+| fin3@cc.example.com | DEV | Finance Manager | Stage 16 (approves settlement and payout) |
+| fin4@cc.example.com | DEV | Finance Manager | Stage 16 (executes the payout) |
+| buyer@cc.example.com | Buyer Co (BUY) | Buyer | Stage 15 |
+| comp@cc.example.com | none (platform staff) | Marketplace Compliance | Stage 15 |
 
-Copy each temporary password. **CLICK:** Create user.
+And one organization: **Administration → Organizations**: Code `REG`, Name `Verra Registry (test)`, Type **Registry**, Country `IN`.
 
-**YOU SHOULD SEE:** the users listed with "Must change password".
-
-**NEXT:** stay as `leelak` → Stage 1.
+🔎 **0.1** Sign in as **labtech@** and open `http://localhost:4200/mrv` → "You don't have access to this page".
+✅ **0.2** analyst@ and vvb@ still have temporary passwords: at their first sign-in they're forced to set a new one.
 
 ---
 
-## Stage 1 — Catalog
-*Flow: leelak FILL.* Skip if `GS` and `AGR-SOC` already exist.
+## Stage 1: Catalog (admin)
 
-### 1.1 · LOGIN `leelak` · FILL — Standard and activity
-**GO TO:** Projects → **Standards & activities**
+**Projects → Standards & activities**
+1. Left card: Code `VCS` · Name `Verified Carbon Standard` · Programme owner `Verra` · Type `Voluntary` → **Add standard**.
+2. Right card: Code `IALM` · Name `Improved agricultural land management` · Offered under ✔ `Verified Carbon Standard` → **Add activity**.
 
-| Card | Field | Enter |
+✅ The activity shows "Offered under: Verified Carbon Standard".
+
+---
+
+## Stage 2: Methodology VM0042 with its calculation module (meth1@ → meth2@)
+
+**meth1@ · Projects → Methodologies → Add a methodology**
+1. Code **`VM0042`** (exactly) · Name `Improved Agricultural Land Management` · Standard `Verified Carbon Standard` · Activities `Improved agricultural land management` → **Add methodology**.
+2. New version label **`2.2`** (exactly) → **New draft version** → **Open**.
+3. Version details: Effective from `10/21/2025` · Source `Verra VM0042 v2.2` → **Save details**.
+4. **Calculation tab → Calculation module**: choose **VM0042 v2.2 - SOC measure & remeasure (QA2) + default-factor emissions (QA3)** → **Use this module**.
+   ✅ The draft now has 8 calculation rules (`V42-BSL` … `V42-NET`), 13 monitoring rules (`V42_OC`, `V42_SOIL_MASS`, `V42_FSN`, `V42_DIESEL`, … `V42_NPR`) and a sampling rule.
+5. **Applicability tab**, add 2 rules (click **Add rule** after each):
+
+| Field | Rule 1 | Rule 2 |
 |---|---|---|
-| Standard | Code | `GS` |
-| | Name | `Gold Standard for the Global Goals` |
-| | Programme owner | `Gold Standard Foundation` |
-| | Type | Voluntary |
-| Activity | Code | `AGR-SOC` |
-| | Name | `Agriculture - soil organic carbon` |
-| | Offered under | tick Gold Standard for the Global Goals |
+| Code | `A1` | `A2` |
+| Title | `Standard is VCS` | `Activity is IALM` |
+| Category | Standard | Activity |
+| Fact key | `standard_code` | `activity_code` |
+| Operator | `EQUALS` | `EQUALS` |
+| Expected value (JSON) | `"VCS"` (with quotes) | `"IALM"` (with quotes) |
+| If it fails | Not applicable | Not applicable |
 
-**CLICK:** Add standard, then Add activity.
+6. **Submit for approval** → status **In review**.
 
-**YOU SHOULD SEE:** the activity row says "Offered under: Gold Standard for the Global Goals".
+🔎 **2.1** meth1@ clicks **Approve** → refused (the author can't approve).
 
-**NEXT:** log in as `ms1`.
-
----
-
-## Stage 2 — Methodology
-*Flow: ms1 FILL → ms1 NEGATIVE CHECK → ms2 APPROVE.*
-
-### 2.1 · LOGIN `ms1` · FILL — Methodology, version and module
-**GO TO:** Methodologies
-
-| Where | Field | Enter |
-|---|---|---|
-| Add a methodology (skip if GS402 exists) | Code | `GS402` |
-| | Name | `Gold Standard SOC Framework` |
-| | Standard / route | Gold Standard for the Global Goals |
-| | Activities | Agriculture - soil organic carbon |
-| New version | New version label | `1.0` — or `1.0-IT-A3-` + tester no. if `1.0` exists |
-| Version page → details | Effective from | `01/01/2020` |
-| | Source | `Gold Standard SOC Framework Methodology v1.0` |
-| Tab **calculation** | Calculation module | **GS 402 + 402.1 Improved Tillage - Approach 3 (IPCC stock change factors, Eqs. 4 and 6) · v1.0.0** |
-| Tab **applicability** — rule 1 | Code / Title / Category | `A1` / `Standard is GS` / Standard |
-| | Fact key / Operator / Expected value / If it fails | `standard_code` / EQUALS / `"GS"` / Not applicable |
-| Tab **applicability** — rule 2 | Code / Title / Category | `A2` / `Activity is AGR-SOC` / Activity |
-| | Fact key / Operator / Expected value / If it fails | `activity_code` / EQUALS / `"AGR-SOC"` / Not applicable |
-
-**CLICK:** Add methodology → New draft version → Open → Save details → **Use this module** → Use module → Add rule (×2) → **Submit for approval**.
-
-**YOU SHOULD SEE:** badge **Module: GS402-IT-A3** (must end in **-A3**), status **In review**.
-
-**NEXT:** stay as `ms1`.
-
-> Choose the module **before** submitting. After approval it can never be changed.
-
-### 2.2 · LOGIN `ms1` · NEGATIVE CHECK
-**CLICK:** Approve. **YOU SHOULD SEE:** refused — the submitter cannot approve.
-
-**NEXT:** log in as `ms2`.
-
-### 2.3 · LOGIN `ms2` · APPROVE
-**GO TO:** Methodologies → GS402 → the version. **CLICK:** Approve (reason).
-
-**YOU SHOULD SEE:** **Approved**; "Calculation: Not production ready" is normal.
-
-**NEXT:** log in as `pm`.
+**meth2@** → open the version → **Approve**. ✅ **Approved**; rules read-only; "Calculation: Not production ready" (expected).
 
 ---
 
-## Stage 3 — Farmer
-*Flow: pm FILL → pm NEGATIVE CHECK → qa VERIFY → pm FILL.*
+## Stage 3: Farmer (pm@ → qa@)
 
-### 3.1 · LOGIN `pm` · FILL — Register the farmer and submit KYC
-**GO TO:** Farmers → **Register farmer**
+**pm@ · Field operations → Farmers → Register farmer**
+1. Managing org `Green Farms Developer` · Full name `Ramesh Patil` · Primary phone `9876543210` · Village `Pimpalgaon` · District `Nashik` · State `Maharashtra` · Country `IN` → save. ✅ `FRM-2026-000001`, **Draft**.
+2. Header → **Registered**.
+   🔎 **3.1** Try **Activate** now → refused (KYC and consent missing).
+3. **KYC** tab: upload any PDF/JPG · ID type · ID number `1234 5678 9012` → submit. ✅ **KYC pending**, number shown as `••••9012`.
+   🔎 **3.2** pm@ tries to approve the KYC → refused / no button.
+4. **qa@** → same farmer → **KYC** → approve. ✅ **KYC verified**.
+5. **pm@ · Consents** tab: `Personal data processing` · version `v1` · Captured by `Paper signed` → **Record consent**.
+6. Header → **Activate**. ✅ **Active**.
 
-| Field | Enter |
+---
+
+## Stage 4: Four farms: the project farm + 3 control farms (pm@ → gis@)
+
+VM0042 needs **3 control sites**: farms with the same soil and rainfall that keep the **old** practice and do **not** join the project.
+Create 4 farms for Ramesh Patil (in a real project the control farms belong to other farmers; for the test one farmer is fine).
+
+| Farm name | Corners (lat, long), paste into **Boundary → Paste several corners** |
 |---|---|
-| Managing organization | varsapradaya_developer |
-| Full name | `Ramesh Patil` |
-| Gender | MALE |
-| Preferred language | `mr` |
-| Primary phone | `+91 98765 43210` |
-| Village / District / State | `Ozar` / `Nashik` / `Maharashtra` |
-| Country | `IN` |
+| `Pimpalgaon plot 1` (project) | `20.0063, 73.7910` · `20.0063, 73.7925` · `20.0050, 73.7925` · `20.0050, 73.7910` |
+| `Control field 1` | `20.0063, 73.7940` · `20.0063, 73.7955` · `20.0050, 73.7955` · `20.0050, 73.7940` |
+| `Control field 2` | `20.0063, 73.7970` · `20.0063, 73.7985` · `20.0050, 73.7985` · `20.0050, 73.7970` |
+| `Control field 3` | `20.0063, 73.8000` · `20.0063, 73.8015` · `20.0050, 73.8015` · `20.0050, 73.8000` |
 
-**CLICK:** Create farmer → header **Register** (reason).
-
-Then tab **KYC**: ID type National ID · ID number `1234 5678 90` + tester no. · Attach ID document (any PDF) → **Submit for review**.
-
-**YOU SHOULD SEE:** status **KYC pending**.
-
-**NEXT:** stay as `pm`.
-
-### 3.2 · LOGIN `pm` · NEGATIVE CHECK
-On the KYC tab look for Verify. **YOU SHOULD SEE:** "You submitted this KYC, so another reviewer must decide".
-
-**NEXT:** log in as `qa`.
-
-### 3.3 · LOGIN `qa` · VERIFY — KYC
-**GO TO:** Farmers → Ramesh Patil → tab KYC. **ENTER:** Review notes `ID checked`. **CLICK:** **Verify KYC**.
-
-**YOU SHOULD SEE:** **KYC verified**.
-
-**NEXT:** log in as `pm`.
-
-### 3.4 · LOGIN `pm` · FILL — Consent, activation, agreement
-**GO TO:** Farmers → Ramesh Patil
-
-| Tab | Enter | Click |
-|---|---|---|
-| Consents | keep defaults: Personal data processing (v1) · `DATA_PROCESSING-v1` · Paper signed | Record consent |
-| Header | — | **Activate** (reason) |
-| Agreements | Type `PROGRAM_PARTICIPATION` · Template version `v1` · Effective from `06/01/2026` | Create agreement → Upload signed copy (PDF) |
-
-**YOU SHOULD SEE:** farmer **Active**; agreement **Signed** — note its code `AGR-2026-…`.
-
-**NEXT:** stay as `pm` → Stage 4.
+For **each** farm:
+1. **pm@ · Farms → New farm**: Farmer `Ramesh Patil` · the farm name · Land tenure `Owned` · Declared area `2.2` · Village/District/State · Country `IN` → **Create farm and draw boundary**.
+2. **Boundary** tab: paste the corners → **Add these corners** → **Check boundary** → **Save as new boundary version**. ✅ "Measured by SQL Server ≈ 2.27 ha".
+3. **Documents** tab: upload a PDF, category `LAND_RECORD` (e.g. "7/12 extract").
+4. **Ownership** tab: Owner type `Farmer` · Relationship `Owner` · Share % `100` · Title / survey reference `Survey 12/3` · Valid from `01/01/2020` · **Evidence document** = the land record (preselected) → save.
+5. **History** tab (needed for a realistic record): Land use 2021–2025 `CROPLAND`; Practice 2025 `HISTORICAL` `Conventional tillage`; plot 1 only: 2026 `PROPOSED` `Reduced tillage`.
+6. Header → **Submit**. 🔎 **4.1** (first farm only) pm@ looks for **Verify** → not available.
+7. **gis@** → farm → **Ownership** → **Verify** the record → header **Start review** → **Overlaps** tab (should be empty) → header **Verify**. ✅ **Verified**; the land-records card shows "Verified".
 
 ---
 
-## Stage 4 — Farm
-*Flow: pm FILL → pm NEGATIVE CHECK → gis VERIFY.*
+## Stage 5: Project and eligibility (pm@ → gis@ → qa@)
 
-### 4.1 · LOGIN `pm` · FILL — Farm, boundary, document, ownership
-**GO TO:** Farmers → Ramesh Patil → tab Farms → **Add farm**
-
-| Tab / form | Field | Enter |
-|---|---|---|
-| Add farm | Farm name / Land tenure / Declared area / Country | `North block` / Owned / `100` / `IN` |
-| Boundary | Paste several corners | the 4 lines below |
-| Documents | Category / Title / file | Land record / `7/12 extract Survey 45/2` / any PDF |
-| Ownership | Owner type / Relationship / Share % | Farmer / Owner / `100` |
-| | Title reference / Valid from | `Survey 45/2` / `01/01/2020` |
-| | Evidence document | `7/12 extract Survey 45/2` (pre-selected) |
-
-```
-20.1000, 73.7000
-20.1000, 73.7096
-20.1090, 73.7096
-20.1090, 73.7000
-```
-Tester 2 adds `0.02` to each latitude, tester 3 adds `0.04`, …
-
-**CLICK:** Create farm and draw boundary → Add these corners → Check boundary → Save as new boundary version → Upload → Record ownership → header **Submit for review**.
-
-**YOU SHOULD SEE:** area ≈ 100 ha; farm **Submitted**.
-
-**NEXT:** stay as `pm`.
-
-### 4.2 · LOGIN `pm` · NEGATIVE CHECK
-Look for **Verify farm**. **YOU SHOULD SEE:** not available to the submitter.
-
-**NEXT:** log in as `gis`.
-
-### 4.3 · LOGIN `gis` · VERIFY — Ownership and farm
-**GO TO:** Farms → North block
-
-| Order | Where | Click |
-|---|---|---|
-| 1 | Tab Ownership | **Verify** → reason `Land record checked` |
-| 2 | Header | **Start GIS review** |
-| 3 | Tab Overlaps | **Clear** anything listed (only if another tester overlaps) |
-| 4 | Header | **Verify farm** |
-
-**YOU SHOULD SEE:** ownership Verified; farm **Verified**.
-
-**NEXT:** log in as `pm`.
+1. **pm@ · Projects → New project**: Org `Green Farms Developer` · Name `Nashik soil carbon pilot` · Country `IN` · Region `Maharashtra` · Planned start **`11/01/2025`** → **Create project**. ✅ `PRJ-2026-000001`, **Draft**.
+   (The start must be on or after the version's effective date 10/21/2025, otherwise VM0042 is not offered.)
+2. Header → **Start data collection**.
+3. **Farms** tab: Farm `Pimpalgaon plot 1` · Agreement / evidence reference `Participation agreement clause 4` → **Add farm**. Add **only plot 1**; the control farms must stay out of the project.
+4. **Team** tab: add `qa@` as QA officer.
+5. **Standard & activity**: Select `Verified Carbon Standard`, Select `Improved agricultural land management`.
+6. **Crediting & baseline**: crediting period `11/01/2025`–`10/31/2035` → **Record period**; baseline `11/01/2020`–`10/31/2025`, `Conventional tillage, residue burning` → **Record baseline**.
+7. Header → **Submit for eligibility review**.
+8. **gis@ · Boundary** tab → **Accept boundary**.
+9. **qa@ · Carbon rights** tab → **Verify**.
+   🔎 **5.1** pm@ looks for **Approve eligibility** → not shown.
+10. **qa@** header → **Approve eligibility** → **pm@** header → **Confirm activity**. ✅ **Activity selected**.
 
 ---
 
-## Stage 5 — Project and eligibility
-*Flow: pm FILL → gis VERIFY → qa VERIFY → pm NEGATIVE CHECK → qa APPROVE → pm FILL.*
+## Stage 6: Lock the methodology (pm@ → meth1@ → pm@)
 
-### 5.1 · LOGIN `pm` · FILL — Build and submit the project
-**GO TO:** Projects → **New project**
-
-| Tab / form | Field | Enter |
-|---|---|---|
-| New project | Organization / Name / Type | varsapradaya_developer / `Nashik tillage pilot` (+ tester no.) / Agricultural land management |
-| | Country / Region / Planned start | `IN` / `Nashik` / `06/01/2026` |
-| Header | Start data collection | reason |
-| Farms | Farm / Participation from / Rights holder | North block / `06/01/2026` / Farmer |
-| | Agreement / evidence reference / Share % | `Carbon rights clause of AGR-2026-…` / `100` |
-| Standard & activity | Standard / Activity | Gold Standard → Select / Agriculture - soil organic carbon → Select |
-| Crediting & baseline | Crediting period | `06/01/2026` – `05/31/2036` → Record period |
-| | Baseline From / To / Practices / Data sources | `06/01/2021` / `05/31/2026` / `Conventional tillage, residue burning` / `Farmer interview` → Record baseline |
-
-**CLICK:** Create project → Start data collection → Add farm → Select ×2 → Record period → Record baseline → header **Submit for eligibility review**.
-
-**YOU SHOULD SEE:** status **Eligibility review**.
-
-**NEXT:** log in as `gis`.
-
-### 5.2 · LOGIN `gis` · VERIFY — Project boundary
-**GO TO:** Projects → the project → tab **Boundary**. **CLICK:** **Accept boundary** (reason).
-
-**YOU SHOULD SEE:** Review: Accepted.
-
-**NEXT:** log in as `qa`.
-
-### 5.3 · LOGIN `qa` · VERIFY — Carbon rights
-**GO TO:** the project → tab **Carbon rights**. **CLICK:** **Verify** → reason `Agreement checked`.
-
-**YOU SHOULD SEE:** rights Verified.
-
-**NEXT:** log in as `pm` for a quick check.
-
-### 5.4 · LOGIN `pm` · NEGATIVE CHECK
-Look for **Approve eligibility**. **YOU SHOULD SEE:** not shown to the submitter.
-
-**NEXT:** log in as `qa`.
-
-### 5.5 · LOGIN `qa` · APPROVE — Eligibility
-**GO TO:** the project header. **CLICK:** **Approve eligibility** (reason).
-
-**YOU SHOULD SEE:** **Standard selected**.
-
-**NEXT:** log in as `pm`.
-
-### 5.6 · LOGIN `pm` · FILL — Confirm activity
-**CLICK:** header **Confirm activity** (reason). **YOU SHOULD SEE:** **Activity selected**.
-
-**NEXT:** log in as `ms1`.
+1. **pm@ · Methodology** tab → **Evaluate candidates**. ✅ "VM0042 2.2: Applicable" (A1 ✔, A2 ✔); status **Methodology review**.
+2. **meth1@** → project → **Methodology** → expand → **Recommend**.
+   🔎 **6.1** meth1@ tries **Confirm & lock** → not allowed.
+3. **pm@** → expand → **Confirm & lock**. ✅ Lock card "VM0042 2.2"; status **Methodology confirmed**.
 
 ---
 
-## Stage 6 — Lock the methodology
-*Flow: ms1 FILL → ms1 NEGATIVE CHECK → pm APPROVE.*
+## Stage 7: MRV plan, strata and control sites (mrv@ → qa@ → gis@)
 
-### 6.1 · LOGIN `ms1` · FILL — Evaluate and recommend
-**GO TO:** Projects → the project → tab **Methodology**. Leave Declared facts empty.
+Everything below is in **Projects → MRV → Nashik soil carbon pilot** (the MRV workspace).
 
-**CLICK:** **Evaluate candidates** → expand GS402 → **Recommend** → reason `Applicable; module GS402-IT-A3`.
+1. **mrv@ · MRV plans → Create MRV plan**: frequency `Annual` · approach `MEASURE_AND_REMEASURE` · `11/01/2025`–`10/31/2035` · Required evidence `Field photos, GPS, lab report` → **Create plan (draft)** → **Submit for approval**.
+   ✅ The 13 VM0042 measurements are added automatically (this is the module at work).
+2. **qa@ · MRV plans** → open → **Approve**. ✅ project **MRV planned**.
+3. **mrv@ · Stratification**, **Project stratum**: Code `S1` · Name `Black soil plot` · Farms ✔ `Pimpalgaon plot 1` · characteristics `SOIL_TEXTURE` = `Clay`, `SOIL_GROUP` = `Vertisol`, `PRECIPITATION_MM` = `750` → **Create stratum**.
+4. Switch to **Control site**: `C1` · `Control site 1` · Farms ✔ `Control field 1` · **Represents (project strata)** ✔ `S1` · the same three characteristics → **Create control site**. Repeat for `C2` (Control field 2) and `C3` (Control field 3).
+   🔎 **7.1** mrv@ tries **Approve** on S1 → refused.
+5. **gis@ · Stratification** → **Approve** S1, C1, C2, C3. ✅ Checklist: "3 of at least 3" control sites; "Every stratum has a control site".
 
-**YOU SHOULD SEE:** candidate **Applicable** (A1 ✔ A2 ✔); "Recommended by" your name; status **Methodology review**.
-
-**NEXT:** stay as `ms1`.
-
-### 6.2 · LOGIN `ms1` · NEGATIVE CHECK
-Try **Confirm & lock**. **YOU SHOULD SEE:** not allowed.
-
-**NEXT:** log in as `pm`.
-
-### 6.3 · LOGIN `pm` · APPROVE — Confirm and lock
-**GO TO:** tab Methodology → expand the candidate. **CLICK:** **Confirm & lock** (reason). Do **not** re-evaluate or unlock.
-
-**YOU SHOULD SEE:** lock card; status **Methodology confirmed**; **MRV workspace** button.
-
-**NEXT:** log in as `mrv`.
+Why: S1's area (≈ 2.27 ha, measured by SQL Server) multiplies the result later; the control sites tell VM0042 what would have happened without the project; `PRECIPITATION_MM` decides wet or dry IPCC factors (750 mm = dry).
 
 ---
 
-## Stage 7 — MRV plan, period, stratum
-*Flow: mrv FILL → mrv NEGATIVE CHECK → qa APPROVE → mrv FILL → gis FILL → gis NEGATIVE CHECK → sup APPROVE.*
+## Stage 8: Lab engagement (once) (mrv@ → labmgr@)
 
-### 7.1 · LOGIN `mrv` · FILL — MRV plan
-**GO TO:** MRV → choose the project at the top → tab **MRV plans** → **Create MRV plan**
+1. **mrv@ · Samples & laboratory** → **Laboratory engagements**: Laboratory `Soil Test Lab` · **LABORATORY rules in scope** ✔ `V42_OC` and ✔ `V42_SOIL_MASS` → **Propose engagement**.
+2. **labmgr@ · Laboratory → Engagements** → **Accept**. ✅ **Active**.
 
-| Field | Enter |
+---
+
+## Stage 9: Period 0, the baseline sampling (soil at the project start)
+
+### 9a. Period (mrv@)
+**Monitoring periods**: Name `Period 0` · purpose `BASELINE` · `11/01/2025`–`05/31/2026` → **Create period** → **Mark planned** → **Start period** → **Open data collection**.
+✅ Period **Data collection**; project **Monitoring**.
+
+### 9b. Sampling design (mrv@ → gis@)
+**Sampling design → New sampling design**: Code `SOIL-0` · Name `Baseline soil sampling` · **S1 = 3, C1 = 3, C2 = 3, C3 = 3** · Statistical design `Stratified random` · Sampling method `Soil auger` · Depth top `0` · Depth bottom `50` · Target precision `10` · Confidence level `90` · Min. distance `10` → **Create design (12 samples)**.
+VM0042 refuses fewer than 3 per stratum or a design other than stratified random.
+**gis@** → **Approve design**. **mrv@** → **Generate sampling points**. ✅ "Points generated (SQL Server validated)": 12 points, 3 inside each farm.
+
+### 9c. Assign (sup@)
+**Points & assignments** → **Select unassigned** → collector `col@` → **Assign 12 point(s)**.
+
+### 9d. Field collection (col@, phone view: F12 → Ctrl+Shift+M)
+**Field operations → Field work** → each point → **Start collection**:
+
+| Field | Value |
 |---|---|
-| Monitoring frequency | `Annual` |
-| Quantification approach | **leave empty** |
-| Monitoring start / end | `06/01/2026` / `05/31/2036` |
-| Required evidence | `Factor sources (IPCC tables)` |
-| Project measurements | add none |
+| Latitude / Longitude | the planned point's coordinates (shown on the point) |
+| GPS accuracy (m) | leave empty |
+| Collected at | `05/20/2026` 10:00 (must be inside Period 0 and not in the future) |
+| Depth top / bottom (cm) | `0` / `50` |
+| Probe inside diameter (mm) * | `21.5` |
+| Number of cores * | `4` |
+| Checklist | tick every item |
+| Photos | add one photo |
 
-**CLICK:** Create plan (draft) → **Submit for approval**.
+→ **Save & submit**.
+🔎 **9.1** (first point) col@ tries to accept their own record → not allowed.
+**sup@ · Points & assignments** → **Accept** each record.
 
-**YOU SHOULD SEE:** the `GS_…` measurements listed; plan **Submitted**.
+### 9e. Two depth samples per field record (col@)
+On each **accepted** record (**Field work → the point → View**) → **Laboratory samples** → **Register & seal sample**, twice:
 
-**NEXT:** stay as `mrv`.
+| Sample | Description | Depth top (cm) | Depth bottom (cm) | Then |
+|---|---|---|---|---|
+| 1 | `Soil core 0-30 cm` | `0` | `30` | Seal number e.g. `S0-01` → **Seal sample** |
+| 2 | `Soil core 30-50 cm` | `30` | `50` | Seal number e.g. `S0-02` → **Seal sample** |
 
-### 7.2 · LOGIN `mrv` · NEGATIVE CHECK
-Look for **Approve** on the plan. **YOU SHOULD SEE:** not shown.
+✅ Each sample shows "0–30 cm" / "30–50 cm" and **2 test(s)** (organic carbon and soil mass, created automatically). 24 samples in total.
+VM0042 needs ≥ 2 depth layers per point (equivalent-soil-mass comparison); one layer gives the blocker `DEPTH_INCREMENTS_REQUIRED`.
 
-**NEXT:** log in as `qa`.
+### 9f. Ship and receive (sup@ → labtech@)
+1. **sup@ · Samples & laboratory → Shipments**: Ship to laboratory `Soil Test Lab` · Carrier `Courier` → **Create shipment** → **Add sealed samples** → **Add** → **Dispatch**.
+2. **labtech@ · Laboratory → Incoming**: for each sample ✔ Accept · **Seal observed** = that sample's seal · Condition `Good` → **Record receipt**.
+3. **Samples** tab: Accession no. `L0-01`, `L0-02`, … → **Register**.
 
-### 7.3 · LOGIN `qa` · APPROVE — MRV plan
-**GO TO:** MRV → project → MRV plans → open the plan. **CLICK:** **Approve** (reason; the gaps notice is expected).
+### 9g. Lab results (labtech@ → labqa@)
+**Laboratory → Worklist** → each test → Method used `Dry combustion` → **Start test** → Result type `Numeric` · Value · **Unit exactly `g/kg` (organic carbon) or `g` (soil mass)** · Analysed at = now → **Save result** → upload a **PDF report** → **Submit for QA**.
 
-**YOU SHOULD SEE:** plan **Approved**; project **MRV planned**.
+Values for Period 0 (enter them point by point; "point 1/2/3" = the 1st/2nd/3rd point of that farm, any order):
 
-**NEXT:** log in as `mrv`.
+| Farm | Point | 0–30 cm: OC (g/kg) | 0–30 cm: mass (g) | 30–50 cm: OC (g/kg) | 30–50 cm: mass (g) |
+|---|---|---|---|---|---|
+| Plot 1 (S1) | 1 | 11.0 | 280 | 6.0 | 200 |
+| Plot 1 (S1) | 2 | 10.5 | 290 | 6.2 | 205 |
+| Plot 1 (S1) | 3 | 11.4 | 285 | 5.9 | 198 |
+| Each control field (C1, C2, C3) | 1 | 11.2 | 284 | 6.1 | 202 |
+| Each control field | 2 | 11.0 | 287 | 6.0 | 204 |
+| Each control field | 3 | 11.5 | 283 | 6.2 | 200 |
 
-### 7.4 · LOGIN `mrv` · FILL — Monitoring period
-**GO TO:** tab **Monitoring periods**. **ENTER:** Name `Period 1` · Purpose Monitoring · Start `06/01/2026` · End `05/31/2027`.
+🔎 **9.2** labtech@ tries to approve their own result → refused.
+🔎 **9.3** (optional) submit one result without the PDF → refused `REPORT_REQUIRED`.
+**labqa@ · Laboratory → QA** → **Review** → **Start QA review** (12 checks) → Decision `APPROVED` · Notes → **Record decision**. ✅ samples **Analysed**.
+✅ **mrv@ · Samples & laboratory → Lineage** on a result: result → test → sample → field record → point → stratum → farm → project.
 
-**CLICK:** Create period → **Mark planned** → **Start period** → **Open data collection**.
+### 9h. Monitoring data and dataset (mrv@ → qa@)
+1. **Monitoring data**: Measurement `V42_NPR` (project level, no farm) · Value `12` · Observed on `05/31/2026` · Phase `Monitoring` · Source `Document` → **Record value**.
+2. **Datasets & QA**: Period 0 → **Create dataset version** → **Open / QA** → **Submit for QA**.
+   🔎 **9.4** mrv@ tries **Approve dataset** → refused.
+3. **qa@** → **Start QA review** (15 checks; a WARN `configuration` is OK) → QA result `PASS` → **Record QA result** → **Approve dataset**. ✅ Period 0 **Approved**.
 
-**YOU SHOULD SEE:** period **Data collection**; project **Monitoring**.
-
-**NEXT:** log in as `gis`.
-
-### 7.5 · LOGIN `gis` · FILL — Stratum
-**GO TO:** tab **Stratification** → New, keep **Project stratum**. **ENTER:** Code `S1` · Name `Tillage plots` · Farms North block · Characteristic Soil type · Value `Black soil` → click **+**.
-
-**CLICK:** **Create stratum**.
-
-**YOU SHOULD SEE:** S1 Draft, area ≈ 100 ha.
-
-**NEXT:** stay as `gis`.
-
-### 7.6 · LOGIN `gis` · NEGATIVE CHECK
-Look for **Approve** on S1. **YOU SHOULD SEE:** not available to the creator.
-
-**NEXT:** log in as `sup`.
-
-### 7.7 · LOGIN `sup` · APPROVE — Stratum
-**GO TO:** MRV → project → Stratification. **CLICK:** **Approve** on S1 (reason).
-
-**YOU SHOULD SEE:** S1 **Approved**.
-
-**NEXT:** log in as `mrv`.
+⚠️ After the dataset is submitted, don't press **Open data collection** on Period 0 again (known issue).
 
 ---
 
-## Stage 8 — Factor data and dataset
-*Flow: mrv FILL → mrv NEGATIVE CHECK → qa VERIFY + APPROVE.*
+## Stage 10: Period 1, the re-measurement (one year of the new practice)
 
-### 8.1 · LOGIN `mrv` · FILL — Factor values
-**GO TO:** MRV → project → tab **Monitoring data**. For **every** row: Stratum `S1 · Tillage plots` · Observed on `10/05/2026` · Phase Project · Source Document → **Record value**.
+Repeat Stage 9 with these differences:
 
-| Measurement | Value |
+| Step | Period 1 value |
 |---|---|
-| GS_SOC_REF | `47` |
-| GS_F_LU | `0.83` |
-| GS_F_MG_BL | `1.00` |
-| GS_F_I_BL | `0.92` |
-| GS_F_MG_PR | `1.10` |
-| GS_F_I_PR | `1.11` |
-| GS_T_BL | `20` |
-| GS_T_PR | `1` |
-| GS_U_SOC_REF | `2` |
-| GS_U_F_LU | `2` |
-| GS_U_F_MG_BL | `1` |
-| GS_U_F_I_BL | `1` |
-| GS_U_F_MG_PR | `1` |
-| GS_U_F_I_PR | `1` |
-| GS_PAA (project level — no stratum box) | `YES` |
+| 9a | `Period 1` · purpose `MONITORING` · `06/01/2026`–`05/31/2027` |
+| 9b | Code `SOIL-1`; again 3 / 3 / 3 / 3, depth 0–50 |
+| 9d | Collected at = **today** (inside Period 1, not in the future) |
+| 9e | Seals `S1-01`, `S1-02`, … |
+| 9g | the values below |
 
-Record each measurement **once**; fix a mistake with **Correct** on its row.
+| Farm | Point | 0–30 cm: OC | 0–30 cm: mass | 30–50 cm: OC | 30–50 cm: mass |
+|---|---|---|---|---|---|
+| Plot 1 (S1) | 1 | 12.6 | 282 | 6.6 | 201 |
+| Plot 1 (S1) | 2 | 12.2 | 288 | 6.5 | 206 |
+| Plot 1 (S1) | 3 | 12.9 | 284 | 6.4 | 199 |
+| Each control field | 1 | 11.3 | 285 | 6.1 | 203 |
+| Each control field | 2 | 11.0 | 286 | 6.0 | 204 |
+| Each control field | 3 | 11.4 | 284 | 6.1 | 199 |
 
-**YOU SHOULD SEE:** 15 records in the table.
+**Monitoring data for Period 1** (mrv@; farm-level items ask for the **Farm** = `Pimpalgaon plot 1`):
 
-**NEXT:** stay as `mrv`.
+| Measurement | Farm | Value | Observed on | Phase | Meaning |
+|---|---|---|---|---|---|
+| `V42_FSN` | plot 1 | 120 | 07/01/2023 | Baseline | old practice, history year 1 (kg N) |
+| `V42_FSN` | plot 1 | 110 | 07/01/2024 | Baseline | history year 2 |
+| `V42_FSN` | plot 1 | 130 | 01/15/2025 | Baseline | history year 3 |
+| `V42_FSN` | plot 1 | 90 | today | Project | new practice |
+| `V42_DIESEL` | plot 1 | 60 | 07/01/2023 | Baseline | litres |
+| `V42_DIESEL` | plot 1 | 60 | 07/01/2024 | Baseline | |
+| `V42_DIESEL` | plot 1 | 35 | today | Project | |
+| `V42_NPR` | (project) | 12 | today | Monitoring | Verra non-permanence risk rating, % |
 
-### 8.2 · LOGIN `mrv` · FILL — Submit the dataset
-**GO TO:** tab **Datasets & QA** → Monitoring period `Period 1`. **CLICK:** **Create dataset version** → **Open / QA** → **Submit for QA**.
-
-**YOU SHOULD SEE:** dataset **Submitted**.
-
-**NEXT:** stay as `mrv`.
-
-### 8.3 · LOGIN `mrv` · NEGATIVE CHECK
-Look for **Record QA result**. **YOU SHOULD SEE:** not available to the submitter.
-
-**NEXT:** log in as `qa`.
-
-### 8.4 · LOGIN `qa` · VERIFY + APPROVE — Dataset
-**GO TO:** MRV → project → Datasets & QA → Open / QA.
-
-**CLICK:** **Start QA review** → QA result `PASS` → **Record QA result** → **Approve dataset**.
-
-**YOU SHOULD SEE:** every check PASS or WARN; dataset and period **Approved**.
-
-**NEXT:** log in as `analyst`.
+Then create, submit and approve the **Period 1 dataset** (qa@).
 
 ---
 
-## Stage 9 — Calculation
-*Flow: analyst FILL → analyst NEGATIVE CHECK → qa VERIFY + APPROVE.*
+## Stage 11: Calculation (analyst@ → qa@)
 
-### 9.1 · LOGIN `analyst` · FILL — Calculation run
-**GO TO:** **Calculations** → Project `Nashik tillage pilot` · Period `Period 1`.
+1. **analyst@ · Calculations**: Project `Nashik soil carbon pilot` · Monitoring period `Period 1`.
+   ✅ Readiness: no blockers, only the warning "NOT_PRODUCTION_READY: non-production use only".
+2. **New calculation run** → open the run → **Check readiness & freeze inputs** → **Execute**.
+   ✅ **Results** tab: about 41 outputs, each with its VM0042 equation: `REF_MASS_…`, `SOC_BAS_PREV/CURR`, `SOC_PRO_PREV/CURR`, `E_BAS_*`, `E_PRO_*`, `ER_*`, `DCO2_SOIL_WP`, `DCO2_SOIL_BSL`, `UNC_PCT`, `BUFFER_CR`, … **`VCU_TOTAL`**.
+   Expected: SOC project ≈ 21.44 → 24.62 t C/ha, control ≈ 21.99 → 22.01, uncertainty ≈ 9.8 %, **VCU_TOTAL ≈ 21** (the exact value depends on the area SQL Server measures; with 2.6153 ha it was 24).
+3. **Submit for QA**.
+4. **qa@ · QA** tab → **Start calculation QA** → **Findings** tab → Raise a finding: Category `Clarification` · ✔ Blocking · Title `Soil mass basis` · Description `Confirm the soil mass is oven-dry fine earth.` → **Raise finding**.
+5. **analyst@** → Findings → Response `Confirmed: oven-dry fine earth < 2 mm.` → **Respond**.
+   🔎 **11.1** analyst@ tries **Resolve** → refused.
+6. **qa@** → **Resolve** → **QA** tab: Result `PASS` · Notes → **Record QA**.
+   🔎 **11.2** analyst@ tries **Approve** → refused.
+7. **qa@** → **Approve**. ✅ Run **Approved**.
+8. **analyst@** → **Calculation report** → **Generate report** → **Verify** ✅ valid.
+9. **analyst@ · Calculations** (Period 1) → **Verification readiness** → **Prepare readiness** → **Submit**. **qa@** → **Approve (READY)**.
 
-**CLICK:** **New calculation run** → open the run → **Check readiness & freeze inputs** → **Execute** → **Submit for QA**.
-
-**YOU SHOULD SEE:** no red blocker (only "NOT_PRODUCTION_READY"); outputs incl. **GS_VER_TOTAL ≈ 170** — write the exact number down.
-
-**NEXT:** stay as `analyst`.
-
-### 9.2 · LOGIN `analyst` · NEGATIVE CHECK
-Look for **Approve** on the run. **YOU SHOULD SEE:** not available to the creator.
-
-**NEXT:** log in as `qa`.
-
-### 9.3 · LOGIN `qa` · VERIFY + APPROVE — Calculation
-**GO TO:** Calculations → the run → tab **QA**. **CLICK:** **Start calculation QA** → Result `PASS` · Notes `Inputs and outputs checked` → **Record QA** → header **Approve**.
-
-**YOU SHOULD SEE:** run **Approved**.
-
-**NEXT:** stay as `qa` → Stage 10.
+👉 Send me a message at this point: I'll read your run and explain every number with your data.
 
 ---
 
-## Stage 10 — Internal readiness and VVB verification
-*Flow: qa FILL → analyst FILL → analyst NEGATIVE CHECK → qa VERIFY → analyst FILL → analyst NEGATIVE CHECK → qa APPROVE → pm FILL → vvb FILL → pm FILL → vvb VERIFY + APPROVE.*
+## Stage 12: Verification by the VVB (pm@ → vvb@)
 
-### 10.1 · LOGIN `qa` · FILL — Internal finding
-**GO TO:** the run → tab **Findings**. **ENTER:** Category Clarification · Blocking ticked · Title `Source of factors` · Description `Cite the IPCC table used for F_MG and F_I`.
+1. **pm@ · MRV workspace → Verification** tab (period `Period 1`): VVB / ACVA organization `Verify Co` → **Propose**.
+2. **vvb@ · VVB workspace** → the assignment → Conflict-of-interest declaration `No conflict of interest with the project, developer or farmers.` → **Accept**. ✅ project **Verification**.
+3. **pm@** → **Submit READY package**.
+4. **vvb@** → **Package** and **Documents** tabs (no farmer names or GPS visible) → **Decision** tab: Outcome `Verified` · VVB-stated verified quantity = the `VCU_TOTAL` value · Unit `tCO2e` · Rationale · Verification report PDF → **Record decision**. ✅ project **Verified**.
 
-**CLICK:** **Raise finding**. **YOU SHOULD SEE:** finding **Open**.
-
-**NEXT:** log in as `analyst`.
-
-### 10.2 · LOGIN `analyst` · FILL — Respond
-**GO TO:** the run → tab Findings. **ENTER:** Response `IPCC 2019 Vol. 4 Ch. 5 Table 5.5 (test values)`. **CLICK:** **Respond**.
-
-**YOU SHOULD SEE:** **Responded**. Look for **Resolve** — it must **not** be shown to you (NEGATIVE CHECK).
-
-**NEXT:** log in as `qa`.
-
-### 10.3 · LOGIN `qa` · VERIFY — Resolve the finding
-**CLICK:** **Resolve** → reason `Source accepted`. **YOU SHOULD SEE:** **Resolved**.
-
-**NEXT:** log in as `analyst`.
-
-### 10.4 · LOGIN `analyst` · FILL — Report and readiness
-**CLICK:** run page → **Generate report** → **Verify** (shows "Hashes verify"). Then **Calculations** → project + Period 1 → **Verification readiness** → **Prepare readiness** → **Submit**.
-
-**YOU SHOULD SEE:** readiness **Submitted**; **Approve (READY)** is hidden for you (NEGATIVE CHECK).
-
-**NEXT:** log in as `qa`.
-
-### 10.5 · LOGIN `qa` · APPROVE — Readiness
-**GO TO:** Calculations → project + Period 1 → Verification readiness. **CLICK:** **Approve (READY)** → reason `Internal checks complete`.
-
-**YOU SHOULD SEE:** **READY**.
-
-**NEXT:** log in as `pm`.
-
-### 10.6 · LOGIN `pm` · FILL — Propose the VVB
-**GO TO:** MRV → project → tab **Verification**. **ENTER:** VVB / ACVA organization `verify_co` · Notes `Verification of Period 1`. **CLICK:** **Propose**.
-
-**YOU SHOULD SEE:** assignment **Proposed**.
-
-**NEXT:** log in as `vvb`.
-
-### 10.7 · LOGIN `vvb` · FILL — Accept the assignment
-**GO TO:** **VVB workspace** → the assignment. **ENTER:** Conflict-of-interest declaration `No financial or personal interest in the project or its developer`. **CLICK:** **Accept**.
-
-**YOU SHOULD SEE:** **Accepted**; project **Verification**.
-
-**NEXT:** log in as `pm`.
-
-### 10.8 · LOGIN `pm` · FILL — Submit the package
-**GO TO:** MRV → project → Verification. **CLICK:** **Submit READY package**.
-
-**YOU SHOULD SEE:** submission `SUB-…` **Submitted**.
-
-**NEXT:** log in as `vvb`.
-
-### 10.9 · LOGIN `vvb` · VERIFY + APPROVE — Review and decide
-**GO TO:** VVB workspace → the assignment → tabs **Package** and **Documents** (review), then tab **Decision**.
-
-| Field | Enter |
-|---|---|
-| Outcome | Verified |
-| VVB-stated verified quantity | the GS_VER_TOTAL from 9.1 (e.g. `170`) |
-| Unit | `tCO2e` |
-| Rationale | `Factors and calculation checked against the package` |
-| Verification report | any PDF |
-
-**CLICK:** **Record decision**.
-
-**YOU SHOULD SEE:** assignment **Completed**; project **Verified**.
-
-**NEXT:** log in as `pm`.
+(If vvb@ raises findings in the **Findings** tab, a **second** VVB reviewer must record the decision.)
 
 ---
 
-## Stage 11 — Registry and issuance
-*Flow: pm FILL → pm NEGATIVE CHECK → qa APPROVE.*
-
-### 11.1 · LOGIN `pm` · FILL — Account, registration, submission, issuance
-**GO TO:** **Registry** → project + Period 1. Work top to bottom:
-
-| Form | Field | Enter | Click |
-|---|---|---|---|
-| Registry account | Registry / Account ID / Label | Test Registry / `ACC-` + tester no. / `Main GS account` | |
-| | Registry credit unit / = 1 verified unit | `VER` / `tCO2e` | Record account |
-| Registration | Account for registration | Main GS account | Start registration record |
-| | Registry project ID / Registered on / PDF | `GS-PRJ-` + tester no. / `10/05/2026` / any PDF | Record registered |
-| Submission | Registry account | Main GS account | Prepare registry submission → Freeze snapshot |
-| | Submission reference / receipt PDF | `GS-SUB-` + tester no. / any PDF | Record submitted |
-| | Outcome / response PDF | Accepted / any PDF | Record response |
-| Issuance | Issuance ID / date / Unit / statement PDF | `GS-ISS-` + tester no. / `10/05/2026` / `VER` / any PDF | |
-| | Batch: Vintage / Whole credits | `2026` / the VVB quantity (e.g. `170`) | |
-| | Batch: Serial start / end | `GS-T01-2026-000001` / `GS-T01-2026-000170` (your tester no.) | Record issuance |
-
-**YOU SHOULD SEE:** account "1 VER = 1 tCO2e"; registration Registered; submission Accepted; issuance **Recorded**. The **Confirm** button is not shown to you (NEGATIVE CHECK).
-
-**NEXT:** log in as `qa`.
-
-### 11.2 · LOGIN `qa` · APPROVE — Confirm the issuance
-**GO TO:** Registry → project + Period 1. **CLICK:** **Confirm (second person)** → note `Matches registry statement`.
-
-**YOU SHOULD SEE:** issuance **Confirmed**; batch **Issued**; project **Issued**.
-
-**NEXT:** log in as `credits`.
-
----
-
-## Stage 12 — Credit ledger
-*Flow: credits FILL → qa APPROVE → credits FILL → qa APPROVE → credits FILL → qa APPROVE → buyer FILL → qa APPROVE.*
-
-### 12.1 · LOGIN `credits` · FILL — Request opening
-**GO TO:** **Credit ledger** → the batch. **CLICK:** **Open in ledger** → reason → **Request opening**.
-
-**YOU SHOULD SEE:** opening **Requested**; **Confirm opening** not available to you (NEGATIVE CHECK).
-
-**NEXT:** log in as `qa`.
-
-### 12.2 · LOGIN `qa` · APPROVE — Confirm opening
-**CLICK:** **Confirm opening**. **YOU SHOULD SEE:** Available 170 owned by varsapradaya_developer.
-
-**NEXT:** log in as `credits`.
-
-### 12.3 · LOGIN `credits` · FILL — Request a retirement
-**GO TO:** Credit ledger → batch → **Details** → Request retirement. **ENTER:** Owner varsapradaya_developer · Quantity `10` · Beneficiary `Varsapradaya Developer` · Retirement reason `Test retirement by the developer`.
-
-**CLICK:** **Request retirement**. **YOU SHOULD SEE:** 10 Retirement pending.
-
-**NEXT:** log in as `qa`.
-
-### 12.4 · LOGIN `qa` · APPROVE — Record the retirement
-**GO TO:** batch → Details → Retirements. **ENTER:** Registry retirement reference `GS-RET-` + tester no. + `-A` · date `10/05/2026` · certificate PDF.
-
-**CLICK:** **Record retirement**. **YOU SHOULD SEE:** 10 **Retired**.
-
-**NEXT:** log in as `credits`.
-
-### 12.5 · LOGIN `credits` · FILL — Request a transfer to the buyer
-**GO TO:** batch → Details → Request transfer. **ENTER:** Kind Internal · Sender varsapradaya_developer · Recipient Test Buyer · Quantity `10` · Purpose `Test transfer`.
-
-**CLICK:** **Request transfer**. **YOU SHOULD SEE:** 10 Transfer pending.
-
-**NEXT:** log in as `qa`.
-
-### 12.6 · LOGIN `qa` · APPROVE — Complete the transfer
-**GO TO:** batch → Details → Transfers. **CLICK:** **Complete**. **YOU SHOULD SEE:** Test Buyer owns 10.
-
-**NEXT:** log in as `buyer`.
-
-### 12.7 · LOGIN `buyer` · FILL — Retire own credits
-**GO TO:** **My credits** → AVAILABLE row → **Request retirement**. **ENTER:** Quantity `5` · Beneficiary `Test Buyer Ltd` · Retirement reason `Offsetting 2026 travel`.
-
-**YOU SHOULD SEE:** request listed under Retirement requests.
-
-**NEXT:** log in as `qa`.
-
-### 12.8 · LOGIN `qa` · APPROVE — Record the buyer's retirement
-**GO TO:** Credit ledger → batch → Details → Retirements. **ENTER:** reference `GS-RET-` + tester no. + `-B` · date · certificate PDF. **CLICK:** **Record retirement**.
-
-**YOU SHOULD SEE:** 5 **Retired**; 150 still available to the developer.
-
-**NEXT:** log in as `buyer`.
-
----
-
-## Stage 13 — Marketplace
-*Flow: buyer FILL → compliance VERIFY → credits FILL → fin1 APPROVE → buyer FILL → fin1 VERIFY → qa APPROVE → buyer CHECK.*
-
-### 13.1 · LOGIN `buyer` · FILL — Buyer profile and KYC
-**GO TO:** **Buyer profile**. **ENTER:** Legal name `Test Buyer Ltd` · Registration number `U12345MH2026PTC0000` + tester no. · Country `IN` · Contact name `Asha Rao` · Contact email `buyer@yopmail.com`.
-
-**CLICK:** **Save** → KYC documents: choose a PDF → **Upload** → **Submit for KYC review**.
-
-**YOU SHOULD SEE:** **KYC submitted**.
-
-**NEXT:** log in as `compliance`.
-
-### 13.2 · LOGIN `compliance` · VERIFY — Buyer KYC
-**GO TO:** **KYC review** → Test Buyer Ltd. **CLICK:** **Verify** → reason `Registration documents checked`.
-
-**YOU SHOULD SEE:** **KYC verified**.
-
-**NEXT:** log in as `credits`.
-
-### 13.3 · LOGIN `credits` · FILL — Listing
-**GO TO:** **Listings** → **New listing**
-
-| Field | Enter |
-|---|---|
-| Credits | your batch |
-| Title | `GS402 Nashik tillage 2026` |
-| Listed quantity | `100` |
-| Price per credit / Currency | `500.00` / `INR` |
-| Min order / Max order | `1` / `50` |
-| Payment window (hours) | `48` |
-| Co-benefits | `Soil health, farmer income` |
-
-**CLICK:** **Create draft** → row **Submit**.
-
-**YOU SHOULD SEE:** **Pending approval**; **Approve** hidden for you (NEGATIVE CHECK).
-
-**NEXT:** log in as `fin1`.
-
-### 13.4 · LOGIN `fin1` · APPROVE — Listing
-**GO TO:** **Listings**. **CLICK:** **Approve** → reason `Price approved`. **YOU SHOULD SEE:** listing **Active**.
-
-**NEXT:** log in as `buyer`.
-
-### 13.5 · LOGIN `buyer` · FILL — Order and payment
-**GO TO:** **Marketplace** → the listing → **Details**. **ENTER:** Quantity `20` → **Add to order** · Delivery Ledger transfer → **Place order**.
-
-Then **Orders** → Open → Payment reference `UTR-` + tester no. + `-0001` · PDF evidence → **Record payment**.
-
-**YOU SHOULD SEE:** order **Placed**, total INR 10,000.00; payment **Pending confirmation**; no Confirm button for you (NEGATIVE CHECK).
-
-**NEXT:** log in as `fin1`.
-
-### 13.6 · LOGIN `fin1` · VERIFY — Payment
-**GO TO:** **Payments**. **CLICK:** **Confirm receipt** → reason `Funds received`.
-
-**YOU SHOULD SEE:** payment **Confirmed**; order **Transfer pending**.
-
-**NEXT:** log in as `qa`.
-
-### 13.7 · LOGIN `qa` · APPROVE — Delivery
-**GO TO:** **Credit ledger** → batch → Details → Transfers (row "marketplace order ORD-…"). **CLICK:** **Complete**.
-
-**YOU SHOULD SEE:** order **Completed**.
-
-**NEXT:** log in as `buyer`.
-
-### 13.8 · LOGIN `buyer` · CHECK — Holdings
-**GO TO:** **My credits**. **YOU SHOULD SEE:** 25 credits (5 left from Stage 12 + 20 bought).
-
-**NEXT:** log in as `pm`.
-
----
-
-## Stage 14 — Revenue sharing, settlement, payout
-*Flow: pm FILL → fin1 APPROVE → pm FILL → fin1 APPROVE → pm FILL → fin1 VERIFY → fin1 FILL → fin2 APPROVE → fin1 FILL → fin2 APPROVE → fin3 FILL → fin2 VERIFY.*
-
-Every Finance page has a **Project** picker — choose `Nashik tillage pilot`.
-
-### 14.1 · LOGIN `pm` · FILL — Revenue-share version
-**GO TO:** **Revenue & costs** — check one revenue record of INR 10,000. Then **Revenue sharing**:
-
-| Field | Enter |
-|---|---|
-| Farmer share % | `60` |
-| Rounding mode | HALF_UP |
-| Deduct approved project costs | unticked |
-| Effective from / to | `06/01/2026` / empty |
-| Source (agreement / clause) | `Farmer agreement AGR-2026-… clause 7` |
-
-**CLICK:** **Create draft version** → **Submit**. **YOU SHOULD SEE:** version **In review**.
-
-**NEXT:** log in as `fin1`.
-
-### 14.2 · LOGIN `fin1` · APPROVE — Revenue-share version
-**GO TO:** Revenue sharing. **CLICK:** **Approve** (reason). **YOU SHOULD SEE:** **Approved**.
-
-**NEXT:** log in as `pm`.
-
-### 14.3 · LOGIN `pm` · FILL — Farm allocation
-**GO TO:** Revenue sharing → farm allocation. **ENTER:** Monitoring period `Period 1` · Basis `Single participating farm` · North block `100` (Total: 100 %).
-
-**CLICK:** **Create draft allocation** → **Submit**.
-
-**NEXT:** log in as `fin1`.
-
-### 14.4 · LOGIN `fin1` · APPROVE — Farm allocation
-**CLICK:** **Approve** (reason). **YOU SHOULD SEE:** allocation **Approved**.
-
-**NEXT:** log in as `pm`.
-
-### 14.5 · LOGIN `pm` · FILL — Farmer bank account
-**GO TO:** Farmers → Ramesh Patil → tab **Bank**. **ENTER:** Account holder `Ramesh Patil` · Bank `State Bank of India` · Branch `Nashik Main` · Routing code `SBIN0001234` · Account number `1234567890` + tester no.
-
-**CLICK:** **Add bank account**. **YOU SHOULD SEE:** **Pending verification**.
-
-**NEXT:** log in as `fin1`.
-
-### 14.6 · LOGIN `fin1` · VERIFY — Bank account
-**GO TO:** Farmers → Ramesh Patil → Bank. **CLICK:** **Verify** → reason `Cancelled cheque checked`. **YOU SHOULD SEE:** **Verified**.
-
-**NEXT:** stay as `fin1`.
-
-### 14.7 · LOGIN `fin1` · FILL — Settlement run
-**GO TO:** **Settlements**. **ENTER:** Monitoring period `Period 1` · Currency `INR` · the approved revenue-share version · the approved farm allocation.
-
-**CLICK:** **Create run** → **Calculate** → **Verify (recompute from snapshot)** → **Submit**.
-
-**YOU SHOULD SEE:** entitlement **INR 6,000.00** for Ramesh Patil; "Reproducible"; **Pending approval**; Approve hidden for you (NEGATIVE CHECK).
-
-**NEXT:** log in as `fin2`.
-
-### 14.8 · LOGIN `fin2` · APPROVE — Settlement
-**GO TO:** Settlements → the run. **CLICK:** **Approve** → reason `Entitlements checked`. **YOU SHOULD SEE:** run **Approved**.
-
-**NEXT:** log in as `fin1`.
-
-### 14.9 · LOGIN `fin1` · FILL — Create the payout
-**GO TO:** Settlements → the run → **Create payouts**; then **Payouts** → **Submit**.
-
-**YOU SHOULD SEE:** payout **Pending approval**.
-
-**NEXT:** log in as `fin2`.
-
-### 14.10 · LOGIN `fin2` · APPROVE — Payout
-**GO TO:** **Payouts**. **CLICK:** **Approve** → reason `Approved for payment`.
-
-**YOU SHOULD SEE:** **Approved**; **Execute** not available to you (NEGATIVE CHECK).
-
-**NEXT:** log in as `fin3`.
-
-### 14.11 · LOGIN `fin3` · FILL — Pay
-**GO TO:** **Payouts**. **CLICK:** **Execute** → **Record paid** → Bank / remittance reference `NEFT-` + tester no. + `-0001` · PDF → **Upload evidence and record PAID**.
-
-**YOU SHOULD SEE:** payout **Paid**.
-
-**NEXT:** log in as `fin2`.
-
-### 14.12 · LOGIN `fin2` · VERIFY — Reconcile
-**GO TO:** **Payouts** → **Reconcile**. **ENTER:** Statement reference = the same `NEFT-…` · Statement amount `6000.00` · Currency `INR` · Statement date `10/05/2026` · PDF.
-
-**CLICK:** **Upload statement and reconcile**.
-
-**YOU SHOULD SEE:** payout **Reconciled**; settlement run **Completed**. **End of the main flow.**
-
----
-
-## If a step fails
-- **A button is missing:** you are logged in as the wrong user, or it is your own submission. Check the step's LOGIN.
-- **A red message with a code** (`SEPARATION_OF_DUTIES`, `REQUIREMENTS_NOT_MET`, …): look the code up in the Troubleshooting table of [e2e-test-guide.md](e2e-test-guide.md).
-- Report every failure with: step number, login, screen, the values entered, and the error code.
+## Stage 13: Registry (registry@ → qa@)
+
+**registry@ · Registry** → Project `Nashik soil carbon pilot` · Monitoring period `Period 1`
+1. **Record a registry account / registration**: Registry `REG` · Registry account ID `VCS-ACC-001` · Label `Verra account` · Registry credit unit `VCU` · = 1 verified unit `tCO2e` → **Record account**.
+2. Account for registration → **Start registration record** → Registry project ID `VCS-1234` · Registered on (today) · Registry evidence PDF → **Record registered**.
+3. **Registry submissions**: Registry account → **Prepare registry submission** → open it → attach a PDF ("Document sent to the registry") → **Attach** → **Freeze snapshot**.
+4. Registry submission reference `SUB-001` · Registry receipt PDF → **Record submitted**.
+5. Outcome `Accepted` · Registry response PDF → **Record response**.
+6. **Record a registry issuance**: Registry issuance ID `ISS-001` · Issuance date (today) · Unit `VCU` · Issuance statement PDF · Vintage `2026` · Whole credits = VCU_TOTAL · Serial start `VCU-0001` · Serial end (e.g. `VCU-0021`) → **Record issuance**.
+   🔎 **13.1** Try first with VCU_TOTAL + 1 → refused `QUANTITY_EXCEEDS_VERIFIED`.
+   🔎 **13.2** registry@ clicks **Confirm (second person)** → refused.
+7. **qa@** → **Confirm (second person)**. ✅ Issuance **Confirmed**; project **Issued**.
+
+## Stage 14: Credit ledger (credit@ → qa@)
+**credit@ · Credit ledger** → **Open in ledger** → **Request opening**. 🔎 credit@ tries **Confirm opening** → refused.
+**qa@** → **Confirm opening**. ✅ All credits **Available**.
+
+## Stage 15: Marketplace (buyer@, comp@, credit@, fin1@, qa@)
+1. **buyer@ · Buyer profile**: Legal name `Buyer Co Pvt Ltd` · Country `IN` · contact → **Save** → KYC documents PDF → **Upload** → **Submit for KYC review**.
+2. **comp@ · KYC review** → **Verify**.
+3. **credit@ · Listings → New listing**: the batch · Title `Nashik VCUs 2026` · Listed quantity `20` (or less than your total) · Price per credit `850` · Currency `INR` · Payment window `24` → **Create draft** → **Submit**.
+   🔎 credit@ tries **Approve** → refused. **fin1@** → **Approve**.
+4. **buyer@ · Marketplace** → **Details** → Quantity `10` → **Add to order** → **Place order**. ✅ total INR 8,500.
+5. **buyer@ · Orders** → **Open** → Payment reference `NEFT-001` + PDF → **Record payment**.
+   🔎 buyer@ can't confirm it. **fin1@ · Payments** → **Confirm receipt**.
+6. **qa@ · Orders** → **Complete delivery** (or **Credit ledger** → transfers → **Complete**). ✅ order **Completed**; buyer's **My credits** shows 10.
+7. **buyer@ · My credits** → **Request retirement**: Quantity `4` · Beneficiary `Buyer Co Pvt Ltd` · reason `Voluntary claim FY2026`.
+8. **qa@ · Credit ledger** → Retirements → Registry retirement reference `RET-001` · date · certificate PDF → **Record retirement**. ✅ buyer holds 6 available, 4 retired.
+
+## Stage 16: Revenue sharing and farmer payout (pm@, fin1–fin4)
+1. **pm@ · Revenue sharing**: Farmer share `60` · Rounding `HALF_UP` · ✔ Deduct approved project costs · Effective from `01/01/2026` · Source `Benefit-sharing agreement clause 4` → **Create draft version** → **Submit**; **fin1@** → **Approve**.
+2. **pm@** → Farm allocation: Period 1 · Basis `Allocation by area` · plot 1 `100` % → **Create draft allocation** → **Submit**; **fin1@** → **Approve**.
+3. **pm@ · Revenue & costs**: Category `FIELD_OPERATIONS` · `Soil sampling and laboratory analysis` · `1500` · `INR` · today → **Record cost** → attach invoice PDF; **fin1@** → **Approve**.
+4. **fin2@ · Settlements → New settlement run**: Period 1 · INR · the approved sharing version and allocation → **Create run** → **Calculate** → **Verify (recompute from snapshot)** → **Submit**.
+   ✅ 8,500 − 1,500 = **7,000** distributable; farmers 60 % = **4,200**; developer 2,800.
+   🔎 fin2@ tries **Approve** → refused. **fin3@** → **Approve**.
+5. **fin2@** → **Create payouts** → **Payouts** → **Submit**.
+   🔎 **fin3@** → **Approve** → refused `BANK_ACCOUNT_NOT_VERIFIED`.
+6. **pm@ · Farmers → Ramesh Patil → Bank** tab: Account holder · Bank `State Bank of India` · Routing code `SBIN0001234` · Account number → **Add bank account**; **fin1@** → **Verify**.
+7. **fin3@** → **Approve** the payout. 🔎 fin3@ tries **Execute** → refused.
+8. **fin4@** → **Execute** → **Record paid**: reference `NEFT-002` + PDF → **Upload evidence and record PAID**.
+9. **fin1@** → **Reconcile**: Statement reference `NEFT-002` · amount `4200` · `INR` · date · statement PDF → **Upload statement and reconcile**. ✅ **Matched**; payout **Reconciled**; settlement **Completed**.
+
+## Stage 17: Farmer self-service
+⚠️ There is currently **no screen to link a farmer login to the farmer profile** (the server supports it, the UI doesn't). Until that
+is added, "My payouts" can't be tested from the UI.
+
+## Final checks
+1. **Project → Status history**: Draft → Data collection → Eligibility review → Standard selected → Activity selected → Methodology review → Methodology confirmed → MRV planned → Monitoring → Calculation ready → Calculated → Verification → Verified → Issued.
+2. **Administration → Audit log**: every action with who, when and the reason.
+3. All 🔎 tests were refused.
