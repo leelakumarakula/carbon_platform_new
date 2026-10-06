@@ -107,7 +107,8 @@ function localInput(iso: string | null): string {
       } @else {
         <p class="small muted">This record is {{ label(c.status) }} and can no longer be edited by you.</p>
       }
-      <app-collection-samples [collectionId]="c.id" [collectionStatus]="c.status" />
+      <app-collection-samples [collectionId]="c.id" [collectionStatus]="c.status" [recordDepthTop]="c.actual_depth_top_cm"
+                              [recordDepthBottom]="c.actual_depth_bottom_cm" />
     }
   `,
   styles: `

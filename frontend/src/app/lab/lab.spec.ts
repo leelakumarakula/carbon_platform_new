@@ -193,4 +193,46 @@ describe('Laboratory screens', () => {
       f.destroy();
     }
   });
+
+  it('registers depth increments of one core: sends the depth, then proposes the next layer; refuses depths outside the record', async () => {
+    signIn(['lab.sample_register']);
+    const f = TestBed.createComponent(CollectionSamples);
+    f.componentRef.setInput('collectionId', 'c1');
+    f.componentRef.setInput('collectionStatus', 'ACCEPTED');
+    f.componentRef.setInput('recordDepthTop', '0.0');
+    f.componentRef.setInput('recordDepthBottom', '50.0');
+    f.detectChanges();
+    http.expectOne((r) => r.url === '/api/v1/lab/samples' && r.params.get('field_collection_id') === 'c1').flush([]);
+    await f.whenStable();
+    f.detectChanges();
+    const el = f.nativeElement as HTMLElement;
+    const top = el.querySelector<HTMLInputElement>('[data-testid="sample-depth-top"]')!;
+    const bottom = el.querySelector<HTMLInputElement>('[data-testid="sample-depth-bottom"]')!;
+    expect([top.value, bottom.value]).toEqual(['0', '50']);            // defaults to the field record's depth
+    expect(el.textContent).toContain('Field record depth 0–50 cm');
+
+    const type = async (input: HTMLInputElement, value: string) => {
+      input.value = value;
+      input.dispatchEvent(new Event('input'));
+      f.detectChanges();
+      await f.whenStable();
+      f.detectChanges();
+    };
+    await type(bottom, '60');                                           // deeper than the record: blocked before sending
+    expect(el.querySelector('[data-testid="depth-problem"]')?.textContent).toContain('within the field record depth');
+    expect(el.querySelector<HTMLButtonElement>('[data-testid="register-sample"]')?.disabled).toBe(true);
+
+    await type(bottom, '30');
+    expect(el.querySelector('[data-testid="depth-problem"]')).toBeNull();
+    el.querySelector<HTMLButtonElement>('[data-testid="register-sample"]')!.click();
+    const post = http.expectOne((r) => r.method === 'POST' && r.url === '/api/v1/lab/samples');
+    expect(post.request.body).toMatchObject({ field_collection_id: 'c1', depth_top_cm: 0, depth_bottom_cm: 30 });
+    post.flush({ id: 's1' });
+    http.expectOne((r) => r.method === 'GET' && r.url === '/api/v1/lab/samples').flush([]);
+    await f.whenStable();
+    f.detectChanges();
+    await f.whenStable();
+    f.detectChanges();
+    expect([top.value, bottom.value]).toEqual(['30', '50']);           // the next layer of the same core
+  });
 });
