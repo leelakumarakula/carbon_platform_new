@@ -111,7 +111,7 @@ Verification (exit gate, 2 Oct 2026)
   `alembic check`: no drift.
 - Frontend: **35 Vitest tests passed** (6 files). Production build OK (initial bundle 732 kB, 172 kB
   transferred).
-- E2E smoke test (`frontend/e2e/smoke.cjs`, headless Chrome) passed:
+- E2E smoke test (`e2e/smoke.cjs`, now in the `carbon_project_frontend` repository; headless Chrome) passed:
   - admin pages;
   - project manager: the farm polygon renders and the overlap flag is visible;
   - a boundary drawn in the UI measured 5.0443 ha by SQL Server;

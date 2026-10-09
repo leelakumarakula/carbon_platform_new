@@ -3,7 +3,7 @@
 ## Local
 
 See the README: native setup (verified) or `docker-compose.yml` (SQL Server, Redis, MinIO, backend, nginx
-frontend; written but not yet run on the development machine).
+frontend built from the sibling repository `../carbon_project_frontend`; written but not yet run on the development machine).
 
 ## Production checklist
 

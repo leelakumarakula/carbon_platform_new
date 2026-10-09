@@ -40,7 +40,7 @@ Rules followed: routes contain no DB logic; services take an explicit `RequestCo
 records who, from where, which request and why; material changes and their audit rows commit in one
 transaction.
 
-## Frontend layout (`frontend/src/app`)
+## Frontend layout (`src/app` in the `carbon_project_frontend` repository)
 
 | Folder | Responsibility |
 |---|---|

@@ -8,7 +8,7 @@ Work through the stages in order, top to bottom. Each step says **who** does it,
 
 **Servers.**
 - Backend on port 8000.
-- `npx ng serve` in `frontend`.
+- `npx ng serve` in the `carbon_project_frontend` repository (checked out next to this one).
 - Open http://localhost:4200.
 
 **Tips.**
