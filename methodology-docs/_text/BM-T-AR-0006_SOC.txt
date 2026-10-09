@@ -1,0 +1,594 @@
+=== p1
+ 
+ 
+ 
+ 
+ 
+ 
+METHODOLOGICAL TOOL 
+ 
+BMT-T-AR-0006  
+Tool for estimation of change in soil organic carbon 
+stocks due to the implementation of A/R ICM project 
+activities  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Publication Date: 27 March 2025 
+Version 1.0 
+ 
+ 
+  
+ 
+ 
+
+=== p2
+ 
+Table of Contents 
+1. INTRODUCTION ........................................................................................................ 3 
+2. DEFINITIONS ............................................................................................................. 3 
+3. SCOPE & APPLICABILITY ....................................................................................... 3 
+3.1. Scope ............................................................................................................. 3 
+3.2. Applicability .................................................................................................... 3 
+3.3. Assumptions .................................................................................................. 4 
+3.4. Parameters..................................................................................................... 4 
+3.5. Methodological Tool Approval Date ............................................................... 4 
+4. ESTIMATING CHANGE IN SOC STOCK ................................................................. 4 
+ 
+ 
+  
+=== p3
+1. Introduction 
+1. This tool provides an approach to estimate change in carbon stock in soil organic carbon 
+(SOC) resulting from an afforestation or reforestation (A/R) project activity under the Indian 
+Carbon Market (ICM). 
+2. Definitions 
+2. This tool uses the following specific definition: 
+“Soil disturbance” is an anthropogenic activity that results in release of soil organic carbon 
+into the atmosphere, e.g. ploughing, ripping, scarification, digging of pits and trenches, 
+stump removal, drainage of soil, etc. 
+3. Scope & Applicability 
+3.1. Scope 
+3. This tool can be used for estimation of change in carbon stock in soil organic carbon (SOC) 
+due to implementation of an A/R ICM project activity. 
+3.2. Applicability 
+4. This tool is applicable when the areas of land, the baseline scenario, and the project 
+activity meet the following conditions: 
+(a) The areas of land to which this tool is applied: 
+(i) Do not fall into wetland 1 category; or 
+(ii) Do not contain organic soils as defined in “Annex A: glossary” of the latest 
+version of IPCC GPG LULUCF; 
+(iii) Are not subject to any of the land management practices and application of 
+inputs as listed in the Tables 1 and 2; 
+(b) The A/R ICM project activity meets the following conditions: 
+(i) Litter remains on site and is not removed in the A/R ICM project activity; and 
+(ii) Soil disturbance attributable to the A/R ICM project activity, if any, is: 
+a. In accordance with appropriate soil conservation practices, e.g. 
+follows the land contours; 
+b. Limited to soil disturbance for site preparation before planting and 
+such disturbance is not repeated in less than twenty years. 
+ 
+1 “Wetlands” as a land category is defined in Annex A: Glossary of IPCC, Good Practice Guidance for Land 
+Use, Land-use Change and Forestry (IPCC, GPG-LULUCF). 
+=== p4
+3.3. Assumptions 
+5. This tool applies the following assumptions for estimation of change in SOC stock:  
+(a) Site preparation and planting take place within a year of each other;  
+(b) Implementation of an A/R ICM project activity increases the SOC content of the 
+lands from the pre-project level to the level that is equal to the steady-state SOC 
+content under native vegetation;  
+(c) The increase in SOC content in the project scenario takes place at a constant rate 
+over a period of 20 years from the year of planting. 
+3.4. Parameters 
+6. This tool provides procedures to determine the following parameter: 
+Table 1: Parameter determined by the tool 
+Parameter SI Unit Description 
+∆SOCAL,t t CO2e Change in SOC stock in areas of land meeting the 
+above applicability conditions, in year t 
+ 
+3.5. Methodological Tool Approval Date 
+7. The date of adoption of this document shall be effective from 27 March 2025. 
+4. Estimating Change in SOC Stock 
+8. To estimate the change in SOC stock in the project scenario, the areas of land meeting 
+the applicability conditions of the tool are stratified2 according to: 
+(a) Climate region and soil types given in Table 3; 
+(b) Pre-project management activities on croplands given in Tables 4 and 5; and 
+(c) Pre-project management activities on grasslands given in Table 6. 
+9. The initial SOC stock at the start of the project is estimated as follows: 
+SOCINITIAL,i = SOCREF,i * fLU,i * fMG,i * fIN,i                                                                            Equation (1) 
+Where: 
+SOCINITIAL,i = SOC stock at the beginning of the A/R ICM project 
+activity in stratum i of the areas of land; t C ha-1 
+SOCREF,i = Reference SOC stock corresponding to the 
+reference condition in native lands (i.e. non-
+degraded, unimproved lands under native 
+vegetation - normally forest) by climate region and 
+ 
+2 This stratification is limited to the application of this tool only. 
+=== p5
+soil type applicable to stratum i of the areas of land; 
+t C ha-1 
+fLU,i = Relative stock change factor for baseline land-use 
+in stratum i of the areas of land; dimensionless 
+fMG,i = Relative stock change factor for baseline 
+management regime in stratum i of the areas of 
+land; dimensionless 
+fIN,i                                                                            = Relative stock change factor for baseline input 
+regime (e.g. crop residue returns, manure) in 
+stratum i of the areas of land; dimensionless 
+i = 1, 2, 3, …strata of areas of land; dimensionless 
+10. The values of SOCREF,i , fLU,i , fMG,i  and fIN,i  are taken from the Tables 3 - 6 of this tool, unless 
+transparent and verifiable information can be provided to justify different values.     
+11. For each stratum of the areas of land which is subjected to soil disturbance attributable to 
+project activity and for which the total area disturbed, over and above the area disturbed 
+in the baseline (if any), is greater than 10% of the area of the stratum, the following carbon 
+loss is accounted:    
+SOCLOSS, i = SOCINITIAL,i * 0.1                                                                                           Equation (2)    
+For all other strata:      
+SOCLOSS, i = 0                                                                                                                  Equation (3)    
+Where: 
+SOCLOSS, i = Loss of SOC caused by soil disturbance attributable 
+the A/R ICM project activity, in stratum i of the areas 
+of land; t C ha-1 
+0.1 = The approximate proportion of SOC lost within the 
+first five years from the year of site preparation 
+i = 1, 2, 3, … strata of areas of land; dimensionless 
+12. The rate of change in SOC stock in project scenario until the steady-state SOC content is 
+reached is estimated as follows: 
+dSOCt,i = 0 for t < tPREP,i                                                                                                       Equation (4) 
+dSOCt,i = -  SOCLOSS, i
+ଵ ௬௘௔௥   for t = tPREP,i                                                                                               Equation (5) 
+dSOCt,i = 
+SOCREF,i - (SOCINITIAL,i - SOCLOSS, i ) 
+20 years   for tPREP,i < t ≤ tPREP,i + 20                                           Equation (6) 
+where: 
+=== p6
+dSOCt,i = The rate of change in SOC stock in stratum i of the 
+areas of land, in year t; t C ha-1 yr-1 
+tPREP,i                                                                                                       = The year in which first soil disturbance takes place 
+in stratum i of the areas of land 
+SOCLOSS, i = Loss of SOC caused by soil disturbance attributable 
+the A/R ICM project activity, in stratum i of the areas 
+of land; t C ha-1 
+SOCREF,i = Reference SOC stock corresponding to the 
+reference condition in native lands (i.e. non-
+degraded, unimproved lands under native 
+vegetation - normally forest) by climate region and 
+soil type applicable to stratum i of the areas of land; 
+t C ha-1 
+SOCINITIAL,i = SOC stock at the beginning of the A/R ICM project 
+activity in stratum i of the areas of land; t C ha-1 
+i = 1, 2, 3, … strata of areas of land; dimensionless 
+t = 1, 2, 3, … years elapsed since the start of the A/R  
+ICM project activity 
+13. Considering uncertainties and inherent limitation of the precision of a factor-based 
+estimation used in this tool, value of the rate of change of SOC stock is not accounted as 
+more than 0.8 t C ha-1 yr-1, that is: 
+If dSOCt,i  > 0.8 t C ha-1 yr-1 then dSOCt,i  = 0.8 t C ha-1 yr-1                                          Equation (7) 
+14. The change in SOC stock for all the strata of the areas of land, in year t, is calculated as: 
+∆SOCAL,t  = 
+ସସ
+ଵଶ * ∑i Ai * dSOCt,i * 1 year                                                                           Equation (8) 
+where: 
+∆SOCAL,t   = Change in SOC stock in areas of land meeting the 
+applicability conditions of this tool, in year t; t CO2e 
+Ai = The area of stratum i of the areas of land; ha 
+dSOCt,i = The rate of change in SOC stocks in stratum i of the 
+areas of land; t C ha-1 yr-1 
+i = 1, 2, 3, … strata of areas of land; dimensionless 
+Table 2: Baseline cropland management practices under which the tool is not applicable 
+=== p7
+Temperature / 
+Moisture Regime 
+Land Use Management Inputs 
+Boreal Long-term cultivated 
+cropland 
+Full tillage High with manure 
+Reduced tillage High with manure 
+No-till High without manure 
+High with manure 
+Short-term or set aside 
+cropland 
+Full tillage High with manure 
+Reduced tillage High with manure 
+No-till High without manure 
+High with manure 
+Temperate, cold, dry Long-term cultivated 
+cropland 
+Full tillage High with manure 
+Reduced tillage High with manure 
+No-till High with manure 
+Short-term or set aside 
+cropland 
+Full tillage High with manure 
+Reduced tillage High with manure 
+No-till Medium 
+High without manure 
+Temperate, cold, moist Long-term cultivated 
+cropland 
+Reduced tillage High with manure 
+No-till High with manure 
+Short-term or set aside 
+cropland 
+Full tillage High with manure 
+Reduced tillage High with manure 
+No-till High without manure 
+High with manure 
+Temperate, warm, dry Long-term cultivated 
+cropland 
+Full tillage High with manure 
+Reduced tillage High with manure 
+No-till High with manure 
+Short-term or set aside 
+cropland 
+Full tillage High with manure 
+Reduced tillage High with manure 
+No-till Medium 
+High without manure 
+Temperate, warm, 
+moist 
+Long-term cultivated 
+cropland 
+Reduced tillage High with manure 
+No-till High with manure 
+Short-term or set aside 
+cropland 
+Full tillage High with manure 
+Reduced tillage High with manure 
+No-till High without manure 
+High with manure 
+Tropical, dry Short-term or set aside 
+cropland 
+Full tillage High with manure 
+Reduced tillage Medium  
+High without manure 
+High with manure 
+No-till All cases 
+Tropical, moist Short-term or set aside 
+cropland 
+Full tillage High with manure 
+Reduced tillage High without manure 
+High with manure 
+No-till High without manure 
+High with manure 
+Tropical, montane Long-term cultivated 
+cropland 
+No-till High with manure 
+Short-term or set aside 
+cropland 
+Full tillage High with manure 
+Reduced tillage High without manure 
+High with manure 
+No-till Medium 
+High without manure 
+High with manure 
+=== p8
+Tropical, wet Short-term or set aside 
+cropland 
+Full tillage High with manure 
+Reduced tillage High without manure 
+High with manure 
+No-till High without manure 
+High with manure 
+Table 3: Baseline grassland management practices under which the tool is not applicable  
+Temperature / Moisture 
+Regime 
+Management Inputs  
+Boreal Improved All 
+Non-degraded All 
+Moderately degraded High 
+Temperate, cold, dry Improved All 
+Non-degraded All 
+Moderately degraded High 
+Temperate, cold, moist Improved All 
+Non-degraded All 
+Moderately degraded High 
+Temperate, warm, dry Improved All 
+Non-degraded All 
+Moderately degraded High 
+Temperate, warm, moist Improved All 
+Non-degraded All 
+Moderately degraded High 
+Tropical, dry Improved All 
+Non-degraded All 
+Tropical, moist Improved All 
+Non-degraded All 
+Moderately degraded High 
+Tropical, montane Improved All 
+Non-degraded All 
+Moderately degraded High 
+Tropical, wet Improved All 
+Non-degraded High 
+Moderately degraded High 
+Table 4: Default reference SOC stocks (SOC REF) for mineral soils3 (tC ha-1 in 0-30 cm depth) 
+Climate 
+region 
+HAC soils (a) LAC soils (b) Sandy soils (c) Spodic soils 
+(d) 
+Volcanic soils 
+(e) 
+Boreal 68 NA 10 117 20 
+Cold 
+temperate, dry 
+50 33 34 NA 20 
+Cold 
+temperate, 
+moist 
+95 85 71 115 130 
+Warm 
+temperate, dry 
+38 24 19 NA 70 
+Warm 
+temperate 
+88 63 34 NA 80 
+Tropical, dry 38 35 31 NA 50 
+ 
+3 Adapted from 2006 IPCC Guidelines for National Greenhouse Gas Inventories 
+=== p9
+Climate 
+region 
+HAC soils (a) LAC soils (b) Sandy soils (c) Spodic soils 
+(d) 
+Volcanic soils 
+(e) 
+Tropical, moist 65 47 39 NA 70 
+Tropical, wet 44 60 66 NA 130 
+Tropical 
+montane 
+88 63 34 NA 80 
+(a) Soils with high activity clay (HAC) minerals are lightly to moderately weathered soils, which are dominated by 2:1 
+silicate clay minerals (in the World Reference Base for Soil Resources (WRB) classification these include Leptosols, 
+Vertisols, Kastanozems, Chernozems, Phaeozems, Luvisols, Alisols, Albeluvisols, Solonetz, Calcisols, Gypsisols, 
+Umbrisols, Cambisols, Regosols; in USDA classification includes Mollisols, Vertisols, high-base status Alfisols, 
+Aridisols, Inceptisols);  
+(b) Soils with low activity clay (LAC) minerals are highly weathered soils, dominated by 1:1 clay minerals and amorphous 
+iron and aluminium oxides (in WRB classification includes Acrisols, Lixisols, Nitisols, Ferralsols, Durisols; in USDA 
+classification includes Ultisols, Oxisols, acidic Alfisols);  
+(c) Includes all soils (regardless of taxonomic classification) having > 70% sand and < 8% clay, based on standard 
+textural analyses (in WRB classification includes Arenosols; in USDA classification includes Psamments);  
+(d) Soils exhibiting strong podzolization (in WRB classification includes Podzols; in USDA classification Spodosols);  
+(e) Soils derived from volcanic ash with allophanic mineralogy (in WRB classification Andosols; in USDA classification 
+Andisols) 
+Table 5: Relative stock change factors for different management activities on cropland (net effect 
+over a period of 20 years)4 
+Factor type Level Temperature 
+regime 
+Moisture 
+regime 
+Factor 
+value 
+Description and 
+criteria 
+Land use (fLU) Long-term 
+cultivated 
+Temperate / 
+Boreal 
+Dry 0.80 Area has been 
+continuously 
+managed for crops 
+for more than 20 
+years 
+Moist 0.69 
+Tropical Dry 0.58 
+Moist/Wet 0.48 
+Tropical montane n/a 0.64 
+Land use (fLU) Short-term 
+cultivated  
+(< 20 yrs) or 
+set aside  
+(< 5 years) 
+Temperate / 
+Boreal and 
+Tropical 
+Dry 0.93 Area has been 
+managed for crops 
+for less than 20 
+years and/or the 
+area is cropland 
+that has been in a 
+fallow state for less 
+than five years at 
+any point during 
+the last 20 years 
+Moist/Wet 0.82 
+Tropical montane n/a 0.88 
+Management 
+(fMG) 
+Full tillage All Dry and 
+Moist/Wet 
+1.00 Substantial soil 
+disturbance with 
+full inversion and/or 
+frequent (within-
+year) tillage 
+operations. At 
+planting time, little 
+(e.g. <30%) of the 
+surface is covered 
+by residues 
+ 
+ 
+4 Ibid 
+=== p10
+Factor type Level Temperature 
+regime 
+Moisture 
+regime 
+Factor 
+value 
+Description and 
+criteria 
+Management 
+(fMG) 
+Reduced 
+tillage 
+Temperate / 
+Boreal 
+Dry 1.02 Primary and/or 
+secondary tillage 
+but with reduced 
+soil disturbance 
+(usually shallow 
+and without full soil 
+inversion). 
+Normally leaves 
+surface with >30% 
+coverage by 
+residues at planting 
+Moist 1.08 
+Tropical Dry 1.09 
+Moist / Wet 1.15 
+Tropical montane n/a 1.09 
+Table 6: Relative stock change factors for different levels of nutrient input on cropland (net effect 
+over a period of 20 years)5 
+Factor type Level Temperature 
+regime 
+Moisture 
+regime 
+Factor 
+value 
+Description and 
+criteria 
+Input (fIN) Low Temperate / 
+Boreal 
+Dry 0.95 There is removal of 
+residues (via 
+collection or 
+burning), or frequent 
+bare-fallowing, or 
+production of crops 
+yielding low residues 
+(e.g. vegetables, 
+tobacco, cotton), or 
+no mineral 
+fertilization or N-
+fixing crops 
+Moist 0.92 
+Tropical Dry 0.95 
+Moist / Wet 0.92 
+Tropical 
+montane 
+n/a 0.94 
+Input (fIN) Medium All Dry and Moist/ 
+Wet 
+1.00 All crop residues are 
+returned to the field. 
+If residues are 
+removed then 
+supplemental 
+organic matter (e.g. 
+manure) is added. 
+Additionally, mineral 
+fertilization or N-
+fixing crop rotation is 
+practised 
+Input (fIN) High without 
+manure 
+Temperate/ 
+Boreal and 
+Tropical 
+Dry 1.04 Represents 
+significantly greater 
+crop residue inputs 
+over medium C input 
+cropping systems 
+due to additional 
+practices, such as 
+production of high 
+residue yielding 
+crops, use of green 
+manures, cover 
+crops, improved 
+Moist/ Wet 1.11 
+Tropical 
+Montane 
+n/a 1.08 
+ 
+5 Ibid 
+=== p11
+Factor type Level Temperature 
+regime 
+Moisture 
+regime 
+Factor 
+value 
+Description and 
+criteria 
+vegetated fallows, 
+irrigation, frequent 
+use of perennial 
+grasses in annual 
+crop rotations, but 
+without manure 
+applied 
+Table 7: Relative stock change factors ( fLU, fMG, and fIN) for grassland management (net effect over 
+a period of 20 years)6 
+Factor type Level Climate regime Factor 
+value 
+Description 
+Land use (fLU) All All 1.00 All permanent grassland is 
+assigned a land-use factor of 
+1 
+Management (fMG) Non-degraded 
+grassland 
+All 1.00 Non-degraded and 
+sustainably managed 
+grassland, but without 
+significant management 
+improvements 
+Management (fMG) Moderately 
+degraded 
+grassland 
+Temperate/Boreal 0.95 Overgrazed or moderately 
+degraded grassland, with 
+somewhat reduced 
+productivity (relative to the 
+native or nominally managed 
+grassland) and receiving no 
+management inputs 
+Tropical 0.97 
+Tropical Montane 0.96 
+Management (fMG) Severely 
+degraded 
+All 0.70 Lands are identified as 
+degraded lands 
+Input (fIN) Low/Medium All 1.00 All grassland without input of 
+fertilizers is assigned an 
+input factor of 1 
+High All 1.11 Grasslands with direct 
+application of fertilizers - 
+organic or inorganic 
+References 
+IPCC. Good Practice Guidance for Land Use, Land-Use Change and Forestry, prepared by the 
+National Greenhouse Gas Inventories Programme, Jim Penman, Michael Gytarsky, Taka Hiraishi, 
+Thelma Krug, Dina Kruger, Riitta Pipatti, Leandro Buendia, Kyoko Miwa, Todd Ngara (eds). 
+Published: IGES, Japan.  
+< http://www.ipcc-nggip.iges.or.jp/public/gpglulucf/gpglulucf.html> 
+  
+ 
+ 
+=== p12
+Revision/Changes in the Document 
+ 
+Version Date Description 
+ 
+1.0 March 2025 Initial Adoption 
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   

@@ -1,0 +1,889 @@
+METHODOLOGY  ACTIVITY MODULE
+
+SOIL ORGANIC CARBON ACTIVITY
+MODULE FOR APPLICATION OF
+ORGANIC SOIL IMPROVERS FROM
+PULP AND PAPER MILL SLUDGES
+
+SDG 13
+
+Publication Date 7.03.2022
+Version 1.0
+Next Planned Update 7.03.2025
+
+Contact details
+The Gold Standard Foundation
+International Environment House 2
+Chemin de Balexert 7-9
+1219 Châtelaine Geneva, Switzerland
+Tel: +41 22 788 70 80
+Email: standards@goldstandard.org
+
+SUMMARY
+
+This Soil Organic Carbon (SOC) Activity Module presents requirements and guidance
+to monitor and calculate the climate impact of the application of organic soil improvers
+from pulp and paper mill sludges. The module applies to activities that involve
+application of organic soil improvers from pulp and paper mill sludges to improve soil
+organic matter content in agricultural systems thus increasing soil organic carbon
+content (creating a soil carbon sink).
+
+The Activity module is applicable to projects located in member states of European
+Union (EU). The project developer seeking application of this module to project
+activities located outside the member states of European Union (EU) shall seek
+revision to methodology.
+
+                                        Climate Security and Sustainable Development
+METHODOLOGY ­ SOC Activity Module Pulp and Paper v.1.0
+
+Organic soil improvers are processed pulp and paper mill sludges and contain a large
+amount of organic C and nutrients. Organic soil improvers from pulp and paper mill
+sludges may be utilized in agriculture fields as soil improvers to increase soil organic
+matter, soil organic carbon, improve soil physical properties, provide nutrients, and
+increase soil pH. Positive effects of organic soil improvers from pulp and paper mill
+sludges on soil quality are primarily due to increased soil organic matter, aggregation,
+water holding capacity, infiltration rate, and cation exchange capacity.
+
+According to pulp and paper mill sludges are produced from primary and secondary
+treatment of wastes derived from virgin wood fiber sources, recycled paper products,
+and non-wood fibers. Sludges and sludge composts may be utilized in agriculture as
+soil improvers to increase soil organic matter, soil organic carbon, improve soil
+physical properties, provide nutrients, and increase soil pH. According to the study by
+Camberato et al, annual or biennial applications of pulp and paper sludge at  45 Mg
+ha­1 increased soil C throughout the 5-year study. The increases in soil C at the end
+of the study were directly proportional to the cumulative applied sludge C. For
+example, annual application of sludge at 225 Mg ha­1 more than doubled soil C from
+its initial level of 4%1.
+
+Natural Resources Institute Finland has done research on the stability of pulp and
+paper mill sludge carbon in soils. They estimate (based on analyses, lab & field
+experiments & modelling) that 53 % of the carbon is consumed by soil microbes
+during the initial decomposition and 47 % of it is resistant to microbial decomposition.
+If these industrial residues aren't used as soil improvers, they are typically incinerated
+by pulp and paper mills, especially in Europe. In other parts of the world landfilling the
+industrial residues can still be the baseline situation. For example in Sweden, the
+common practice is incineration of bio-sludge with energy recovery followed by
+landfilling of ash2. Generally in Europe, due to legislation and increased taxes, landfills
+are quickly being eliminated as a final destination for pulp and paper production
+wastes, and incineration with energy recovery is becoming the main waste recovery
+method3. The moisture content of sludges is so high (60-75 %) that they have no
+energy value, and fossil or renewable fuels are needed to aid the incineration process.
+In the baseline scenario, no soil improvement fibers from industrial residues are used
+as soil improvers.
+
+Relevant GHGs are CO2 and CH4. Applicable quantification approaches may include 1)
+on-site, direct measurement of baseline and project SOC stocks, or 2) peer-reviewed
+publications to quantify Baseline Scenario SOC stocks, other emissions reductions,
+
+1 Camberato et al. 2006. Pulp and paper mill by-products as soil
+amendments and plant nutrient sources. https://cdnsciencepub.com/doi/pdf/10.4141/S05-120
+2 Mohammadi, A, Sandberg, M, Venkatesh, G, et al. Environmental analysis of producing
+biochar and energy recovery from pulp and paper mill biosludge. Journal of Industrial Ecology
+2019; 23: 1039 -1051. https://doi.org/10.1111/jiec.12838
+3 Monte MC, Fuente E, Blanco A, Negro C. Waste management from pulp and paper production
+in the European Union. Waste Manag. 2009 Jan;29(1):293-308. doi:
+10.1016/j.wasman.2008.02.002. Epub 2008 Apr 10. PMID: 18406123.
+
+Climate Security and Sustainable Development                                                   2
+METHODOLOGY ­ SOC Activity Module Pulp and Paper v.1.0
+
+and Project Scenario impact. Project developers shall apply the most specific approach
+possible with the data available, giving preference to local data sources and models.
+A project developer using this Activity Module may follow one of the three approaches
+outlined in the SOC framework methodology to identify, measure and quantify GHG
+emissions reductions/removals attributable to the project activities in an ex post
+fashion (SDG 13) following. However, this activity module recommends the approach
+1 as preferred approach whereas the user may apply approach 2 providing sufficient
+justifications in line with the SOC framework methodology.
+Documentation of contributions to carbon sequestration and greenhouse gas reduction
+(SDG 13) shall follow the requirements defined in the SOC Framework Methodology.
+A project applicant using this Activity Module may identify, measure and quantify
+further beneficial ecosystem services towards other Sustainable Development Goals
+(SDGs), including:
+
+    i. Water supply and purification (SDG 6),
+    ii. Zero hunger (food security/stabilization of yield) (SDG 2),
+    iii. Responsible consumption and production (SDG 12),
+    iv. Life below water (SDG 14), and
+    v. Life on Land (biodiversity) (SDG 15).
+The SDGs listed above are expected to have positive contributions from projects
+applying this methodology. However, contribution to the specific SDGs including
+above shall be specified at the project level following Principles & Requirements.
+
+ACKNOWLEDGEMENT
+
+Developer Name: Soilfood Oy
+
+Climate Security and Sustainable Development                                            3
+METHODOLOGY ­ SOC Activity Module Pulp and Paper v.1.0
+
+TABLE OF CONTENTS
+
+               Definitions and References ............................................................................ 5
+               1.1 | Definitions........................................................................................ 5
+               1.2 | References ....................................................................................... 5
+
+             Scope, applicability, and entry into force ........................................................... 5
+             2.1 | Scope .............................................................................................. 5
+             2.2 | Applicability ...................................................................................... 5
+             2.3 | Entry into force ................................................................................. 7
+
+             Additionality ................................................................................................. 7
+             Project Boundaries ........................................................................................ 7
+             4.1 | Spatial boundary: .............................................................................. 7
+             4.2 | Temporal boundary:........................................................................... 8
+             4.3 | Carbon Pools .................................................................................... 8
+
+             Emission Reduction Quantification Approach....................................................... 9
+             5.1 | Approaches for baseline and project scenario quantification ...................... 9
+
+             Baseline Scenario .........................................................................................10
+             6.1 | General requirements ........................................................................10
+             6.2 | Baseline Calculations .........................................................................11
+
+             Project Scenario ...........................................................................................11
+             7.1 | General requirements ........................................................................11
+             7.2 | Project Calculations...........................................................................12
+             7.3 | Other emissions ...............................................................................12
+
+             Uncertainty .................................................................................................14
+             Other Emissions ...........................................................................................14
+            Leakage ......................................................................................................14
+            Monitoring ...................................................................................................15
+             Data and parameters not monitored ................................................................15
+             Data and parameters monitored......................................................................16
+
+Climate Security and Sustainable Development                                                                                    4
+METHODOLOGY ­ SOC Activity Module Pulp and Paper v.1.0
+
+      Definitions and References
+
+1.1 | Definitions
+
+1.1.1 | In addition to the terms and definitions listed in SOC Framework Methodology,
+            the following additional definitions shall apply, specific to this SOC Activity
+            Module.
+
+Term                         Definition
+
+Pulp and paper mill sludges  Organic waste residue streams from pulp and paper mills.
+Organic soil improvers
+                             Organic soil improver products that are processed, as required,
+                             from fiber residues from pulp and paper industries. These
+                             products are used to improve soil in agricultural systems,
+                             increasing soil organic carbon content (creating a soil carbon
+                             sink).
+
+1.2 | References
+1.2.1 | References are included as footnotes in the text.
+
+       Scope, applicability, and entry into force
+
+2.1 | Scope
+
+2.1.1 | This activity module is applicable to project activities that use soil improvers
+            produced by processing and/or recycling of pulp and paper mill sludges from
+            industrial operations in pulp and paper manufacturing to increase soil organic
+            matter and soil organic carbon and improve soil physical properties without
+            negatively affecting the soil health.
+
+2.1.2 | This activity module is not applicable to reduced or avoided emissions from
+            organic waste residue streams handling and management. To quantify and
+            monitor the reduced or avoided GHG emissions from the avoided incineration
+            or landfilling of the industrial residues, if applicable, the project developer
+            shall apply an approved GS methodology and applicable GS4GG requirements
+            for such emissions.
+
+2.2 | Applicability
+
+2.2.1 | A project applying this Activity Module shall comply with the applicability
+            conditions specified below and within the SOC Framework Methodology. In
+            addition, the project shall comply with applicable Land Use & Forests Activity
+            Requirements (hereafter LUF Activity Requirements) and the Gold Standard
+            for the Global Goals Principles & Requirements. (hereafter Principles &
+            Requirements):
+
+2.2.2 | The Activity module is applicable under the following conditions:
+
+                   Climate Security and Sustainable Development                               5
+METHODOLOGY ­ SOC Activity Module Pulp and Paper v.1.0
+
+            a. Geographic location: Projects are eligible in EU member countries4. The
+                 project developer may submit a request for applicability expansion by
+                 submitting supporting peer reviewed literature and supporting studies.
+
+Table ­ List of relevant publications (List is non-exhaustive)
+
+AUTHORS TITLE                                                 EU CANADA & CHILE
+                                                                      USA
+
+Camberato Pulp and paper mill by-products as soil                *
+et al (2006) amendments and plant nutrient sources
+
+Gallardo et  Effect of pulp mill sludge on soil
+
+al (2012)    characteristics, microbial community and                   *
+
+             vegetal production of Lolium Perenne
+
+Kätterer et al Roots contribute more to refractory soil
+
+(2011)       organic matter than above-ground crop            *
+             residues, as revealed by a long-term field
+
+             experiment
+
+Kinnula et al Effects of mixed pulp mill sludges on crop      *
+
+(2020)       yields and quality
+
+Mohammadi Environmental performance of end-of-life
+
+et al (2019) handling alternatives for paper-and-pulp-mill    *
+                      sludge: Using digestate as a source of
+
+             energy or for biochar production
+
+Monte et al Waste management from pulp and paper              *
+
+(2009)       production in the European Union
+
+Rasa et al Pulp and paper mill sludges decrease soil          *
+
+(2020)       erodibility
+
+        b. Soil type: Project Area(s) shall not be comprised of organic soils
+            (Histosols) as defined by the World Reference Base for Soil Resources
+            (FAO 2015)5. Only mineral soil types are eligible6,7.
+
+        c. The certified Project Area shall be limited to eligible areas, excluding
+            riparian or other buffer zones located within such eligible areas, and
+
+        4 Other geographical locations: revisions may be requested by providing relevant peer
+        reviewed application.
+
+        5 World reference base for soil resources 2014 (Update 2015):
+        http://www.fao.org/3/i3794en/I3794en.pdf
+        6 https://esdac.jrc.ec.europa.eu/content/european-soil-database-v20-vector-and-attribute-data
+
+        7 https://esdac.jrc.ec.europa.eu/content/soil-atlas-europe
+
+                          Climate Security and Sustainable Development                                 6
+METHODOLOGY ­ SOC Activity Module Pulp and Paper v.1.0
+
+                 excluding areas set aside for conservation in accordance with LUF Activity
+                 Requirements.
+2.2.3 | Under this activity module, organic soil improvers processed from pulp and
+            paper mill sludges are applied to improve soil in agricultural systems,
+            increasing soil organic carbon content (creating a soil carbon sink). The
+            organic soil improvers must
+                 a. be processed from pulp and paper mill sludges
+                 b. be eligible for agricultural use according to local legislation
+                 c. meet quality criteria set in local legislation8 for fertilizer application (not
+
+                      limited to e.g. heavy metal content and microbiological quality as
+                      applicable)
+                 d. be non-fossil fraction of an industrial waste9.
+
+2.3 | Entry into force
+
+2.3.1 | The date of entry into force of this methodology is 7th March 2022.
+
+       Additionality
+
+3.1.1 | All Gold Standard projects shall demonstrate that they would not have been
+            implemented without the benefits of carbon revenue. Specific rules and
+            guidelines on how to assess additionality can be found in the Additionality
+            section LUF Activity Requirements and the AGR Additionality (AGR projects)
+            Template. These include optional means of demonstrating additionality
+            including CDM Tools, Activity Penetration in the local area, or inclusion of the
+            activity on a Positive List.
+
+3.1.2 | Additionality assessment: The relevant Baseline Scenario is the continuation
+            of historical cropping practices that have been practiced in at least the last 5
+            years before the project start date (business as usual (BAU) where, in the
+            absence of the Project Activity, conventional soil amendment (use of manure
+            and crop residues) use in the project boundary is done in a business as usual
+            (BAU) manner. The Baseline Scenario should consider the level of national
+            ambition in encouraging agricultural best practices to reduce GHG emissions.
+
+       Project Boundaries
+
+4.1 | Spatial boundary:
+
+4.1.1 | For spatial boundaries, rules and requirements defined in the SOC Framework
+            Methodology apply.
+
+8 REGULATION (EU) 2019/1009 OF THE EUROPEAN PARLIAMENT AND OF THE COUNCIL of 5
+June 2019 laying down rules on the making available on the market of EU fertilising products
+and amending Regulations (EC) No 1069/2009 and (EC) No 1107/2009 and repealing
+Regulation (EC) No 2003/2003 https://eur-lex.europa.eu/legal-
+content/EN/TXT/PDF/?uri=CELEX:32019R1009&from=EN and possible national regulation
+
+9 CDM Definition of renewable biomass https://cdm.unfccc.int/EB/023/eb23_repan18.pdf
+
+Climate Security and Sustainable Development                                                         7
+METHODOLOGY ­ SOC Activity Module Pulp and Paper v.1.0
+
+4.1.2 | Under this activity module, organic soil improvers from pulp and paper mill
+            sludges are applied to improve soil in agricultural systems, increasing soil
+            organic carbon content.
+
+4.1.3 | Areas joining the project shall be areas within a farm (e.g. fields, parcels).
+            Project area shall be stratified into modelling units (MU) by mineral soil type,
+            climate zone, tillage practices, and level of vegetation cover.
+
+4.1.4 | Risk of project areas leaving a project within crediting period are low,
+            however any areas leaving the project shall be considered as full reversal
+            following SOC framework methodology. At project level long-term storage of
+            organic inputs will be ensured by a) using reduced or minimum tillage, where
+            residue, mulch, or sod is left on the soil surface to protect soil and conserve
+            moisture, and/or b) avoiding bare fallow periods by increasing vegetation
+            cover.
+
+4.2 | Temporal boundary:
+
+4.2.1 | The maximum crediting period is ten (10) years. All project applying this
+            module shall follow 5 year certification cycle.
+
+4.3 | Carbon Pools
+
+4.3.1 | This SOC Activity Module focuses on the soil organic carbon pool. The project
+            shall account for carbon pools for assessment in line with the Gold Standard
+            SOC Framework Methodology.
+
+SCENARIO CARBON POOLS                                                    CO2  CH4 N2O
+                                                                         Yes  No No
+Baseline scenario                                                        Yes  No No
+                    The amount of soil carbon storage (SOC content)      Yes  Yes10 Yes
+
+Project scenario
+                    The amount of soil carbon storage (SOC content)
+
+                    GHG emissions from the processing, transport and
+                    application of organic soil improvers from pulp and
+                    paper mill sludges
+
+10 In the processing of organic residues from pulp and paper mill sludges, CH4 and N20 emissions are
+negligible, and can be considered zero in the calculations.
+
+Climate Security and Sustainable Development                                                          8
+METHODOLOGY ­ SOC Activity Module Pulp and Paper v.1.0
+
+4.3.2 | Justification for inclusion of other carbon pools than SOC
+
+              - GHG emissions from the processing, transport and application of organic
+                   soil improvers from pulp and paper mill sludges shall be included in the
+                   project scenario. The processing, transport and application of organic
+                   biomass residue generate GHG emissions from fuel/energy including
+                   electricity use.
+
+              - Optional: GHG emissions from waste handling. Emissions of CO2 and
+                   CH4 in the baseline scenario from the use of pulp and paper mill sludges
+                   for incineration/energy purposes, or landfilling in case it is not
+                   incinerated. The incineration and landfilling generate GHG emissions that
+                   are avoided in the project scenario, hence it is conservative. However, if
+                   the project activity intends to claim avoided/reduced GHGs emission from
+                   waste disposal and/or treatment, the project shall take all relevant
+                   emission as per applicable methodology.
+
+              - Optional: The storage of C in landfills or other areas (in case all the
+                   sludge is not incinerated). Some C could be stored in landfill. Justification
+                   for the inclusion or exclusion of this optional pool is determined at the
+                   project level depending on the situational context and applicable
+                   methodology.
+
+       Emission Reduction Quantification Approach
+
+Calculations for overall benefits follow the equations set out in Section: Emissions
+Reduction Quantification Approaches of the SOC Framework Methodology. Sections
+below specify approaches and calculations specific to this SOC activity module.
+
+5.1 | Approaches for baseline and project scenario quantification
+
+5.1.1 | This SOC Activity Module focuses on the soil carbon pool. Calculations for
+            overall benefits follow the equations set out in Section 7 of the SOC
+
+Climate Security and Sustainable Development                                                      9
+METHODOLOGY ­ SOC Activity Module Pulp and Paper v.1.0
+
+            Framework Methodology. Sections below specify approaches and calculations
+            specific to this SOC activity module.11
+5.1.2 | To accommodate that soil measurements are not always available to projects,
+            especially for small community-based activities, this SOC Activity Module
+            allows selection of any of the three approaches to baseline and project activity
+            quantification as described in the SOC Framework Methodology. This activity
+            module recommends approach 1, whereas approach 2 may be applied
+            following SOC framework methodology requirements. If a different approach
+            is used for baseline and project scenarios in a stratum, conservativeness and
+            comparability have to be ensured.
+
+                 a. Approach 1: On-site, direct measurement of Baseline Scenario and
+                      Project Scenario SOC stocks and emissions reductions from the
+                      application of fertilizers and other soil improvers.
+
+                 b. Approach 2: Peer-reviewed publications to quantify Baseline Scenario
+                      SOC stocks, other emissions reductions, and Project Scenario impact.
+                      Project developers shall demonstrate that the research results are
+                      conservative and applicable to the proposed Project Area and
+                      management practice.
+
+5.1.3 | See the specific quantification approaches for baseline and project activity
+            emissions in sections 7 and 8.
+
+       Baseline Scenario
+
+6.1 | General requirements
+
+6.1.1 | As per the SOC Framework Methodology, the relevant baseline scenario is
+            that as a continuation of historical cropping practices, in the absence of the
+            project activity, no organic soil improvers from pulp and paper mill sludges
+            are used in the baseline scenario.
+
+6.1.2 | Organic soil improvers from pulp and paper mill sludges are mainly
+            incinerated on site (in EU member states) or in some cases also landfilled
+
+11 GHGs avoidance and reduction may exist related to the avoidance of emissions from
+incineration of industrial residues and waste streams, or landfill methane due to the avoided
+disposal of those biomass waste products. Where applicable, the organic biomass residue
+disposal emission shall be supplemented by additional equations to estimate avoided emission
+from industrial residue disposal in compliance with a relevant GS approved CDM methodology.
+Relevant GS approved CDM methodologies with calculation equations for estimating
+incineration or waste landfilling emissions include, not limited to the following:
+- ACM0001 "Flaring or use of landfill gas"
+- ACM0006 "Electricity and heat generation from biomass"
+- ACM0012 "Waste energy recovery"
+- ACM0018 "Electricity generation from biomass in power-only plants"
+- AM0057 / Version 03.0.1 "Avoided emissions from biomass wastes through use as feed
+stock in pulp and paper, cardboard, fibreboard or bio-oil production"
+- AM0083 / Version 01.0.1 "Avoidance of landfill gas emissions by in-situ aeration of
+landfills"
+- AM0093 / Version 01.0.1 "Avoidance of landfill gas emissions by passive aeration of
+landfills"
+
+Climate Security and Sustainable Development                                                   10
+METHODOLOGY ­ SOC Activity Module Pulp and Paper v.1.0
+
+            (mostly outside EU). To determine optional waste-related reduction in
+            emissions, the project developer shall use one of the applicable CDM
+            methodologies (section 5.1.1) taking into account the possible restrictions for
+            transboundary movement of waste. In areas where the pulp and paper mill
+            sludges are landfilled as the baseline, the project proponent should add
+            whether the energy is captured or not, and what the effects of it are.
+            However, the energy value is expected to be small or negligible also in
+            landfills.
+6.1.3 | To determine the baseline of the eligible project area the land shall be
+            stratified into modelling units (MU) according to:
+
+              o Mineral soil type12
+              o Climate zone13
+              o Tillage practices
+              o Level of vegetation cover
+6.1.4 | For each stratum (MU), SOC measurements shall be performed (Approach 1)
+            and/or model parameters identified and verified (Approach 2) in the beginning
+            of the project.
+
+6.2 | Baseline Calculations
+
+6.2.1 | Quantification for soil organic carbon in the baseline (SOCBL,y) shall follow
+            the rules, approaches, calculations, and parameters set out in Section:
+            Baseline Scenario of the SOC Framework Methodology.
+
+       Project Scenario
+
+7.1 | General requirements
+
+7.1.1 | Under the project scenario, organic soil improvers from pulp and paper mill
+            sludges are applied in the project area to increase SOC and retain soil
+            moisture. Other inputs are used and monitored similarly to baseline, and
+            possible exceptions are reported. Expected emissions reductions would be
+            achieved by both creating a soil carbon sink.
+
+7.1.2 | As with the baseline, the eligible project area shall be stratified into modelling
+            units (MU) according to
+
+              o Mineral soil type14
+
+12 European Soil Database https://esdac.jrc.ec.europa.eu/content/european-soil-database-
+v20-vector-and-attribute-data or other national soil database
+
+13 Köppen-Geiger climate classification or similar, e.g. https://edepot.wur.nl/197197
+14 European Soil Database https://esdac.jrc.ec.europa.eu/content/european-soil-database-v20-vector-
+and-attribute-data or other national soil database
+
+Climate Security and Sustainable Development                                                         11
+METHODOLOGY ­ SOC Activity Module Pulp and Paper v.1.0
+
+              o Climate zone15
+              o Tillage practices
+              o Level of vegetation cover
+7.1.3 | For each stratum (MU), SOC measurements have to be performed (Approach
+            1) and/or model parameters identified and verified (Approach 2) during the
+            project at least every 5 years (following certification cycle).
+7.1.4 | In cases where a cropping change between the Baseline Scenario and Project
+            Scenario occurs, the impact on SOC stocks in the medium term (following 5
+            year certification cycle) must be assessed. This shall be done considering the
+            following:
+
+              o Agrochemical inputs, e.g. fertilizer or other nutrient inputs, pesticides,
+                   other additives;
+
+              o Change in hydrology, e.g. irrigation, draining and seasonal shift in crop
+                   coverage;
+
+              o Change in crop-related inputs, including plant residue and N-fixation;
+              o Change in crop management (e.g. tillage, machine use, treatments and
+
+                   harvest); and
+              o Seasonal management activities (e.g. harvesting, fallow periods,
+
+                   seasonal no cover).
+
+7.2 | Project Calculations
+
+7.2.1 | Quantification for soil organic carbon in the project scenario (SOCt,y) shall
+            follow the rules, approaches, calculations, and parameters set out in Section
+            7: Project scenario of the SOC Framework Methodology.
+
+7.3 | Other emissions
+
+7.3.1 | Project activity emissions consist of CO2 emissions from the transport
+            emissions of pulp and paper mill sludges from the industrial facility to the
+            processing facility, the processing emissions of organic soil improvers and the
+            possible application emissions of organic soil improvers from pulp and paper
+            mill sludges to the farms.
+
+7.3.2 | Project emissions are determined as follows:
+
+15 Köppen-Geiger climate classification or similar, e.g. https://edepot.wur.nl/197197
+
+Climate Security and Sustainable Development                                                 12
+METHODOLOGY ­ SOC Activity Module Pulp and Paper v.1.0
+
+PEy =   × (2e,1 + 2e, + 2e,2 + 2e,) +
+ × (2e, + 2e,3)
+Where16:
+PEy = total project emissions in year y (t CO2e)
+
+ = Amount of organic soil improver product applied in the modelling unit i (t of
+organic soil improver product / ha of land)
+
+2e,1 = Emission factor for transport of the pulp and paper mill sludges to the
+processing site (tCO2e/t pulp and paper mill sludges)
+
+2e,= Emission factor for processing of the organic soil improvers from pulp
+and paper mill sludges at the processing site (tCO2e/t organic soil improver product)
+
+2e,2 = Emission factor for transport of the organic soil improver product to the
+farm i (tCO2e/t organic soil improver product)
+
+2e, = Emission factor for the application of the organic soil improver product
+on the farm i (tCO2e/t organic soil improver product). The emission factor is
+calculated based on the fuel or electricity use (fuel consumption × area/distance
+travelled) of the application machinery of the soil improver product. If there are any
+other significant emissions from application, e.g. due to environmental conditions of
+the project, these should be taken into account in the emission factor.
+
+ = Amount of any other ingredients (e.g. lime) used for processing of organic
+soil improver products (ton of ingredient; sum each ingredient separately)
+
+2, = Emission factor (tCO2e/t) for production of any other ingredients
+used for processing of organic soil improver products (each ingredient separately).
+The emission factor should also include CH4 and N2O emissions, if applicable.
+(tCO2e/t)
+
+16 Sources for estimation of emission factors are defined in Monitoring section
+
+Climate Security and Sustainable Development                                            13
+METHODOLOGY ­ SOC Activity Module Pulp and Paper v.1.0
+
+2,3 = Emission factor for transportation of any other ingredients used for
+processing of organic soil improver products (each ingredient separately) (tCO2e/t
+ingredient)
+
+       Uncertainty
+
+8.1.1 | Calculation of uncertainty shall follow the rules and equations set out in the
+            SOC Framework Methodology.
+
+8.1.2 | Allocation of emissions reductions to a Gold Standard Compliance Buffer shall
+            follow the rules set out in the SOC Framework Methodology.
+
+       Other Emissions
+
+9.1.1 | Significant additional greenhouse gas emissions (>5% total) due to the
+            project activity need to be accounted for. For this SOC Activity Module, this
+            explicitly includes emissions from fossil fuel combustion, and other
+            agrochemical emissions. Input of N fertilizer is not included since additional N
+            fertilization is not necessary and in some cases N fertilization can even be
+            reduced17. Calculation thereof shall follow the rules and equations set out in
+            the SOC Framework Methodology. These emissions need to be subtracted
+            from the soil organic carbon in the project scenario (SOCt,y).
+
+       Leakage
+
+10.1.1 |Calculation of leakage shall follow the rules and equations set out in the SOC
+            Framework Methodology. If a reduction in yield is detected in a performance
+            certification, it is assumed that the lost production capacity will have to be
+            made up for on land outside the project area. Emissions caused by such a
+            shift shall be accounted for as leakage according to the equation listed in the
+            SOC Framework Methodology.
+
+10.1.2 |As the Project Area is being actively maintained for commodity production
+            during the project crediting period, yield-related leakage risks are expected to
+            be relatively small. Crop producers are commonly risk averse and are unlikely
+            to intentionally suffer reduced crop yields. Moreover, according to LUF Activity
+            Requirements, projects shall not lead to a decrease in agricultural
+
+17 https://journal.fi/afs/article/view/95600
+
+Climate Security and Sustainable Development                                                  14
+METHODOLOGY ­ SOC Activity Module Pulp and Paper v.1.0
+
+            productivity. All projects shall be designed to maintain or increase crop yield.
+            In principle, LKt-0 is thus considered to be 0.18
+10.1.3 |Risk of reducing yield is low when enough soluble N is available for the plants.
+            Baseline N fertilization levels are adequate and can even be reduced in some
+            cases. 19 When applied in the autumn, organic soil improvers from pulp and
+            paper sludges can immobilize excess soluble N and prevent nutrient leaching.
+            Immobilized N may be mineralized to plant available N next growing seasons
+            and then increase yields.20. After application of organic soil a improvers from
+            pulp and paper sludges into the field, the next crop is typically sowed in the
+            spring.
+10.1.4 |Risks to soil health are linked to quality of organic soil improvers from pulp
+            and paper sludges, main risks being heavy metals and microbiological
+            contaminations. However, these risks are taken into account in local fertilizer
+            legislations and are mitigated using approved soil improver products only.
+            Monitoring of soil health using heavy metals markers as indicators (parameter
+            ID 15) is required at least once at each certification renewal (i.e. every fifth
+            year of the project).
+
+       Monitoring
+
+11.1.1 |Monitoring approach and parameters shall be followed as set out in the SOC
+            Framework Methodology. Also, the project owner shall collect and document
+            evidence that this SOC activity module's applicability conditions are met at all
+            times.
+
+11.1.2 |In addition to the data and parameters listed in the SOC Framework
+            Methodology, the following parameters need to be monitored and recorded.
+
+a. Data and parameters not monitored
+
+Data/parameter ID OSI 1
+
+Data / Parameter:  EFFFC,MT
+
+Data unit:         t CO2e / liter of fuel
+
+                   The emission factor for diesel / gasoline / light fuel oil
+
+Description:       used in transport vehicles and agricultural machinery (per
+
+                   machine type)
+
+Source of data:    2019 Refinement to the 2006 IPCC Guidelines for National
+
+                   Greenhouse Gas Inventories Volume 2 Chapter 3 Table
+
+                   3.3.1
+
+Any comment:
+
+18 Section 11. Leakage in SOC Framework Methodology
+19 Kinnula et al. (2020 Effects of mixed pulp mill sludges on crop yields and quality.
+Agricultural and Food Science, 29(4), 276­286. https://doi.org/10.23986/afsci.95600,
+https://journal.fi/afs/article/view/95600
+20 Camberato et al. (2006) Pulp and paper mill by-products as soil amendments and plant
+nutrient sources. Canadian Journal of Soil Science . DOI: 10.4141/S05-120
+
+                   Climate Security and Sustainable Development                               15
+METHODOLOGY ­ SOC Activity Module Pulp and Paper v.1.0
+
+b. Data and parameters monitored
+
+Data/parameter ID      OSI 2
+Data / Parameter:      QSOC,prod
+Data unit:             %
+Description:           The content of organic carbon (C) in the processed
+Source of data:        organic biomass residue product
+                       Direct C-content measurements at the organic soil
+Monitoring frequency:  improvers production company
+                       Annually
+
+QA/QC procedures:      Direct analyses according to SFS-EN 13039 standard
+Any comment:           performed by an independent laboratory
+                       The level of uncertainty as per test results determined by
+                       independent laboratory shall be taken into account.
+
+Data/parameter ID      OSI 3
+Data / Parameter:      Qamend
+Data unit:             t of organic biomass residue product / ha of land
+Description:           The amount of organic biomass residue product applied to
+Source of data:        each modelling unit in the project activity
+                       Amount applied by organic soil improvers producer to the
+Monitoring frequency:  farmers in the modelling units (book-keeping of organic
+QA/QC procedures:      soil improvers producer company)
+                       Annually
+Any comment:           Verifying data entry and analysis techniques, ensuring
+                       data maintenance and archiving for project time (20
+                       years)
+
+Data/parameter ID      OSI 4
+Data / Parameter:      Dtrans,industry
+Data unit:             km
+                       The distance from each industrial facility to the organic
+Description:           soil improvers processing facility, multiplied by the
+                       amount of transportation trips. Amount of transportation
+Source of data:        trips is calculated by dividing the total amount of pulp and
+Monitoring frequency:  paper mill sludges delivered by the average load of
+                       residues per truck.
+                       This parameter is used in the calculation of the emission
+                       factor 2e,1 .
+                       Organic soil improvers processing company. The PD
+                       should ensure, that data sharing agreement among all
+                       parties involved is in place where applicable.
+                       Annually
+
+                       Climate Security and Sustainable Development                  16
+METHODOLOGY ­ SOC Activity Module Pulp and Paper v.1.0
+
+QA/QC procedures:      Verifying data entry, and ensuring data maintenance and
+Any comment:           archiving for project time (20 years)
+
+Data/parameter ID      OSI 5
+Data / Parameter:      Dtrans,farm
+Data unit:             km
+                       The distance from the organic soil improvers processing
+Description:           facility to each farm in the project activity scenario,
+                       multiplied by the amount of transportation trips. Amount
+Source of data:        of transportation trips is calculated by dividing the total
+Monitoring frequency:  amount of organic soil improvers delivered by the average
+QA/QC procedures:      load of residues per truck.
+Any comment:           This parameter is used in the calculation of the emission
+                       factor 2e,2 .
+                       Organic soil improvers processing company
+                       Annually
+                       Verifying data entry, and ensuring data maintenance and
+                       archiving for project time (20 years)
+
+Data/parameter ID      OSI 6
+Data / Parameter:      FFCtrans, wp,j,i,t
+Data unit:             liters
+                       Consumption of fossil fuel type j in the project for
+Description:           transport i in year t.
+                       This parameter is used in the calculation of all of the
+Source of data:        transport-related emission factors mentioned in section
+                       7.2.3.
+Monitoring frequency:  Fuel efficiency factors can be obtained from the 2019
+QA/QC procedures:      Refinement to the IPCC 2006 Volume 2 Chapter 3.
+Any comment:           Alternatively national or literature studies can be used21.
+                       Annually
+                       Verifying data entry, and ensuring data maintenance and
+                       archiving for project time (20 years)
+
+21 e.g. in Finland http://lipasto.vtt.fi/yksikkopaastot/indexe.htm
+
+                       Climate Security and Sustainable Development                 17
+METHODOLOGY ­ SOC Activity Module Pulp and Paper v.1.0
+
+Data/parameter ID      OSI 7
+Data / Parameter:      FFCapplic, wp,j,i,t
+Data unit:             liters
+                       Consumption of fossil fuel type j in the project for
+Description:           application at farm i in year t.
+                       This parameter is used in the calculation of the emission
+Source of data:        factor 2e, .
+Monitoring frequency:
+QA/QC procedures:      Fuel efficiency factors can be obtained from the 2019
+Any comment:           Refinement to the IPCC 2006 Volume 2 Chapter 3
+                       Annually
+                       Verifying data entry, and ensuring data maintenance and
+                       archiving for project time (20 years)
+
+Data/parameter ID      OSI 8
+Data / Parameter:      FFCprocess
+Data unit:             liter of fuel
+                       The amount of fuel used for processing of the organic soil
+Description:           improvers from pulp and paper mill sludges. Record also
+                       the type of fuel used.
+Source of data:        This parameter is used in the calculation of the emission
+Monitoring frequency:  factor 2e,.
+QA/QC procedures:      Organic soil improvers processing company
+                       Annually
+Any comment:           Verifying data entry, and ensuring data maintenance and
+                       archiving for project time (20 years)
+
+Data/parameter ID      OSI 9
+Data / Parameter:      EFCO2e,ingredient
+Data unit:             t CO2e /t of ingredient
+                       Emission factor for production of other ingredients used in
+Description:           the processing of the organic biomass residue products.
+                       Record emission factors for any other ingredients needed
+Source of data:        in processing of the organic biomass residue products. In
+Monitoring frequency:  case of recycled residues the value is considered to be
+QA/QC procedures:      zero.
+Any comment:           Organic soil improvers processing company
+                       Annually
+                       Verifying data entry, and ensuring data maintenance and
+                       archiving for project time (20 years)
+
+                       Climate Security and Sustainable Development                 18
+METHODOLOGY ­ SOC Activity Module Pulp and Paper v.1.0
+
+Data/parameter ID      OSI 10
+Data / Parameter:      Qingredient
+Data unit:             t of ingredient
+                       Amount of other ingredients used in the processing of the
+Description:           organic soil improver products. Specify each ingredient
+                       separately.
+Source of data:        Organic soil improvers processing company
+Monitoring frequency:  Annually
+QA/QC procedures:      Verifying data entry, and ensuring data maintenance and
+                       archiving for project time (20 years)
+Any comment:
+
+Data/parameter ID      OSI 11
+Data / Parameter:      FFCingredient
+Data unit:             liter of fuel
+                       The amount of fossil fuel in transportation of any other
+Description:           ingredient (used for processing organic soil improver
+                       products). Record consumption of fossil fuel needed for
+Source of data:        transportation of any other ingredients needed in
+Monitoring frequency:  processing of the organic soil improver products. Record
+QA/QC procedures:      also the type of fuel used.
+                       This parameter is used in the calculation of 2,3 .
+Any comment:           Transportation company
+                       Annually
+                       Verifying methods used to collect data, verifying data
+                       entry, and ensuring data maintenance and archiving for
+                       project time (20 years)
+
+Data/parameter ID      OSI 12
+Data / Parameter:      SHHM,MC
+Data unit:             mg / kg solids
+                       Soil health is monitored using changes in content of heavy
+Description:           metal marker compounds as the indicator. Project
+                       developers shall assess possible heavy metal related risks
+Source of data:        posed by organic soil improvers products to be used in the
+Monitoring frequency:  project. Relevant marker compound or compounds (e.g.
+                       Pb, Cd, Hg etc.) are identified and selected based on the
+                       assessment and monitored by testing content of marker
+                       compounds in soil samples per modelling unit. Content of
+                       heavy metal marker compounds should not rise
+                       significantly in the soil samples during the project.
+                       Laboratory test results
+                       At least once at each certification renewal (i.e. every fifth
+
+                       Climate Security and Sustainable Development                   19
+METHODOLOGY ­ SOC Activity Module Pulp and Paper v.1.0
+
+QA/QC procedures:  year of the project)
+Any comment:       Verifying selection of heavy metal marker compounds,
+                   verifying methods used to test heavy metal marker
+                   compounds in soil samples, verifying data entry into
+                   project book-keeping, and ensuring data maintenance and
+                   archiving for project time (20 years)
+
+                   Climate Security and Sustainable Development             20
+

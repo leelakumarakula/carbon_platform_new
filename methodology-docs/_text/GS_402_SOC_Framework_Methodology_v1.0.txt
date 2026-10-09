@@ -1,0 +1,2276 @@
+GOLD STANDARD FOR THE GLOBAL GOALS
+
+Soil Organic Carbon Framework Methodology
+
+Version 1.0
+Published January 2020
+SDG: 13 Climate Action
+                                                                                                                                       2
+
+TABLE OF CONTENTS
+
+1. Methodology Scope and Structure ................................................. 3
+2. Definitions and References ............................................................ 6
+3. Applicability .................................................................................. 8
+4. Project Boundaries ........................................................................ 9
+5. Emissions Reduction Quantification Approaches...........................11
+6. Baseline Scenario .........................................................................13
+7. Project Scenario ...........................................................................20
+8. Procedures for Approach Change .................................................23
+9. Uncertainty ..................................................................................26
+10. Other Emissions ...........................................................................28
+11. Leakage .......................................................................................32
+12. Double Counting and Benefits Overlap .........................................33
+13. Project Buffer...............................................................................34
+14. Additionality.................................................................................35
+15. Sustainable Development Goals ...................................................35
+16. Monitoring....................................................................................35
+Annex 1: Eligible Soil Sampling Protocols ............................................ 44
+Annex 2: Additional References ........................................................... 45
+
+ACKNOWLEDGEMENT:
+
+Developed by: TREES Consulting
+                                                                                                                                       3
+
+1. Methodology Scope and Structure
+
+The methodology presents requirements to quantify changes in greenhouse gas
+(GHG) emissions and soil organic carbon (SOC) stocks through the adoption of
+improved agricultural practices. Activities can achieve avoidance of emissions as
+well as sequestration of carbon in the soil, both which result in increased SOC
+content.
+
+This SOC methodology is applicable for a broad range of activities, from small
+scale, low tech land use to industrialized, large scale land management, using a
+variety of SOC improvement approaches. As scientific knowledge of SOC impact
+or activities covered in this methodology continues to evolve, the methodology is
+not limited to a specific activity but provides flexibility to apply the most current
+and best-fit systems.
+
+The SOC methodology provides three approaches for the quantification of SOC
+improvements for baseline and project scenario. This accommodates the reality
+that not all relevant measurements and parameters may be available to all
+projects and SOC activities.
+
+    1. Take on-site measurements to directly document baseline and project
+         SOC stock levels
+
+    2. Use peer-reviewed publications to quantify baseline and project SOC stock
+         levels
+
+    3. Apply default factors to quantify SOC changes, relating to the general
+         methodology described in the IPCC Guidelines for National Greenhouse
+         Gas Inventories (IPCC 2019) using tier 2 level approach whenever
+         possible.
+
+The SOC Framework Methodology structure (Figure 1) features a core
+Framework Methodology (this document) and activity-specific modules to be
+developed on an ongoing basis.
+
+Figure 1: Basic Architecture of Framework Methodology and Activity Modules
+                                                                                                                                       4
+
+The Framework Methodology ensures that quality of projects and
+quantification of benefits correspond to the high level expected under Gold
+Standard for the Global Goals. The Framework Methodology:
+
+    · Defines requirements and guidance applicable to all activities
+    · Ensures quality and consistency across different activities, e.g. in
+
+         quantification approaches and core equations
+    · Facilitates development of Activity Modules by defining a common basis
+
+         and approach, as well as the overall requirements (which thus do not
+         have to be repeated in the modules)
+    · Sets out rules to prevent benefit overlap if multiple Activity Modules are
+         applied in a project
+
+The Activity Modules are designed following the guidance provided in
+Framework Methodology. Activity Modules provide requirements and calculation
+approaches applicable to specific activities that increase SOC from baseline to
+project scenario. An Activity Module:
+
+    · Defines activity-specific applicability conditions, requirements and
+         potential sub-selection of calculation approaches
+
+    · Presents activity-specific measurement and monitoring requirements
+    · May be globally applicable or be limited to specific conditions (e.g. soils,
+
+         climate zones, data availability)
+    · May provide activity-specific data sources and/or models to apply (e.g.
+
+         globally or regionally applicable parameters)
+
+The methodology content differentiation between Framework Methodology and
+Activity Modules is described in more detail in
+Table 1 below.
+
+Project documentation will reference the Framework Methodology in
+combination with the applicable Activity Module(s). A project:
+
+    · applies one or more SOC Activity Modules for calculation of SOC accrual if
+         the project activities are clearly delineated and benefits from SOC accrual
+         do not overlap among project activities.
+
+    · specifies detailed impact calculations, including measurement and/or
+         modelling approach, data sources and parameters used.
+
+Table 1: Framework Methodology and Activity Modules content hierarchy
+
+Sections         Framework Methodology         Activity Modules
+
+Definitions and  · Definitions of core terms   · Definitions of activity-specific
+references       · Overall references for SOC       terms
+
+                      quantification           · References for selected
+                                                    measurement and/or
+                                                    calculation approaches
+                                                    (models, parameters,
+                                                    datasets, key publications)
+                                                                                             5
+
+Applicability     · General applicability               · Applicability requirements for
+and                    requirements for SOC                  specific activity, practices
+requirements           Activities Modules                    and/or quantification
+                                                             approaches (e.g. geographic
+Project                                                      limitations, additional
+boundaries                                                   requirements)
+
+Greenhouse        · Requirements and guidelines · Activity-specific criteria for
+Gases (GHG)
+                     to be applied at the Activity      the selection and justification
+
+                     Module level for the               of boundaries (spatial,
+
+                     delimitation of boundaries         temporal, carbon pools)
+
+                     (spatial, temporal, carbon         criteria (specific crediting
+
+                     pools); general stratification     period)
+
+                     criteria                           · Specific criteria for project
+
+                                                        area stratification (relevant
+
+                                                        subset and/or additions to
+
+                                                        framework criteria)
+
+                  · List of eligible GHGs and           · List of GHGs monitored for
+                       criteria (if any) for inclusion       activity and justification for
+                       and exclusion                         inclusion/exclusion of each
+
+Approaches for · Core equations to                      · Identification of
+
+the                  consistently calculate             quantification approach(es)
+
+quantification       impacts                                 applicable for baseline and
+                                                             project scenario
+of emission       ·  Outline of the three eligible      · Detailed guidance and
+reductions (i.e.                                             equations (or models) for
+                     quantification approaches,
+baseline and
+                     including a decision tree to
+project
+
+emissions,           select applicable                  selected quantification
+
+leakage and          quantification approach(es)        approach/es as well as key
+
+other             · List of potential sources of        parameters
+emissions)
+                     GHG emissions and removals · Any specific sources of GHG
+
+                     to be accounted for under          emissions and removals to
+
+                     baseline, project, other           be accounted for under
+
+                     emissions                          baseline, project, other
+
+                  · Guidelines to identify and               emissions, and leakage
+                       account for leakage              · Specific accounting of
+
+                                                        leakage and respective key
+
+                                                        parameters
+
+                                                        · Information on key
+                                                             parameters where
+                                                             customisation is being
+                                                             introduced (e.g. in the case
+                                                             of a regional application of
+                                                             an eligible project type)
+
+Uncertainty       · Buffer Contribution and non-        · Any specific Buffer
+assessment             permanence requirements               Contribution and non-
+and                                                          permanence requirements
+contribution to
+Compliance
+Buffer
+Additionality,  · Reference to Gold Standard                                                 6
+sustainable          requirements on
+development          Additionality and SDG    · Identification of default
+(SDG)                contributions                 SDGs impacts
+contributions
+                · Guidelines on eligible      · Specific monitoring
+Monitoring           monitoring approaches         approach and key
+                                                   parameters
+
+2. Definitions and References
+
+2.1 Definitions
+
+a. The definitions contained in the following documents apply:
+    · Glossary of Gold Standard for Global Goals
+    · Land-use & Forests Activity Requirements
+
+b. For the purpose of this Framework Methodology and associated Activity
+    Modules, the following specific definitions also apply:
+
+Baseline:            Estimated soil carbon stocks in the baseline
+                     scenario.
+
+Baseline scenario:   The activities that would occur in the
+                     absence of the proposed project (business-
+                     as-usual).
+
+Calculation period:  The period between two points in time for
+                     which a change in carbon stocks is
+                     calculated, e.g. the time between project
+                     performance certifications.
+
+Crediting period:    The time span in which SDG Impacts can be
+                     accounted for and are subject to monitoring.
+
+Crop:                A plant or fungus species that is purposefully
+                     cultivated and/or harvested to satisfy human
+                     and livestock needs.
+
+Crop residue:        Materials left in an agricultural field or
+                     orchard after the crop has been harvested.
+                     These residues include stalks and stubble
+                     (stems), leaves, and seed pods. Process
+                     residues are materials left after the crop is
+                     processed into a usable resource. These
+                     residues may include but are not limited to
+                     husks, seeds, bagasse, molasses and roots.
+                            7
+
+Cropping system:            The crops, crop sequences and the
+Cropland:                   management techniques used on a particular
+                            field over a period of years.
+Grassland:
+                            All arable and tillage land and agro-forestry
+Land use change:            systems where vegetation falls below the
+Livestock:                  threshold used for the forest land category,
+Modelling Unit (MU):        consistent with the selection of national
+Monitoring period:          definitions (IPCC, 2003).
+Project region:
+                            Areas where the vegetation is dominated by
+Project scenario:           grasses (Poaceae); however, sedge
+Soil Organic Carbon (SOC):  (Cyperaceae) and rush (Juncaceae) families
+Soil Organic Matter (SOM):  can also be found along with variable
+                            proportions of legumes, like clover, and other
+                            herbs.
+
+                            A change from one land use category to
+                            another.
+
+                            All domestic animals. Non-domestic animals
+                            are not included unless they are kept or
+                            raised in captivity on agricultural holdings,
+                            including holdings without land (FAO, 1994).
+
+                            Distinct areas with homogeneous
+                            characteristics to quantify a certain SDG
+                            Impact.
+
+                            The period between two points in time for
+                            which a reduction in GHG emission is
+                            calculated, e.g. the time between project
+                            performance certifications.
+
+                            The spatial area where people and
+                            environment are influenced by the project
+                            activities. A project region can be expanded
+                            over time. All project areas are located
+                            within the project region.
+
+                            The scenario that will exist once the Project
+                            is implemented and operational.
+
+                            Carbon (C) located in the Soil Organic
+                            Matter.
+
+                            Organic constituents in the soil such as
+                            tissues from dead plants and animals,
+                            products produced as these decompose and
+                            the soil microbial biomass.
+                                                                                         8
+
+Tillage:  The agricultural preparation of soil by
+          mechanical agitation of various types, such
+          as digging, stirring, and overturning.
+
+2.2 References
+
+    · This Framework Methodology refers to and replaces the Gold Standard
+         Agriculture Methodology for Increasing Soil Carbon Through Improved
+         Tillage Practices V0.9 (released for road testing).
+
+    · In addition to the methodologies, methodological tools, guidelines, and
+         key sources referenced herein, the Framework Methodology refers to
+         other peer reviewed publications listed in Annex 2.
+
+3. Applicability
+
+Projects shall comply with the applicability conditions specified in the Framework
+Methodology and in the respective applicable Activity Module. A project cannot
+apply the Framework Methodology without an applicable Activity Module.
+
+The following conditions apply:
+
+    a. Geographic location:
+         · Projects are eligible in all countries. SOC Activity Modules may limit
+              geographic applicability.
+
+    b. Project area:
+         · The project activity shall take place on the same parcel of land as the
+              baseline.
+         · Project area(s) shall not be on wetlands1.
+         · Project area (s) shall not be on forest according to the Land Use &
+              Forests Activity Requirements (hereafter LUF Activity Requirements).
+
+    c. Site preparation:
+         · No biomass burning for site preparation is allowed in the project
+              scenario.
+         · Project activities shall not include changes in surface and shallow
+              (<1m) soil water regimes through flood irrigation, drainage or other
+              significant anthropogenic changes in the ground water table.
+
+1 Wetland: This category includes land that is covered or saturated by water for all or
+part of the year (e.g. peatland) and that does not fall into the forest land, cropland,
+grassland or settlements categories. Source: 2019 Refinement to the 2006 IPCC
+Guidelines for National Greenhouse Gas Inventories ­ Glossary.
+https://www.ipcc.ch/site/assets/uploads/2019/12/19R_V0_02_Glossary.pdf /.
+                                                                                                                                       9
+
+    d. Land use:
+         · Managed cropping systems (e.g. single crop or crop rotation) must
+              have been in place for at least 5 years prior to project
+              implementation2.
+         · The project activity shall not lead to land use change.3
+
+    e. Food security:
+         · No reduction in crop yield which can be attributed to the project
+              activity shall be allowed. Activities in the project area shall deliver a
+              yield at least equivalent to the baseline yield (five-year average, prior
+              to project start). If regional crop productivity changes (e.g. due to
+              climatic factors), yield in project area shall not decrease significantly
+              (5%) more than yield in the project region.
+
+4. Project Boundaries
+
+4.1 Spatial boundary
+The spatial boundary encompasses the impacts of activities that are under the
+project owner's control. Activities result in reduction of emissions and/or
+sequestration of carbon in the soil, which result in an increased SOC content in
+the project area.
+
+Any areas leaving the project during the project duration, i.e. no longer included
+in monitoring, are conservatively considered full reversals (i.e. loss of all carbon
+sequestered). According to the LUF Activity Requirements the project owner is
+
+2 If a SOC activity module considers a crop change between baseline and project
+
+scenario, the module shall contain evidence/calculation approaches that the change does
+
+not impact SOC stocks negatively in the medium term (e.g. 5 years) or specifically
+
+quantify the changes, considering at least the following parameters:
+
+Direct impacts on SOC and project emissions:
+
+·  Agrochemical inputs, e.g. fertilizer or other nutrient inputs, pesticides, other
+
+   additives
+
+·  Change in hydrology, e.g. due to irrigation, draining and seasonal shift in crop
+
+   coverage
+
+·  Change in crop-related inputs, including plant residue and N-fixation
+
+·  Change in technical management of crop (e.g. machine use for planting,
+
+   treatments and harvest)
+
+·  Seasonal change in crop management activities (e.g. harvesting, fallow
+
+   periods, season without vegetation cover)
+
+Market leakage risks
+
+·  Change in crop revenues (outside the normal market price variations)
+
+·  Change in crop yield (outside of normal variation) expressed in mass (tons)
+
+   and with relation to calorific value and end user (crops for animal/human use)
+
+3 For activities involving land use change from grassland to cropland and vice-versa,
+contact the Gold Standard Secretariat
+                                                                                10
+
+responsible to maintain or compensate carbon loss to the level of credits already
+issued according to the GHG Emissions Reductions & Sequestration Product
+Requirements. If new areas are added to the project, they have to be
+documented and certified according to the `new area certification' procedures
+described in the LUF Activity Requirements.
+
+4.2 Temporal boundary
+
+According to LUF Activity Requirements the duration of the crediting period is
+specified on methodology level. SOC projects crediting periods shall be between
+5-20 years. The Activity Modules shall define applicable crediting period length
+within this range based on published peer-review scientific results for a specific
+project activity addressing relevant SOC factors such as climate, soil type, etc.
+
+For retroactive submission of projects and the respective crediting period please
+refer to the chapter Retroactive Issuance of the LUF Activity Requirements.
+
+4.3 Carbon pools
+
+This Framework Methodology focuses entirely on benefits from increase of soil
+carbon. Benefits accounting is thus limited to the soil organic carbon pool as
+shown in Table 2.
+
+Table 2: Carbon pools to be included
+
+Pools                Includes                 Project Baseline Leakage
+Above ground         Stem, branches, bark,
+                     grass, herbs, etc.
+                                              No   No   Yes*
+
+Below ground         Roots of grass, trees,   No   No   Yes*
+                     herbs
+
+Deadwood             Standing and lying       No   No   No
+                     deadwood
+
+Litter               Leaves, small fallen     No   No   No
+                     branches
+
+Soil organic carbon  Organic material         Yes  Yes  Yes
+
+Wood products        Furniture, construction
+
+                     material, etc.           No   No   No
+
+* change in biomass carbon stocks in leakage area to be accounted for in case of activity
+shift (see Section 11)
+
+4.4 Greenhouse gases
+
+The primary greenhouse gas monitored with all SOC project activities is CO2.
+Monitoring of additional gases such as methane (CH4) or nitrous oxide (N2O)
+may be required in the respective Activity Modules (e.g. due to risk of leakage or
+change in fertilization). In principle, projects shall monitor all GHG sinks and
+sources affected by its activities. Exclusions may be made for impacts with
+limited measurability (i.e. quantifiability and data availability) if the omission is
+conservative, i.e. does not lead to overestimation of emission reductions or GHG
+                                                                                                                                     11
+
+sequestrations. Also, GHG emissions considered insignificant (less than 5% of
+total emission reduction and sequestration) may be omitted from monitoring.
+
+5. Emissions Reduction Quantification Approaches
+
+Greenhouse gas benefits from activities are calculated as the net changes in the
+soil organic carbon pool as defined below by Equation 1 (below). Consequently,
+the CO2 equivalent to the increase in SOC minus project emissions and potential
+emissions leakage effects is considered the greenhouse gas benefit attributable
+to the project activity. Projects shall transfer a fixed percentage of the issued GS
+VERs attributable to SOC sequestration activities into Gold Standard Compliance
+Buffer4 according to the GHG Emissions Reductions & Sequestration Product
+Requirements. A contribution to Gold Standard Compliance Buffer is not required
+from activities involving SOC emission reductions (i.e. BUF = 0%).
+
+-0 = [(,-0 × 1424) - -0 - -0] × (1 - )            (1)
+
+Where:    = emissions reductions to be issued for the calculation period [tCO2e]
+ERt-0     = change in carbon stocks in mineral soils in the calculation period [tC]
+CSOC,t-0
+          = CO2 to C molecular mass ratio [tCO2e tC-1]
+44
+12        = additional emissions due to project activity in the calculation period
+          [tCO2e]
+PEt-0     = leakage of emissions due to project activity in the calculation period
+          [tCO2e]
+LKt-0     = compliance buffer fraction5 [dimensionless].
+
+BUF
+
+Changes in SOC between two points in time (calculation period) are determined
+as the difference between SOC stocks at each point as defined by Equation 2:
+
+,-0 = ( - 0) × (1 - )                             (2)
+
+Where:    = change in soil organic carbon stocks in the calculation period [tC]
+CSOC,t-0
+SOC0      = soil organic carbon stock at the beginning of the calculation period
+          [tC]
+
+4 Refer to Gold Standard for Global Goals - GHG Emissions Reductions & Sequestration
+Product Requirements. https://globalgoals.goldstandard.org/500-gs4gg-ghg-emissions-
+reductions-sequestration-product-requirements/
+
+5 Ibid.
+                                                                                   12
+
+SOCt  = soil organic carbon stock at the end of the calculation period [tC]
+UD    = uncertainty deduction [dimensionless]
+
+Note: For the first calculation period, SOC0 is equal to SOCBL (see Section 6.1);
+for subsequent periods, SOC0 refers to the previous period's SOCt.
+
+5.1 Approaches for baseline and project scenario quantification
+
+To accommodate the reality that soil measurements are not always available to
+projects, especially for small community-based activities, this methodology
+incorporates three approaches to baseline and project activity quantification:
+
+    · Approach 1: Requires on-site measurements to directly document
+         baseline and project SOC stocks.
+
+· Approach 2: Uses calculation approaches, datasets, parameters and/or
+    models from peer-reviewed publications to estimate baseline and project
+    SOC stocks. Project owners need to prove that the research results are
+    conservative and applicable to the project site and management practice.
+
+· Approach 3: Applies default factors to estimate SOC changes, relating to
+    the general Tier 1/2 model described in the IPCC Guidelines for National
+    Greenhouse Gas Inventories (IPCC 2019). If possible, the Tier 2 approach
+    as outlined in the IPCC Guidelines should be applied. Applicability of SOC
+    reference values (SOCREF) to be used in connection with IPCC impact
+    factors shall be transparently demonstrated for the project area.
+
+    Note that not all of the above approaches may be applicable to all
+    SOC activities under this Framework Methodology. Specifically,
+    datasets and/or models derived locally may only be applied if
+    validated by direct measurements in the project area (Approach
+    1). Activity modules must define which approaches are applicable
+    for the respective SOC activity. This selection will be assessed by
+    the Gold Standard Secretariat at the time of module review.
+
+Generally, project owners shall select the most specific approach possible with
+the data available, giving preference to local data sources and models. A
+decision tree to determine an eligible approach is illustrated in Figure 2 below.
+Further requirements for each approach are given in the baseline and project
+scenario chapters.
+                                                                                  13
+
+        Identify project activity and      Yes  Approach 1   High accuracy
+                  boundaries                                 No deductions
+
+On-site SOC measurements (before and       Yes  Approach 2   Medium accuracy
+    after activity or land management                        Deductions possible
+       change) ongoing or planned?
+                           No              Yes  Approach 3   Low accuracy
+                                                             Deductions likely
+Applicable peer-reviewed research data /
+models (before and after activity or land
+
+     management change) available?
+                           No
+
+   Applicable SOCREF value and impact
+              factors available?
+
+                           No
+                 Perform SOC
+                measurements
+
+Figure 2: Decision tree for identification of appropriate calculation approach
+
+6. Baseline Scenario
+
+The relevant baseline scenario is the continuation of the historical land
+management practices that are being followed in last 5 years before the project
+start date (business as usual (BAU).
+
+To determine the baseline of the eligible project area, the land shall be stratified
+into modelling units (MU) according to:
+
+    · Soil type
+    · Climate zone
+    · Land management / cropping system
+    · Input levels (e.g. fertilization)
+    · As applicable (to be defined in SOC Activity Modules):
+
+              o Tillage practices
+              o Soil properties (e.g. nutrient status or soil health)
+              o Hydrology
+              o Risk of carbon loss (e.g. fire risk)
+
+For each stratum (MU), SOC measurements have to be performed (Approach 1)
+and/or model parameters identified and verified (Approach 2 or 3).
+                                                                           14
+
+6.1 Baseline Calculations
+
+For all of the eligible project area, baseline SOC stocks are calculated as the sum
+of stocks in each stratum multiplied by the stratum area as shown in Equation
+3:
+
+ = =1(, × )                                       (3)
+
+Where:
+
+SOCBL   = soil organic carbon in the eligible project area before project start
+        [tC]
+
+SOCBL,y = soil organic carbon in stratum y before project start [tC ha-1]
+
+Ay = area of stratum y before project start [ha]
+
+For each stratum in the eligible project area, baseline SOC stocks shall be
+quantified using any of the three general approaches. Different approaches may
+be used for different strata.
+
+· Approach 1: SOCBL,y is measured in an adequate number of soil profiles
+    to meet GS uncertainty requirements in each stratum (compare section
+    16.2). Measurement of SOC shall follow accepted sampling and analysis
+    protocols (a list of approved protocols is provided in Appendix 1). As these
+    protocols require a certain measure of field and laboratory technology,
+    alternate protocols may be proposed in Activity Modules or at project
+    level. Deviations from the protocols listed in the framework methodology
+    or activity module (or use of alternate protocols) are subject to review
+    and decision by The Gold Standard.
+
+    · Approach 2: SOCBL,y is derived from data or models published in peer-
+         reviewed literature. Evidence for applicability of the literature values to
+         the project site must be provided and validated as described in section
+         16.2. Specifically, applicability shall be demonstrated with respect to:
+              · Climate factors (e.g. precipitation levels and seasonal distribution)
+              · Soil and vegetation types
+              · Current and historic management systems (land use category,
+                   crops, tillage techniques, fertilization)
+
+Direct application of literature values is only permitted if the source conditions
+are comparable to the project environment, evidence of which shall be provided
+as described in section 16. Furthermore, literature values shall only be applied
+within the spatial and temporal dimensions analysed in the original source (e.g.
+SOC depth, timespan for which changes are documented). If a range of
+parameter values is given in a source or data is aggregated across various factor
+levels (e.g. average SOC in a region, across a range of soil types), the most
+conservative value shall be applied.
+                                                                              15
+
+Alternatively, SOC values from literature may be verified by comparing them to
+measurements in a set of sample sites within the respective project stratum to
+indicate conservativeness of the parameter values applied. Such measurements
+are required if evidence for applicability (as listed above) of literature values is
+deemed insufficient by the Validation and Verification Body (VVB).
+
+· Approach 3: If no data for SOCBL,y is available, it may be modelled using
+    Equation 4 (below). The calculation follows the approach documented in
+    IPCC 20196 but allows for baseline management practices to be in place
+    less than the estimated time to equilibrium (i.e., in case of IPCC default
+    factors, less than 20 years). Note that the current IPCC Guidelines only
+    provide stock change factors for tillage change and generic inputs
+    (fertilizing) for croplands and grassland. Approach 3 is thus not applicable
+    for activities increasing SOC in other manners (e.g. through biological soil
+    agents) unless additional factors are available for the project area (e.g.
+    Tier 2 factors from national GHG inventory).
+
+, =        ,  ×  (1  +  (,  ×  ,,  ×  ,,  -  1)  ×   )  (4)
+
+                                                    
+
+Where:    = soil organic carbon before project start in stratum y
+SOCBL,y   [tCha-1]
+          = reference soil organic carbon stock under natural vegetation in
+SOCREF,y  stratum y [tC ha-1]
+          = land use factor in stratum y [dimensionless]
+FLU,y     = tillage factor before project start in stratum y [dimensionless]
+FMG,BL,y  = input factor before project start in stratum y [dimensionless]
+FI,BL,y   = time dependency of FMG, BL and FI,BL factors7 [yr]
+DBL       = number of years since introduction of baseline practice;
+TBL       maximum TBL = D [yr]
+
+In this approach, SOCREF,y shall be selected from an appropriate scientific source8
+or measurements, applicability of which in the project stratum shall be
+
+6 2019 Refinement to the 2006 IPCC Guidelines for National Greenhouse Gas Inventories.
+Volume 4 Agriculture, Forestry and Other Land Use (https://www.ipcc-
+nggip.iges.or.jp/public/2019rf/vol4.html)
+
+7 For IPCC 2019 and IPCC 2006 default factors, D equals 20 years
+
+8 Publications, verifiable local research results, soil databases e.g. ISRIC
+(https://www.isric.org/explore), Hengl et al., (2014), or the European Soil Portal
+(http://eusoils.jrc.ec.europa.eu/; also provides information on non-European soils).
+IPCC default SOC reference values (SOCREF) may only be applied if within Gold Standard
+Uncertainty Requirements.
+                                                                                16
+
+documented. This must include evidence that the SOCREF value stems from a
+comparable climatic, soil and vegetation environment, as described in section
+16. If evidence provided for applicability of SOCREF is deemed insufficient by VVB,
+appropriate measurements are required.
+
+For FLU,BL,y, FMG, BL,y and FI, BL,y factors, default values from the IPCC 2019
+guidelines may be applied within a given temperature and moisture regime (see
+Table 3 and Table 4 below), referring to the management before project start. If
+national or regional factors are available (IPCC Tier 2 or Tier 3 data) these
+should be used instead.
+
+Table 3: Relative stock change factors (FLU, FMG, FI) for grassland management
+               (IPCC 2019)9
+
+RELATIVE STOCK CHANGE FACTORS (FLU, FMG, AND FI ) FOR GRASSLAND MANAGEMENT
+
+Factor      Level      Temperature  IPCC      Error1,2  Description
+value type             regime       defaults
+
+Land use    All        All          1.0       N/A       All native and/or
+                                    1.0       N/A       permanent grassland in a
+(FLU)                               0.90      ±8%       nominal condition is
+                                    0.7       ±40%      assigned a land-use factor
+Management Nominally All                                of 1.
+
+(FMG)       managed                                     Represents low or medium
+                                                        intensity grazing regimes,
+            (non ­                                      in addition to periodic
+                                                        cutting and removal of
+            degraded)                                   above-ground vegetation,
+                                                        without significant
+Management High        All                              management
+                                                        improvements.
+(FMG)       Intensity
+                                                        Represents high intensity
+            Grazing3                                    grazing systems (or cutting
+                                                        and removal of vegetation)
+Management Severely All                                 with shifts in vegetation
+                                                        composition and possibly
+(FMG)       degraded                                    productivity but is not
+                                                        severely degraded4.
+
+                                                        Implies major long-term
+                                                        loss of productivity and
+                                                        vegetation cover, due to
+                                                        severe mechanical damage
+                                                        to the vegetation and/or
+                                                        severe soil erosion.
+
+9 IPCC 2019 Refinement to the 2006 IPCC Guidelines for National Greenhouse Gas
+  Inventories, Volume 4 Agriculture, Forestry and Other Land Use, Chapter 6 Grassland,
+  table 6.2 (Updated). https://www.ipcc-nggip.iges.or.jp/public/2019rf/vol4.html
+                                                                            17
+
+RELATIVE STOCK CHANGE FACTORS (FLU, FMG, AND FI ) FOR GRASSLAND MANAGEMENT
+
+Factor      Level  Temperature  IPCC      Error1,2  Description
+value type         regime       defaults
+
+Management Improved Temperate/  1.14      ±11%      Represents grassland which
+                                                    is sustainably managed
+(FMG)       grassland Boreal                        with light to moderate
+                                                    grazing pressure (or cutting
+                                                    and removal of vegetation)
+                                                    and that receive at least
+                                                    one improvement (e.g.,
+                                                    fertilization, species
+                                                    improvement, irrigation).
+
+                   Tropical     1.17      ±9%
+
+                   Tropical     1.16      ±40%
+                   Montane5
+
+Input       Medium All          1.0       NA        Applies to improved
+
+(applied                                            grassland where no
+
+only to                                             additional management
+
+improved                                            inputs have been used.
+
+grassland)
+
+(FI )
+
+Input       High   All          1.11      ±7%       Applies to improved
+                                                    grassland where one or
+(applied                                            more additional
+                                                    management
+only to                                             inputs/improvements have
+                                                    been used (beyond that
+improved                                            required to be classified as
+                                                    improved grassland).
+grassland)
+
+(FI )
+
+Management factors were derived using methods and studies provided in IPCC 2019, Annex 6A1. The basis
+for the other factors is described in the 2006 IPCC Guidelines.
+Source:
+3 The bibliography for the following references used for management factor can be found in Annex 6A.1:
+Cao et al., 2013; Ding et al., 2014; Du et al., 2017; Frank et al., 1995; Franzluebbers and Stuedemann,
+2009; Gao et al., 2018; Gao et al., 2007; Gillard, 1969; Han et al., 2008; He et al., 2008; Ingram et al.,
+2008; Kioko et al., 2012; Kölbl et al., 2011; Li et al., 2008; Liu et al., 2012; Manley et al., 1995; Martinsen
+et al., 2011; Potter et al., 2001; Qi et al., 2010; Rutherford and Powrie, 2011; Schulz et al., 2016; Schuman
+et al., 1999; Segoli et al., 2015; Smoliak et al., 1972; Sun et al., 2011; Talore et al., 2016; Teague et al.,
+2011; Wang et al., 2017; Wei et al., 2011; Xu et al., 2014; Yanfen et al., 1998; Zhang et al., 2018; Zhou et
+al., 2010; Zou et al., 2015
+Notes:
+1 ± two standard deviations, expressed as a percent of the mean; where sufficient studies were not available
+for a statistical analysis a default, based on expert judgement, of + 40% is used as a measure of the error.
+NA denotes `Not Applicable', for factor values that constitute reference values or nominal practices for the
+input or management classes.
+2 This error range does not include potential systematic error due to small sample sizes that may not be
+representative of the true impact for all regions of the world.
+4 High intensity grazing may be moderately degraded, but do not represent excessive grazing intensity that
+leads to severe grassland
+5 There were not enough studies to estimate stock change factors for mineral soils in the tropical montane
+climate region. As an approximation, the average stock change between the temperate and tropical regions
+was used to approximate the stock change for the tropical montane climate.
+                                                                                                 18
+
+Table 4: Relative stock change factors (FLU, FMG, FI) for different management
+activities on cropland (IPCC 201910)
+
+RELATIVE STOCK CHANGE FACTORS (FLU, FMG, AND FI ) (OVER 20 YEARS) FOR
+DIFFERENT MANAGEMENT ACTIVITIES ON CROPLAND
+
+Factor  Level      Temperatur Moisture      IPCC      Error2,3  Description
+value                                       defaults
+type               e regime      regime1
+
+Land    Long- Cool               Dry        0.77      ±14% Represents area that has been
+use5                                        0.70
+(FLU)   term       Temperate     Moist                ±12%      converted from native
+        cultivate  / Boreal                 0.76                conditions and continuously
+                                            0.69
+        d          Warm          Dry        0.92      ±12%      managed for predominantly
+                                            0.83                annual crops over 50 yrs.
+                   Temperate
+                                     Moist            ±16% Land-use factor has been
+                                                                 estimated under a baseline
+                   Tropical Dry
+                                                      ±13% condition of full tillage and
+
+                                 Moist/               ±11%      nominal ("medium") carbon
+                                 Wet                            input levels. Input and tillage
+
+                                                                factors are also applied to
+
+                                                                estimate carbon stock changes,
+
+                                                                which includes changes from
+
+                                                                full tillage and medium input.
+
+Land    Paddy All                Dry and 1.35         ±4%       Long-term (> 20 year) annual
+use6    rice                     Moist/                         cropping of wetlands (paddy
+(FLU)                            Wet                            rice). Can include double-
+                                                                cropping with non-flooded
+                                                                crops. For paddy rice, tillage
+                                                                and input factors are not used.
+
+Land    Perennia Temperate Dry and          0.72      ±22% Long-term perennial tree crops
+use5                                        1.01                 such as fruit and nut trees,
+(FLU)   l/ Tree / Boreal Moist
+                                                      ±25% coffee and cacao.
+        Crop       Tropical Dry and
+
+                                 Moist/
+
+                                 Wet
+
+Land    Set        Temperate Dry            0.93      ±11% Represents temporary set aside
+use                                         0.82                 of annually cropland (e.g.,
+(FLU)   aside (< / Boreal                   0.88                 conservation reserves) or other
+
+        20 yrs) and              Moist/               ±17% idle cropland that has been
+                       Tropical  Wet                             revegetated with perennial
+
+                   Tropical n/a                       ±50% grasses.
+                   montane4
+
+Tillage Full       All           Dry and 1.00 n/a               Substantial soil disturbance
+                                 Moist/                         with full inversion and/or
+(FMG)                            Wet                            frequent (within year) tillage
+                                                                operations. At planting time,
+                                                                little (e.g., <30%) of the
+                                                                surface is covered by residues.
+
+Tillage7 Reduced                 Dry        0.98 ±5%
+
+10 IPCC 2019 Refinement to the 2006 IPCC Guidelines for National Greenhouse Gas
+  Inventories, Volume 4 Agriculture, Forestry and Other Land Use, Chapter 5 Cropland,
+  table 5.5 (Updated). https://www.ipcc-nggip.iges.or.jp/public/2019rf/vol4.html
+                                                                                                19
+
+RELATIVE STOCK CHANGE FACTORS (FLU, FMG, AND FI ) (OVER 20 YEARS) FOR
+DIFFERENT MANAGEMENT ACTIVITIES ON CROPLAND
+
+Factor  Level    Temperatur Moisture       IPCC      Error2,3  Description
+value                                      defaults
+type             e regime   regime1
+
+(FMG)            Cool       Moist          1.04      ±4%       Primary and/or secondary
+                                                               tillage but with reduced soil
+                 Temperate                 0.99      ±3%       disturbance (usually shallow
+                                           1.05      ±4%       and without full soil inversion).
+                 / Boreal                  0.99      ±7%       Normally leaves surface with
+                                                               >30% coverage by residues at
+                 Warm       Dry                                planting.
+
+                 Temperate
+                                   Moist
+
+                 Tropical Dry
+
+                            Moist/         1.04      ±7%
+                            Wet
+
+                 n/a        n/a            n/a       n/a
+
+Input Low        Temperate Dry             0.95      ±13% Low residue return occurs
+(FI)             / Boreal Moist            0.92
+                                           0.95      ±14%      when there is removal of
+                 Tropical Dry              0.92                residues (via collection or
+
+                                   Moist/  0.94      ±13% burning), frequent bare-
+                                   Wet
+                                                                fallowing, production of crops
+                 Tropical n/a                        ±14% yielding low residues (e.g.,
+                 montane4
+                                                               vegetables, tobacco, cotton),
+
+                                                     ±50% no mineral fertilization or N-
+                                                                fixing crops.
+
+Input Medium All            Dry and 1.00 n/a                   Representative for annual
+(FI)                        Moist/                             cropping with cereals where all
+                            Wet                                crop residues are returned to
+                                                               the field. If residues are
+                                                               removed then supplemental
+                                                               organic matter (e.g., manure)
+                                                               is added. Also requires mineral
+                                                               fertilization or N-fixing crop in
+                                                               rotation.
+
+Input   High -   Temperate Dry             1.04      ±13% Represents significantly greater
+(FI)    without  / Boreal                  1.11                 crop residue inputs over
+        manure   and                       1.08                 medium C input cropping
+                 Tropical Moist/
+                                                     ±10% systems due to additional
+                                   Wet                          practices, such as production of
+                                                                high residue yielding crops, use
+                 Tropical n/a
+                 montane4                            ±50% of green manures, cover crops,
+                                                                improved vegetated fallows,
+                                                                irrigation, frequent use of
+                                                                perennial grasses in annual
+                                                                crop rotations, but without
+                                                                manure applied (see row
+                                                                below).
+
+Input   High -   Temperate Dry             1.37      ±12% Represents significantly higher
+(FI)    with                               1.44                 C input over medium C input
+        manure   / Boreal                  1.41
+                                                     ±13% cropping systems due to an
+                 and        Moist/                              additional practice of regular
+
+                 Tropical Wet                        ±50% addition of animal manure.
+
+                 Tropical n/a
+                 montane4
+                                                                                  20
+
+RELATIVE STOCK CHANGE FACTORS (FLU, FMG, AND FI ) (OVER 20 YEARS) FOR
+DIFFERENT MANAGEMENT ACTIVITIES ON CROPLAND
+
+Factor  Level   Temperatur Moisture  IPCC      Error2,3  Description
+value                                defaults
+type            e regime  regime1
+
+Notes: Long-term cultivation, perennial crops paddy rice and tillage management factors were derived using
+methods provided in IPCC 2019, Annex 5A1.
+1 Where data were sufficient, separate values were determined for temperate and tropical temperature
+regimes; and dry, moist, and wet moisture regimes. Temperate and tropical zones correspond to those
+defined in Chapter 3; wet moisture regime corresponds to the combined moist and wet zones in the tropics
+and moist zone in temperate regions.
+2 ± two standard deviations, expressed as a percent of the mean; where sufficient studies were not available
+for a statistical analysis to derive a default, uncertainty was assumed to be + 50% based on expert opinion.
+NA denotes `Not Applicable', where factor values constitute defined reference values, and the uncertainties are
+reflected in the reference C stocks and stock change factors for land use.
+3 This error range does not include potential systematic error due to small sample sizes that may not be
+representative of the true impact for all regions of the world.
+4 There were not enough studies to estimate some of the stock change factors for mineral soils in the tropical
+montane climate region. As an approximation, the average stock change between the temperate and tropical
+regions was used to approximate the stock change for the tropical montane climate.
+
+7. Project Scenario
+
+Under the project scenario, SOC relevant practices are applied in the project
+area. As with the baseline, the eligible project area shall be stratified into
+modelling units (MU) according to:
+
+    · Soil type
+    · Climate zone
+    · Land management / cropping system
+    · Input levels (e.g. fertilization)
+    · As applicable (to be defined in SOC Activity Modules):
+
+              o Tillage practices
+              o Soil properties (e.g. nutrient status or soil health)
+              o Hydrology
+              o Risk of carbon loss (e.g. fire risk)
+
+For each stratum (MU), SOC measurements have to be performed (Approach 1)
+and/or model parameters identified and verified (Approach 2 or 3).
+
+7.1 Project Scenario Calculations
+
+For all of the eligible project area, SOC stocks at time t are calculated as the
+sum of stocks in each stratum multiplied by the stratum area:
+
+         = =1(, × )                                                    (5)
+
+        Where:
+
+        SOCt = soil organic carbon in the eligible project area at time t [tC]
+
+        SOCt,y = soil organic carbon in stratum y at time t [tC ha-1]
+
+        Ay      = area of stratum y at time t [ha]
+                                                                                                                                     21
+
+For each stratum in the eligible project area, SOC stocks are quantified using
+any of the three approaches. If a different approach is used for baseline and
+project scenarios in a stratum, conservativeness and comparability have to be
+ensured, following the procedures outlined in section 8 below and model
+assessment criteria in section 16.2.
+
+    · Approach 1: SOCt,y is measured in an adequate number of soil profiles to
+         meet Gold Standard uncertainty requirements in each stratum (compare
+         section 16.2). Currently accepted protocols are the ICRAF protocol11 and
+         the VCS SOC Module12. As these protocols require a certain measure of
+         field and laboratory technology, alternate protocols may be proposed in
+         SOC Activity Modules or on project level. Deviations from the protocols
+         listed in the framework methodology or activity module (or use of
+         alternate protocols) are subject to review and decision by The Gold
+         Standard.
+
+For ex-ante calculations, literature references or an accepted soil carbon model
+shall be used, following Approach 2 below.
+
+    · Approach 2: SOCt,y is derived from data published in peer-reviewed
+         literature or accepted soil carbon models13. Evidence for applicability of
+         the literature values and model parameters to the project site must be
+         provided and validated as described in section 16.2. Specifically,
+         applicability shall be shown with respect to:
+                   · Climate factors (e.g. precipitation levels and seasonal
+                        distribution)
+                   · Soil and vegetation types
+                   · Current and historic management systems (land use category,
+                        crops, tillage techniques, fertilization)
+
+         Direct application of literature values is only permitted if the source
+         conditions are comparable to the project environment, evidence of which
+         shall be provided as described in section 16. Furthermore, literature
+         values shall only be applied within the spatial and temporal dimensions
+         analysed in the original source (e.g. SOC depth, timespan for which
+
+11 Aynekulu, E. Vagen, T-G., Shephard, K., Winowiecki, L. 2011. A protocol for modeling,
+measurement and monitoring soil carbon stocks in agricultural landscapes. Version 1.1.
+World Agroforestry Centre (ICRAF), Nairobi.
+(http://old.worldagroforestry.org/downloads/Publications/PDFS/TM11192.pdf)
+
+12 Verified Carbon Standard (VCS) 2012. Module VMD0021 Estimation of Stock in The
+Soil Carbon Pool (Version 1.0). (https://verra.org/methodology/vmd0021-estimation-of-
+stocks-in-the-soil-carbon-pool-v1-0/)
+
+13 such as RothC (https://www.rothamsted.ac.uk/rothamsted-carbon-model-rothc) or
+Century (http://www.nrel.colostate.edu/projects/century/) soil carbon models
+                                                                             22
+
+changes are documented). If a range of parameter values is given in a
+source or data is aggregated across various factor levels (e.g. average
+SOC in a region, across a range of soil types), the most conservative
+value shall be applied.
+
+Alternatively, the SOC values from literature may be verified by
+comparing them to measurements in a set of sample sites within the
+respective project stratum to indicate conservativeness of the parameter
+values applied. Such measurements are required if evidence for
+applicability (as listed above) of literature values or model parameters is
+deemed insufficient by the VVB.
+
+· Approach 3: If no data for SOCt,y is available, it may be modelled using
+    the approach documented in IPCC 2019. The land use factors FLU, FMG and
+    FI used in this approach have a time dependency based on the estimated
+    time to reach an equilibrium state after a management change (for IPCC
+    2019 and IPCC 2006 defaults factors, this is 20 years). Equation 6
+    (below) provides an approach to account for shorter crediting periods and
+    shall thus be applied.
+
+, = , + ,
+
+, = , × , × (,, × ,, - ,, × ,,) ×
+
+                                                                      (6)
+
+
+
+Where:
+
+SOCt,y = soil organic carbon in stratum y at time t [tC ha-1]
+
+SOCBL,y = soil organic carbon in stratum y before project start (see
+            equation 9) [tC ha-1]
+
+SOCt,y = change in soil organic carbon since project start in stratum y at
+            time t [tC ha-1]
+
+SOCREF,y = reference soil organic carbon stock under natural vegetation in
+            stratum y [tC ha-1]
+
+FLU, y = land use factor in stratum y [dimensionless]
+
+FMG,BL,y = tillage factor before project start in stratum y [dimensionless]
+
+FI,BL,y = input factor before project start in stratum y [dimensionless]
+
+FMG,PR,y = tillage factor under the project scenario in stratum y
+            [dimensionless]
+
+FI,PR,y = input factor under the project scenario in stratum y
+            [dimensionless]
+
+DPR     = time dependency of FMG, PR and FI,PR factors14 [yr]
+
+14 For IPCC 2019 and IPCC 2006 default factors, D equals 20 years
+           23
+
+TPR  = number of years since project start at time t; maximum TPR = D
+
+     [yr]
+
+Under the applicability conditions of this Framework Methodology, no land use
+change is taking place and thus the SOCREF,y and FLU,y values are identical to the
+respective baseline values.
+
+For FMG,PR,y and FI,PR,y factors, default values from the IPCC 2019 guidelines may
+be applied within a given temperature and moisture regime as in the baseline
+scenario (see Table 3 and Table 4), but now referring to the management and
+input levels under the project scenario. Note that the same climate zone and soil
+type as for baseline calculations shall be used. If national or regional factors are
+available (IPCC Tier 2 or Tier 3 data) these should be used instead. In such
+cases, time dependency D also has to be matched to the respective source.
+
+8. Procedures for Approach Change
+
+Any approach change between baseline and project scenario calculations shall
+meet the following conditions and procedures:
+
+    1. If approach 1 or 2 are used for quantification, change to approach 3 is not
+         allowed.
+
+    2. At project start, calculations result from both approaches shall be
+         compared. Differences shall be assessed and procedures below applied:
+              a. Neutral change: If SOC stocks calculated (Approach 2) or measured
+                   (Approach 1) at project start do not differ by more than 5% of the
+                   stocks calculated and verified with the previous approach for the
+                   baseline scenario (see section 16.2), the transition can be
+                   considered neutral and may be permitted. The result of the new
+                   Approach shall be applied for stock change calculations. Exception:
+                   If the baseline stock was measured under Approach 1 and this
+                   baseline SOC value is higher than the new Approach 2 result, the
+                   measured baseline value shall remain to ensure conservativeness.
+
+              b. SOC change (modelled): If SOC stocks calculated with a new
+                   Approach 2 method differ by more than 5% from the stocks
+                   calculated and verified with the previous approach for the baseline
+                   scenario, the applicability of the selected dataset or model and
+                   parametrization shall be reviewed at project validation. If the model
+                   and data is deemed applicable upon review by the VVB, the
+                   baseline value shall be corrected accordingly. Exception: If the
+                   baseline stock was measured under Approach 1 and this baseline
+                   SOC value is higher than the new Approach 2 result, the measured
+                   baseline value shall remain to ensure conservativeness.
+                                                                                                                                     24
+
+              c. SOC change (measured): If SOC stocks measured with a new
+                   Approach 1 sample differ by more than 5% from the stocks
+                   calculated and verified with the previous approach for the baseline
+                   scenario, the baseline value shall be corrected accordingly.
+
+Table 5 illustrative examples for approach change, change assessment and
+outcome.
+                                                                                                                                               25
+
+Table 5: Examples for Approach Changes
+
+Baseline scenario  Project scenario                       Change assessment                                                      Change outcome
+      approach          approach
+
+Approach  SOC      Approach  SOC        Change rationale                        Change rule                        Review    Baseline    Approach
+          Stock              Stock                                                                               result (if     value    for project
+                                                                                                                applicable)
+Appr. 3   55       Appr. 2   54      The project owner applies a specific SOC   Rule 2a): Difference is less   n/a           54           scenario
+          ± 8%               ± 4%    model for the practices under project           than 5% change is                                   Appr. 2
+                                     scenario. This model is not applicable          neutral                   Model
+Appr. 3   143      Appr. 2   126     under the baseline scenario due to lack                                   confirmed     126         Appr. 2
+Appr. 2   ±                  ± 6%    of historic data. A simpler model is used  Rule 2b): Difference is more   n/a
+Appr. 1   30%15                      for the baseline calculations.                  than 5% Review
+          37       Appr. 2   39                                                      needed                    n/a           39          Appr. 2
+          ±                  ± 5%    Data collected in the baseline period has
+          12%                        been expanded with regional soil data      Rule 2a): Difference is less   n/a                       (new
+          45                         and a regional SOC model has been               than 5% change is
+          ± 2%                       created ad published. The project owner         neutral                   n/a                       model)
+                                     wants to use the high-accuracy
+                   Appr. 2   47      measured baseline data but use a model     Rule 2a): Difference is less   n/a           47          Appr. 2
+                             ± 8%    approach going forward.                         than 5% change is
+                                     Previous SOC measurement is                     neutral
+Appr. 1   68       Appr. 2   65      discontinued at project start. The                                                      68          Appr. 2
+          ± 2%               ± 8%    project owner wants to apply the           Rule 2a): Difference is less
+                                     (measured) start value in an Approach 3         than 5% special case:
+Appr. 1   93       Appr. 3   93      model.                                          higher measured value                   To be       To be
+          ± 4%               ± 4%    The project owner intends to perform            to be kept as baseline                  revised     revised
+                                     measurements in the project area
+Appr. 3   82       Appr. 1   69      throughout the crediting period.           Rule 1): Not allowed                         69          Appr. 1
+          ±                  ± 9%    However, such measurements are not
+          14%                        available for the baseline period.         Rule 2c): Measurements
+                                     Instead, a simple Approach 3 model was          take precedence (even if
+                                     used for baseline calculations.                 difference is >5%)
+
+15 Applying a parameter with a high uncertainty will likely result in an uncertainty deduction off the benefits (see Section 9). In the
+assessment of the approach change, this does not have an impact.
+9. Uncertainty
+
+The project proponent shall use a precision of 20% of the mean at the 90%
+confidence level as the criteria for accuracy of total SOC change calculation. This
+target precision shall be achieved by selecting appropriate models, parameters,
+sampling and measurement techniques in accordance with Annex A - Uncertainty
+of LUF Parameters, LUF Activity Requirements for the three approaches under
+this Framework Methodology.
+
+Overall uncertainty for calculation of emissions reduction is performed as
+follows16:
+
+Step 1: Calculate upper and lower confidence limits for all input parameters
+
+Calculate the mean  , and standard deviation p, for each parameter and
+coefficient used in emissions calculations. The standard error of the mean is then
+given by
+
+SEp  =    p                                                                 (7)
+         np
+
+Where:   = Standard error in the mean of parameter p
+    SEp  = Standard deviation of the parameter p
+    p
+    np   = Number of samples used to calculate the mean and standard deviation
+         of parameter p
+
+If SEp (mean standard error) is available directly from the parameter
+source (e.g. literature, metadata) it may be used directly in the following
+calculations (without the use of Equation 7).
+
+Assuming that values of the parameter are normally distributed about the mean,
+values for the upper and lower confidence intervals for the parameters are given
+by
+
+Lowerp = Xp - t × SEp                                                       (8)
+
+Upperp = Xp + t × SEp
+
+Where:
+    Lowerp = Value at the lower end of the 90% confidence interval for parameter p
+
+16 This chapter on uncertainty is adapted from VCS VM0017 and approved registered
+"Gold Standard Agriculture Methodology for Increasing Soil Carbon Through Improved
+Tillage Practices".
+                                                                                    27
+
+Upperp = Value at the upper end of the 90% confidence interval for parameter p
+
+        = Mean value for parameter p
+
+SEp     = Standard error in the mean of parameter p
+
+tnp     = t-value for the cumulative normal distribution at 90% confidence
+
+        interval for the number of samples np for parameter p (apply Table 6
+
+        below). If no information is available on np a conservative value of 1.675
+
+        (n=3) shall be used.
+
+Table 6: t-values (tnp) applicable in equation (8). Select appropriate tnp value depending
+
+on the number of samples (np) measured for parameter p.
+
+np tnp  np  tnp np tnp        np tnp  np tnp             np tnp     np tnp
+
+        31 1.6973 61 1.6706 91 1.6620 121 1.6577 151 1.6551 181 1.6534
+
+        32 1.6955 62 1.6702 92 1.6618 122 1.6575 152 1.6550 182 1.6533
+
+3 2.9200 33 1.6939 63 1.6698 93 1.6616 123 1.6574 153 1.6549 183 1.6533
+
+4 2.3534 34 1.6924 64 1.6694 94 1.6614 124 1.6573 154 1.6549 184 1.6532
+
+5 2.1319 35 1.6909 65 1.6690 95 1.6612 125 1.6572 155 1.6548 185 1.6532
+
+6 2.0150 36 1.6896 66 1.6686 96 1.6610 126 1.6571 156 1.6547 186 1.6531
+
+7 1.9432 37 1.6883 67 1.6683 97 1.6609 127 1.6570 157 1.6547 187 1.6531
+
+8 1.8946 38 1.6871 68 1.6679 98 1.6607 128 1.6570 158 1.6546 188 1.6531
+
+9 1.8595 39 1.6859 69 1.6676 99 1.6606 129 1.6568 159 1.6546 189 1.6530
+
+10 1.8331 40 1.6849 70 1.6673 100 1.6604 130 1.6568 160 1.6545 190 1.6529
+
+11 1.8124 41 1.6839 71 1.6669 101 1.6602 131 1.6567 161 1.6544 191 1.6529
+
+12 1.7959 42 1.6829 72 1.6666 102 1.6601 132 1.6566 162 1.6544 192 1.6529
+
+13 1.7823 43 1.6820 73 1.6663 103 1.6599 133 1.6565 163 1.6543 193 1.6528
+
+14 1.7709 44 1.6811 74 1.6660 104 1.6598 134 1.6564 164 1.6543 194 1.6528
+
+15 1.7613 45 1.6802 75 1.6657 105 1.6596 135 1.6563 165 1.6542 195 1.6528
+
+16 1.7530 46 1.6794 76 1.6654 106 1.6595 136 1.6562 166 1.6542 196 1.6527
+
+17 1.7459 47 1.6787 77 1.6652 107 1.6593 137 1.6561 167 1.6541 197 1.6527
+
+18 1.7396 48 1.6779 78 1.6649 108 1.6592 138 1.6561 168 1.6540 198 1.6526
+
+19 1.7341 49 1.6772 79 1.6646 109 1.6591 139 1.6560 169 1.6540 199 1.6526
+
+20 1.7291 50 1.6766 80 1.6644 110 1.6589 140 1.6559 170 1.6539 200 1.6525
+
+21 1.7247 51 1.6759 81 1.6641 111 1.6588 141 1.6558 171 1.6539
+
+22 1.7207 52 1.6753 82 1.6639 112 1.6587 142 1.6557 172 1.6538
+
+23 1.7172 53 1.6747 83 1.6636 113 1.6586 143 1.6557 173 1.6537
+
+24 1.7139 54 1.6741 84 1.6634 114 1.6585 144 1.6556 174 1.6537
+
+25 1.7109 55 1.6736 85 1.6632 115 1.6583 145 1.6555 175 1.6537
+
+26 1.7081 56 1.6730 86 1.6630 116 1.6582 146 1.6554 176 1.6536
+
+27 1.7056 57 1.6725 87 1.6628 117 1.6581 147 1.6554 177 1.6536
+
+28 1.7033 58 1.6720 88 1.6626 118 1.6580 148 1.6553 178 1.6535
+
+29 1.7011 59 1.6715 89 1.6623 119 1.6579 149 1.6552 179 1.6535
+
+30 1.6991 60 1.6711 90 1.6622 120 1.6578 150 1.6551 180 1.6534
+
+Step 2: Calculate SOC change (CSOC,t-0) with the lower and upper confidence
+interval values of the input parameters
+
+Apply the Lower and Upper parameter values in the models for CSOC,t-0 , i.e.
+equations for SOCBL and SOCt, to achieve a lower and upper value for CSOC
+
+LowerCSOC = ModelSOC{Lowerp}                                        (9)
+
+UpperCSOC = ModelSOC{Upperp}
+
+Where:
+
+LowerCSOC = lower value of SOC change at a 90% confidence interval
+
+UpperCSOC = upper value of SOC change at a 90% confidence interval
+                                                                             28
+
+ModelSOC   = calculation models for SOCt, SOC0, SOCBL
+Lowerp
+           = values at the lower end of the 90% confidence interval for all
+Upperp     parameters p
+
+           = values at the upper end of the 90% confidence interval for all
+           parameters p
+
+Step 3: Calculate the uncertainty in the model output
+The uncertainty in the output model is given by
+
+   UNC = |UpperCSOC-LowerCSOC|                                     (10)
+
+                               2×CSOC
+
+Where:
+
+UNC        = model output uncertainty [%]
+
+LowerCSOC = lower value of SOC change at a 90% confidence interval [tC]
+
+UpperCSOC = upper value of SOC change at a 90% confidence interval [tC]
+
+CSOC       = change in soil organic carbon stocks [tC]
+
+Step 4: Adjust the estimate of SOC change (CSOC,t-0) based on the
+uncertainty in the model output
+
+If the uncertainty of SOC change models is less than or equal to 20% of the
+mean SOC change value then the project owner may use the estimated value
+without any deduction for uncertainty, i.e. UD = 0 in Equation 2.
+
+If the uncertainty of soil models is greater than 20% of the mean value, then the
+project owner shall use the estimated value subject to an uncertainty deduction
+(UD) in Equation 2, calculated as
+
+UD = UNC - 20%                                                     (11)
+
+Where:
+
+UD         = uncertainty deduction [%]
+
+UNC = model output uncertainty (>20%) [%]
+
+10. Other Emissions
+
+Significant additional greenhouse gas emissions (>5% total) due to the project
+activity need to be accounted for. This explicitly includes emissions from
+increased fertilizer input and fossil fuel combustion. Activity Modules may define
+additional other emissions required.
+
+-0 = -0 + -0 + -0                                                  (12)
+
+Where:     = emissions from project activities in the calculation period [tCO2e]
+    PEt-0  = emissions from increased fertilizer use in the calculation period [tCO2e]
+    FEt-0
+                                                                                     29
+
+FUt-0   = emissions from increased fuel and electricity use in the calculation
+AEt-0   period [tCO2e]
+
+        = other agrochemical emissions in the calculation period [tCO2e]
+
+10.1 Increased Nitrogen Fertilizer Input
+
+Emissions from increased nitrogen (N) fertilizer input in project scenario as
+compared to the baseline scenario are calculated as follows. No differentiation is
+made between synthetic and organic N fertilizer. Note that this formula is not
+applicable for decreases in N fertilizer input, in which case FEt-0,y is considered
+0. To account for reductions in fertilizer input (and the respective GHG emissions
+reductions), a separate Gold Standard methodology may be applied.
+
+-0 =  × =1(, - )                                                  (13)
+
+Where:
+
+FEt-0 = emissions from increased fertilizer use in the calculation period [tCO2e].
+            Must be  0 in this methodology (i.e. no accounting of reductions).
+
+FEPR,a = N fertilizer input under the project scenario in year a of the calculation
+            period [kgN]
+
+FEBL = mean annual N fertilizer input under the baseline scenario [kgN]
+
+T       = number of years in the calculation period [yr]
+
+EFFE    = Conversion factor for emissions from N fertilizer [tCO2e kgN-1]. IPCC
+        2019 aggregated default value17 for EFFE is 0.01. Disaggregated default
+        values in IPCC 2019 Table 11.1 may be used if fertilizer inputs are known
+        per fertilizer type.
+
+FEPR and FEBL shall be documented by the project owner. For FEBL, mean annual
+input is calculated based on respective management records for 5 years prior to
+project start. If no adequate documentation can be provided, FEBL shall be no
+more than 50% of FEPR.
+
+10.2 Increased Combustion of Fossil Fuels and Electricity Use
+
+Additional CO2 emissions from use of fossil fuel and electricity in project
+activities (e.g. fuel used by farm machines due to needs for stronger tractors or
+additional passes to close/treat the surface, or fuel/electricity for irrigation
+pumps) need to be accounted for, unless project owner can demonstrate that
+fossil fuel/electricity used in the project scenario is less than or does not differ
+significantly from fossil fuel/electricity used in the baseline, in which case FUt-0
+is considered 0.
+
+-0 = =1(, - ) + (, - )                                            (14)
+
+Where:
+
+17 IPCC 2019, Vol 4 AFOLU, Table 11.1 (Aggregated default value)
+                                                                                30
+
+FUt-0   = emissions from increased fossil fuel and electricity use in the calculation
+FUPR,a  period [tCO2e]
+FUBL
+EUPR,a  = emissions from use of fossil fuels under the project scenario in year a of
+EUBL       the calculation period [tCO2e]
+T
+        = mean annual emissions from use of fossil fuels under the baseline
+        scenario [tCO2e]
+
+        = emissions from use of electricity under the project scenario in year a of
+           the calculation period [tCO2e]
+
+        = mean annual emissions from use of electricity under the baseline
+        scenario [tCO2e]
+
+        = number of years in the calculation period [yr]
+
+FUPR and FUBL shall be documented by the project owner and generally calculated
+with the equation below, based on fuel consumption by machine type and fuel
+emission factor.
+
+, =  ,, × ,                                                        (15)
+
+Where:
+
+FUi,a = emissions from use of fossil fuels in year a [tCO2e ha-1]
+
+FULi,MT,a = fuel consumption by the machinery type MT used in year a [litres]
+
+FEFi, MT = emissions factor for the fuel used in machinery MT [tCO2e litres-1]
+
+MT      = machinery type (gasoline two-stroke, gasoline four-stroke, diesel)
+
+i       = formula used for baseline (i=BL) as well as project scenario (i=PR)
+
+For FUBL, mean annual emissions are calculated based on respective
+management records for 5 years prior to project start. If this is not available,
+the amount of fuel combusted can be estimated using fuel efficiency (for
+example l/100 km, l/t-km, l/hour) of the vehicle and the appropriate unit of use
+for the selected fuel efficiency (for example km driven if efficiency is given in
+l/100 km). If no adequate documentation can be provided, FUBL shall be no more
+than 50% of FUPR.
+
+Non-CO2 GHG emissions caused by the use of fossil fuel from project activities
+(management operations, machinery, etc.) are insignificant and may thus be
+neglected.
+
+EUPR and EUBL shall be documented by the project owner and generally calculated
+with the equation below, based on electricity consumption by appliance and
+respective emission factor. If electricity is generated on-site using fossil fuels
+(e.g. in diesel generators for irrigation pumps), emissions from fuel combustion
+should be calculated instead, following the approach described above.
+
+, =  ,, × ,                                                        (16)
+                                                                                       31
+
+Where:
+
+EUi,a = emissions from use of fossil fuels in year a [tCO2e ha-1]
+
+EUWi,SE,a= electricity consumption from source SE in year a [kWh]
+
+EEFi, SE = emissions factor for the electricity used in source SE [tCO2e kWh-1]
+
+SE          = electricity source type (grid, fossil fuel generator, etc)
+
+i           = formula used for baseline (i=BL) as well as project scenario (i=PR)
+
+For EUBL, mean annual emissions are calculated based on respective
+management records for 5 years prior to project start. If no adequate
+documentation can be provided, EUBL shall be no more than 50% of EUPR.
+
+10.3 Other Agrochemical Emissions
+
+Additional agrochemical emissions (AE) related to the project activities from
+increased use of agrochemicals, especially pesticides or non-N fertilizers need to
+be accounted for, unless the project owner can demonstrate that agrochemicals
+used in the project scenario are less than or do not differ significantly from
+agrochemicals used in the baseline, in which case AEt-0 is considered 0.
+
+If use of agrochemicals (herbicides, pesticides) or non-N fertilizer is significantly
+higher in the project than in the baseline scenario, the project owner shall
+calculate respective emissions by using specific amounts and emission factors.
+Emission factors applied shall be based on manufacturer information or scientific
+sources.
+
+-0 = =1(, - )                                                             (17)
+
+Where:      = additional emissions from project activity in the calculation period
+    AEt-0   [tCO2e]
+
+    AEPR,a  = other emissions under the project scenario in year a of the calculation
+               period [tCO2e]
+    AEBL
+    T       = other emissions (annual mean) under the baseline scenario [tCO2e]
+
+            = number of years in the calculation period [yr]
+
+AEPR and AEBL shall be documented for each emitter type (agrochemical) by the
+project owner and calculated with the equation below, based on emission type,
+underlying quantity and respective emission factor.
+
+, =  ,, × ,                                                               (18)
+
+Where:
+    AEi,a = emissions from use of other agrochemicals in year a [tCO2e ha-1]
+    AQi,ET,a = quantity of agrochemicals for emitter type ET applied in year a [kg]
+                                                                            32
+
+AEFi, ET = emissions factor of the agrochemical used (for emitter type ET) [tCO2e
+            kg-1]
+
+ET  = emitter type (specific pesticide, fertilizer, or other agrochemical)
+
+i   = formula used for baseline (i=BL) as well as project scenario (i=PR)
+
+For AEBL, mean annual emissions are calculated based on respective
+management records for 5 years prior to project start. If no adequate
+documentation can be provided, AEBL shall be no more than 50% of AEPR.
+
+11. Leakage
+
+Leakage is defined as an increase in GHG emissions outside the project area as a
+result of project activities. Activity Modules shall provide leakage calculations if
+applicable.
+
+In the context of this Framework Methodology and respective Activity Modules,
+leakage could occur inter alia in relation to shift of crop production to other lands
+to compensate for yield reductions or to emissions from increased C runoff.
+
+Under this Framework Methodology's applicability conditions, projects are not
+allowed on wetlands, where C runoff could be an issue. Leakage from C runoff is
+thus considered 0.
+
+And, concerning yield-related leakage, project sites are normally actively
+maintained for commodity production during the project crediting period and
+thus yield-related leakage risks are relatively small. Crop producers are
+commonly risk averse and are unlikely to intentionally suffer reduced crop
+yields. Moreover, under this Framework Methodology's applicability conditions
+and the LUF Activity Requirements, projects shall not lead to a decrease in
+agricultural productivity, thus all projects shall be set up to maintain or increase
+yield. Accordingly, this Framework Methodology's applicability conditions do not
+allow yield reduction.
+
+For initial project calculations, LKt-0 is thus considered equal 0.
+
+Nevertheless, if a reduction in yield is detected in a performance certification, it
+is assumed that the lost production capacity will have to be made up for on land
+outside the project area. Emissions caused by such a shift must be accounted for
+as leakage, unless the project owner provides evidence that yield reductions are
+caused by factors unrelated to the project activity, e.g. regional yield reduction
+due to weather.
+
+Equation 19 is applied to calculate the carbon losses resulting from a reduction
+in crop yield (CY) and activity shift to a non-project land (leakage area) in a
+specific calculation period. In order to avoid undue accounting for leakage after
+temporary yield increases (i.e. no additional losses compared to the baseline
+                                                                                                    33
+
+yield), reduction in crop yield is always calculated against the lowest yield in the
+project area since project start. Note that under these conditions, leakage shall
+only be calculated with Equation 19 if yield CYt is lower than the minimal yield
+CYmin. Accounting of positive leakage is not allowed.
+
+LK-0 =  -     ×    ×  (BC+,-0  +            ,-0  +  ,-0)  (19)
+            
+
+Where:
+
+LKt-0   = emissions due to shift of production to non-project lands (leakage
+        area) [tCO2e]
+
+CYt     = crop yield in the project area at time t (5-year average) [kg ha-1]
+
+CYmin   = lowest crop yield in the project area in any calculation period since
+        project start (5-year average) [kg ha-1]
+
+CYBL    = crop yield in the project area under the baseline scenario (5-year
+        average) [kg ha-1]
+
+A       = total eligible project area [ha]
+
+BCLA    = change in biomass carbon stocks in leakage area [tCO2e ha-1]
+
+SOCLA,t-0 = change in soil organic carbon stocks in leakage area [tCO2e ha-1]
+
+FELA,t-0 = change in emissions from use of fertilizer in leakage area [tCO2e ha-1]
+
+FULA,t-0 = change in emissions from fuel use in leakage area [tCO2e ha-1]
+
+CYt, CYmin and CYBL are based on project owner's documentation. For each point
+in time, the previous five years' average is used as yield quantity. Note that for
+the first calculation period CYmin equals CYBL.
+
+BCLA, SOCLA, FELA, FULA are calculated as the difference between respective
+carbon stocks on the land to which the activity would most likely be shifted (i.e.
+the pre-shift vegetation cover and land use) and the long-term biomass carbon
+stock under the baseline cropping system.
+
+For BCLA biomass carbon stocks according to IPCC (2019)18 or applicable local
+literature values are compared to the respective stocks under the baseline
+cropping system. All other parameters are calculated according to the
+approaches described in this methodology, taking into account the situation in
+the leakage area (i.e. use of appropriate parameters for different soils or
+management practices).
+
+12. Double Counting and Benefits Overlap
+
+18 IPCC 2019, Vol 4 AFOLU, table 4.7 (forests), table 4.8 (plantations), chapter 5.2.1 (cropland),
+chapter 6.2.1 (grassland).
+                                                                                                                                     34
+
+Refer to the GHG Emissions Reductions & Sequestration Product Requirements
+Annex A "Double Counting Requirements" for cross-market or cross-project
+double counting rules. In addition, this section outlines rules to avoid double
+counting of benefits within a project (benefits overlap), e.g. due to
+implementation of multiple SOC activities applying multiple SOC Activity
+Modules.
+
+Benefits overlap from SOC increase from multiple SOC activities would occur
+when impacts of activities are not cumulative yet calculated through
+independent approaches (e.g. with separate models or even separate
+approaches under the SOC Framework Methodology). To avoid such effects, the
+following rules shall be followed when applying multiple Activity Modules in one
+project under the Framework Methodology:
+
+12.1 Project applying direct measurement (Approach 1 under the
+         Framework Methodology) in at least one activity module applied
+
+For strata with measured SOC impacts, the resulting difference represents
+impacts of all project activities, i.e. no additional model calculations for SOC
+increase shall be done.
+
+For strata without measurements (i.e. where only SOC Activity Modules without
+direct measurement are applied), rules in section 12.2 (below) apply.
+
+12.2 Projects applying SOC models or reference data (Approach 2 or 3
+         under the Framework Methodology) without direct measurements
+
+If SOC pools impacted can be clearly separated between activities, either
+through chemical or physical differentiation in the soil (i.e. different soil organic
+components impacted) or due to geographical separation (i.e. impact in different
+strata), separate models or approaches may be applied to calculate cumulative
+impact.
+
+If SOC pools impacted cannot be separated and cumulative impact cannot be
+proven (e.g. from published research comparing impacts in a combined study
+including interactions between activities), only benefits from one activity shall be
+accounted for. It is recommended that a direct measurement approach is
+implemented in such cases to provide evidence of cumulated impact.
+
+13. Project Buffer
+
+According to GHG Emissions Reduction & Sequestration Product Requirements, a
+fixed percentage of the validated and verified GS VERs must be transferred into
+the Gold Standard Compliance Buffer if the SOC activity results in sequestration
+(buffer is not required for emission reduction activities). The buffer is non-
+refundable, though the project owner may transfer GS VERs from other Gold
+                                                                                                                                     35
+
+Standard certified projects to the Gold Standard Compliance Buffer in lieu of the
+GS VERs from the project.
+
+14. Additionality
+
+All GS projects shall demonstrate that they would not have been implemented
+without the benefits of carbon certification. Specific rules and guidelines on how
+to assess additionality can be found in the Additionality section LUF Activity
+Requirements and the AGR Additionality (AGR projects) Template.
+
+15. Sustainable Development Goals
+
+Primary SDG targeted by this Framework Methodology is SDG 13, through
+avoidance of emissions as well as sequestration of carbon in the soil.
+Contribution to further specific Sustainable Development Goals (SDGs) is not
+defined here as it is specified at the project level following Principles &
+Requirements.
+
+16. Monitoring
+
+16.1 Monitoring frequency and performance reviews
+The project proponent shall submit a monitoring report at each verification and
+performance review according to Principles & Requirements.
+
+In addition, the project proponent shall submit an annual report containing at
+least the information listed in Principles & Requirements using the Annual Report
+Template, and those labelled as annually in below monitoring tables.
+
+The project proponent shall also collect and document evidence that the
+methodology's applicability conditions are met at all times. The project
+proponent shall:
+
+    · Electronically archive all monitoring data collected in the last crediting
+         period for up to 2 years after the crediting period comes to an end; and
+
+    · Ensure that measuring equipment is certified to national or international
+         standards and calibrated according to the national standards and
+         reference points or international standards and recalibrated at appropriate
+         intervals according to manufacturer specifications.
+
+16.2 Assessment of data and model applicability
+At the time of Validation, the project owner shall document applicability of
+parameters and models used in Approach 2 or Approach 3 based on field
+                                                                                                                                     36
+
+assessments. For each stratum, a representative number of small temporary soil
+pits (area of 50 by 50 cm) shall be dug to a depth of 50 cm. The resulting soil
+profiles are assessed regarding the following criteria:
+
+    1. Soil type and soil depth: Verify that the soil type and depth match data
+         source's conditions.
+
+    2. Inorganic soil contents (rock, sand, clay etc.): Verify that portion of
+         inorganic soil contents, match the data source's conditions. Especially
+         increased presence of rocks or rock aggregates may require conservative
+         adaptation of literature data and models (reduction of active soil
+         components, density corrections, etc.).
+
+    3. Organic matter: Assess the presence of (pre-project) organic matter such
+         as large diameter root residues (indicating e.g. previous woody crops or
+         plantation use). If such residues are present, the project's pre-project soil
+         carbon stock may be considerably higher than a C-depleted soil. The
+         resulting reduction of potential SOC increase may require model
+         adaptation or exclusion of areas from project.
+
+    4. Evidence for land management history: Assess soil structure for evidence
+         of previous land management (e.g. tillage intensity and depth). Soil
+         structure (e.g. upper soil horizons, porosity/compaction, disturbance
+         depth, etc.) shall be in line with historic land management and literature
+         source's practices.
+
+The number of pits used for this assessment shall represent the project situation
+and distributed across the defined strata. In heterogeneous areas , e.g. with
+highly varying soils, land use history (e.g. fragmented historic deforestation)
+and/or management activities, the number of samples will have to be large
+enough to represent the variation and confirm the stratification.
+
+The soil pits shall remain open until after the project initial certification audit.
+The VVB shall assess the adequacy of the sampling to confirm applicability of
+selected approaches and shall revisit a series of soil pits to verify the project
+owner's assessment. If applicability of selected approaches is in doubt,
+measurement of SOC in a sub-sample at this time is recommended.
+
+The assessments described above are explicitly also required for projects
+claiming retrospective crediting. Despite the project activities having already
+taken place at initial certification, the above criteria will indicate applicability and
+adequacy of data/model choice.
+
+16.3 Data and Parameters collected for baseline calculation and when
+         project areas (farms/land parcels) are being added and at
+         renewable of crediting period if required
+
+The following baseline information on each project area (i.e. farm/land parcel)
+within the project region shall be recorded for any SOC Activity Module and
+project:
+                                                                                   37
+
+· Unique numerical identifier for each project area (i.e. farm/land parcel)
+· Name of farm/land owner
+· Physical address and GPS coordinates of locations
+· A statement clarifying the ownership of emission reductions
+
+Data/parameter:       A
+                      ha
+Unit                  Total project area
+Description           Project owner records
+Source of data
+Value(s) applied      Project start
+Measurement
+procedures
+Monitoring frequency
+QA/QC procedures
+Additional comments
+
+Data/parameter:       Ay
+                      ha
+Unit                  Area per stratum y
+Description           Project owner records
+Source of data
+Value(s) applied      Project start
+Measurement
+procedures
+Monitoring frequency
+QA/QC procedures
+Additional comments
+
+Data/parameter:       AQBL,ET,a
+Unit                  kg
+Description           Agrochemical quantity applied by emitter type for baseline
+                      activities
+Source of data        Project owner records (5year pre-project average current)
+Value(s) applied
+Measurement           Annually
+procedures
+Monitoring frequency
+QA/QC procedures
+Additional comments
+
+Data/parameter:       CYBL
+Unit
+Description           Kg/ha
+                      Average annual crop yield per ha in the project area during
+Source of data        the baseline period (5 year average)
+                      Project owner records (self-reporting e.g. sale receipts,
+Value(s) applied      contracts, etc.)
+                                                                                    38
+
+Measurement           Yield is recorded annually and an average annual yield
+procedures            calculated across the 5-year baseline period
+Monitoring frequency
+QA/QC procedures      Annually
+Additional comments
+
+Data/parameter:       SOCBL,y
+Unit                  tC/ha
+Description           Soil organic carbon density at equilibrium per stratum y
+Source of data        Project owner records (approach 1), from literature
+                      (approach 2) or modelled (approach 3)
+Value(s) applied
+Measurement           Project start
+procedures
+Monitoring frequency
+QA/QC procedures
+Additional comments
+
+Data/parameter:       SOCREF,y
+Unit                  tC/ha
+Description           Soil organic carbon reference density (under natural
+                      vegetation) at equilibrium per stratum y
+Source of data        values from literature / local studies
+Value(s) applied
+Measurement           Project start
+procedures
+Monitoring frequency   Used in approach 3 only
+QA/QC procedures
+Additional comments
+
+Data/parameter:       EFLE
+Unit                  [tCO2e kgN-1]
+Description           Conversion factor for emissions from N fertilizer
+Source of data        IPCC defaults
+Value(s) applied       Aggregated default value for EFFE is 0.01. Disaggregated
+                      default values in IPCC 2019 Table 11.1 may be used if
+Measurement           fertilizer inputs are known per fertilizer type.
+procedures
+Monitoring frequency  Project start
+QA/QC procedures
+Additional comments   Used for calculations of emissions from increased fertilizer
+                      use only. Not to be used under the SOC Framework
+                      Methodology for emission reductions
+
+Data/parameter:       FLU,y
+Unit                  [dimensionless]
+                                                                                  39
+
+Description           land use factor in stratum y
+Source of data        IPCC defaults or national / local studies (preferred)
+Value(s) applied
+Measurement           Project start
+procedures
+Monitoring frequency
+QA/QC procedures
+Additional comments
+
+Data/parameter:       FI,BL,y
+Unit                  [dimensionless]
+Description           input factor before project start in stratum y
+Source of data        IPCC defaults or national / local studies (preferred)
+Value(s) applied
+Measurement           Project start
+procedures
+Monitoring frequency
+QA/QC procedures
+Additional comments
+
+Data/parameter:       FEBL
+                      kg
+Unit                  mean annual N fertilizer input under the baseline scenario
+Description           Project owner records (5year pre-project average)
+Source of data
+Value(s) applied      Project start, if applicable
+Measurement
+procedures
+Monitoring frequency
+QA/QC procedures
+Additional comments
+
+Data/parameter:       FULBL,MT
+Unit                  litres
+Description           Fossil fuel consumed recorded by vehicle and fuel type for
+                      baseline activities
+Source of data        Project owner records or modelling (5year pre-project
+                      average)
+Value(s) applied
+Measurement           Project start, if applicable
+procedures
+Monitoring frequency
+QA/QC procedures
+Additional comments
+
+Data/parameter:       EUWBL,SE
+Unit                  kWh
+                                                                               40
+
+Description           electricity consumed by source for baseline activities
+Source of data        Project owner records (5year pre-project average)
+Value(s) applied
+Measurement           Project start, if applicable
+procedures
+Monitoring frequency
+QA/QC procedures
+Additional comments
+
+In addition to the parameters listed above, the SOC Activity Modules may specify
+additional monitoring parameters depending on activity and calculation
+approach.
+
+16.4 Data and Parameters monitored
+
+Data/parameter:       A
+                      ha
+Unit                  Total project area
+Description           Project owner records
+Source of data
+Value(s) applied      Annually
+Measurement
+procedures
+Monitoring frequency
+QA/QC procedures
+Additional comments
+
+Data/parameter:       Ay
+                      ha
+Unit                  Area per stratum y
+Description           Project owner records
+Source of data
+Value(s) applied      Annually
+Measurement
+procedures
+Monitoring frequency
+QA/QC procedures
+Additional comments
+
+Data/parameter:       AQPR,ET,a
+                      kg
+Unit                  Agrochemical quantity by emitter type applied in year a
+Description           Project owner records (current)
+Source of data
+Value(s) applied      Annually
+Measurement
+procedures
+Monitoring frequency
+QA/QC procedures
+                                                                                    41
+
+Additional comments
+
+Data/parameter:       CYt
+Unit                  Kg/ha
+Description           Average annual crop yield per ha in the project area (5 year
+                      average)
+Source of data        Project owner records (current)
+Value(s) applied
+Measurement           Yield is recorded annually and an average annual yield
+procedures            calculated at the end of each 5-year reporting period
+Monitoring frequency  Annually
+QA/QC procedures
+Additional comments   This value shall be reported as evidence that no yield
+                      reduction is taking place.
+                      The lowest annual yield is considered CYmin and serve as
+                      threshold to assess yield reduction (see Equation 19)
+
+Data/parameter:       SOCt,y
+Unit                  tC/ha
+Description           Soil organic carbon density at equilibrium per stratum y
+Source of data        Project owner records (approach 1), from literature
+                      (approach 2) or modelled (approach 3)
+Value(s) applied
+Measurement           At each performance certification
+procedures
+Monitoring frequency
+QA/QC procedures
+Additional comments
+
+Data/parameter:       SOCREF,y
+Unit                  tC/ha
+Description           Soil organic carbon reference density (under natural
+                      vegetation) at equilibrium per stratum y
+Source of data        Same as in baseline
+Value(s) applied
+Measurement           Project start
+procedures
+Monitoring frequency  Used in approach 3 only
+QA/QC procedures
+Additional comments
+
+Data/parameter:       FLU,y
+Unit                  [dimensionless]
+Description           land use factor in stratum y
+Source of data        Same as in baseline
+Value(s) applied
+                                                                               42
+
+Measurement           Project start
+procedures
+Monitoring frequency
+QA/QC procedures
+Additional comments
+
+Data/parameter:       FI,PR,y
+Unit                  [dimensionless]
+Description           input factor before project start in stratum y
+Source of data        IPCC defaults or national / local studies (preferred)
+Value(s) applied
+Measurement           Annually
+procedures
+Monitoring frequency
+QA/QC procedures
+Additional comments
+
+Data/parameter:       FEPR,a
+                      kg
+Unit                  N fertilizer input under the project scenario in year a
+Description           Project owner records (current)
+Source of data
+Value(s) applied      Annually, if applicable
+Measurement
+procedures
+Monitoring frequency
+QA/QC procedures
+Additional comments
+
+Data/parameter:       FULPR,MT,a
+Unit                  litres
+Description           Fossil fuel consumed
+                      recorded by vehicle and fuel type in year a
+Source of data        Project owner records (current)
+Value(s) applied
+Measurement           Annually, if applicable
+procedures
+Monitoring frequency
+QA/QC procedures
+Additional comments
+
+Data/parameter:       EUWPR,SE,a
+Unit                  kWh
+Description           electricity consumed by source in year a
+Source of data        Project owner records (current)
+Value(s) applied
+                                               43
+
+Measurement           Annually, if applicable
+procedures
+Monitoring frequency
+QA/QC procedures
+Additional comments
+
+In addition to the parameters listed above, the SOC Activity Modules may specify
+additional monitoring parameters depending on SOC activity and calculation
+approach.
+                                                         44
+
+Annex 1: Eligible Soil Sampling Protocols
+
+The soil sampling protocols listed in Table 6 have been accepted for use under
+this Framework Methodology. Additional sampling protocols may be submitted to
+Gold Standard for addition to this list, subject to review and acceptance by Gold
+Standard.
+Table 6: List of eligible Soil Sampling Protocols
+
+Protocol  Reference                                      Source
+Name                                                     (accessed 09/2019)
+ICRAF     Aynekulu, E. Vagen, T-G., Shephard, K.,
+protocol  Winowiecki, L. 2011. A protocol for modeling,  http://old.worldagrof
+          measurement and monitoring soil carbon         orestry.org/download
+VCS SOC   stocks in agricultural landscapes. Version     s/Publications/PDFS/T
+Module    1.1. World Agroforestry Centre (ICRAF),        M11192.pdf
+          Nairobi.
+          Verified Carbon Standard (VCS) 2011.           https://verra.org/met
+          Module VMD0021 Estimation of Stock in the      hodology/vmd0021-
+          Soil Carbon Pool (Version 1.0).                estimation-of-stocks-
+                                                         in-the-soil-carbon-
+                                                         pool-v1-0/
+                                                                                                                                     45
+
+Annex 2: Additional References
+
+In addition to the references listed in section Error! Reference source not
+found., the following sources were referred for the development of this
+methodology.
+
+Aynekulu et al. (2011): A protocol for modeling, measurement and monitoring
+         soil carbon stocks in agricultural landscapes, version 1.1. World
+         Agroforestry Centre (ICRAF), Nairobi.
+         (http://old.worldagroforestry.org/downloads/Publications/PDFS/TM11192.
+         pdf)
+
+Bikila, N. G., Tessema, Z. K., & Abule, E. G. (2016). Carbon sequestration
+         potentials of semi-arid rangelands under traditional management practices
+         in Borana, Southern Ethiopia. Agriculture, Ecosystems &
+         Environment, 223, 108-114.
+
+Cheesman, S., Thierfelder, C., Eash, N. S., Kassie, G. T., & Frossard, E. (2016).
+         Soil carbon stocks in conservation agriculture systems of Southern
+         Africa. Soil and Tillage Research, 156, 99-109.
+
+European Soil Data Centre (2014): Soil data and information systems
+         (http://eusoils.jrc.ec.europa.eu/). Also contains information on non-
+         European soils.
+
+FAO (2015): World reference base for soil resources 2014 International soil
+         classification system for naming soils and creating legends for soil maps -
+         Update 2015 (http://www.fao.org/3/i3794en/I3794en.pdf and
+         http://www.fao.org/soils-portal/soil-survey/soil-classification/world-
+         reference-base/en/)
+
+Govaerts, B., Verhulst, N., Castellanos-Navarrete, A., Sayre, K. D., Dixon, J., &
+         Dendooven, L. (2009). Conservation agriculture and soil carbon
+         sequestration: between myth and farmer reality. Critical Reviews in Plant
+         Science, 28(3), 97-122.
+
+Hengl et al (2014): SoilGrids1km -- Global Soil Information Based on Automated
+         Mapping. PLOS ONE, DOI: 10.1371/journal.pone.0105992
+         (http://www.plosone.org/article/info%3Adoi%2F10.1371%2Fjournal.pone
+         .0105992).
+
+Hoyle, F. C., D'Antuono, M., Overheu, T., & Murphy, D. V. (2014). Capacity for
+         increasing soil organic carbon stocks in dryland agricultural systems. Soil
+         Research, 51(8), 657-667.
+                                                                                                                                     46
+
+IPCC (2006): Guidelines for National Greenhouse Gas Inventories, Volume 4
+         Agriculture, Forestry and Other Land Use (http://www.ipcc-
+         nggip.iges.or.jp/public/2006gl/vol4.html).
+
+IPCC (2019): 2019 Refinement to the 2006 IPCC Guidelines for National
+         Greenhouse Gas Inventories, Volume 4 Agriculture, Forestry and Other
+         Land Use (https://www.ipcc-
+         nggip.iges.or.jp/public/2019rf/pdf/19R_V4_advance.zip).
+
+ISRIC (2014): World Soil Information (https://www.isric.org/explore). Several
+         global soil maps are available, e.g. 1 km soil grids (http://soilgrids.org/).
+
+Palm, C., Blanco-Canqui, H., DeClerck, F., Gatere, L., & Grace, P. (2014).
+         Conservation agriculture and ecosystem services: An
+         overview. Agriculture, Ecosystems & Environment, 187, 87-105.
+
+Plaza-Bonilla, D., Arrúe, J. L., Cantero-Martínez, C., Fanlo, R., Iglesias, A., &
+         Álvaro-Fuentes, J. (2015). Carbon management in dryland agricultural
+         systems. A review. Agronomy for Sustainable Development, 35(4), 1319-
+         1334.
+
+Smith, P., Soussana, J. F., Angers, D., Schipper, L., Chenu, C., Rasse, D. P., &
+         Arias-Navarro, C. (2019). How to measure, report and verify soil carbon
+         change to realise the potential of soil carbon sequestration for
+         atmospheric greenhouse gas removal. Global change biology.
+
+VCS Methodology VM0017 v 1.0 (2011): Adoption of Sustainable Agricultural
+         Land Management. Developed by BioCarbon Fund, World Bank.
+         (https://verra.org/methodology/vm0017-adoption-of-sustainable-
+         agricultural-land-management-v1-0/)
+
+VCS Module VMD0021 v1.0 (2011): Module VMD0021 Estimation of Stock in the
+         Soil Carbon Pool. (https://verra.org/methodology/vmd0021-estimation-of-
+         stocks-in-the-soil-carbon-pool-v1-0/)
+

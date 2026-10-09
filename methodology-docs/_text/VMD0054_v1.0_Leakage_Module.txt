@@ -1,0 +1,1153 @@
+VCS Module
+
+VMD0054
+
+MODULE FOR ESTIMATING LEAKAGE
+FROM ARR ACTIVITIES
+
+                                                                                     Version 1.0
+                                                                         28 September 2023
+                                                                          Sectoral Scope 14
+                                                                                                VMD0054, v1.0
+
+Version 1.0 of this module was developed by Terra Carbon (Scott Settelmyer, David Shoch, John Furniss,
+Rebecca Dickson and Devon Ericksen) and Silvestrum Climate Associates (Igino Emmer), with
+contributions from Kyle Hemes and the ABACUS working group.
+
+                                                                                                                                     2
+                                                                                                VMD0054, v1.0
+
+CONTENTS
+
+1 SOURCES ................................................................................................................. 4
+2 SUMMARY DESCRIPTION OF THE ARR LEAKAGE MODULE ................................. 4
+3 DEFINITIONS ............................................................................................................ 4
+4 APPLICABILITY CONDITIONS ................................................................................. 5
+5 PROCEDURES .......................................................................................................... 5
+
+   5.1 Step 1: Determine Foregone Production in Project Area ........................... 5
+   5.2 Step 2: Determine the Impact of Leakage Mitigation Activities ............... 7
+   5.3 Step 3: Determine Amount of New Land Brought into Production ........... 9
+   5.4 Step 4: Determine Change in Carbon Stocks in New Lands Brought into
+
+            Production........................................................................................................ 11
+   5.5 Step 5: Determine Leakage Emissions ......................................................... 11
+6 DATA AND PARAMETERS ..................................................................................... 12
+   6.1 Data and Parameters Available at Validation .......................................... 12
+   6.2 Data and Parameters Monitored ................................................................. 14
+7 REFERENCES .......................................................................................................... 22
+APPENDIX 1: LEAKAGE EXAMPLE .................................................................................. 24
+APPENDIX 2: BACKGROUND ON DEFAULT VALUES ..................................................... 27
+DOCUMENT HISTORY ...................................................................................................... 29
+
+                                                                                                                                     3
+1 SOURCES
+
+          This module is used in conjunction with the following VCS methodology:
+
+             · VM0047 Afforestation, Reforestation and Revegetation
+
+          The following CDM tool has informed the development of this module:
+               · CDM AR-TOOL15: Estimation of the increase in GHG emissions attributable to
+                    displacement of pre-project agricultural activities in A/R CDM project activity, v2.0
+
+2 SUMMARY DESCRIPTION OF THE ARR
+    LEAKAGE MODULE
+
+          Project activities applying the methodology VM0047 Afforestation, Reforestation and
+          Revegetation must use this module to estimate leakage. This module accounts for leakage
+          related to the displacement of pre-project agricultural activities (including grazing) and fuelwood
+          collection activities. It includes leakage caused by the baseline agent (activity-shifting leakage)
+          and other actors (market leakage).
+
+          The module estimates leakage based on two factors:
+               1) Reduction in agricultural commodities or fuelwood produced in the project area; and
+               2) Impact of leakage mitigation activities to enhance production outside the project area.
+
+          The module estimates the net production in the project area replaced in the market, the amount
+          of new forest lands brought into production outside the project area, and the associated carbon
+          stock emissions.
+
+3 DEFINITIONS
+
+          In addition to the definitions set out in the latest version of the VCS Program Definitions, the
+          following definitions apply to this module.
+
+          Agricultural activity
+                                                                                                VMD0054, v1.0
+
+          Production of an agricultural commodity on agricultural land
+          Agricultural commodity
+          Any (part of) plant, animal or animal product, produced on agricultural land
+          Fuelwood
+          Includes firewood or charcoal produced from woody biomass
+          Subsistence commodity
+          Agricultural commodity that is not destined for commercial markets
+
+4 APPLICABILITY CONDITIONS
+
+          This module applies to estimating leakage emissions from ARR activities.
+          Projects using this module must meet all applicability conditions of the methodology
+          VM0047 Afforestation, Reforestation and Revegetation.
+
+5 PROCEDURES
+
+          The following steps must be taken to calculate leakage emissions from ARR activities. Leakage
+          emissions from ARR activities must be assessed and calculated for a period of five years after the
+          project start date, or project instance start date in the case of grouped projects. This is when the
+          effects of leakage from displaced agricultural production are expected to occur.
+
+5.1 Step 1: Determine Foregone Production in Project Area
+
+          The baseline agricultural and fuelwood commodity production in the project area must be
+          demonstrated using historical production records for each commodity during the chosen
+          reference period. Use the following process to select historical production for each commodity.
+          Part 1: Set the historical reference period
+          The historical reference period is the greater of either:
+
+               1) The 3-year period immediately preceding the project start date (or the project instance
+                    start date in the case of grouped projects); or
+
+               2) One complete crop rotation (where applicable).
+
+          Part 2: Document commodities displaced and production
+          Identify all commodities that will be displaced in the project area using historical production
+          records.
+
+                                                                                                                    5
+                            VMD0054, v1.0
+
+Then, use historical data to document the amount of production of each commodity being
+displaced. Eligible types of historical production records are listed below. Data sources must be
+used in the following order, if available (e.g., if two data sources are available, the data source
+nearest the top of the list must be used):
+
+1) Grower records (e.g., management logs, receipts or invoices, logs or files containing
+     machine and/or sensor data); or
+
+2) Remote sensing methods where requisite information on production can be reliably
+     determined with these methods; or
+
+3) The most recent regional (sub-national) average values derived from published census
+     data; or
+
+4) The most recent national average values derived from published census data; or
+
+5) The most recent relevant commodity or ownership class where estimates have been
+     disaggregated by those attributes and substantiated with a signed attestation from the
+     farmer or landowner
+
+6) For fuelwood production, use average above-ground biomass growth rates published by
+     the IPCC applicable to the region if regional or national averages are unavailable.
+
+Historical production data must be supported by verifiable evidence of grower records or remote
+sensing data, provided that remote sensing procedures have been peer-reviewed and tested in a
+similar region and for the agricultural activity displaced by the project activity.
+
+,  =    =1 ,  ×  (1  +   )                                                                (1)
+            
+
+Where:        = Baseline production in the project area for commodity j in year t (units of
+ BPj,t            production)
+
+ pj,h         = Production in the project area for commodity j in year h of the historical
+                  reference period (units of production)
+ H
+ rj           = Duration of historical reference period (years)
+              = Annual growth rate of yield for commodity j (percent) or the default value
+ t
+                  (2.5 percent)
+              = 1, 2, 3, ..., t years elapsed since the project start date
+
+Foregone production must be calculated for commodities that were produced in the project area
+during the historical reference period. The amount of foregone production in the project area is
+the difference between baseline production for each commodity produced in the project area
+and the monitored production of that same commodity in the project area:
+
+                                                                                                                      (2)
+, = , - ,
+
+                                                                                                     6
+                                VMD0054, v1.0
+
+Where:     = Foregone production in the project area for commodity j in year t (units of
+FPj,t          production)
+BPj,t
+MPj,t      = Baseline production in the project area for commodity j in year t (units of
+t              production)
+
+           = Monitored production in the project area for up to five years after the
+               project start date for commodity j in year t (units of production)
+
+           = 1, 2, 3, ..., t years elapsed since the project start date
+
+5.2 Step 2: Determine the Impact of Leakage Mitigation Activities
+
+          The project proponent may implement activities outside the project area that reduce the amount
+          leakage. The areas in which such activities take place are called leakage mitigation areas.
+          Leakage mitigation is optional. Leakage mitigation must meet all of the following requirements:
+
+               1) Leakage mitigation must take place in geographically delineated areas within the same
+                    region of the project. The project proponent must justify the region for leakage mitigation
+                    by referencing the production region of the agricultural commodity that is displaced by
+                    the project;
+
+               2) Leakage mitigation areas must not overlap with:
+
+                         a) the project area;
+                         b) areas of other carbon projects; and
+                         c) leakage mitigation areas of other carbon projects.
+
+               3) The project proponent must sign an agreement with the landowner that explicitly allows
+                    the project proponent to uniquely claim the increase in productivity in this area as
+                    leakage mitigation from foregone production in the project area. The term of the
+                    agreement must be no less than five years from the project start date (or last project
+                    instance start date if a grouped project); and
+
+               4) Fuelwood production must only be mitigated through the establishment of new tree
+                    plantations.
+
+Leakage mitigation (,) is equal to the difference in production between the project and
+baseline scenarios of the leakage mitigation area. Baseline production in the leakage mitigation
+area is derived from production over the historical reference period as defined in Section 5.1.1
+Baseline production of agricultural commodities in the leakage mitigation area is calculated as
+follows:
+
+,       =  =1 ,   ×  (1  +   )  (3)
+                
+
+                                                                                                  7
+                 VMD0054, v1.0
+
+Where:  = Baseline production in the leakage mitigation area for commodity j in year
+OBPj,t      t (units of production)
+
+opj,h   = Baseline production in the leakage mitigation area for commodity j in year
+            h of the historical reference period (units of production)
+H
+rj      = Duration of historical reference period (years)
+        = Annual growth rate of commodity yields for commodity j (percent) or the
+t
+            default value of 0.025 (2.5 percent)
+        = 1, 2, 3, ..., t years elapsed since the project start date
+
+Baseline production of fuelwood in the leakage mitigation area (OBP) is zero (i.e., only newly
+established tree plantations are eligible). Leakage mitigation is the monitored increase in
+production in the leakage mitigation area that is above the baseline levels of production and is
+calculated as follows:
+
+, = , - ,                                                                                    (4)
+
+Where:  = Leakage mitigation of commodity j in year t (units of production)
+LMj,t   = Monitored production in the leakage mitigation area for commodity j in
+OMPj,t
+            year t (units of production)
+OBPj,t  = Baseline production in the leakage mitigation area for commodity j in year
+
+t           t (units of production)
+        = 1, 2, 3, ..., t years elapsed since the project start date
+
+The amount of foregone production that may result in leakage is calculated as follows:
+
+, =  (, - ,, 0)                                                                         (5)
+
+Where:  = Amount of foregone production subject to leakage for commodity j in year
+ lj,t       t (units of production); minimum value is zero
+
+ FPj,t  = Foregone production in the project area of commodity j in year t (units of
+            production)
+ LMj,t
+ t      = Leakage mitigation of commodity j in year t (units of production)
+        = 1, 2, 3, ..., t years elapsed since the project start date
+
+Leakage mitigation activities involving agricultural intensification in the leakage mitigation area
+can potentially increase GHG emissions (e.g., due to increased fertilization or stocking rates).
+Project proponents must account for leakage unless they demonstrate it is de minimis.
+Appendix 2 of VM0047 Afforestation, Reforestation and Revegetation must be used to
+determine whether decreases in carbon pools and increases in GHG emissions are de minimis.
+
+                                                                                                     8
+                        VMD0054, v1.0
+
+In the case of livestock intensification, project proponents must demonstrate that stocking rates
+in leakage mitigation areas are not expected to exceed maximum carrying capacity and will not
+deplete vegetation and soil resources. Leakage from increased production of supplemental
+feedstocks must also be accounted for where supplemental feeding is used. Evidence of
+maximum carrying capacity must be sourced from reports prepared by or signed attestations
+from qualified independent local experts (e.g., agricultural extension agent, professional
+agronomist).
+
+Assessment of nitrous oxide emissions or demonstration of stocking rates compared to carrying
+capacity is not required if the leakage mitigation area is included in a registered carbon project
+and changes in greenhouse gas emissions and soil carbon stocks are assessed.
+
+5.3 Step 3: Determine Amount of New Land Brought into Production
+
+Where the amount of displaced production that may result in leakage (l) for commodity j in year t
+(as calculated above) is greater than zero, the amount of new land that is brought into production
+outside the project area in year t is calculated as follows:
+
+,        =  ,  ×   ×                                              (6)
+                  ,
+
+Where:            = Area of new land brought into production in year t (ha)
+ INLj,t           = Amount of foregone production subject to leakage for commodity j in year
+ lj,t
+ IS                   t (units of production)
+                  = Share of leakage resulting in increased supply outside the project area, or
+ NLj
+                      default value of 0.75 (75 percent) for agricultural commodities or 1.00
+ yj,t                 (100 percent) for fuelwood
+ t                = Share of increased supply from new land brought into production for
+                      commodity j, or default value of 0.40 (40 percent) for agricultural
+                      commodities or 1.00 (100 percent) for fuelwood
+                  = Yield on new land brought into production for commodity j in year t (units
+                      of production/ha)
+                  = 1, 2, 3, ..., t years elapsed since the project start date
+
+A fundamental premise of leakage is that where production is decreased by one unit, production
+in other locations will replace some, but not all, of the forgone production. This module uses a
+conservative default value of 75 percent for IS which assumes that 75 percent of the agricultural
+production lost in the project area is made up through increases in supply outside the project
+area (see Appendix 2 for background on default values). It is conservatively assumed that 100
+percent of fuelwood production lost in the project area is made up through increases outside the
+project area.
+
+The increases in supply outside the project area may or may not result in bringing new lands into
+production. Supply increases from agricultural intensification and increases in yields on non-
+
+                                                                                                 9
+             VMD0054, v1.0
+
+forest lands will not lead to new lands being brought into agricultural production. This module
+uses a conservative default value of 40 percent for NL. This assumes that 40 percent of the
+increase in supply of agricultural commodities outside the project is made up through bringing
+new land into production (see Appendix 2 for background on default values). It is conservatively
+assumed that 100 percent of the increase in supply of fuelwood outside the project is made up
+through bringing new land into production.
+
+Where the default value for IS or NL is not applied, the project proponent must provide evidence
+justifying the use of a different value where it is less conservative than the default value. Such
+evidence may include peer-reviewed studies relevant to the agricultural commodity and the
+region of the project. Project proponents may use more conservative values for IS or NL without
+providing such evidence.
+
+For subsistence commodities, the yield of NL brought into production must reference the yield in
+the project area during the historical reference period.
+
+For fuelwood production, yields based on the average above-ground biomass growth rates
+published by the IPCC applicable to the region of the project may be used if regional or national
+data are not available.
+
+For non-subsistence commodities, the yield on new land brought into production must reference
+the following data sources as available in the order listed (e.g., if two data sources are available,
+the data source nearest the top of the list must be used):
+
+     1) The yield in the project area during the historical reference period; or
+
+     2) Regional data on the yields for the relevant agricultural commodities subject to foregone
+          production; or
+
+     3) National data on the yields for the relevant agricultural commodities subject to foregone
+          production.
+
+The area of new land brought into production (,) must be summed across all commodities
+produced in the project area during the historical reference period, as identified in above in
+Section 5.1.1, Step 2, to determine the total area generating leakage emissions. The area
+generating leakage emissions is calculated as follows:
+
+                                                                                        (7)
+
+ =  ,
+         =1
+
+Where:       = Area generating leakage emissions in year t (ha)
+ ALt         = Area of new land brought into production for commodity j in year t (ha)
+ INLj,t      = Total number of commodities produced in historical reference period
+ T           = 1, 2, 3, ..., t years elapsed since the project start date
+ t
+
+                                                                                        10
+                       VMD0054, v1.0
+
+5.4 Step 4: Determine Change in Carbon Stocks in New Lands Brought
+        into Production
+
+          This module assumes that new land brought into production is forested land. The change in
+          carbon stocks in the new land that is brought into production is calculated as follows:
+
+ =  +                                                                                               (8)
+
+Where:          = Change in carbon stocks on new lands brought into production (t C/ha)
+ CS             = Change in forest biomass carbon stocks equal to the in the regional
+ Cbiomass
+                    average stock in which the project is located (t C/ha)
+ SOC            = Change in soil organic carbon (SOC) stocks in the region in which the
+
+                    project is located (t C/ha)
+
+The change in forest biomass carbon stocks in the area generating leakage emissions assumes
+the complete loss of above- and belowground biomass, deadwood and litter.
+
+The change in SOC stock is calculated as the difference between initial reference stocks and
+estimated future, steady-state stocks at the end of 20 years.
+
+ =  × (1.00 -  ×  × )                                                                               (9)
+
+Where:          = Change in SOC stock in the area generating leakage emissions (t C/ha)
+ SOC            = SOC stock corresponding to the reference condition in native ecosystems
+ SOCREF
+                    by climate region and soil type applicable to the land receiving the
+ fLU, fMG, fIN      displaced activity (t C/ha)
+                = Relative SOC stock change factors over 20 years for land use,
+                    management practices and inputs respectively, applicable to the
+                    displaced production (dimensionless)
+
+5.5 Step 5: Determine Leakage Emissions
+
+          The leakage emissions from new land that is brought into production and where t does not
+          exceed 5 years beyond the last project instance start date are calculated as follows:
+
+ =  ×  × 44/12                                                                                      (10)
+
+Where:          = Cumulative leakage up to year t (t CO2e)
+ LKt            = Area generating leakage emissions in year t (ha)
+ ALt            = Change in carbon stocks on new lands brought into production (t C/ha)
+ CS
+
+                                                                                                         11
+t                                                                                 VMD0054, v1.0
+44/12
+                = 1, 2, 3, ..., t years elapsed since the project start date, t must not exceed
+                    five years beyond the last project instance start date
+
+                = Conversion factor from C to CO2e
+
+6 DATA AND PARAMETERS
+
+6.1 Data and Parameters Available at Validation
+
+Data/Parameter  pj,h
+Data unit
+Description     Unit of production, varies by commodity
+
+Equations       Production in the project area for commodity j in year h of the historical
+Source of data  reference period
+
+                (1)
+
+                Where available, grower records (e.g., management logs, receipts or
+                invoices, logs or files containing machine and/or sensor data), or remote
+                sensing methods (e.g., satellite imagery, manned aerial vehicle footage,
+                drone imagery) where it is possible to reliably determine requisite
+                information on production with these remote sensing methods.
+
+                Where historical production records for the project area do not exist,
+                regional (sub-national) average values derived from published census data
+                should be used.
+
+                Where historical production records for the project area and regional (sub-
+                national) average values do not exist, national average values derived from
+                census data must be used. In the case of fuelwood production, average
+                aboveground biomass growth rates published by the IPCC (Tables 4.9­
+                4.11 of the 2019 Refinement to the 2006 IPCC Guidelines for National
+                Greenhouse Gas Inventories) may be used where regional or national
+                averages are not available.
+
+                When using regional or national average values, official government
+                sources must be used where available. In the absence of official
+                government sources, published studies may be used to justify such values.
+                In addition, when using regional or national average values, such values
+                must be derived from all datapoints within the historical reference period
+                where such data are available, or from the most recent datapoint to the
+                end of the historical reference period otherwise.
+
+                Historical production records must reference the relevant commodity, or
+                ownership class where estimates have been disaggregated by those
+
+                                                 12
+                                                                     VMD0054, v1.0
+
+                            attributes and substantiated with a signed attestation from the farmer or
+                            landowner.
+
+Value applied               Conditional based on source of data
+
+Justification of choice of  Should be collected for a period that includes all years within the three-
+data or description of      year period immediately preceding the project start date or all years of one
+measurement methods         complete crop rotation where applicable, whichever is longer.
+and procedures applied
+
+Purpose of data             Calculation of foregone production
+
+Comments                    Units of production for livestock commodities may be expressed in terms of
+                            stocks and may include number of animals, animal units or forage intake
+                            units.
+
+Data/Parameter              H
+
+Data unit                   Years
+
+Description                 Number of years within historical reference period used to determine
+                            baseline production within the project area
+
+Equations                   (1), (3)
+
+Source of data              N/A
+
+Value applied               A value between 3 and the number of years for one complete crop rotation
+                            where applicable, whichever is greater
+
+Justification of choice of  Selected by the project proponent
+data or description of
+measurement methods
+and procedures applied
+
+Purpose of data             Calculation of foregone production
+
+Comments                    None
+
+Data/Parameter              opj,h
+Data unit                   Unit of production, varies by commodity
+
+                                                                                                       13
+                                                                 VMD0054, v1.0
+
+Description                 Production units of commodity j in the leakage mitigation area in year h of
+                            the historical reference period
+
+Equations                   (3)
+
+Source of data              Grower records, or remotely sensed data (e.g., satellite imagery, manned
+                            aerial vehicle footage, drone imagery) where it is possible to reliably
+                            determine the requisite information on production using these methods
+
+Value applied               Conditional based on source of data
+
+Justification of choice of  Must be collected for each commodity produced in the project area over
+data or description of      the historical reference period
+measurement methods
+and procedures applied
+
+Purpose of data             Calculation of leakage mitigation for foregone production
+
+Comments                    Units of production for livestock commodities may be expressed in terms of
+                            stocks and may include number of animals, animal units and forage intake
+                            units.
+
+6.2 Data and Parameters Monitored
+
+Data/Parameter              MPj,t
+Data unit
+Description                 Units of production
+Equations
+Source of data              Monitored production in the project area for commodity j in year t
+
+Description of              (2)
+measurement methods
+and procedures to be        Grower records (e.g., management logs, receipts or invoices, logs or files
+applied                     containing machine and/or sensor data), or data derived from remote
+                            sensing methods (e.g., satellite imagery, manned aerial vehicle footage,
+                            drone imagery) where it is possible to reliably determine requisite
+                            information on production with these remote sensing methods
+
+                            N/A
+
+                                                                                                      14
+                                                                     VMD0054, v1.0
+
+Frequency of            At each monitoring event
+monitoring/recording
+
+QA/QC procedures to be
+applied
+
+Purpose of data         Calculation of foregone production
+
+Calculation method      N/A
+
+Comments                None
+
+Data/Parameter          rj
+Data unit
+Description             Percent
+Equations
+Source of data          Annual growth rate of yield for commodity j
+
+Description of          (1), (3)
+measurement methods
+and procedures to be    Regional (where available) yield data must be obtained or calculated
+applied                 using published studies or official government statistics referencing the
+                        smallest territorial administrative division (e.g., district or municipality)
+                        that encompasses all areas of land included in the ARR project activity.
+                        Yield data must be disaggregated by the ownership classes for which
+                        production data are available. In the case of crop commodities, data from
+                        FAOSTAT may be used where published studies or official government
+                        statistics are not available.
+
+                        Alternatively, a default value of 0.025 (2.5 percent) may be used.
+
+                        When using data from FAOSTAT (for crop commodities only), the following
+                        procedures must be applied to calculate the annual growth rate of yield
+                        for commodity j:
+
+                            1) For year t (years elapsed since the project start date), find the
+                                 yield for commodity j by selecting Group: Production; Domains:
+                                 Crops and livestock products; Area: Country where ARR project
+                                 activity is located; Element: Yield; and Item: Commodity j.
+
+                            2) Calculate annual growth rate in yield for commodity j as:
+
+                                    =  ( , )  -   1
+
+                                        ,-1
+
+                                                                                                  15
+                                                           VMD0054, v1.0
+
+Frequency of            At each monitoring event
+monitoring/recording
+
+QA/QC procedures to be
+applied
+
+Purpose of data         Calculation of baseline commodity production in the project area and the
+                        leakage mitigation area
+
+Calculation method
+
+Comments                Where default value is not applied, the yield data from the year closest to
+                        year t must be used unless otherwise justified.
+
+                        Yield data for livestock commodities is expressed in terms of stocking
+                        rate and may include number of animals, animal units and forage intake
+                        units per hectare.
+
+Data/Parameter          OMPj,t
+
+Data unit               Units of production
+
+Description             Monitored production in the leakage mitigation area for commodity j in
+                        year t
+
+Equations               (4)
+
+Source of data          Grower records (e.g., management logs, receipts or invoices, logs or files
+                        containing machine and/or sensor data), or data derived from remote
+                        sensing methods (e.g., satellite imagery, manned aerial vehicle footage,
+                        drone imagery) where it is possible to reliably determine requisite
+                        information on production with these remote sensing methods
+
+Description of          N/A
+
+measurement methods
+
+and procedures to be
+
+applied
+
+Frequency of            At each monitoring event
+monitoring/recording
+
+QA/QC procedures to be
+applied
+
+Purpose of data         Calculation of leakage mitigation
+
+                                                                                                16
+                                                                         VMD0054, v1.0
+
+Calculation method      N/A
+Comments                None
+
+Data/Parameter          IS
+
+Data unit               Percent
+
+Description             Share of leakage resulting in increased supply outside the project area
+
+Equations               (6)
+
+Source of data
+
+Description of          Default value of 0.75 (75 percent) for agricultural commodities or 1.00
+measurement methods     (100 percent) for fuelwood.
+and procedures to be
+applied                 Where the default value is not applied, evidence justifying the use of a
+                        different value must be provided. Such evidence may include
+                        government-approved or peer-reviewed studies relevant to the
+                        agricultural commodity and region in which the project is located.
+
+Frequency of            At each monitoring event
+monitoring/recording
+
+QA/QC procedures to be
+applied
+
+Purpose of data         Estimation of area of new land brought into production
+
+Calculation method
+
+Comments                See Appendix 2 for background on default values
+
+Data/Parameter          NLj
+Data unit               Percent
+Description             Share of increased supply from new land brought into production for
+                        commodity j
+Equations               (6)
+
+                                                                                                17
+                                                                         VMD0054, v1.0
+
+Source of data          Default value of 0.40 (40 percent) for agricultural commodities or 1.00
+                        (100 percent) for fuelwood.
+
+                        Where the default value is not applied, evidence justifying the use of a
+                        different value must be provided. Such evidence may include
+                        government-approved or peer-reviewed studies relevant to the commodity
+                        produced and region in which the project is located.
+
+Description of          N/A
+
+measurement methods
+
+and procedures to be
+
+applied
+
+Frequency of            At each monitoring event
+monitoring/recording
+
+QA/QC procedures to be
+applied
+
+Purpose of data         Estimation of area of new land brought into production
+
+Calculation method      N/A
+
+Comments                See Appendix 2 for background on default values
+
+Data/Parameter          yj,t
+Data unit
+Description             Production units per hectare per year
+Equations
+Source of data          Yield on new lands brought into production for commodity j in year t
+
+Description of          (6)
+measurement methods
+and procedures to be    Government data or published studies
+applied                 Productivity data must be obtained or calculated using official
+                        government statistics or published studies where available. For crop
+                        commodities, data from FAOSTAT may be used where official government
+                        statistics or published studies are not available. Where none of the above
+                        sources of data are available, or for subsistence commodities, yield in the
+                        project area during the historical reference period may be used.
+
+                        Data from the year closest to that for which leakage emissions are being
+                        calculated must be used.
+                        For non-subsistence commodities, the yield on new land brought into
+                        production must reference regional yields for the relevant agricultural
+
+                                                                                18
+                                                                              VMD0054, v1.0
+
+                        commodities subject to foregone production. Where regional data are not
+                        available, national data must be used. In the absence of regional and
+                        national data for the commodity, the yield in the project area during the
+                        historical reference period must be used. In the case of fuelwood
+                        production, yields based on the average aboveground biomass growth
+                        rates published by the IPCC applicable to the region of the project may be
+                        used where regional or national data are not available.
+
+                        For subsistence commodities, the yield of new land brought into
+                        production must reference the yield in the project area during the
+                        historical reference period.
+
+                        When using data from FAOSTAT (for crop commodities only), the following
+                        procedure must be applied. For the year t (number of years elapsed since
+                        the project start date), find the yield for commodity j by selecting Group:
+                        Production; Domains: Crops and livestock products; Area: Country where
+                        ARR project activity is located; Element: Yield; Item: Commodity j.
+
+Frequency of            At each monitoring event
+monitoring/recording
+
+QA/QC procedures to be
+applied
+
+Purpose of data         Calculation of area of new land brought into production
+
+Calculation method      N/A
+
+Comments                Where yield data are not available for year t, yield data from the year
+                        closest to the year t must be used unless otherwise justified.
+
+                        Yield on new lands brought into production for livestock commodities may
+                        be expressed in terms of stocking rate and may include number of
+                        animals, animal units and forage intake units per hectare per year.
+
+Data/Parameter          Cbiomass
+Data unit
+Description             t C/ha
+
+Equations               The change in forest biomass carbon stocks equal to the regional
+                        average stock where the project is located.
+                        (8)
+
+                                                                                          19
+                                                              VMD0054, v1.0
+
+Source of data          Published studies with data from country in which the project is located
+                        where such data are available, or derived from Table 3A.1.4 of the IPCC
+                        Good Practice Guidance for Land Use, Land-Use Change and Forestry
+                        (IPCC 2003) where such data are not available.
+
+Description of           must reference the following data sources as available in the
+measurement methods     order listed, (e.g., if two data sources are available the data source
+and procedures to be    nearest the top of the list must be used):
+applied
+                         · mean carbon stocks in forest biomass in the region; or
+
+                         · mean carbon stocks in forest biomass in the country where the
+                               project is located and must be obtained from published studies or
+                               official government statistics; or
+
+                         · mean carbon stocks in forest biomass derived from above-ground
+                               biomass estimates in Table 3A.1.4 of the IPCC Good Practice
+                               Guidance for Land Use, Land-Use Change and Forestry (IPCC 2003)
+                               if such information is not available.
+
+                        Determined based on data available at the time of the assessment and
+                        reflecting area-weighted mean stocks in above- and belowground
+                        biomass, dead wood and litter pools at the nearest date to the
+                        assessment date.
+
+                        If biomass is presented in tonnes of dry biomass per hectare, then carbon
+                        stocks should be determined using a carbon fraction default value of
+                        0.47.
+
+                        If only aboveground biomass stocks are reported, then belowground
+                        biomass stocks should be estimated using allometric equations
+                        contained in Table 4.A.4 of IPCC (2003), unless verifiable information is
+                        provided to justify a different value.
+
+                        Similarly, if data presented include tree biomass only, then the carbon
+                        stocks in deadwood and litter must be estimated by multiplying the sum
+                        of aboveground and belowground biomass stocks by a factor of 1.1.1
+
+Frequency of            At the time of each monitoring event
+monitoring/recording
+
+QA/QC procedures to be
+applied
+
+Purpose of data         Calculation of leakage emissions
+
+Calculation method      N/A
+
+1 Source: CDM AR-TOOL15, v2.0
+
+                                                                                                                  20
+                                                  VMD0054, v1.0
+
+Comments                None
+
+Data/Parameter          SOCREF
+
+Data unit               t C/ha
+
+Description             Soil organic carbon (SOC) stock corresponding to the reference condition
+                        in native ecosystems by climate region and soil type applicable to the
+                        land receiving the displaced activity
+
+Equations               (9)
+
+Source of data          Table 2.3 of the 2019 Refinement to the 2006 IPCC Guidelines for
+                        National Greenhouse Gas Inventories
+
+Description of          Where soils vary across the region of production, a weighted average
+measurement methods     (based on relative commodity production) or the highest, most
+and procedures to be    conservative value may be used.
+applied
+
+Frequency of            At each monitoring event
+monitoring/recording
+
+QA/QC procedures to be
+applied
+
+Purpose of data         To calculate change in carbon stocks on new lands brought into
+                        production
+
+Calculation method      N/A
+
+Comments                None
+
+Data/Parameter          fLU, fMG, fIN
+Data unit
+Description             Dimensionless
+
+Equations               Relative SOC stock change factors applicable to the displaced production
+                        over 20 years for land use, management practices and inputs
+                        respectively
+
+                        (9)
+
+                                                                                              21
+                                                          VMD0054, v1.0
+
+Source of data          Table 5.5 (displaced crops, referencing tree crops in the case of
+                        fuelwood) and Table 6.2 (displaced grazing) of the 2019 Refinement to
+                        the 2006 IPCC Guidelines for National Greenhouse Gas Inventories
+
+Description of          N/A
+
+measurement methods
+
+and procedures to be
+
+applied
+
+Frequency of            At each monitoring event
+monitoring/recording
+
+QA/QC procedures to be
+applied
+
+Purpose of data         Calculation of leakage emissions
+
+Calculation method      N/A
+
+Comments                None
+
+7 REFERENCES
+
+          Alexandratos, N., & Bruinsma, J. (2012). World Agriculture towards 2030/2050: The 2012
+          Revision. Food and Agricultural Organization Agricultural Development Economics Division.
+          http://www.fao.org/docrep/016/ap106e/ap106e.pdf
+
+          Fuglie, K., & Nin-Pratt, A. (2012). Agricultural productivity: A changing global harvest. In
+          International Food Policy Research Institute (Ed.), 2012 Global food policy report (pp. 14­27).
+          International Food Policy Research Institute. http://dx.doi.org/10.2499/9780896295537
+
+          IPCC (2003). Good practice guidance for land use, land-use change and forestry. Institute for
+          Global Environmental Strategies (IGES). https://www.ipcc.ch/publication/good-practice-guidance-
+          for-land-use-land-use-change-and-forestry/
+
+          IPCC (2019). 2019 Refinement to the 2006 IPCC Guidelines for National Greenhouse Gas
+          Inventories Volume 4. IPCC. https://www.ipcc-nggip.iges.or.jp/public/2019rf/index.html
+
+          Roberts, M. J., & Schlenker, W. (2013). Identifying supply and demand elasticities of agricultural
+          commodities: Implications for the US ethanol mandate. American Economic Review, 103(6),
+          2265­2295. https://www.doi.org/10.1257/aer.103.6.2265
+
+                                                                                               22
+                                                                                       VMD0054, v1.0
+
+Verra (2014). AFOLU project market leakage: Production approach. Public consultation document
+29 May 2014. https://stg.verra.org/wp-content/uploads/imported/methodologies/AFOLU-
+Project-Market-Leakage-Public-Consultation.pdf
+
+                                                                                                         23
+                                                           VMD0054, v1.0
+
+APPENDIX 1: LEAKAGE EXAMPLE
+
+The following example demonstrates the application of the leakage module in hypothetical scenario. All of
+the values presented have been rounded to make the example simpler to read.
+
+In year 1, a project area of 1,000 hectares is planted to trees. All cattle that were grazed in the project
+area are sold prior to tree planting. In the three years prior to the planting date, 300, 330 and 360 cattle
+were grazed in the project area respectively.
+
+The project proponent undertakes leakage mitigation activities in a designated area outside the project
+area (leakage mitigation area) to increase production of cattle. In the three years prior to the planting
+date, 400, 420 and 440 cattle were grazed in the leakage mitigation area.
+
+In year 5, the production of cattle in the leakage mitigation area has increased to 536 cattle (+5.0
+percent per year). The yield for cattle in the region of the project area is 1.70 cattle/ha.
+
+The total forest biomass carbon stock is 130.6 tonnes, calculated as the product of aboveground tree
+biomass (209 tonnes biomass), carbon fraction of tree biomass (0.50) and biomass expansion factor
+(1.25). Initial reference SOC stocks in native forest in the region of production are 60 tonnes,
+corresponding to tropical wet climate, high activity clay soils per Table 2.3 of the 2019 Refinement to the
+2006 IPCC Guidelines for National Greenhouse Gas Inventories. Relative stock change factors for
+grassland management used are 1.0 (land use), 0.7 (management) and 1.0 (inputs) per Table 6.2 of the
+2019 Refinement to the 2006 IPCC Guidelines for National Greenhouse Gas Inventories.
+
+Step 1: Determine foregone production in the project area
+
+A historical reference period (H) of 3 years is selected by the project proponent. With Equation (1),
+baseline production of cattle in the project area, using the default production growth rate of 2.5 percent,
+is calculated in year 5 as follows:
+
+,  =  =1 ,   ×  (1  +   )                                  (1)
+           
+
+,=5   =  (300   + 330 +    360)  × (1 + 0.025)5  =  373  
+                    3
+
+In year 5, the project area is monitored to quantify the number of cattle grazed in the area after the
+project start date. Because the cattle previously in the project area were completely removed, and no
+cattle are grazed after the start date, the foregone production (FP) in the project area in year 5 of the
+project is calculated using Equation (2):
+
+, = , - ,                                                  (2)
+
+,=5 = 373  - 0  = 373 
+
+                                                                                                           24
+                                                               VMD0054, v1.0
+
+Step 2: Determine the impact of leakage mitigation activities
+
+Using Equation (3), the baseline production in the leakage mitigation area in year 5 is calculated as
+follows:
+
+,  =  =1 ,    ×  (1  +   )                                     (3)
+           
+
+,=5   =   (400   + 420  + 440)  ×  (1 + 0.025)5  =  475 
+                     3
+
+Using Equation (4), and per the assumption above that the number of cattle grazed in the leakage
+mitigation area in year 5 is 536, the amount of leakage mitigation (LM) in year 5 is calculated as follows:
+
+, = , - ,                                                      (4)
+
+,=5 = 536  - 475  = 61 
+
+Using Equation (5), the amount of foregone production subject to leakage in year 5 is calculated as
+follows:
+
+, = , - ,                                                      (5)
+
+,=5 = 373  - 61  = 313 
+
+Step 3: Determine amount of new land brought into production
+
+Using Equation (6) and the default values for IS (75 percent) and NL (40 percent), the amount of new
+land brought into production (INL) is calculated as follows:
+
+,  =  ,××                                                      (6)
+           ,
+
+,=5 =     313 × 0.75 × 0.40  = 55 
+
+                 1.70
+
+Using Equation (7), considering that cattle were the only agricultural commodity produced in the historical
+reference period in the project area, then the area of new land brought into production and generating
+leakage is calculated as follows:
+
+ = =1 ,                                                        (7)
+
+=5 = 55 
+
+                                                                                                       25
+                                                                               VMD0054, v1.0
+
+Step 4: Determine change in carbon stocks in new land brought into production
+
+Using Equation (8), the change in carbon stocks on new land that is brought into production in year 5 is
+calculated as follows:
+
+ =  +                                                                          (8)
+
+CS = (130  / + 18  /) = 148 /
+
+Where:
+
+ =  - ( × ( ×  × ))                                                            (9)
+
+ = 60  / - (60  / × (1.00 × 0.70 × 1.00)) = 18  /
+
+Step 5: Determine leakage emissions
+
+Using Equation (10), leakage emissions from new land that is brought into production in year 5 is
+calculated as follows:
+
+ =  ×  × 44/12                                                                 (10)
+
+=5 = 55  × (149  /) × 44/12 = 30,048  2
+
+                                                                                                   26
+                                                                                                VMD0054, v1.0
+
+APPENDIX 2: BACKGROUND ON
+DEFAULT VALUES
+
+Growth rate of production
+
+The default value for growth rates of production has been developed based on reports from the
+International Food Policy Research Institute (IFPRI) and Food and Agriculture Organization (FAO). This
+default value based on the growth rates of production has been applied within this module to serve as a
+proxy for growth rates in yields. Analysis from the IFPRI indicates that global average agricultural growth
+rates over the past 40 years have remained less than 2.5 percent per decade, with values ranging from
+2.08 percent to 2.42 percent (Fuglie & Nin-Pratt, 2012). Reports from FAO confirm that this is a
+conservative default value for growth rates. FAO predicts that agricultural growth rates within developing
+countries will decrease in the coming decades with an average value of 1.6 percent from 2007 to 2030
+and 0.9 percent from 2030 to 2050 (Alexandratos & Bruinsma, 2012). Therefore, 2.5 percent has been
+selected as a conservative default value for commodity production. Projects may justify using regional or
+country-specific values instead where such data are relevant and available.
+
+Share of leakage resulting in increased supply
+
+The default value for the share of leakage resulting in increased supply of agricultural commodities
+outside the project area was developed considering elasticities of supply and demand as well as
+observed prices and quantities to develop constant elasticity of substitution (CES) demand, supply and
+reduced supply curves. The analysis for developing the conservative default value used elasticities of
+supply and demand across commodities and countries from peer-reviewed economic studies. Data on
+exogenous prices and quantities of commodities in specific geographic regions were gathered from
+several sources including USDA Economic Research Service (ERS), the Food and Agricultural Organization
+of the United Nations (FAO), Federal Reserve Economic Data (FRED) and Trading Economics. The
+elasticity data on agricultural commodities and forest products indicated that no commodities
+experienced perfectly inelastic supply or demand. Averaging across global commodities, production
+losses occurring within the project would result in a 13 to 72 percent increase in supply elsewhere.
+Therefore, 75 percent was selected as a conservative default value.
+
+Share of increased supply coming from new land brought into production
+
+The default value for the increased supply coming from new land brought into production was developed
+based on data and reports from the FAO. Such studies indicate that globally only 10 percent of the
+increases in agricultural production will come from new land being brought into production (Alexandratos
+& Bruinsma, 2012). Some sub-regions such as Latin America and the Caribbean may experience 40
+percent of future supply coming from new land being brought into production. While these studies provide
+predictions regarding long-term trends in production, other studies on short-term trends result in other
+conclusions. Roberts and Schlenker (2013) provide evidence that shorter-term price shocks do not follow
+
+                                                                                                                  27
+                                                                                                VMD0054, v1.0
+
+these longer-term trends and the increase in production is primarily made up by bringing new land into
+production.
+The default value has been developed based on the assumption that projects will have longer-term
+impacts on commodity markets. Based on the FAO data, 40 percent was selected as a conservative
+threshold for the default value for agricultural commodities. This default value may be updated in the
+future where ARR projects are shown to have shorter-term impacts on commodity markets.
+Conservative assumptions used
+The use of the above default values is further supported by the following conservative assumptions that
+have been employed elsewhere in this module:
+
+  1) New lands brought into production are assumed to be forested lands;
+  2) Positive leakage effects from ARR activities that provide timber to the market and reduce
+
+        harvesting on existing forested lands are not included. Similarly, increases in production in leakage
+        mitigation areas that occur after leakage emissions are calculated are not included;
+  3) Leakage calculations conservatively ignore that new lands brought into production outside the host
+        country would reduce the amount of new land brought into production within the host country and
+        would reduce leakage emissions (limited to domestic emissions under the VCS Standard); and
+  4) Leakage estimated in this module do not decrease with time, however, the actual leakage effects
+        may be expected to decrease as the share of carbon projects and the impact on market supply and
+        prices from foregone production increase over time.
+
+                                                                                                                  28
+                                                VMD0054, v1.0
+
+DOCUMENT HISTORY
+
+Version  Date         Changes
+v1.0     28 Sep 2023  Initial version released
+
+                                                29
+

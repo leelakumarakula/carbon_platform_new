@@ -1,0 +1,916 @@
+        CORE STANDARD
+         GS4GG PAA P&R100-01
+         SDG 13
+
+      REQUIREMENTS FOR PARIS AGREEMENT
+      ALIGNMENT
+
+           PUBLICATION DATE 02/10/2026
+           VERSION ­ 1.2
+           NEXT UPDATE 02/10/2029
+
+S`U1MMARY:
+
+This Core Standard establishes the mandatory procedural framework for transitioning
+all Gold Standard for the Global Goals (GS4GG) activities to Paris Agreement-aligned
+(PA-aligned) methodologies. It operationalises the requirement that all Carbon Credits
+(GSVERs) with a vintage of 1 January 2026 and onwards shall be quantified using
+methodologies that align with the long-term temperature goals of the Paris
+Agreement.
+Key provisions of this document include:
+
+    · Mandatory Transition: Defines the cut-off date (31 December 2025) for non-
+         PA aligned methodologies and requires a PA-Alignment Design Change
+         validation for all projects seeking issuance for 2026 and onwards vintages.
+
+    · Sunset Clauses: Establishes 30 June 2026 as the final submission deadline for
+         new projects applying non-PA aligned methodologies.
+
+    · Deferred Issuance: Introduces a procedural status to manage issuance delays
+         if specific PA-aligned methodologies are not yet published, ensuring projects
+         are not penalised while maintaining environmental integrity.
+
+    · VVB Requirements: Mandates specific training and competency requirements
+         for Validation and Verification Bodies (VVBs) conducting PA-alignment
+         assessments.
+
+    · Applicability: Applies to all standalone Projects and Programmes of Activities
+         (PoAs), including those currently certified, listed, or undergoing validation.
+
+    · Addition of flexibility to projects pending renewal in year 2026.
+    · Multiple Methodologies and Late Renewal: Clarifies how the six-month
+
+         submission window applies to project activities applying more than one
+P&R: Requirements for Paris Agreement Alignment, Version 1.2
+GS4GG PAA P&R100-01
+
+         methodology (including phased transition of components) and how the gap
+         period is determined when a crediting period renewal is submitted after the
+         applicable deadline.
+
+                                                                                                                                                2
+P&R: Requirements for Paris Agreement Alignment, Version 1.2
+GS4GG PAA P&R100-01
+
+TABLE OF CONTENTS
+
+1| INTRODUCTION, APPLICABILITY, AND SCOPE................................................ 4
+
+1.1 |  OBJECTIVE & SCOPE ......................................................................................4
+1.2 |  APPLICABILITY ...........................................................................................4
+1.3 |  EXCLUSIONS AND CLARIFICATIONS .........................................................................4
+1.4 |  SPECIFIC ACTIVITY TYPES .................................................................................4
+1.5 |  EFFECTIVE DATE .........................................................................................5
+
+2| TERMS AND DEFINITIONS............................................................................ 5
+
+3| TIMELINE AND KEY DATES ........................................................................... 6
+
+3.1 |  CORE REQUIREMENTS .....................................................................................6
+3.2 |  KEY DEADLINES ..........................................................................................6
+3.3 |  FLEXIBILITY AND CONTINGENCIES ..........................................................................7
+
+4| TRANSITION REQUIREMENTS BY PROJECT STATUS......................................... 8
+
+4.1 |  NEW PROJECTS (TO BE SUBMITTED FOR PRELIMINARY REVIEW) ...............................................8
+4.2 |  LISTED PROJECT ACTIVITIES UNDERGOING VALIDATION AND DESIGN CERTIFICATION ............................. 8
+4.3 |  . 9 GS4GG DESIGN CERTIFIED PROJECT ACTIVITIES UNDERGOING VERIFICATION AND PERFORMANCE CERTIFICATION
+4.4 |  ALIGNMENT RULES FOR SPECIFIC CATEGORIES ............................................................ 11
+4.5 |  LATE SUBMISSION OF CREDITING PERIOD RENEWAL AND DETERMINATION OF THE GAP PERIOD ................ 14
+
+5| DEFERRED ISSUANCE ................................................................................ 15
+
+5.1 |  PURPOSE AND OVERVIEW................................................................................ 15
+5.2 |  DEFERRED ISSUANCE CONDITIONS ....................................................................... 16
+5.3 |  PARTIAL ISSUANCE ..................................................................................... 16
+5.4 |  MANDATORY MONITORING:.............................................................................. 16
+5.5 |  RESOLUTION AND RETROACTIVE ISSUANCE................................................................ 16
+5.6 |  CREDIT VOLUME IMPACT AND COMMERCIAL IMPLICATIONS ................................................. 17
+
+6| VVB REQUIREMENTS ................................................................................. 17
+
+6.1 | VVB ADHERENCE....................................................................................... 17
+6.2 | COMPETENCE AND TRAINING............................................................................. 17
+6.3 | AUDIT TEAM COMPOSITION.............................................................................. 18
+6.4 | EFFICIENCY, ROTATION, AND CONFLICT OF INTEREST ...................................................... 18
+
+  DOCUMENT INFORMATION ....................................................................... 19
+
+                                                              3
+P&R: Requirements for Paris Agreement Alignment, Version 1.2
+GS4GG PAA P&R100-01
+
+1| INTRODUCTION, APPLICABILITY, AND SCOPE
+
+1.1 | Objective & Scope
+
+1.1.1 | To establish the mandatory procedure for transitioning all Gold Standard for
+            the Global Goals (GS4GG) projects to PA -aligned methodologies, ensuring
+            alignment with the Paris Agreement through the application of compliant
+            methodologies.
+
+1.1.2 | These Requirements shall govern the transition of all GS4GG activities to PA-
+            aligned methodologies. Their primary objective is to ensure continued
+            alignment with the long-term temperature goals of the Paris Agreement and
+            host Party's latest climate goals and policies reflected in Nationally
+            Determined Contribution (NDC) and Net Zero Targets. These Requirements
+            and Guidance Standard shall establish the official procedure to achieve this
+            mandate.
+
+1.1.3 | These requirements are designed to provide a clear, predictable, and fair
+            pathway for all projects for alignment with Paris Agreement while upholding
+            the Gold Standard's foundational commitment to environmental integrity and
+            alignment with the Paris Agreement.
+
+1.2 | Applicability
+
+1.2.1 | These requirements apply to all projects seeking GS4GG certification for
+            emission reductions and/ or removals for vintages starting 1 January 2026
+            and onwards. This includes:
+                     a | Projects currently certified under GS4GG.
+                     b | Projects currently 'Listed' or 'Undergoing Validation'.
+                     c | Projects certified under other schemes (e.g., A6.2, A6.4) seeking
+                          GS4GG labelling or certification.
+
+1.3 | Exclusions and Clarifications
+
+1.3.1 | Other GS4GG Use-Cases: Projects utilizing GS4GG for purposes other than
+            carbon credit issuance (e.g., specific labels or claims) should seek clarification
+            from the GS Secretariat regarding the applicability of these requirements.
+
+1.4 | Specific Activity Types
+
+1.4.1 | Land Use and Forestry (LUF) Projects: For LUF projects where vintages
+            may cover extended periods, the cut-off for the 2025 vintage shall be strictly
+            defined as 31 December 2025. Specific guidance on vintage allocation will be
+            published separately.
+
+1.4.2 | Removals and Impermanence: The alignment process introduces
+            complexities regarding removals, impermanence, and the interaction between
+            pre-2026 and post-2026 buffer contributions. Specific guidance on managing
+            the buffer is currently under development and will be published separately.
+
+                                                                                                                                                4
+P&R: Requirements for Paris Agreement Alignment, Version 1.2
+GS4GG PAA P&R100-01
+
+1.5 | Effective Date
+
+1.5.1 | This procedure comes into effect on 01/01/2026.
+
+2| TERMS AND DEFINITIONS
+
+2.1.1 | To ensure consistent application and verifiability of these Requirements, the
+            following terms shall be defined and universally applied by all stakeholders:
+
+Table 1. Terms and definitions
+
+TERM            DEFINITION
+
+PA-Aligned      An approved GS4GG methodology, developed or revised to
+Methodology:    conform alignment with Paris Agreement and requirements for
+                methodology standards of GS4GG.
+
+Non-PA aligned  An approved GS4GG methodology which has not been assessed
+methodology:    for conformity with the requirements of the Paris Agreement
+                and requirements for methodology standards of GS4GG.
+
+PA-Alignment    The mandatory process through which a GS4GG-certified
+Design Change:  project revises its design including monitoring plan to conform
+                with a new, corresponding PA-aligned methodology. This
+                constitutes a design change under the GS4GG Principles &
+                Requirements.
+
+PA-Alignment    A mandatory validation conducted by a GS approved VVB to
+Validation:     assess a project's PA-Alignment Design Change for conformity.
+                This is a prerequisite for the issuance of credits with vintages of
+                2026 or later. The PAA validation may be combined with the
+                verification under issuance track of Design Change Request
+                Requirements and Procedures.
+
+Deferred        A temporary procedural status affecting the issuance of credits
+Issuance:       for vintages dated 2026 or later. This status is triggered if
+
+                    a. the required PA-aligned methodology has not been
+                         published by the time the project - including PoA and its
+                         VPAs ­ collectively referred as project activity in this
+                         document - is ready for verification, or
+
+                    b. the PA-Alignment Design Change has not been successfully
+                         completed. As verification for 2026+ vintages cannot be
+                         conducted without the use of applicable methodology(ies)
+                         and a validated design change, the verification and
+                         subsequent issuance are postponed until the methodology
+                         is available and the PA-Alignment Design Change is
+                         successfully validated. This is a procedural measure and
+                         does not result in the cancellation of credits.
+
+                                                                                           5
+P&R: Requirements for Paris Agreement Alignment, Version 1.2
+GS4GG PAA P&R100-01
+
+Submission:   The point at which a project has been successfully submitted for
+              the Completeness Check by VVB or Project developer as required
+Sunset Date:  via Assurance Platform.
+
+PA-Alignment  The final date (30 June 2026) a project may complete Submission
+Schedule:     for Preliminary Review by project developer, unless otherwise
+              formally announced by Gold Standard for specific methodologies.
+
+              The public document maintained by Gold Standard detailing the
+              status, sunset Date, and expected publication date of PA-Aligned
+              GS4GG Methodologies.
+
+3| TIMELINE AND KEY DATES
+
+3.1 | Core Requirements
+
+3.1.1 | All GSVERs issued with a vintage of 2026 or later shall be issued to project
+            activity that has successfully completed PA - Alignment Validation against a
+            GS4GG approved PA-Aligned Methodology.
+
+3.1.2 | The cut-off for applying non-PA aligned methodologies is strictly 31 December
+            2025. For projects with monitoring periods that span this date (including Land
+            Use and Forestry projects), the verification process shall clearly delineate
+            emission reductions/removals occurring up to 31 December 2025 (using the
+            non-PA aligned methodology) and those occurring from 1 January 2026
+            onwards (requiring the PA-aligned methodology).
+
+3.1.3 | Projects undergoing verification for a period that spans the 2025 & 2026
+            transition may request issuance for the vintages up to 31 December 2025.
+            Issuance for vintages from 1 January 2026 onwards is contingent upon the
+            PA-Alignment Design Change.
+
+3.2 | Key Deadlines
+
+3.2.1 | The following table summarizes key dates, ordered chronologically.
+
+Table 2 -Key Dates and Deadlines
+
+Date          Event/Deadline                                  Mandatory Action
+
+Ongoing       PA-aligned methodology                          Stakeholder input on draft
+              consultations                                   methodologies (See GS Website for
+                                                              PA-Alignment Schedule).
+Q4 2025       VVBs Capacity building
+              and mandatory training                          Mandatory training for all approved
+01 January                                                    VVBs shall begin.
+2026          PA Alignment
+              requirements Effective                          All credits with a vintage of 2026 or
+              Date                                            later shall be from a project validated
+                                                              and verified against an PA - aligned
+                                                              methodology.
+
+                                                                                                       6
+P&R: Requirements for Paris Agreement Alignment, Version 1.2
+GS4GG PAA P&R100-01
+
+30 June 2026  Sunset Date                                     Final date for Submission (as defined
+              (Submission Deadline for                        in Section 2) applying a non-PA
+              Preliminary Review)                             aligned methodology, unless
+                                                              otherwise announced by GS.
+
+3.3 | Flexibility and Contingencies
+
+3.3.1 | Adherence to the certification timelines defined in the GS4GG Principles &
+            Requirements (e.g., deadlines for completing validation or verification)
+            remains mandatory.
+
+3.3.2 | However, if a required PA-Aligned Methodology is unavailable by a project's
+            required submission deadline, the project shall be granted an automatic
+            exemption from that deadline. In such cases, the project shall be required to
+            complete Submission within six (6) months after the relevant PA-Aligned
+            methodology is published. Where the project activity applies more than one
+            methodology, paragraphs 3.3.3 and 3.3.4 below apply. The consequences of
+            completing Submission of a crediting period renewal after this six (6) month
+            period are set out in Section 4.5.
+
+3.3.3 | Project activities applying more than one methodology: Where a project
+            activity (including a PoA and its VPAs) comprises more than one component
+            and applies more than one methodology, each component shall be
+            transitioned to its corresponding PA-Aligned Methodology. Where the
+            applicable PA-Aligned Methodologies are published on different dates, the six
+            (6) month period referred to in paragraph 3.3.2 shall be counted from the
+            publication date of the last of the PA-Aligned Methodologies applicable to the
+            project activity (i.e., the latest publication date).
+
+3.3.4 | Phased transition of components: Notwithstanding paragraph 3.3.3, the
+            Project Developer may elect to transition first only the component(s) for
+            which the applicable PA-Aligned Methodology has already been published, and
+            to transition the remaining component(s) once their PA-Aligned Methodologies
+            are published. In such cases:
+
+            a | the PA-Alignment Design Change, or the crediting period renewal where
+                 applicable, shall cover the transitioning component(s) in full, and the PA-
+                 Aligned Methodology shall be applied in its entirety to each of those
+                 components (paragraph 4.3.8(c)(ii) applies per component);
+
+            b | GSVERs for 2026+ vintages may be issued only for the component(s) that
+                 have successfully completed PA-Alignment Validation. The remaining
+                 component(s) shall remain under Deferred Issuance (Section 5) and shall
+                 continue to be monitored as per the existing certified monitoring plan;
+
+            c | the remaining component(s) shall be transitioned through a subsequent
+                 design change (of the PDD or, where the first step was a crediting period
+                 renewal, of the renewed PDD) once the corresponding PA-Aligned
+                 Methodology is published, with Submission completed within six (6)
+                 months after the publication date of the last applicable PA-Aligned
+                 Methodology as per paragraph 3.3.3;
+
+                                                                                                     7
+P&R: Requirements for Paris Agreement Alignment, Version 1.2
+GS4GG PAA P&R100-01
+
+            d | the subsequent design change shall be limited to the remaining
+                 component(s); aspects already validated for the components transitioned
+                 in the first step shall not be re-assessed unless they are affected by the
+                 subsequent design change;
+
+            e | monitoring reports and verification reports shall present emission
+                 reductions separately for each component, clearly identifying the
+                 methodology applied and the monitoring period concerned for each
+                 component; and
+
+            f | electing a phased transition shall not shorten the period granted under
+                 paragraph 3.3.3 for the remaining component(s).
+
+Illustrative example: A project activity comprises an improved cookstove
+component and a solar lighting component. The PA-aligned cookstove methodology is
+published on 05 May 2026 and the PA-aligned safe drinking water methodology on 15
+March 2027. The six (6) month period is counted from 15 March 2027, i.e. submission
+is due by 15 September 2027. Alternatively, the Project Developer may transition the
+cookstove component first (e.g., Submission by 04 November 2026) and request
+issuance of 2026+ GSVERs for that component, while the safe drinking water
+component remains under Deferred Issuance and is transitioned through a
+subsequent design change submitted by 15 September 2027.
+
+4| TRANSITION REQUIREMENTS BY PROJECT STATUS
+
+4.1 | New Projects (to be submitted for Preliminary Review)
+
+4.1.1 | Any project Submitted for Preliminary Review after the Sunset Date (30 June
+            2026, unless otherwise announced) shall use an approved PA-aligned
+            methodology.
+
+4.1.2 | Projects Submitted for Preliminary Review on or before the Sunset Date using
+            a non-PA aligned methodology may proceed through validation and
+            subsequent Design Certification Review using that methodology, regardless of
+            when the Design Certification Review is submitted, provided standard GS4GG
+            timelines are met.
+
+4.1.3 | Projects certified under a non-PA aligned methodology (as per 4.1.2) shall be
+            ineligible for issuance of credits for vintages beyond 31 December 2025
+            unless they complete a PA-Alignment Design Change (see 4.3).
+
+4.2 | Listed project activities undergoing validation and design
+       certification
+
+4.2.1 | Projects currently 'Listed' or undergoing validation (having already completed
+            Preliminary Review) may complete their Design Certification Review using the
+            non-PA aligned methodology. The review shall be conducted by a VVB
+            assigned in the Assurance Platform.
+
+                                                                                                                                                8
+P&R: Requirements for Paris Agreement Alignment, Version 1.2
+GS4GG PAA P&R100-01
+
+4.2.2 | Upon successful Design certification, these projects shall only be eligible to
+            issue credits for vintages up to and including 31 December 2025 using that
+            methodology.
+
+4.2.3 | Issuances for vintages from 1 January 2026 onwards are conditional upon the
+            successful completion of a PA-Alignment Design Change (see 4.3).
+
+4.3 | GS4GG Design Certified Project Activities undergoing verification
+       and performance certification
+
+4.3.1 | Projects may continue to monitor and verify against their current certified
+            methodology for all vintages up to 31 December 2025.
+
+4.3.2 | To be issued credits for the 2026 vintage and onwards, the project shall
+            undergo mandatory PA-Alignment Design Change process. This involves:
+                     a | Revising the Project Design Document (PDD) and Monitoring Plan to
+                          conform to the applicable PA-Aligned Methodology.
+                     b | Undergoing PA-Alignment Validation by a GS-approved VVB.
+                     c | Successfully completing a Design Change Review.
+
+4.3.3 | Scope of PA-Alignment Validation: The PA-Alignment Validation is a
+            mandatory design change validation focused specifically on assessing the
+            project's conformity with the new PA-Aligned Methodology. To minimize
+            disruption to projects mid-crediting period, the scope of this validation is
+            targeted and does not constitute a full re-validation of the entire project
+            design. The VVB shall assess:
+                     a | The correct application of the new PA-Aligned methodology,
+                          including revised baseline calculations (e.g., application of the
+                          Downward Adjustment Factor), leakage assessment, and monitoring
+                          plan.
+                     b | The project's eligibility under the applicability conditions of the PA-
+                          Aligned methodology. The assessment of eligibility for historical
+                          activities or technologies already implemented shall be conducted
+                          strictly according to the transition provisions defined within the
+                          applicable PA-Aligned methodology. Methodologies may include
+                          provisions that allow for the continued eligibility of existing
+                          technologies until the end of their technical lifetime, provided all
+                          other requirements of the PA-aligned methodology are met.
+                     c | The assessment of additionality, common practice, and regulatory
+                          surplus, as explicitly required by the transition provisions of the PA-
+                          Aligned methodology. For projects transitioning mid-crediting period,
+                          this assessment shall focus on confirming the ongoing reliance on
+                          carbon finance for the sustained operation of the project (ongoing
+                          financial need), and ensuring compliance for any forward-looking
+                          expansion, unless the methodology stipulates otherwise.
+
+4.3.4 | Specific transition validation requirements detailed within the applicable PA-
+            Aligned methodology shall take precedence. The VVB shall not re-assess
+
+                                                                                                                                                9
+P&R: Requirements for Paris Agreement Alignment, Version 1.2
+GS4GG PAA P&R100-01
+
+            aspects of the project design that were previously validated and are not
+            affected by the transition to the PA-aligned methodology.
+4.3.5 | The PA-Alignment Validation may be conducted concurrently with the
+            verification of vintages (pre-2026 and/or post-2026). The VVB may combine
+            these assessments into a single site visit and single report ­ with clearly
+            marked separate sections i.e., Validation Section for the Design Change, and
+            Verification Section for the monitored periods.
+4.3.6 | For monitoring periods that span 31 December 2025 and 1 January 2026, one
+            monitoring report and corresponding verification report may be submitted
+            with clearly differentiated section:
+
+                     a | Section A: Monitoring Report and Verification Report covering the
+                          period up to 31 December 2025, applying the non-PA aligned
+                          methodology.
+
+                     b | Section B: Monitoring Report and Verification Report covering the
+                          period from 1 January 2026 onwards, applying the PA-aligned
+                          methodology.
+
+4.3.7 | The Performance Review for 2026+ vintages cannot be completed until the
+            PA-Alignment Design Change (4.3.2) has been successfully approved.
+
+4.3.8 | Voluntary Early Adoption:
+                     a | Notwithstanding the mandatory effective date of 1 January 2026,
+                          Project Developers may voluntarily elect to transition to an approved
+                          PA-Aligned Methodology for vintages prior to 1 January 2026 (e.g.,
+                          for 2024 or 2025 vintages). This option allows projects to
+                          demonstrate higher ambition and alignment with the Paris
+                          Agreement requirements ahead of the mandate.
+                     b | To exercise this option, the Project Developer shall initiate the PA-
+                          Alignment Design Change process (as defined in Section 4.3.2
+                          above). The developer shall explicitly state in the Design Change
+                          submission that the transition is voluntary and specify the start date
+                          of the elected monitoring period.
+                     c | Voluntary early adoption is subject to the following strict conditions:
+                         i. Irreversibility: Once the PA-Alignment Design Change is
+                                successfully approved (Design Certified), the transition is
+                                irrevocable. The project shall verify against the PA-Aligned
+                                Methodology for all subsequent monitoring periods and may not
+                                revert to the non-PA aligned methodology, even for vintages
+                                occurring prior to 31 December 2025.
+                        ii. Full Methodology Application: The project shall apply the PA-
+                                Aligned Methodology in its entirety. This includes the mandatory
+                                application of the Downward Adjustment Factor (DAF), updated
+                                additionality or eligibility criteria, and revised monitoring
+                                parameters. Selective application of specific components while
+                                retaining elements of the non-PA aligned methodology is
+                                prohibited.
+
+                                                                                                                                              10
+P&R: Requirements for Paris Agreement Alignment, Version 1.2
+GS4GG PAA P&R100-01
+
+                       iii. Monitoring Period Alignment: The voluntary transition shall
+                                apply to the entirety of the specific monitoring period submitted
+                                for verification. Splitting a monitoring period between PA-aligned
+                                and non-PA aligned methodologies is permitted only at the
+                                mandatory 31 December 2025 cut-off date (as per Section
+                                4.3.5); otherwise, voluntary early transitions shall encompass
+                                full monitoring periods to ensure data consistency.
+
+4.4 | Alignment Rules for Specific Categories
+
+4.4.1 | Projects Undergoing Crediting Period Renewal: The crediting period
+            renewal process serves as the mandatory point for transition. The renewal
+            validation and review shall be conducted against a PA-Aligned Methodology to
+            be eligible for 2026+ vintages.
+
+4.4.2 | Projects Undergoing Crediting Period Renewal During Calendar Year
+            2026:
+
+4.4.3 | Activities which are due for renewal of crediting period during the year 2026,
+            have the flexibility of conducting the renewal of crediting period that also
+            serves as PA-alignment design change for the portion of the preceding
+            crediting period falling in 2026. Such projects may submit the request for
+            renewal of design certification and apply the methodology and monitoring
+            requirements from the renewed PDD to the vintage 2026 period falling in the
+            previous crediting period.
+
+4.4.3.1 | The activity shall not be required to conduct a separate PA-Alignment
+               Design Change as mentioned under Section 4.3 solely for the purpose of
+               issuing GSVERs for the period between 1 January 2026 and the end date of
+               the expiring crediting period considering:
+                     a | the current crediting period expires during the 2026 calendar year;
+                          and
+                     b | the project activity is transitioning from a non-PA aligned
+                          methodology to an approved PA-aligned methodology through the
+                          crediting period renewal process; and
+                     c | the request for renewal is submitted in accordance with the
+                          applicable GS4GG requirements (including PA-alignment
+                          requirements); and
+                     d | no material design changes other than those associated with the
+                          renewal are introduced.
+
+                                                                                                                                              11
+P&R: Requirements for Paris Agreement Alignment, Version 1.2
+GS4GG PAA P&R100-01
+
+Illustrative example:
+A renewable energy project, along with the PA-transition and design certification
+renewal, intends to add Battery Energy Storage System (BESS) to the design of the
+project. This shall be considered a material design change and shall not be eligible to
+avail the provided flexibility.
+On the other hand, an improved cookstove project, is updating the value of fNRB
+used in the project design as a part of design certification renewal shall not be
+considered a material design change and may avail this flexibility.
+
+4.4.3.2 | In such scenarios, the approved renewed PDD, including the PA-aligned
+               methodology and monitoring requirements, may be applied for
+               quantification and issuance of GSVERs for the portion of the previous
+               crediting period occurring on or after 1 January 2026.
+
+4.4.4 | The project shall apply the PA-aligned methodology, monitoring requirements,
+            baseline, additionality provisions, leakage assessment, and all other
+            applicable requirements contained in the renewed PDD when quantifying
+            emission reductions for this period.
+
+4.4.5 | The project would be required to confirm that the assessment of additionality
+            remains valid as on the crediting period renewal date considering any changes
+            arising in context of the regulatory surplus assessment, lock-in risk
+            assessment and common practice analysis between the period of 1 January
+            2026 to the crediting period renewal date. This confirmation shall be assessed
+            by VVB as part of first verification event after PA alignment, failing which the
+            activity shall not proceed for successful performance certification.
+
+4.4.6 | The project developer may submit the request of verification (from previous
+            crediting period's 2026 vintage) and renewal of design certification
+            simultaneously however, the result of performance review shall be contingent
+            upon a successful renewal.
+
+ Illustrative example: Projects Undergoing Crediting Period Renewal During
+ Calendar Year 2026
+
+ An activity is certified under a non-PA aligned RECH methodology. The project's
+ current crediting period ends on 31 May 2026. The applicable PA-aligned RECH
+ methodology is published by Gold Standard on 5 May 2026. The submission for the
+ crediting period renewal shall be made within six months of the publication of the PA-
+ aligned RECH methodology (i.e., by 5 November 2026).
+
+ The following shall be submitted:
+
+      · a Crediting Period Renewal request applying the PA-aligned RECH methodology;
+           and
+
+      · a Performance Certification Request covering the monitoring period from 1
+           January 2026 onwards, concurrently.
+
+ The Performance Certification Request shall quantify emission reductions generated
+ between 1 January 2026 and 31 May 2026 using the PAA methodology, baseline and
+ monitoring plan and all other applicable requirements contained in the renewed PDD.
+
+                                                                                                                                              12
+P&R: Requirements for Paris Agreement Alignment, Version 1.2
+GS4GG PAA P&R100-01
+
+ The verifying VVB shall assess and document whether application of the renewed PDD
+ to the period 1 January 2026 to 31 May 2026 presents any risk of over-issuance or
+ non-compliance with PAA eligibility requirements.
+
+ The verification may be completed concurrently with the crediting period renewal
+ assessment. However, approval of the Performance Certification Request and issuance
+ of GSVERs shall remain contingent upon the successful approval of the renewed PDD
+ under the Crediting Period Renewal process.
+
+4.4.7 | Inactive or On-Hold Design Certified Project Activities: A project's
+            status does not exempt it from the mandate. Before issuance can resume for
+            any 2026+ vintage, the project shall complete the PA-Alignment Design
+            Change.
+
+4.4.8 | Programme of Activities (PoAs):
+
+                 a. The PoA's Design Document (PoA-DD) shall be updated and validated
+                      (PA-Alignment Validation) to conform to an approved PA-Aligned
+                      Methodology. This transition is a prerequisite for any Voluntary Project
+                      Activity (VPA) under the PoA to be issued credits for 2026+ vintages.
+
+                 b. The transition of the PoA and its VPAs can be managed flexibly. For
+                      example:
+
+                         i. The PoA-DD and all associated VPAs (real-case and regular) may
+                                undergo the design change together.
+
+                        ii. Alternatively, the PoA-DD and its real-case VPAs may undergo
+                                the design change first, with regular VPAs following later, in
+                                batches or individually.
+
+                 c. Project developers shall assess the eligibility of existing VPAs under the
+                      new PA-aligned methodology. If the application of the PA-aligned
+                      methodology introduces stricter eligibility criteria or data requirements
+                      that the existing VPAs do not meet, those VPAs will be rendered
+                      ineligible and will be unable to issue credits for 2026+ vintages,
+                      regardless of the rules in place at the time of their initial inclusion.
+
+4.4.9 | To optimize efficiency due to potential changes in credit volumes, Project
+            Developers may propose the re-bundling of homogenous VPAs (e.g.,
+            consolidating multiple small-scale VPAs into one) as part of the PA-Alignment
+            Design Change. The revised structure shall meet all requirements of the
+            GS4GG PoA Requirements and the applicable PA-aligned methodology.
+
+Table 3 -PA Alignment Rules Matrix
+
+Project Activity  Allowable         Requirement for  Relevant
+Status            Vintage with      2026+ Vintages   Date/Deadline
+                  non-PA aligned
+                  Methodology                        30 June 2026
+
+New Project       N/A (Transition Shall use an
+Activities        mandatory prior approved PA-
+
+                                                                    13
+P&R: Requirements for Paris Agreement Alignment, Version 1.2
+GS4GG PAA P&R100-01
+
+(Submitted after   to 2026+       aligned
+30 June 2026)      issuance)      methodology.
+
+New Project        Up to 31       Requires PA-                   30 June 2026
+Activities         December 2025  Alignment Design
+(Submitted on or                  Change.
+before 30 June
+2026)
+
+Listed/Undergoing  Up to 31       Requires PA-                   N/A (Covered by
+Validation         December 2025  Alignment Design               PR deadline)
+                                  Change.
+
+Design Certified   Up to 31       Mandatory PA-                  N/A
+
+Projects           December 2025 Alignment Design
+
+                                  Change.
+
+Crediting Period   Up to 31       Mandatory PA-               ·  Submission
+Renewal            December 2025                                 within 6 months
+                                  Alignment as part of           after publication
+                                                                 of the (last)
+                                  the renewal                    applicable PA-
+                                                                 aligned
+                                  process.                       methodology.
+                                                                 Late
+                                                              ·  Submission: gap
+                                                                 period applies
+                                                                 (Section 4.5).
+
+Inactive/On-Hold Up to 31         Mandatory PA-                  N/A
+
+Project Activities December 2025 Alignment Design
+
+                                  Change to resume
+
+                                  issuance.
+
+Programme of       Up to 31       PoA-DD shall be                N/A
+Activities (PoAs)
+                   December 2025 updated to a PA-
+
+                                  aligned
+
+                                  methodology for
+
+                                  any VPA to receive
+
+                                  2026+ credits.
+
+4.5 | Late Submission of Crediting Period Renewal and Determination
+       of the Gap Period
+
+4.5.1 | Submission deadline: Submission of the crediting period renewal applying
+            the applicable PA-Aligned Methodology(ies) shall be made within six (6)
+            months after the publication of the relevant PA-Aligned Methodology
+            (paragraphs 3.3.2 and 3.3.3). Gold Standard considers this period
+
+                                                                                                                                              14
+P&R: Requirements for Paris Agreement Alignment, Version 1.2
+GS4GG PAA P&R100-01
+
+            reasonable; requests to extend it shall not be accepted, except in the case of
+            Force Majeure as per paragraph 4.5.4.
+4.5.2 | Gap period: Where Submission of the crediting period renewal is completed
+            after the applicable deadline, the renewed crediting period shall still start on
+            the day following the end date of the current crediting period and its duration
+            shall not be extended. However, no GSVERs shall be issued for the emission
+            reductions or removals achieved during the gap period occurring after the end
+            of 6 months deadline (the "gap period").
+
+Illustrative example: Delay in design certification renewal
+Current crediting period (CP1): 1 January 2021 ­ 31 December 2025.
+Publication of the PA-aligned safe water methodology: 9 July 2026.
+Submission deadline for design certification renewal: 8 January 2027.
+Date of Submission of the renewal: 1 July 2027 (late, no Force Majeure).
+Reference date: 9 July 2026 + 6 months =8 January 2027.
+Gap period: 8 January 2027 to 1 July 2027.
+Renewed crediting period (CP2): 1 January 2026 ­ 31 December 2030. Gap period
+(no GSVERs issued): 8 January 2027 to 1 July 2027.
+
+4.5.3 | Force Majeure: For the purpose of this Section, Force Majeure means an
+            event beyond the reasonable control of the Project Developer, which could not
+            have been foreseen or avoided and which directly prevented Submission
+            within the deadline (e.g., armed conflict, natural disaster, civil unrest,
+            government-imposed restrictions), assessed on a case-by-case basis. Issues
+            internal to the Project Developer, commercial or contractual matters
+            (including with the VVB, buyers or investors) and delays in data collection or
+            document preparation do not constitute Force Majeure. The Project Developer
+            shall send a deviation request to Gold Standard (help@goldstandard.org) as
+            soon as possible, providing convincing documentary evidence of the Force
+            Majeure event and its impact on the Submission timeline. Without such
+            evidence, the request shall not be approved, and the gap period shall apply.
+
+5| DEFERRED ISSUANCE
+
+5.1 | Purpose and Overview
+
+5.1.1 | The Deferred Issuance status is designed to maintain the integrity of the 1
+            January 2026 alignment rule while acknowledging the staggered rollout of
+            new methodologies detailed in the PA-Alignment Schedule. It is a temporary
+            procedural status, not a penalty.
+
+                                                                                                                                              15
+P&R: Requirements for Paris Agreement Alignment, Version 1.2
+GS4GG PAA P&R100-01
+
+5.2 | Deferred Issuance Conditions
+
+5.2.1 | The Deferred Issuance status shall be triggered automatically if a project is
+            ready to undergo verification for vintages of 2026 or later, but
+               i. the required PA-aligned replacement methodology has not yet been
+                      published by Gold Standard. Or
+              ii. the PA-Alignment Design Change has not been successfully approved.
+
+5.2.2 | As verification shall be conducted against the applicable methodology, VVBs
+            cannot complete verification for 2026+ vintages until the PA-aligned
+            methodology is available.
+
+5.3 | Partial Issuance
+
+5.3.1 | The Deferred Issuance status applies only to vintages from 1 January 2026
+            onwards.
+
+5.3.2 | It does not prevent the issuance of credits for vintages up to 31 December
+            2025. Projects with bridging monitoring periods may proceed with the
+            verification and issuance of their pre-2026 credits (as detailed in Scope of
+            PA-Alignment Validation section above).
+
+5.4 | Mandatory Monitoring:
+
+5.4.1 | During the Deferred Issuance, the project developer shall continue monitoring
+            all data as required by their existing, certified monitoring plan to ensure no
+            data gaps occur.
+
+5.4.2 | Project developers are strongly encouraged to monitor the PA-Alignment
+            Schedule and review draft methodologies during consultation to anticipate
+            potential new monitoring requirements. If the subsequent PA-Aligned
+            methodology introduces new parameters for which data was not collected
+            during the deferred period, retroactive issuance may be affected for that
+            period. While deviations may be requested in such cases, approval is strictly
+            subject to the requirements of the applicable PA-aligned methodology and the
+            robust application of the conservativeness principle; approval of such
+            deviations shall not be assumed.
+
+5.5 | Resolution and Retroactive Issuance
+
+5.5.1 | Retroactive Issuance upon Methodology publication:
+5.5.2 | Once the applicable PA-Aligned Methodology is published, the developer shall
+
+            initiate the PA-Alignment Design Change (Section 4.3.2).
+5.5.3 | The subsequent verification shall use the monitored data (collected during the
+
+            deferred period) and apply the new methodology requirements and
+            calculations retroactively to the start of the 2026 vintage period.
+5.5.4 | Upon successful completion of the Design Change Review and the
+            Performance Review, all 2026+ credits will be issued retroactively for the
+            deferred period.
+
+                                                                                                                                              16
+P&R: Requirements for Paris Agreement Alignment, Version 1.2
+GS4GG PAA P&R100-01
+
+5.6 | Credit Volume Impact and Commercial Implications
+
+5.6.1 | Projects will not lose their ability to issue 2026+ vintage credits due to
+            Deferred Issuance. However, the volume of credits issued retroactively will be
+            calculated based on the requirements of the new PA-aligned methodology,
+            which are generally stricter than the non-PA aligned methodologies.
+
+5.6.2 | Project Developers are responsible for managing their contractual obligations
+            (e.g., forward contracts). Gold Standard is not liable for commercial impacts
+            and cannot intervene in private commercial agreements affected by a delay in
+            issuance due to methodology unavailability.
+
+6| VVB REQUIREMENTS
+
+6.1 | VVB Adherence
+
+6.1.1 | VVBs shall verify project adherence to the rules outlined in this document,
+            particularly Sections 3, 4, and 5.
+
+6.1.2 | VVBs shall not validate or verify 2026+ vintages unless conformance with a
+            published PA-Aligned Methodology is demonstrated and a PA-Alignment
+            Design Change has been successfully completed (where applicable).
+
+6.1.3 | For projects applying the provisions of section 4.4.2, the VVB conducting the
+            verification and renewal validation shall:
+                   a. confirm that the renewed PDD has been correctly applied to the
+                        period commencing 1 January 2026 until the end of the previous
+                        crediting period; and
+                   b. assess whether application of the renewed PDD to the preceding
+                        portion of the monitoring period introduces any risk of over-issuance
+                        or environmental integrity concerns; and
+                   c. document the assessment and its conclusion within the verification
+                        report and/or PA-alignment design change; and
+                   d. where any over-issuance or risk of non-compliance is identified,
+                        require appropriate conservative adjustments or corrective actions
+                        prior to issuance. The VVB shall write to help@goldstandard.org for
+                        guidance on case-to-case basis.
+
+6.2 | Competence and Training
+
+6.2.1 | Gold Standard will provide mandatory training and examinations on these
+            requirements and the application of PA-aligned methodologies, beginning in
+            Q4 2025.
+
+6.2.2 | All auditors intending to conduct PA-Alignment Validations or verifications
+            against PA-Aligned methodologies shall successfully pass the mandatory
+            training and examination.
+
+6.2.3 | VVB approval status under GS4GG is contingent on maintaining sufficient
+            competence. A VVB's approval status may be suspended on the grounds of
+            lack of competence if they fail to maintain a sufficient capacity of qualified
+            auditors who have passed the mandatory training and exam.
+
+                                                                                                                                              17
+P&R: Requirements for Paris Agreement Alignment, Version 1.2
+GS4GG PAA P&R100-01
+
+6.3 | Audit Team Composition
+6.3.1 | A PA-Alignment Validation may only be conducted if the audit team includes
+
+            at least one GS-approved auditor who has successfully passed the mandatory
+            PA-Alignment training and examination.
+6.4 | Efficiency, Rotation, and Conflict of Interest
+6.4.1 | VVBs are permitted and encouraged to combine PA-Alignment Validations with
+            regular verifications (pre-2026 and/or post-2026) to maximize efficiency,
+            provided separate reports are issued (as per 4.3.5).
+6.4.2 | VVB rotation rules, as defined in the Validation and Verification Standard
+            (VVS), do not apply to the PA-Alignment Validation. The same VVB may
+            conduct the PA-Alignment Validation and concurrent verification(s) of the
+            project, provided that all conflict-of-interest requirements are respected (e.g.,
+            ensuring the initial validation of the crediting period was conducted by a
+            different VVB, or by different audit and review teams, as defined in the VVS).
+--------------
+
+                                                                                                                                              18
+P&R: Requirements for Paris Agreement Alignment, Version 1.2
+GS4GG PAA P&R100-01
+
+DOCUMENT INFORMATION
+
+VERSION  DATE                          DESCRIPTION
+
+V1.2     02/10/2026                  · Addition of flexibility to projects pending
+                                          renewal in year 2026
+V1.1     02/02/2026
+                                     · Clarification of the six-month period for
+V1.0     22/12/2025                       project activities applying more than one
+                                          methodology
+
+                                     · Addition of the determination of the gap
+                                          period for late Submission of crediting period
+                                          renewal
+
+                                       Editorial revisions
+
+                                       First version released
+
+Published by Gold Standard
+
+ Contact Details
+
+The Gold Standard Foundation
+International Environment House 2
+Chemin de Balexert 7-9
+1219 Châtelaine Geneva, Switzerland
+Tel +41 22 788 70 80
+Email help@goldstandard.org
+
+                                                              19
+

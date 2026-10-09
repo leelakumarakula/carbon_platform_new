@@ -1,0 +1,263 @@
+=== p1
+ 
+ 
+ 
+ 
+ 
+METHODOLOGICAL TOOL 
+ 
+BM-T-AR-0005  
+Estimation of the increase in GHG emissions 
+attributable to displacement of pre-project 
+agricultural activities in A/R ICM project activity 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Publication Date: 27 March 2025 
+Version 1.0 
+  
+ 
+ 
+  
+
+=== p2
+ 
+Table of Contents 
+1. INTRODUCTION ........................................................................................................ 3 
+2. DEFINITIONS ............................................................................................................. 3 
+3. SCOPE & APPLICABILITY ....................................................................................... 3 
+3.1. Scope ............................................................................................................. 3 
+3.2. Applicability .................................................................................................... 3 
+3.3. Methodological Tool Approval Date ............................................................... 3 
+4. PARAMETER ............................................................................................................. 4 
+5. ESTIMATION OF LEAKAGE EMISSION ................................................................. 4 
+6. DATA AND PARAMETERS USED IN THE TOOL ................................................... 7 
+6.1. Data and parameters not monitored .............................................................. 7 
+6.2. Data and parameters monitored .................................................................... 7 
+ 
+ 
+  
+=== p3
+1. Introduction 
+1. This tool provides a step-by-step method for estimating increase in GHG emissions 
+resulting from displacement of pre-project agricultural activities from the project boundary 
+of an afforestation or reforestation (A/R) project activity under the Indian Carbon Market 
+(ICM). The tool estimates the increase in emissions on the basis of changes in carbon 
+stocks in the affected carbon pools in the land receiving the displaced activities. 
+2. Definitions 
+2. The definitions contained in the Detailed Procedure for Offset Mechanism under CCTS 
+shall apply.  
+3. For the purpose of this tool, the following definitions apply: 
+(a) Agricultural activities - refers to crop cultivation activities and grazing activities 
+occurring on land; 
+(b) Crop cultivation activities - refers to human induced activities, occurring on land, 
+that are aimed at vegetation control for producing food, forage, fiber, oilseed crops, 
+etc., including harvesting of the produce; 
+(c) Grazing activities - refers to human induced activities, occurring on land, that are 
+aimed at livestock production; 
+(d) Displacement of agricultural activities  - refers to shifting of the agricultural 
+activities from areas of land within the project boundary to areas of land outside 
+the project boundary; 
+(e) Leakage emission  - refers to the increase in GHG emissions resulting from 
+displacement of pre-project activities. 
+3. Scope & Applicability 
+3.1. Scope 
+4. The tool applies to all types of A/R ICM project activities. 
+3.2. Applicability 
+5. This tool is not applicable if the displacement of agricultural activities is expected to cause, 
+directly or indirectly, any drainage of wetlands or peat lands. 
+3.3. Methodological Tool Approval Date 
+6. The date of adoption of this document shall be effective from 27 March 2025. 
+=== p4
+4. Parameter 
+7. This tool provides procedures to determine the following parameter: 
+Table 1: Parameter determined by the tool 
+Parameter SI Unit Description 
+LKAGRIC,t t CO2e Leakage emission due to the displacement of 
+agricultural activities in year t 
+5. Estimation of leakage emission 
+8. Leakage emission attributable to the displacement of agricultural activities due to 
+implementation of an A/R ICM project activity is estimated as the decrease in carbon 
+stocks in the affected carbon pools of the land receiving the displaced activity. 
+Note 1. Displacement of an agricultural activity by itself does not result in leakage 
+emission. Leakage emission occurs when the displacement leads to an increase in GHG 
+emissions relative to the GHG emissions attributable to the activity as it exists within the 
+project boundary.  
+Note 2. Increase in GHG emission occurring outside the project boundary attributable to 
+the secondary effects of the A/R ICM project activity (e.g. changes in demand, supply or 
+price of goods) is considered insignificant for the purpose of this tool and hence accounted 
+as zero. 
+9. Leakage emission attributable to the displacement of grazing activities under the following 
+conditions is considered insignificant and hence accounted as zero: 
+(a) Animals are displaced to existing grazing land and the total number of animals in 
+the receiving grazing land (displaced and existing) does not exceed the carrying 
+capacity of the grazing land; 
+(b) Animals are displaced to existing non-grazing grassland and the total number of 
+animals displaced does not exceed the carrying capacity of the receiving 
+grassland; 
+(c) Animals are displaced to cropland that has been abandoned within the last five 
+years; 
+(d) Animals are displaced to forested lands, and no clearance of trees, or decrease in 
+crown cover of trees and shrubs, occurs due to the displaced animals; 
+(e) Animals are displaced to zero-grazing system. 
+10. In all other cases, the lands within the project boundary from which the pre-project 
+agricultural activities are to be displaced outside the project boundary are delineated and 
+their area is estimated. Leakage emission resulting from displacement of the activities is 
+estimated as follows: 
+LKAGRIC,t = 
+ସସ
+ଵଶ × (∆CBIOMASS,t + ∆SOCLUC,t)                                                             Equation (1) 
+=== p5
+∆CBIOMASS,t = [1.1 × bTREE × (1 + RTREE) + bSHRUB × (1 + RS)]                               Equation (2)  
+                     × CF × ADISP,t 
+∆SOCLUC,t = SOCREF × (fLUP × fMGP × fINP – fLUD × fMGD × fIND) × ADISP,t                     Equation (3) 
+Where: 
+LKAGRIC,t = Leakage emission resulting from displacement of 
+agricultural activities in year t; t CO2e 
+∆CBIOMASS,t = Decrease in carbon stock in the carbon pools of the 
+land receiving the activity displaced in year t; t d.m. 
+Note. The factor of 1.1 is used to account for the 
+carbon stock in the dead wood and litter pools as a 
+fixed percentage of the carbon stock in living trees. 
+CF = Carbon fraction of woody biomass; dimensionless.  
+A default value of 0.471 is used unless transparent 
+and verifiable information can be provided to justify 
+a different value. 
+ADISP,t = Area of land from which agricultural activity is being 
+displaced in year t; ha 
+bTREE = Mean above-ground tree biomass in land receiving 
+the displaced activity; t d.m. ha-1 
+The value of this parameter is obtained by applying 
+one of the applicable methods from the tool “BM-T-
+AR-0004: Estimation of carbon stocks and change 
+in carbon stocks of trees and shrubs in A/R ICM 
+project activities” to the land receiving the displaced 
+activity.  
+Where the land receiving the displaced activity is 
+unidentified, value of bTREE is set equal to the 
+applicable value of mean aboveground biomass in 
+forest in the region or country where the A/R ICM 
+project activity is located, as obtained from IPCC 
+Good Practice Guidance for Land Use, Land-Use 
+Change and Forestry (latest version of IPCC GPG-
+LULUCF) unless transparent and verifiable 
+information can be provided to justify a different 
+value. 
+RTREE = Root-shoot ratio for trees in the land receiving the 
+displaced activity; dimensionless.  
+ 
+1 https://www.ipcc-nggip.iges.or.jp/EFDB/find_ef.php?ipcc_code=3.B.1.a&ipcc_level=3  
+=== p6
+A default value of 0.25 2 is used unless transparent 
+and verifiable information can be provided to justify 
+a different value. 
+bSHRUB = Mean above-ground shrub biomass in land 
+receiving the displaced activity; t d.m. ha-1.  
+The value of this parameter is obtained by applying 
+one of the applicable methods from the tool “BM-T-
+AR-0004: Estimation of carbon stocks and change 
+in carbon stocks of trees and shrubs in A/R ICM 
+project activities” to the land receiving the displaced 
+activity. 
+RS = Root-shoot ratio for shrubs in the land receiving the 
+displaced activity; dimensionless. 
+The default value of 0.40 3 is used unless transparent 
+and verifiable information can be provided to justify a 
+different value. 
+∆SOCLUC,t = Change in soil organic carbon (SOC) stock due to 
+land-use change in the land receiving the displaced 
+activity in year t; tC ha-1.  
+The value of this parameter may be set to zero if:  
+(a) The only displaced activity being received in the 
+land is grazing activity; or  
+(b) The value of the parameter as estimated from 
+Equation (3) is less than zero (i.e. negative). 
+SOCREF = SOC stock corresponding to the reference condition 
+in native lands by climate region and soil type 
+applicable to the land receiving the displaced activity; 
+t C ha-1.  
+The value of this parameter is taken from Table 3 of 
+the “BM-T-AR-0006: Tool for estimation of change in 
+soil organic carbon stocks due to the implementation 
+of A/R ICM project activities”. 
+fLUP, fMGP, fINP = Relative SOC stock change factors for land-use, 
+management practices, and inputs respectively, 
+applicable to the receiving land before the displaced 
+activity is received; dimensionless.  
+The value of these parameters is taken from Tables 4, 
+5, and 6 of the “BM-T-AR-0006: Tool for estimation of 
+change in soil organic carbon stocks due to the 
+implementation of A/R ICM project activities”. 
+ 
+2 https://www.ipcc-nggip.iges.or.jp/EFDB/find_ef.php?ipcc_code=3.B.1.a&ipcc_level=3  
+3 https://www.ipcc-nggip.iges.or.jp/EFDB/find_ef.php?ipcc_code=3.B.1.a&ipcc_level=3  
+=== p7
+fLUD , fMGD, fIND = Relative SOC stock change factors for land-use, 
+management practices, and inputs respectively, 
+applicable to the receiving land after the displaced 
+activity has been received; dimensionless.  
+The value of these parameters is taken from Tables 
+4, 5, and 6 of the “BM-T-AR-0006: Tool for 
+estimation of change in soil organic carbon stocks 
+due to the implementation of A/R ICM project 
+activities”. 
+t = 1, 2, 3, …years elapsed since the start of the A/R ICM 
+project activity 
+11. Where pre-project activities are shifted to different types of receiving lands in a year, 
+Equations (1), (2) and (3) shall be applied to each type of land separately and the 
+estimated leakage emissions shall be added to obtain the value of the parameter LKAGRIC,t 
+6. Data and parameters used in the tool 
+12. This section describes the requirements for the data and parameters used in this tool. The 
+requirements contained in the data description tables should be treated as an integral part 
+of the tool. The requirements contained in the tools which are referred to in this tool shall 
+also apply. 
+6.1. Data and parameters not monitored 
+13. The values, sources, and requirements for data and parameters which are not subject to 
+monitoring are provided in the text of the tool along with the equations in which these are 
+used. 
+6.2. Data and parameters monitored 
+14. The requirements for data and parameters subject to monitoring are provided in the table 
+below. 
+Data / Parameter Table 1: Area of land 
+Data / parameter:  ADISP,t  
+Data unit:  Ha 
+Description:  Area of land from which agricultural activity is being displaced in year 
+t 
+Source of data:  Field measurement 
+Measurement procedures (if 
+any):  
+Standard operating procedures (SOPs) prescribed under national 
+forest inventory are applied. In the absence of these, SOPs from 
+published handbooks, or from the latest version of IPCC GPG-
+LULUCF, are applied 
+Monitoring frequency:  At every verification 
+QA/QC procedures:  Quality control/quality assurance (QA/QC) procedures prescribed 
+under national forest inventory are applied. In the absence of these, 
+QA/QC procedures from published handbooks, or from the latest 
+version of IPCC GPG-LULUCF, are applied 
+ 
+=== p8
+Revision/Changes in the Document 
+ 
+Version Date Description 
+ 
+1.0 March 2025 Initial Adoption 
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   

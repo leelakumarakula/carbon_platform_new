@@ -1,0 +1,2012 @@
+GOLD STANDARD FOR THE GLOBAL GOALS
+
+LAND USE & FORESTS ACTIVITY REQUIREMENTS
+
+Version 1.2.1
+Published April 2020
+
+GOLD STANDARD FOUNDATION VISION & MISSION
+
+OUR VISION: Climate security and sustainable development for all.
+
+OUR MISSION: To catalyse more ambitious climate action to achieve the Global
+Goals through robust standards and verified impacts.
+
+Status of Document:   Version 1.2 ­ Effective 24th October 2019
+Language:
+Contact Details:      English
+
+Next planned update:  help@goldstandard.org
+                      www.goldstandard.org
+
+                      24th April 2021
+                                                                                                                                      2
+
+TABLE OF CONTENTS
+
+   TERMS AND DEFINITIONS ...................................................................... 3
+   1. SCOPE AND APPLICABLITY................................................................ 8
+
+      GENERAL........................................................................................... 8
+   2. ELIGIBILITY CRITERIA ..................................................................... 8
+
+      (A) FSC DUAL CERTIFICATION............................................................. 9
+      (B) SECURED TITLES.........................................................................10
+   3. ELIGIBILITY PRINCIPLES & REQUIREMENTS .......................................13
+   PRINCIPLE 1 ­ CONTRIBUTION TO CLIMATE SECURITY & SUSTAINABLE
+   DEVELOPMENT .....................................................................................13
+   PRINCIPLE 2 ­ SAFEGUARDING PRINCIPLES & REQUIREMENTS ..................14
+   PRINCIPLE 3 ­ STAKEHOLDER INCLUSIVITY.............................................15
+   PRINCIPLE 4 ­ DEMONSTRATION OF REAL OUTCOMES ..............................15
+   PRINCIPLE 5 ­ FINANCIAL ADDITIONALITY & ONGOING FINANCIAL NEED ...16
+   4. TECHNICAL REQUIREMENTS ............................................................19
+   ANNEX A ­ UNCERTAINTY OF LUF PARAMETERS .......................................22
+   ANNEX B ­ REQUIREMENTS FOR LUF SMALLHOLDER & MICROSCALE
+   PROJECTS ...........................................................................................27
+   ANNEX C ­ GUIDELINES TO CONDUCT A SPATIAL FOREST/NON-FOREST
+   ASSESSMENT ....................................................................................... 33
+   ANNEX D ­ LUF INPUT & GRIEVANCE MECHANISM ....................................36
+                                                                                  3
+
+TERMS AND DEFINITIONS
+
+   Terms                                             Definitions
+Agriculture
+             The Gold Standard defines agriculture in accordance with the
+             FAO, as agricultural activities that contribute to the achievement
+             of sustainable development goals: www.fao.org/climate-
+             change/en
+
+Crop         A crop is a plant or fungus species that is purposefully cultivated
+             and/or harvested to satisfy human and livestock needs.
+
+Forest       A forest is defined by the Designated National Authority (DNA) of
+             the project's host country
+
+             http://cdm.unfccc.int/DNA/index.html.
+
+             In case no forest definition is yet given by the DNA, the Project
+             Developer can refer to the forest definition of the
+             FAO: http://www.fao.org/docrep/003/x6896e/x6896e0e.html or
+             the national forest definition of the project's host country.
+
+Invasive     An organism introduced by man into places out of its natural
+Species      range of distribution, where it becomes established and
+             disperses, generating a negative impact on the local ecosystems
+             and species. An invasive species is likely to cause economic
+             harm or harm to human health.
+
+             Note that species which are already locally established and of
+             economic importance are excluded under this definition.
+
+             Source: Adapted from IUCN, available at
+             https://www.iucn.org/theme/species/our-work/invasive-species
+
+Livestock    Livestock comprises all domestic animals. Non-domestic animals
+             are not included unless they are kept or raised in captivity on
+             agricultural holdings, including holdings without land.
+
+             Source: FAO, available at
+             http://www.fao.org/waicent/faoinfo/economic/faodef/fdef16e.ht
+             m
+
+ Modelling   Modelling Units are distinct parts of the eligible area where
+Units (MU)   carbon stocks can be quantified based on a Gold Standard-
+             approved SDG Impact Quantification Methodology. To meet the
+             precision level for the carbon stocks estimation (see Annex A-
+             Uncertainty of LUF Parameters). MU areas normally have
+             homogeneous characteristics to quantify a certain SDG Impact
+             (growth patterns, management treatment and start date).
+
+New Area     New areas are project areas that are added to a project after it
+             achieves Design Certification
+
+ People People affected are individuals or an entity that are, or are likely
+Affected to be, subject to the project activities.
+                                                                                  4
+
+           Examples of people affected are local:
+
+               (a) Communities, indigenous peoples, neighbors, processors,
+                    and local businesses, AND
+
+               (b) Organizations authorized or known to act on behalf of
+                    people affected (e.g., NGOs, labour organizations).
+
+           Source: Adapted from FSC where the term is `affected
+           stakeholder'
+
+ Planting  The planting area is the eligible area of A/R projects where tree
+Area (A/R  planting activities take place.
+specific)
+           The planting area is the part of the project area which meets the
+           applicability conditions of the applied Gold Standard
+           Methodology.
+
+           Non-eligible areas are those which do not meet the applicability
+           conditions of the applied Gold Standard Methodology.
+
+           As per Gold Standard for the Global Goals Glossary, with further
+           definition as follows:
+
+               1. The project area is a spatial area or areas submitted for
+                    certification with clearly defined boundaries managed to a
+                    set of explicit long-term management objectives.
+                    Source: Adapted from FSC, where the relevant term is
+                    `Management Unit'
+
+                    The project area is the sum of all eligible and non-eligible
+                    areas as per Figure 1.
+
+           Figure 1: Project area, planting area, and MUs
+
+Project
+ Area
+
+           2. Boundaries of the project area shall be clearly
+               distinguishable in the field.
+                                                                                                                                    5
+
+                         3. Under the Gold Standard the project area is divided in
+                             Modelling Units (MU) for an efficient calculation of the
+                             amount of Certified SDG Impact Statement or Product (for
+                             example GSVERs).
+
+                    The `project area' as the area of certification shall be limited to
+                    eligible areas, any riparian or other buffer zones located within
+                    eligible areas, and areas set aside for conservation in accordance
+                    with Gold Standard LUF requirements.
+                    Project Types
+                    A grouped project encompasses several single area projects but
+                    applies the `Land Use & Forests Requirements' in the same way
+                    as a single area project. Figure 2, illustrates a grouped project
+                    and Figure 3, a single area project. Grouped projects are similar
+                    to a Programme of Activities (PoA) under the Clean Development
+                    Mechanism (CDM), allowing for an unlimited number of new
+                    project areas to be added without undergoing the complete Gold
+                    Standard certification process.
+                    The project developer can add new areas to a project (grouped
+                    projects) or expand an existing project area (single area
+                    projects) at any time after a project reaches Registered status.
+                    Figure 2: Grouped Project
+
+                    Figure 3: Single Area Project
+
+  Project A project participant is an individual or entity that is contributing
+Participant to the generation of the SDG certified impacts.
+                                                                                  6
+
+Project    The project region is the spatial area where people and
+Region     environment are influenced by the project activities. A project
+           region can be expanded over time.
+
+           All project areas are located within the project region.
+
+           The `project region' must be identified in the Project Design
+           Document (PDD) and may indicate areas of future project growth
+           through new area certifications.
+
+           i. A/R specific: The project start date shall be the earliest
+                 date when the first trees are planted.
+
+Project    ii. AGR specific: The project start shall be the earliest date
+ start            when implementation of the project activities that lead to
+                  the certification of Ecosystem Services and SDG Impacts
+                  starts. For example, for a project that involves shift in
+                  agricultural practice the start date is the date when the
+                  first project participant shifted to the improved agricultural
+                  practice.
+
+    SDG    Ecosystem services are benefits people obtain from ecosystems.
+Impacts &  Examples include SDG Impacts such as:
+Ecosystem
+ Services     i. Carbon sequestration and greenhouse gas reduction (SDG
+                    13), AND
+
+             ii. Water supply and purification (SDG 6), AND
+            iii. Biodiversity conservation and enhancement (SDG 15)
+
+Smallholde Smallholders are farmers that have more than 50% of farm work
+
+r          done by family members, cooperative members or neighbours.
+
+Tree       (a) A tree is a perennial woody plant with one or several
+                   dominant sprouts that increase its circumference due to
+                   secondary growth.
+
+           (b) For a practical use of this document the definition of a tree
+                   also includes shrubs, palms and bamboo plants.
+
+           (c) In any project, trees shall reach a minimum height of 2
+                   meters.
+
+           A/R specific: For forest inventories of different types of
+           trees additional guidance is provided by the forest
+           inventory guidelines of the BioCarbon Fund1.
+
+   Tree    Tree planting refers to the activity of putting trees in the ground
+ Planting  for growth; it also includes sowing or assisted natural
+           regeneration.
+   (A/R
+specific)
+
+1 Available at
+http://katoombagroup.org/~katoomba/documents/tools/Pearson%20et%20al%20-
+%20Sourcebook%20for%20LULUCF.pdf
+                                                                            7
+
+Wetlands  Wetlands are lands that are transitional between terrestrial and
+          aquatic systems where the water table is usually at or near the
+          surface or the land is covered by shallow water, and that have
+          one or more of the following attributes:
+
+          Source: Cowardin et al. 1979 - Classification of Wetlands and
+          Deepwater Habitats of the United States
+
+           (a) At least periodically, the land supports predominantly
+                   plants typically occurring in wetlands, AND
+
+           (b) The substrate is predominantly undrained and water
+                   saturated soil, AND
+
+           (c) The substrate is non-soil and is saturated with water or
+                   covered by shallow water at some time during the
+                   growing season of each year.
+
+Workers   Workers are all persons that are employed by a written or verbal
+          agreement. This includes permanent, migrant, part-time and
+          seasonal employees of all ranks and categories, including field
+          workers, artisans, labourers, administrators, supervisors,
+          executives, contractor employees as well as self-employed
+          contractors and sub-contractors.
+
+          AGR specific: Excepted from the definition above are:
+
+              (a) Workers employed by a verbal agreement on smallholder
+                   farms for less than 3 months per year, AND
+
+              (b) Smallholder farmers themselves, AND
+              (c) Family members of the smallholder farmer
+                                                                                 8
+
+1. SCOPE AND APPLICABLITY
+
+1.1.1  This Requirements document, hereafter " the LUF Requirements",
+       functions as part of a pathway to certification within Gold Standard for
+       the Global Goals. The Requirements enable eligible forestry and
+       agriculture activities to undergo Design and Performance Certification,
+       including issuance of Certified SDG Impact Statements and Products.
+
+1.1.2  This document presents the Requirements that Gold Standard Land Use
+       & Forest Projects, including Afforestation/Reforestation (A/R) and/or
+       Agriculture (AGR) shall apply in conjunction with the Principles &
+       Requirements and those referenced or associated. Through conformity
+       to these two documents and relevant Methodologies and Product
+       Requirements such as GHG Emissions Reduction &
+       Sequestration Product Requirements, a Project may be issued with Gold
+       Standard Verified Emissions Reductions (GS VERs) and other products.
+       New methodologies and certification products involving Land Use &
+       Forest projects may be submitted to Gold Standard for approval as per
+       the Principles & Requirements.
+
+1.1.3  In this document The `Land Use & Forests Requirements' include
+       sections or items within sections that apply only to A/R or to AGR
+       projects. The sections/items marked as "A/R specific" apply only to
+       A/R projects and "AGR specific" apply only to AGR projects.
+       Sections/items without any specific labelling apply to both A/R and AGR
+       projects.
+
+2. GENERAL ELIGIBILITY CRITERIA
+
+2.1.1  In addition to the requirements stipulated in the Principles &
+       Requirements, A/R and AGR projects shall comply with the following
+       principles and criteria:
+
+       (a) Eligible project types are Afforestation & Reforestation Projects
+                (A/R) and Agriculture Projects (AGR).
+
+       (b) No Deforestation: The eligible area shall not meet the definition of
+                forest 10 years before project start date and at project start date.
+
+       (c) In the case when the eligible area has been deforested during the
+                last 10 years prior to project start date, the eligibility of the
+                project shall be determined by Gold Standard as part of the
+                Preliminary Review. The Project Developer shall provide evidence
+                that the deforestation activity has not taken place with an
+                intention to implement project activities that generate Gold
+                Standard Certified SDG Impact Statements and/or Products, such
+                as GSVERs.
+
+       (d) Projects can be implemented in any country. If projects are
+                located in a country or state that has an operational mandatory
+                national or pan-national cap-and-trade scheme to reduce
+                                                                                  9
+
+       greenhouse-gas (GHG) emissions, and hereby accounts for its
+       own land-based activities under its national or subnational
+       accounting, then projects seeking GSVERs shall conform to the
+       GHG Emissions Reduction and Sequestration Product
+       Requirements - Annex A Double Counting Requirements.
+
+2.1.2 A/R projects:
+
+       (a) Can include planting trees
+
+       (b) Can include single-species plantations
+
+       (c) Can apply all silvicultural systems. For example:
+
+       i. Conservation forests (no use of timber)
+       ii. Forests with selective harvesting
+       iii. Rotation forestry
+
+       (d) All projects can include agriculture (agroforestry) or pasture
+                (silvopasture) activities.
+
+2.1.3 AGR projects include eligible project activities that are covered by
+             an approved Gold Standard SDG Impact Quantification methodology.
+
+(a) FSC Dual Certification
+
+2.1.4  The Gold Standard and Forest Stewardship Council (FSC) are in
+       partnership to promote environmentally appropriate, socially beneficial
+       and economically viable management of the world's forests. Gold
+       Standard and FSC therefore offers opportunities for dual certification in a
+       parallel process. Projects seeking dual certification will need to comply
+       with all the FSC requirements.
+
+2.1.5  With respect to dual certification Gold Standard recognises that FSC
+       certification can be used to demonstrate conformity with the
+       Safeguarding Principles Assessment and Annual Reporting
+       Requirements. In such cases, the Gold Standard Validation/Verification
+       Body (GS-VVB) is not required to re-check the FSC documentation.
+
+2.1.6  In the event of a grievance being raised against a Gold Standard Project
+       then all Gold Standard Requirements shall apply for the purpose of
+       assessing Non-conformity and any response/redress.
+
+2.1.7  The Project shall demonstrate conformity to Safeguarding Principle 8 -
+       Water. FSC Certification is not deemed as evidence that this Principle is
+       met.
+
+2.1.8  When applying a dual certification, the Project Developer shall provide
+       the `FSC Audit Report' alongside the Project Design Document (PDD) -
+       the PDD may reference the FSC Audit Report for relevant sections but is
+       not required to duplicate. Project Developers shall also provide the `FSC
+       Annual Surveillance Report' instead of the template for the `Annual
+                                                                                                                                      10
+
+            Report'. For dual certification, FSC certification is required to be valid
+            throughout the crediting period.
+
+(b) Secured Titles
+
+2.1.9 A/R specific: For all project participants, the following information and
+            evidence shall be provided:
+
+            (a) Name and contact details
+
+            (b) Each entity's legal registration number and documentation by the
+                      governing jurisdiction that proves that the entity is in good
+                      standing. AND
+
+            (c) For the duration of the crediting period the Project Developer
+                      shall:
+                      i. where a Gold Standard Certified Statement or Product (e.g.
+                             GSVERs) is sought, Project Developers must own the CO2
+                             user rights2 or carbon sequestration rights for the project
+                             area, AND
+                      ii. hold an uncontested legal land title for the Project Area, AND
+                      iii. own the rights for timber and non-timber forest products for
+                             the project area, AND
+                      iv. hold all necessary permits to implement the project (planting
+                             permits, infrastructure permits, harvesting permits, etc.),
+                             AND
+                      v. participate in the financing of the project.
+
+2.1.10 If the Project Developer does not meet all of the above requirements,
+            the persons or legal entities that do meet those respective requirements
+            shall endorse the proposed project through an agreement that aligns
+            with the duration of the crediting period.
+
+2.1.11 The Project Developer shall inform the authorities of all project
+            participants with respect of
+
+            (a) instructing the Gold Standard, AND
+
+            (b) requesting or communicating the addition or edits of project
+                      participants, AND
+
+2 CO2 user rights are rights that grant the titleholder any benefit that could be generated
+from the certification of the carbon sequestration or greenhouse gas reduction by the
+project.
+
+For land use projects, the holder of the CO2 user rights is usually the owner of the land,
+where the project activity takes place ­ except when such rights have been expressly
+transmitted to another person or entity by the land owner, or when an authority act /
+decision / order / regulation assigns such rights to a different person than the land
+owner.
+                                                                                                                                      11
+
+            (c) receiving all information from the Gold Standard Secretariat on
+                      matters related to the project.
+
+2.1.12 AGR specific: Depending on the structure of the project, the Project
+            Developer shall follow either requirement 1 or 2.
+
+2.1.13 Requirement 1: The Project Developer acts on behalf of project
+            participants. For such cases, each project participant shall sign
+            an agreement with the Project Developer, which confirms that:
+
+            (a) The project participant holds the CO2 user rights3 that are
+                      associated with the project activities and has passed these on to
+                      the Project Developer, AND
+
+            (b) The project participant holds all necessary rights to implement the
+                      project activities (e.g., rights to harvest), AND
+
+            (c) The legal land title or similar entitlement4 for the land on which
+                      the project activities are implemented is uncontested.
+
+            These agreements shall include the:
+
+            (a) Contact details of the project participants, AND
+
+            (b) The legal registration number and documentation by the
+                      governing jurisdiction that proves that the entity is in good
+                      standing (in case of an organisation), AND
+
+            (c) Contact details of the land owner (if differing), AND
+
+            (d) Length of lease contract (if applicable), AND
+
+            (e) The liabilities and benefits for the person or entity to implement
+                      the project activities (e.g., switch to another crop and get
+                      access to the seeds).
+
+3 CO2 user rights are rights that grant the titleholder any benefit that could be generated
+from the certification of the carbon sequestration or greenhouse gas reduction by the
+project.
+
+For land use projects, the holder of the CO2 user rights is usually the owner of the land,
+where the project activity takes place ­ except when such rights have been expressly
+transmitted to another person or entity by the land owner, or when an authority act /
+decision / order / regulation assigns such rights to a different person than the land
+owner.
+
+4 Similar Entitlement: It is considered that similar entitlement exists, when 1) A person
+or entity has been using the land of the project as its owner, for the period of time that
+the applicable law requires for persons or entity to acquire property by its use, AND 2)
+Neighbours or neighbouring community agrees that the land has been used for such
+time by the person or entity claiming it.
+                                                                                                                                      12
+
+2.1.14 Requirement 2: The Project Developer acts on its own. In such cases, the
+            Project Developer shall provide evidence that:
+
+            (a) It holds the CO2 user rights5 and the rights for any other Certified
+                      SDG Impact Statement or Product that are associated with the
+                      project activities, AND
+
+            (b) It holds all necessary rights to implement the project activities
+                      (e.g., rights to harvest), AND
+
+            (c) The legal land title or similar entitlement for the land on which the
+                      project activities are implemented is uncontested.
+
+(c) New Area Certification
+
+2.1.15 New Areas can be added or removed to an existing project area anytime
+            after a project reaches Registered status (after successfully completing
+            Design Certification) by paying the applicable review fee.
+
+2.1.16 A project developer shall consult with Gold Standard before removing a
+            certified area and/or reducing the size of a certified area, in order to
+            assess the materiality of the changes.
+
+2.1.17 To add new areas to a project the following requirements are set:
+
+            (a) The inclusion of new areas shall follow the Project Design
+                      Certification process as per Principles and Requirements.
+
+            (b) The Project Developer should assess if the new areas present
+                      material differences from the Design Certified project and update
+                      the Safeguarding Principles & Requirements accordingly.
+                      Materiality must be assessed according to Principles and
+                      Requirements.
+
+            (c) For new areas proposed for inclusion, the crediting period end
+                      date will be the same as for the previously Design Certified
+                      project activity.
+
+            (d) The registered Monitoring & Reporting Plan template shall be
+                      updated with the information for new areas as needed.
+
+5 CO2 user rights are rights that grant the titleholder any benefit that could be generated
+from the certification of the carbon sequestration or greenhouse gas reduction by the
+project.
+
+For land use projects, the holder of the CO2 user rights is usually the owner of the land,
+where the project activity takes place ­ except when such rights have been expressly
+transmitted to another person or entity by the land owner, or when an authority act /
+decision / order / regulation assigns such rights to a different person than the land
+owner.
+                                                                                  13
+
+       (e) A site visit and an opinion by a VVB is required to confirm the
+                eligibility of the proposed activities in the new areas.
+
+       (f) New Areas inclusion can be certified before or during a
+                performance certification but it is always required to have the
+                opinion of a VVB based on a site visit to the new area/s being
+                certified.
+
+2.1.18 New areas added to retroactive projects must follow the requirements
+            for retroactive issuance as per the Principles and Requirements, GHG
+            Emissions Reductions & Sequestration Product Requirements, and the
+            Requirements stated in this document.
+
+3. ELIGIBILITY PRINCIPLES & REQUIREMENTS
+
+3.1.1  This section describes the additional requirements and/or deviations
+       from the Principles & Requirements. The LUF project seeking Gold
+       Standard certification shall meet these additional requirements.
+
+3.1.2  The Certification cycle for LUF Projects is as detailed in Principles &
+       Requirements. Projects successfully completing Performance
+       Certification shall be issued with Certified Impact Statement and/ or
+       Product as per the Gold Standard Claims Guidelines.
+
+PRINCIPLE 1 ­ CONTRIBUTION TO CLIMATE SECURITY &
+SUSTAINABLE DEVELOPMENT
+
+3.1.3  AGR specific: Increasing resilience to be able to deal with impacts of
+       climate change is crucial for achieving income stability, food security and
+       long-term development. Hence, preserving and increasing adaptive
+       capacity for project participants must be an integral element of every
+       project. Specifically:
+
+       (a) The Project Developer shall identify the current and predicted
+                variability in climate/weather for the project region.
+
+       (b) Based on the current and predicted variability in climate/weather,
+                the Project Developer shall analyse the possible effects on the
+                project within the crediting period.
+
+       (c) The Project Developer shall implement adaptation activities
+                appropriate to the context and need of the respective project.
+                Adaptation activities may include:
+
+       i. Practices that increase the resilience of farming systems, OR
+
+       ii. Measures to improve the efficiency of water use, OR
+
+       iii. Crops (crop breeds) with improved characteristics, OR
+
+       iv. Crop rotation schemes, OR
+                                                                                   14
+
+       v. Sharing of existing farmers' knowledge as well as knowledge
+              on new agriculture practices, OR
+
+       vi. Diversification of livelihoods, e.g., through increased
+              agricultural productivity, increased variety of cultivated
+              crops, identification of other income streams, OR
+
+       vii. Measures to improve soil fertility.
+
+PRINCIPLE 2 ­ SAFEGUARDING PRINCIPLES &
+REQUIREMENTS
+
+3.1.4  The Project Developer shall conduct the Safeguarding Principles
+       assessment following Safeguarding Principles & Requirements and Risks
+       & Capacities Guideline assessed for the Project Area, taking into account
+       likely issues in the context of the Project Region. The assessment
+       outcome shall be submitted for Preliminary Review and updated as
+       required for Design Certification and Performance Certification.
+
+3.1.5  A minimum of 10% of the total Project Area shall be identified and used
+       to protect or enhance the biological diversity6 following High
+       Conservation Value (HCV)7 approach. The designated protected area
+       shall be located within the Project Area and managed by the Project
+       Developer. The protected area can include buffer zone areas for water
+       bodies. To protect or enhance biological diversity, the following shall be
+       identified and managed.
+
+       (a) Existing patches of native tree species8, AND
+
+       (b) Single solitary stems of native tree species9, AND
+
+6 The variability among living organisms from all sources including, inter alia, terrestrial,
+marine and other aquatic ecosystems and the ecological complexes of which they are a
+part; this includes diversity within species, between species and of ecosystems. Source:
+FSC
+
+7 Refer to High Conservation Value Resource Network for definition of High Conservation
+Value Area. Available at https://hcvnetwork.org/
+
+8 Native tree species (Source: FSC) Species, subspecies, or lower taxon, occurring within
+its natural range (past or present) and dispersal potential that is, within the range it
+occupies naturally or could occupy without direct or indirect introduction or care by
+humans.
+
+9 Native tree species (Source: FSC) Species, subspecies, or lower taxon, occurring within
+its natural range (past or present) and dispersal potential that is, within the range it
+occupies naturally or could occupy without direct or indirect introduction or care by
+humans.
+                                                                                       15
+
+       (c) Habitats of rare, threatened and endangered species10, AND
+
+       (d) Areas relevant for habitat connectivity
+
+3.1.6  The Project Developer shall maintain a buffer zone of 15 meters for
+       water bodies on both sides of any permanent or temporary water
+       bodies such as lakes, streams, rivers, wetlands, etc. Irrigation channels
+       are excluded from this requirement.In these buffer zones:
+
+       (a) All existing native trees shall be kept, AND
+
+       (b) No fertilizer and pesticides shall be used, AND
+
+       (c) No logging activities shall take place, AND
+
+       (d) No heavy machinery shall be used, AND
+
+       (e) No cropping is allowed, AND
+
+       (f) In case trees are being planted, these need to be native tree
+                species.
+
+PRINCIPLE 3 ­ STAKEHOLDER INCLUSIVITY
+
+3.1.7  The Stakeholder Consultation shall be conducted prior to the project
+       start date. The Project Developer shall refer to Stakeholder Consultation
+       Engagement Requirements for further details.
+
+PRINCIPLE 4 ­ DEMONSTRATION OF REAL OUTCOMES
+
+3.1.8  All Projects shall undergo Preliminary Review, Project Design
+       Certification and Performance certification as per the Principles &
+       Requirements.
+
+3.1.9  A/R specific: The crediting period shall be a minimum of 30 years and
+       maximum 50 years. The Project Developer shall select the crediting
+       period based on the characteristics of the project.
+
+3.1.10 AGR specific: The crediting period shall be a fixed 10-year period
+            unless otherwise stated in applicable Impact Quantification Methodology.
+
+3.1.11 The crediting period starts either with the Project Start Date or three
+            years prior to the date of Project Design Certification, whichever occurs
+            later.
+
+3.1.12 Verification & Issuance review (Performance Certification): The
+            performance review may take place either alongside or after Project
+
+10 All endangered and critically endangered species as defined by the IUCN Red List
+­ www.IUCNredlist.org
+                                                                                                                                      16
+
+            Design Certification and must occur at least once during the 5-year
+            Certification cycle.
+
+            (a) AGR specific: The first Verification shall be completed either
+                      within two years of project start date or Project Design
+                      Certification, whichever is later.
+
+            (b) A/R specific: Verification shall be completed at least every 5
+                      years until the end of the crediting period.
+
+            (c) According to the Principles & Requirements, all projects shall seek
+                      Crediting Period Renewal every 5th year. At the time of project
+                      renewal, The A/R and AGR projects shall update the baseline
+                      following the applied Impact Quantification Methodology
+                      requirements.
+
+PRINCIPLE 5 ­ FINANCIAL ADDITIONALITY & ONGOING
+FINANCIAL NEED
+
+3.1.13 The project shall demonstrate additionality as per the Principles &
+            Requirements, or GHG Emissions Reduction and Sequestration Product
+            Requirements, as applicable.
+
+3.1.14 The following requirements are applicable for the demonstration of prior
+            consideration of revenues from Gold Standard certification for
+            standalone projects:
+
+            (a) Regular cycle projects are exempt from any kind of prior
+                      consideration of carbon revenue checks.
+
+            (b) Retroactive cycle projects shall submit the required documents to
+                      Gold Standard within five years of its start date (time of first
+                      submission). Project submitted at a date later than five year from
+                      the project start date will not be eligible for Gold Standard
+                      certification.
+
+3.1.15 For retroactive cycle projects, the Project Developer shall demonstrate
+            that:
+
+            (a) the revenues from Gold Standard Certified SDG Impact
+                      Statements or Products, such as GSVERs, were seriously
+                      considered in the decision to implement the project, AND
+
+            (b) there was continuous interest in Certified Impact Statements or
+                      Products for the project in parallel with its implementation.
+
+            Evidence to support the prior consideration can include contracts, draft
+            versions of project information, correspondence with financial
+            institutions or other stakeholders, minutes and notes of meetings,
+            agreements or negotiations with auditors, publications in newspapers.
+                                                                            17
+
+3.1.16 The project shall apply one of the following options to demonstrate
+            project additionality :
+
+(a) Option 1 - CDM Tools
+
+i. A/R project: Shall apply the latest version of the A/R CDM
+         `Combined tool to identify the baseline scenario and
+         demonstrate additionality in A/R CDM project activities'.
+         The CDM specific terms of the A/R CDM additionality tool
+         (tCERs, A/R CDM project, etc.) shall be interpreted in the
+         context of Gold Standard.The `Guideline on the
+
+         assessment of investment analysis' and the `Guidelines for
+         objective demonstration and assessment of barriers' can be
+         used.
+
+ii. AGR project: Shall apply the latest version of
+          CDM `Guidelines for the establishment of sector specific
+          standardized baselines', or `Combined tool to identify the
+          baseline scenario and demonstrate additionality'. The
+          `Guideline on the assessment of investment analysis' and
+          the `Guidelines for objective demonstration and assessment
+          of barriers' can be used.
+
+(b) Option 2 ­ Positive List
+
+i.  A/R Project: Shall meet requirements (a), (b) and (c) in
+
+    the list below and at least one of the requirements from
+
+    (d) to (g) to apply option 2.
+
+    (a) The project is located in a Least Developed Country
+           (LDCs) or in a region with a recent UNDP Human
+           Development Indicator11 below 0.8. AND
+
+    (b) The project shall have no intention of creating a
+           forest for the commercial use of the timber or non-
+           timber forest products. AND
+
+    (c) The project activities shall not be mandatory by any
+           law or regulation, OR if it is mandatory, it shall
+           demonstrate that these laws or regulations are
+           systematically not enforced. AND
+
+    (d) The project is located in a region with a mean annual
+           precipitation of less than 600 mm. OR
+
+    (e) The soil pH of the planting area is less than 4.0. OR
+
+11 UNDP Human Development Indicator: http://hdr.undp.org/en/data/profiles/
+                                                                                         18
+
+    (f) The planting area is planted with minimum 5
+           different native tree species in mixed stands,
+           covering at a minimum 50% of the planting area. OR
+
+    (g) The project area is located in a country or region
+           with a recent UNDP Human Development Indicator12
+           below 0.5, OR in a Small Island Developing State
+           (SIDS)13
+
+    ii. AGR project: Shall meet requirements (a) and (b) in the
+             list below and at least one of the requirements from (c) to
+             (f).
+
+    (a) The project area is located in a country or in a region
+           with the latest UNDP Human Development Indicator14
+           below or equal to 0.7. AND
+
+    (b) The project activities shall not be mandatory by any
+           law or regulation, OR if they are mandatory, the
+           Project Developer shall demonstrate that these laws
+           or regulations are systematically not enforced. AND
+
+    (c) The mean annual precipitation in the project area is
+           less than 600 mm. OR
+
+    (d) In the project area a minimum of 5 native crop
+           species are being cultivated in a locally adapted
+           agroforestry system15. OR
+
+    (e) The project is a smallholder project and results in
+           Gold Standard VERs of less than 60,000 tCO2eq per
+           annum. OR
+
+    (f) The project area is located in a country or region
+           with a recent UNDP Human Development Indicator
+           below 0.5, OR In a Small Island Developing State
+           (SIDS).
+
+(c) Option 3 ­ Activity Penetration (AGR Project Specific)
+
+i.  An AGR project can only use this option if the project is
+
+    applying GHG Emissions Reductions & Sequestration
+
+12 UNDP Human Development Indicator: http://hdr.undp.org/en/data/profiles/
+
+13 SIDS: https://sustainabledevelopment.un.org/topics/sids/list
+
+14 UNDP Human Development Indicator: http://hdr.undp.org/en/data/profiles/
+
+15 A locally adapted agroforestry system refers to land-use systems and practices where
+trees are deliberately integrated with crops and/or livestock on the same land
+management unit adapted to the local geophysical and social conditions.
+                                                                                          19
+
+       Product Requirements and annual GHGs reductions are less
+       than 60,000 tCO2eq. The project is deemed additional when
+       the project activity is adopted by less than 5% of farmers
+       in the Reference Area16. The `Number of farmers adopting
+       the project activity' represents the farmers participating in
+       the project.
+
+3.1.17 A project may request retroactive issuance of Certified Impact
+            Statements and / or Products. The maximum period for retroactive
+            issuance is three years - which starts either with the Project Start Date
+            or three years prior to the date of Project Design Certification, whichever
+            occurs later.
+
+4. TECHNICAL REQUIREMENTS
+
+4.1.1. In addition to the Principles and Requirements, the Project Developer
+            shall follow the process outlined below:
+
+4.1.2. All projects shall provide the following information in the Key Project
+            Information:
+
+(a)    Preliminary review
+    ·  General description and overview of project activities
+    ·  Organisations that are involved in the project (project
+       participants)
+    ·  Communities stakeholders involved in the project, as applicable
+    ·  Risk of the project area to change (during the crediting period)
+    ·  Risk of the project activities to change (during the crediting
+       period)
+    ·  Timeframe for the project activities
+    ·  Number of predicted CO2-certificates or other Certified SDG
+       Impacts sought
+    ·  Land-use history and current situation of the project area
+    ·  Socio-economic history and current situation
+    ·  Main social impacts (risks and benefits)
+    ·  Main environmental impacts (risks and benefits)
+    ·  Financial structure
+    ·  A/R projects: Location of the project area and the planting area,
+       as applicable
+    ·  A/R projects: Size of the project area and the eligible planting
+       area, as applicable
+    ·  A/R projects: Number of Modeling Units and size of each one
+    ·  A/R projects: Forest management applied (past and future)
+    ·  A/R projects: Forest characteristics (including main tree species
+       planted)
+    ·  AGR projects: Shall also provide information on distribution of
+       revenues (between the Project Developer and the smallholders), if
+       applicable
+
+16 Reference Area: an area with similar climatic and social conditions as defined by the
+Köppen-classification http://en.wikipedia.org/wiki/Köppen_climate_classification
+                                                                                20
+
+4.1.3. All projects shall submit GIS vector layers (Table 4). The GIS vector
+            layers shall be labelled comprehensively:
+
+Table 1: Information as a GIS vector layer
+
+ITEMS                            A/R  AGR           Certification Stage
+
+                                 projects projects
+
+Project Region                   Yes  Yes           Preliminary Review
+Project Area
+                                                    and Project Design
+
+                                 Yes  Yes           certification
+
+Eligible Areas                   Yes  Yes
+
+Individual Modelling Units       Yes  Yes
+
+Infrastructure (road, houses, Yes     Yes
+
+etc.)
+
+Water Bodies                     Yes  Yes
+
+Protected Areas                  Yes  Yes
+
+Biodiversity Areas               Yes  Yes
+
+Where Affected People are        Yes  Yes
+
+situated
+
+Sites with special cultural,     Yes  Yes           Project Design
+                                                      certification
+
+ecological, economic, religious
+
+or spiritual significance
+
+Sites with special significance Yes   Yes
+
+for indigenous people and local
+
+communities ­ resulting from
+
+the Local Stakeholder
+
+Consultation (LSC)
+
+Where indigenous people and Yes       Yes
+
+local communities are situated
+
+Where indigenous people and Yes       Yes
+
+local communities have legal
+
+rights, customary rights or
+
+sites with special cultural,
+
+ecological, economic, religious
+
+or spiritual significance.
+
+4.1.4. AGR specific requirements for Smallholder projects shall use the
+            following guidance to provide above information;
+
+            (b) Project region: A map with a polygon reflecting the boundaries
+                                                                                                                         21
+
+(c) Project areas: A map with one GPS point per project participant
+         and each project participant shall have a hand- drawn map of its
+         part of the project area
+
+(d) Protected areas: A map with national parks (as by Google Maps)
+         and UNESCO sites (as by http://whc.unesco.org/en/interactive-
+         map/)
+
+(e) Biodiversity areas: A map with a polygon reflecting the boundaries
+(f) Infrastructure and permanent water bodies: As by Google Maps
+(g) Location of affected people: One GPS point per person, group of
+
+         persons or community with a caption that describes the effect
+(h) Sites with special cultural, ecological, economic, religious or
+
+         spiritual significance: One GPS point per site with a caption that
+         describes the significance and effect
+                                                                                 22
+
+ANNEX A ­ UNCERTAINTY OF LUF PARAMETERS
+
+Annex A presents guidelines for accounting Uncertainty associated with LUF
+projects. This guideline is applicable to all Gold Standard LUF projects in all
+countries.
+
+1.1.1  Estimated greenhouse gas emissions and removals resulting from Land
+       Use and Forestry (LUF) activities have uncertainties associated with
+       the measurements/estimates of various parameters, especially area
+       or other activity data, carbon stocks, biomass growth rates,
+       expansion factors, emission factors and other coefficients.
+
+1.1.2  This guideline provides a step-by-step approach on how to treat
+       uncertainties in LUF projects and how to comply with the required target
+       precision of 20% of the mean at a 90% confidence level.17
+
+1.1.3  This guideline does not provide requirements for the estimation of
+       uncertainties. Rather, it is assumed that the uncertainties associated
+       with the various input data are known, either as estimates based on
+       sound statistical sampling/measurement or published values, or default
+       values given in IPCC Guidelines (2006), IPCC GPG - LULUCF (2003)
+
+1.1.4  To accommodate that measurements are not always available to
+       projects, and IPCC default factors following tier 1 approach do not meet
+       Gold Standard requirements for project data and precision level, this
+       guideline incorporates three approaches for baseline and project activity
+       quantification:
+
+       (a) Approach 1: requires on-site measurements to directly document
+                pre-project and project activity data.
+
+       (b) Approach 2: uses peer-reviewed publications to quantify baseline
+                and project activity data. Project owners need to prove that the
+                research results are conservative and applicable to the project site
+                and management practice.
+
+       (c) Approach 3: applies default factors to quantify changes but a
+                discounting factor (Uncertainty Deduction) must be applied if
+                compliance with the uncertainty threshold of ±20% at a 90%
+                confidence interval is not satisfied.
+
+1.1.5  Generally, the most specific approach possible with the data available
+       must be chosen. A decision tree to determine an eligible approach is
+       supplied in Figure 1 below.
+
+17 For parameters also applied in Gold Standard Energy such as fuel emission factors the
+Gold Standard precision of 10% of the mean at the 90% confidence level must be
+applied.
+                                                                                                          23
+
+       Identify project activity and
+                boundaries
+
+       On-site measurements      Yes  Approach 1
+        (before and after land
+        management change)       Yes  Approach 2
+
+               available?        Yes  Approach 3
+
+                        No
+
+       Applicable peer-reviewed
+         research data / models
+         (before and after land
+          management change)
+                 available?
+
+                        No
+
+       Applicable default value
+           (before and after
+
+        management change)
+               available?
+
+                        No
+            Perform on-site
+            measurements
+
+Figure 1: Decision tree for identification of appropriate approach
+
+1.1.6  Under Approach 1 data is measured within each stratum and shall
+       follow accepted sampling and analysis protocols. The project owner shall
+       use Special Guidance for Smallholder Projects Data. Data is measured
+       within each stratum and shall follow accepted sampling and analysis
+       protocols.
+
+       (a) If the uncertainty of estimated value is less than or equal to 20%
+                of the mean change value then the project owner may use the
+                estimated value without any deduction for uncertainty, i.e. UD =
+                0.
+
+       (b) If the uncertainty is greater than 20% of the mean value, then
+                the project owner shall either increase the sampling effort to
+                                                                                                                                      24
+
+                      achieve this target or the project owner shall use the estimated
+                      value subject to an Uncertainty Deduction (UD) in table 1 below
+                      (see approach 3).
+
+1.1.7 Approach 2
+
+            (a) Data is derived from peer reviewed published literature. Evidence
+                      for applicability of the literature values to the project site has to
+                      be provided with respect to climate factors (e.g. precipitation
+                      levels and seasonal distribution), soil and vegetation types as well
+                      as current and historic management systems (e.g. crops, tillage
+                      techniques, fertilization). Direct application of literature values is
+                      only permitted if the source conditions match the project
+                      environment, evidence of which shall be provided. Furthermore,
+                      literature values shall only be applied within the spatial and
+                      temporal dimensions analysed in the original source (e.g. SOC
+                      depth, timespan for which changes are documented). If a range of
+                      parameter values are given in a source or data is aggregated
+                      across various factor levels (e.g. average in a region, across a
+                      range of soil types), the most conservative value shall be used.
+
+            (b) Alternatively, values from literature may be verified by comparing
+                      them to measurements in a set of sample sites within the
+                      respective project stratum to indicate conservativeness of the
+                      parameter values applied. Such measurements are required if
+                      evidence for applicability (as listed above) of literature values is
+                      deemed insufficient by an auditor.
+
+            (c) The project owner shall use precision of 20% of the mean at the
+                      90% confidence level as the criteria for reliability of estimates
+
+1.1.8 Special Guidance for Smallholder Projects
+
+            (a) Data is derived from peer reviewed published literature. Evidence
+                      for applicability of the literature values to the project site has to
+                      be provided with respect to climate factors (e.g. precipitation
+                      levels and seasonal distribution), soil and vegetation types as well
+                      as current and historic management systems (e.g. crops, tillage
+                      techniques, fertilization). Direct application of literature values is
+                      only permitted if the source conditions match the project
+                      environment, evidence of which shall be provided. Furthermore,
+                      literature values shall only be applied within the spatial and
+                      temporal dimensions analysed in the original source (e.g. SOC
+                      depth, timespan for which changes are documented). If a range of
+                      parameter values are given in a source or data is aggregated
+                      across various factor levels (e.g. average in a region, across a
+                      range of soil types), the most conservative value shall be used.
+
+            (b) Alternatively, values from literature may be verified by comparing
+                      them to measurements in a set of sample sites within the
+                      respective project stratum to indicate conservativeness of the
+                      parameter values applied. Such measurements are required if
+                                                                                       25
+
+             evidence for applicability (as listed above) of literature values is
+             deemed insufficient by an auditor.
+
+(c) If the uncertainty of estimates is less than or equal to 20% of the
+         mean change value then the project owner may use the estimated
+         value without any deduction for uncertainty, i.e. UD = 0. If the
+         uncertainty is greater than 20% of the mean value, then the
+         project owner shall use the estimated value subject to an
+         Uncertainty Deduction (UD) in table 1 below (see approach 3).
+
+1.1.9 Approach 3
+
+(a) Project owners may use published default factors such as IPCCs.
+         However, as IPCC default factors are often available on tier 1 level
+         only and are thus too generic for project level with high resulting
+         errors for an individual site (or product), Gold Standard provides a
+         discounting approach for those default factors which do not meet
+         the Gold Standard uncertainty threshold of ±20% at a 90%
+         confidence interval.
+
+(b) If the uncertainty is less than or equal to 20% of the mean
+         change value then the project owner may use the estimated value
+         without any deduction for uncertainty, i.e. UD = 0. If the
+         uncertainty is greater than 20% of the mean value, then the
+         project owner shall use the estimated value subject to an
+         Uncertainty Deduction (UD) in Table 1:
+
+Table 2: Uncertainty discounting approach
+
+Uncertainty  Uncertainty Deduction [UD] (% of U)
+[U]
+
+20<U30%      50%
+
+30<U40%      75%
+
+40<U50%      100%
+
+         Example:
+                   Estimated mean = 60±30 kgCO2e
+                   Calculate Uncertainty U = 30/60 = 50%
+                   Resulting Uncertainty Deduction UD = 100% *30 = 30 kg CO2e
+
+1.1.10 The Uncertainty Deductions shall always be applied in the most
+            conservative way, i.e. limiting the activities' GHG benefits to the lower
+            end of the confidence interval.
+
+            Discounted conservative mean:
+
+                   For stocks / GHG removals:
+                   In baseline = 60 + 30 = 90 kgCO2eq
+                   In project = 60 - 30 = 30 kgCO2eq
+                                                                                                                 26
+
+For GHG emissions:
+In baseline = 60 - 30 = 30 kgCO2eq
+In project = 60 + 30 = 90 kgCO2eq
+                                                                                27
+
+ANNEX B ­ REQUIREMENTS FOR LUF SMALLHOLDER &
+MICROSCALE PROJECTS
+
+1.     SCOPE AND APPLICABILITY
+
+1.1.1  Annex B presents simplified requirements for Smallholder and Microscale
+       projects seeking Gold Standard certified statements and or products
+       such as Gold Standard VERs. The following sections outline the
+       requirements that are modified, simplified or waived for Smallholder and
+       Microscale projects. If a particular requirement in the `Land Use & Forest
+       Activity Requirements' is not discussed here, it implies that the `Land
+       Use & Forest Activity Requirements' and/or Principles & Requirements
+       shall be followed. If a project intends to apply the requirements of the
+       `Land Use & Forests Activity Requirements' instead of the adapted
+       version outlined in this guideline, it may do so.
+
+1.1.2  To avoid undermining the purpose of the simplified requirements,
+       Project Developers are not allowed to register projects with similar
+       characteristics as separate projects
+
+1.1.3 These requirements shall be applied in combination with the Gold
+            Standard `Land Use & Forest Activity Requirements'.
+
+1.1.4  Smallholder projects include project areas that are managed by
+       smallholders and there is NO limit in size for such `smallholder' projects.
+       For projects that consist of areas managed by a mix of smallholders and
+       non-smallholders (`smallholders' as defined in `Definitions') can seek a
+       combined certification. Though, these requirements can only be applied
+       for the project areas that are managed by the smallholders.
+
+1.1.5 Microscale projects are defined as projects with a project area of
+            maximum 500ha.
+
+1.1.6  When the Project Developer is uncertain about the interpretation of
+       `Land Use & Forest Activity Requirements' in the context of smallholder
+       or microscale projects, the developer shall seek clarification from the
+       Gold Standard Secretariat.
+
+2.     DEFINITIONS
+
+2.1.1  Project Actors include workers that are employed by a written or verbal
+       agreement. This includes permanent, migrant, part-time and seasonal
+       employees, of all ranks and categories, including field workers, artisans,
+       labourers, administrators, supervisors, executives, contractor employees
+       as well as self-employed contractors and sub-contractors. (Source:
+       adapted from Fairtrade and FSC). In the context of Smallholders and
+       Microscale projects, workers include;
+
+       (a) workers employed by a verbal agreement on smallholder farms
+                for less than 3 months per year, AND
+                                                                                   28
+
+       (b) smallholder farmers i.e., farmers that have more than 50% of
+                farm work done by family members, cooperative members or
+                neighbours. AND
+
+       (c) family members of the smallholder farmer
+
+2.1.2  The Auditor refers to a Gold Standard accredited Validation and
+       Verification body (VVB) or individual experts who have successfully
+       completed the Gold Standard training for `LUF Auditors' and are
+       accredited and approved following Gold Standard Validation &
+       Verification Body Requirements. Upon Gold Standard approval, the
+       `individual auditors' can be engaged to audit projects for New Area
+       Certification and Performance Certification (except for the first
+       Performance Certification) with following limitations
+
+       (a) The cumulative amount of GSVERs issued through one or several
+                certifications executed by `individual auditors' cannot exceed
+                100,000 GSVERs. For other SDG Impact Statements, the
+                developer shall seek clarification from the Gold Standard
+                Secretariat.
+
+       (b) Beyond this threshold a Performance Certification by a Gold
+                Standard accredited VVB can reinstate a project's eligibility for
+                subsequent cumulative 100,000 GSVERs ­ again issued through
+                one or several certifications executed by `individual auditors'.
+
+2.1.3  In the context of Smallholder and microscale A/R projects, an adaptation
+       of the crediting period after the Design Certification is possible, as long
+       as it stays within the timeframe of 30-50 years. For the procedures,
+       please contact the Gold Standard secretariat.
+
+3.     KEY PROJECT INFORMATION
+
+3.1.1 The following additional information is required to support Key Project
+            Information:
+
+       (a) Organisations involved in the project (including legal details of the
+                Project Developer and its relationship to the local communities of
+                the project)
+
+       (b) Target smallholder groups that will be invited to participate
+       (c) Distribution of revenues (between the Project Developer and the
+
+                smallholders)
+
+3.1.2 Smallholder projects shall use the following guidance to provide the
+            information listed in Section 4:
+
+       (a) Project region: A map with a polygon reflecting the boundaries
+       (b) Project areas: A map with one GPS point per project participant
+
+                and each project participant shall have a hand-drawn map of its
+                part of the project area
+                                                                                                                                      29
+
+            (c) The projects shall submit digital polygons of each Modeling Unit
+                      plot area as by Google Earth or other online tools or on-site GPS
+                      or Lidar measurements.
+
+            (d) Protected areas: A map with national parks (as by Google Maps)
+                      and UNESCO sites (as by http://whc.unesco.org/en/interactive-
+                      map/)
+
+            (e) Biodiversity areas: A map with a polygon reflecting the boundaries
+            (f) Infrastructure and permanent water bodies: As by Google Maps
+            (g) Location of affected people: One GPS point per person, group of
+
+                      persons or community with a captionthat describes the effect
+            (h) Sites with special cultural, ecological, economic, religious or
+
+                      spiritual significance: One GPS point per site with a caption that
+                      describes the significance and effect
+
+3.1.3 At validation and verification, each smallholder participating in the
+            project shall:
+
+            (a) know during any field visit what area of his land is part of the
+                      project activity (project area), AND
+
+            (b) have a hand-drawn (or digital) map of this area that contains the
+                      size of his land and/or the number of trees.
+
+3.1.4 Safeguarding Principles & Requirements
+
+            (a) Under the Principle 3 Community Health, Safety and Working
+                      Conditions, Working Conditions and the Occupational Health &
+                      Safety assessment can be limited to `workers' of the project only.
+
+            (b) Under Principle 9 Environment, Ecology and Land Use, the
+                      following requirements are not applicable for smallholder and
+                      microscale projects:
+
+                      · Through a smart mosaic of the planting areas, buffer zones
+                           and infrastructure habitat connectivity for flora and fauna
+                           should be enhanced.
+
+                      · A minimum of 10% of the total Project Area shall be identified
+                           and used to protect or enhance the biological diversity18
+                           following High Conservation Value (HCV)19 approach shall be
+                           followed.
+
+                      · On both sides of permanent or temporary water bodies (lakes,
+                           streams, rivers, wetlands, etc.) riparian buffer zones of 15
+
+18 The variability among living organisms from all sources including, inter alia, terrestrial,
+marine and other aquatic ecosystems and the ecological complexes of which they are a
+part; this includes diversity within species, between species and of ecosystems. Source:
+FSC
+
+19 Refer to High Conservation Value Resource Network for definition of High Conservation
+Value Area. Available at https://hcvnetwork.org/
+                                                                          30
+
+        meters shall be implemented on each site. In these riparian
+        buffer zones:
+
+        · only native tree species20 may be planted, AND
+
+        · invasive species21 shall be removed, AND
+
+        · all existing vegetation shall be kept, AND
+
+        · no timber harvesting activities shall take place, AND
+
+        · no use of fertilizer or chemical pesticides.
+
+        (c) The project shall assess:
+
+        · Existing patches of trees or single solitary stems with a high
+            degree of biological diversity9, AND
+
+        · Habitats of endangered species22 shall always
+            be identified and managed to protect or enhance the biological
+            diversity9.
+
+        · Workers shall transport, store, handle and apply chemical
+            pesticides in a safe way.
+
+3.1.5   AGR specific (applicable to smallholder projects) The AGR projects or
+        project areas managed by smallholders are not required to demonstrate
+        compliance with following Safeguarding Principles Assessment:
+
+        · Principle 9.6 - Pesticides &Fertilisers
+
+        · Principle 9.10 High Conservation Value Areas and Critical
+            Habitats: paragraph 1.1.33.b and point 1.1.33.b
+
+4.0 LEGAL RIGHTS
+
+4.1.1.  The Project Developer shall sign an agreement with the Smallholders
+        which confirms that the smallholder holds the `GSVERs user rights' from
+        the trees that are planted due to the project but has passed these rights
+        on to the Project Developer, AND the smallholder holds all necessary
+
+20 Native tree species (Source: FSC) Species, subspecies, or lower taxon, occurring
+within its natural range (past or present) and dispersal potential that is, within the range
+it occupies naturally or could occupy without direct or indirect introduction or care by
+humans.
+
+21 Invasive species (Source: FSC) Species that are rapidly expanding outside of their native range.
+Invasive species can alter ecological relationships among native species and can affect ecosystem
+function and human health.
+
+22 All endangered and critically endangered species as defined by the IUCN Red List
+­ www.IUCNredlist.org
+                                                                                  31
+
+        rights to implement the project (e.g. planting permits, right to harvest).
+        Such agreements shall include the:
+
+        · contact details of the smallholder, AND
+
+        · contact details of the land owner (if differing), AND
+
+        · length of lease contract (if applicable), AND
+
+        · a confirmation that the land tenure on which the trees are
+            planted is uncontested, AND
+
+        · the liabilities and benefits for the smallholder.
+
+4.1.2   All paragraphs within the agreement shall be explained and discussed
+        with the smallholders. If helpful, the agreement should be translated to
+        the local language and/or explained orally.
+
+4.1.3   If a smallholder does not hold land rights, the person or legal entity that
+        does meet those respective requirements shall endorse the participation
+        of the smallholder in a written form
+
+4.1.4 The Project Developer shall maintain the following information:
+
+        · names and contact details from the participating smallholders,
+            AND
+
+        · the locations (GPS points) and area (ha) of their project areas,
+            AND
+
+        · the end dates of the lease contracts and frequency of renewal
+            (if applicable), AND
+
+        · the start and end dates of the smallholders participating in the
+            project.
+
+5.      Additionality
+
+5.1.1   The project can demonstrate additionally as per Section Principle 5 ­
+        Financial Additionality & Ongoing Financial Need of The `Land Use &
+        Forests Activity Requirements'.
+
+6.      GHG EMISSIONS REDUCTION & SEQUESTRATION
+
+        METHODOLOGY (A/R)
+
+6.1.1.  Many projects take place in countries where little scientific information is
+        available for trees species, biomass in general and other land use
+        related activities. Therefore, following simplifications to Gold Standard
+        A/R GHG Emissions Reduction & Sequestration Methodologies can be
+        applied.
+                                                                                                                         32
+
+(a) The Project can apply existing national or international default
+       values, wherever available for estimations of `Baseline', `Leakage'
+       and `CO2-Fixation'
+
+(b) Baseline: Applicability conditions for each Baseline scenario shall
+       be set.
+                                                                                                                                      33
+
+ANNEX C ­ GUIDELINES TO CONDUCT A SPATIAL
+FOREST/NON-FOREST ASSESSMENT
+
+1.1.1 The Annex C provides guidance:
+
+               i. to develop a forest/non-forest assessment to determine eligible
+                      areas to issue GSVERs, AND;
+
+              ii. required information for project documentation:
+
+1.1.2  Use the definition of "forest" according to the Land Use and Forests
+       (LUF) Activity Requirements as a minimum mapping unit (MPU). Indicate
+       which definition is used for the assessment and justify the reasons.
+
+1.1.3  Report on the type of remote sensing data (e.g. satellite, radar, spatial
+       resolution) and source/s of the data and any relevant support
+       documentation that helps in the replication and accurate assessment of
+       the spatial analysis.
+
+1.1.4 Remote sensing scenes should be dated:
+
+       i. at least 10 years before the start date of the project, AND;
+
+       ii. at project start date
+
+1.1.5  The forest/non-forest assessment shall be conducted for the entire
+       project area. It is not necessary to do a classification of a full remote
+       sensing scene (e.g. a whole Landsat image), but a sub-set of a scene is
+       acceptable if it provides the necessary training points to complete a
+       forest/non-forest classification with the required accuracy.
+
+1.1.6 The following information/data should be reported in the PDD:
+
+       i. Type of sensor used, spatial resolution, path/row, date of the
+           scenes used
+
+       ii. Description of the method and software used in the pre-
+             processing and classification process
+
+       iii. Description of how issues with areas under clouds/shadows were
+              dealt with:
+
+       · In the case of scenes that date 10 years before the project
+           start date, the Project Developer should conservatively
+           consider all areas under shadows/clouds as not eligible
+
+       · In the case of scenes at project start date, if the start date is
+           more than 1 year before the start of Preliminary Review, then
+           the Project Developer should conservatively consider all areas
+           under shadows/clouds as not-eligible. In such cases, a Project
+           Developer could prove eligibility by conducting a ground-
+                                                                                                                     34
+
+           truthing exercise to verify the land-cover for areas under
+           clouds/shadows. The Project Developer shall report on how the
+           ground-truthing was conducted, and which areas were visited
+           (only visited areas can be included in such analysis; sampling
+           is not allowed)
+
+       · Clearly map all polygons covered by shadows/clouds and
+           present a table with the areas of each polygon and the total
+           area in hectares
+
+       · Develop a combined mask for the areas under clouds/shadows
+           in both scenes and apply it to the scenes proceeding to the
+           classification
+
+        iv. Include a map of the classified scenes (10 years before and at
+              project start date) with the forest/non-forest classes before and
+              after the application of the selected forest definition as MPU
+              (resampling).
+
+         v. Classify the scenes with the original spatial resolution. Then,
+              resample the classification products for each scene. The final
+              non-eligible areas within the project area will be the cumulative
+              forest areas from both classified scenes. Generate a shapefile of
+              the eligible area.
+
+        vi. Include a description of how the accuracy assessment was
+              conducted (e.g. how the assessment points were selected and
+              how the confusion matrix was prepared and interpreted). The
+              accuracy must be calculated and reported on class-by-class and
+              for the overall classification. The accuracy assessment of the
+              classification must be conducted using ground-truth data
+              (surveys) or remote sensing imagery of higher resolution of that
+              used for the classification. The minimum overall accuracy for each
+              class should be 90%.
+
+       vii. Provide a shapefile with the points used for the accuracy
+              assessment.
+
+       viii. A final table indicating the total area (in hectares) of the project
+              area, modelling units (planting area), and the 10% set aside for
+              the conservation area.
+
+1.1.7  The use of already classified remote sensing products coming from
+       official sources (national/government institutions) is allowed. If this data
+       is used, then the Project Developer shall explain the type of remote
+       sensing imagery used in that analysis, the method, and the accuracy as
+       reported by the original source.
+                                                                                 35
+
+1.1.8  When using publicly-available remote sensing products that show tree
+       cover instead of forest cover (i.e. Global Forest Watch), then a Project
+       Developer should prove that the selected tree cover percentage is
+       representative of the DNA or national host or FAO forest definition, as
+       necessary.
+                                                                                                                                      36
+
+ANNEX D ­ LUF INPUT & GRIEVANCE MECHANISM
+
+1. PURPOSE
+
+         · To maintain a transparent communication channel with stakeholders
+              throughout the crediting period of a project, in addition to the
+              consultation conducted at the design stage (via two rounds of
+              Stakeholder Consultation).
+
+         · To address early in the crediting period, unforeseen issues that arise
+              during the course of a project. Stakeholders can suggest
+              improvements or modifications based on their direct experience with
+              the project and their knowledge and understanding of local conditions.
+
+         · To further increase the robustness of The Gold Standard through more
+              active and continuous stakeholder involvement, thereby adding value
+              to the existing system of stakeholder feedback and monitoring.
+
+         · To increase mutual trust between the project developer and the local
+              stakeholders, to the benefit of both parties.
+
+2. REQUIREMENTS
+
+The project developer shall establish methods a-c (below) of input &
+grievance expression for each project. Method d (below) is optional and may be
+chosen in agreement with local stakeholders (as part of the SC meeting). The
+project developer shall also demonstrate that they regularly monitor and
+respond to the comments that are made through each of the methods for
+continuous input & grievance expression.
+
+Methods for continuous input & grievance expression
+
+         (a) Continuous `Input & Grievance Expression Process Book'
+         (b) Telephone access
+         (c) Internet and email access
+         (d) Nominated Independent Mediator (NIM)
+
+Comments received through any of the methods shall be documented using the
+table template below. This table is part of the `Annual Reports' and thus part of
+every third-party audit and Gold Standard review.
+
+Method 1 ­ Input & Grievance Expression Process Book
+
+A comment book shall be made available on the project site or in the most
+appropriate, publicly accessible location (e.g. a local community centre, at the
+local council, a local library or school), so that local stakeholders can provide
+feedback on the project.
+
+The book is important to allow for continuous inputs in regions with high literacy
+rates but which have minimal access to the internet. The location of the book
+                                                                                 37
+
+shall be explained and discussed at the SC meeting and then justified in the
+project documentation.
+
+At a minimum, the book shall be formatted to include the five sections from the
+Table D-1 template. If the project developer feels that additional columns are
+necessary then these can be included. The table shall be formatted to allow for
+stakeholders to make anonymous comments should they wish.
+
+The project developer shall check the comments in the book on a regular basis
+and record responses. The project developer may record changes that are made
+to the project, acknowledge problems and explain their causes, or explain why
+the comment cannot be addressed by the project, or if it is irrelevant. Even
+where the desired outcome of the stakeholder cannot be achieved, the project
+developer shall use their response to show that they are respectful of the views
+of stakeholders and suggest alternative solutions or compromises wherever
+possible.
+
+Table D-1: Template table for recording input & grievance expressions
+
+Date Comment       Action       Response        Person          Issue
+                   requested    from            designated      resolved?
+                   from         project         with
+                   Project      developer       responsibility
+                   Developer                    by project
+                                                developer
+
+      Explanation  What would   Explanation     Identification  This could
+      of problem   the          from the        of who will     be
+      or           stakeholder  project of      take            confirmation
+      comment.     like to see  what they       responsibility  from the
+                   change/stay  will do in      for responding  person who
+                   the same.    response to     AND             made the
+                                the             monitoring the  complaint,
+                                comment.        issue.          or the
+                                This may be                     project.
+                                an
+                                explanation
+                                as to why
+                                the project is
+                                unable to
+                                respond/does
+                                not see the
+                                problem as
+                                necessary to
+                                address.
+
+Table D-2: Pros and cons of Method 1
+
+Pros                            Cons
+                                                                                38
+
+o Simple to use ­ does not require      o Assumes literacy (they are still
+    access to technology or associated      able to communicate through
+    costs for stakeholders                  other input mechanisms)
+
+o Cheap, efficient to manage            o Requires small geographical
+                                            spread of stakeholders (or
+o Simple to explain to stakeholders         possibly more than one book)
+
+                                        o Potential loss/theft of the book
+                                            (ensure that a secure place is
+                                            chosen and daily checks are
+                                            carried out)
+
+                                        o Could result in complaints from
+                                            individuals, but little space for
+                                            constructive discussions with
+                                            wider community (encourage
+                                            discussing these complaints in the
+                                            local governance meetings)
+
+Method 2 ­ Telephone access
+
+In regions where stakeholders may be spread over a large geographical area,
+telephone contact may be more practical than a physical book. The telephone
+contact details shall be explained and discussed at the SC meeting and then
+justified in the project documentation.
+
+The telephone number could be that of the project site office or another location.
+However, in countries where local or national calls, or calls to mobiles, have
+different pricing, the project developer shall try to offer the least expensive
+option and justify the choice. The contact details of The Gold Standard Regional
+Manager located closest to the project shall also be provided for stakeholders.
+
+The project developer shall ensure that the phone is answered by someone (or
+has an answer phone message) in a language(s) appropriate to the stakeholders
+of the project.
+
+Calls received shall be logged and recorded in the same way as in the book, with
+the date, comment, action requested and project developer response recorded
+for each call. As with all of the methods, stakeholders are not required to give
+their personal details when they wish to make a comment.
+
+Table D-3: Pros and cons of Method 2
+
+Pros                                    Cons
+
+o Simple to use                         o Stakeholder incurs the cost of a
+o Simple to explain to stakeholders         phone call
+o Inexpensive to run if the project
+                                        o Provides fewer channels for
+    developer uses the same phone           discussion with wider community
+    line as the project/office rather
+    than setting up a separate phone        as complaints are individualized
+    line                                    (encourage discussions on these
+                                                                                  39
+
+o Greater anonymity for                  also in the local governance
+    stakeholders                         meetings)
+
+o Overcomes illiteracy issues
+o Better where stakeholders may be
+
+    spread over a larger area or have
+    geographical barriers to access the
+    project site/book/mediator
+
+Method 3 ­ Internet access
+
+In regions with widespread internet access an email address or comments
+section on a website established by the project developer could be the easiest
+way of receiving input from stakeholders. The email and website details shall be
+explained and discussed at the SC meeting and then justified in the project
+documentation.
+
+The email address of The Gold Standard Regional Manager located closest to the
+project shall also be provided for stakeholders to contact. On a website, the
+information of the project and mechanism for providing comments shall be
+presented in a straightforward manner, showing the same information as in the
+Table D-1 template. The information shall be in the language(s) most
+appropriate for local stakeholders and it shall allow for comments to be made
+anonymously.
+
+Emails or website comments received shall be logged and recorded in the same
+way as in the book, with the date, comment, action requested and project
+response recorded for each message. As with all of the methods, stakeholders
+are not required to give their personal details when they wish to make a
+comment.
+
+Table D-4: Pros and cons of Method 3
+
+Pros                                     Cons
+
+o Simple to use                          o Assumes literacy
+o Simple to explain to stakeholders      o Assumes internet connection,
+o Useful where stakeholders are be
+                                             and access to the internet for all
+    spread over a larger area or have        groups of stakeholders
+    geographical barriers to access      o May entail some costs for the
+                                             project developer to set up, of a
+    the project site/book/mediator           website is used
+o Managing an email address or           o Provides fewer channels for
+                                             discussion with wider community
+    website section for comments is          as complaints are individualised
+                                             (discuss in the local governance
+    inexpensive for project developer.       meetings)
+                                         o Potential lower level of
+                                             anonymity than telephone
+                                             calls/comment book.
+
+Method 4 ­ Nominated Independent Mediator (Optional)
+                                                                                 40
+
+The selection of a Nominated Independent Mediator (NIM) by the project
+developer may be the best approach for projects in regions with low literacy
+rates and/or little access to telephone and internet connections. The NIM shall
+be someone that local stakeholders can access easily, trust to represent their
+views, and who is in contact with the project developer. The selected NIM shall
+be discussed at the SC meeting and agreed by and with the local stakeholders.
+Contacts between the NIM and the local stakeholders shall be communicated to,
+and recorded by, the project developer using Table D-5. This shall include the
+date of contact, all of the issues that have been discussed and any information
+or responses that were provided to the NIM in response to the stakeholders.
+The NIM shall be willing to be contacted by the auditor or The Gold Standard
+Secretariat to confirm their role and the comments they have received.
+
+Table D-5: Pros and cons of Method 4
+
+Pros                                  Cons
+
+o Simple to explain to stakeholders o The mediator may be biased
+                                      towards/against the project and
+o
+                                      not give objective feedback (can
+o Can work within (and uphold) local
+                                      be discussed in the local
+   customs for managing disputes
+                                      governance meetings and a
+o Potentially provides a third party
+                                      request can be made to change
+   to mediate relationships
+                                      the mediator if they are found to
+o Overcomes literacy issues
+                                      be prejudiced)
+o · Potentially allows for
+                                      o May not be approachable for
+   community engagement and
+                                      stakeholders, or not to all groups
+   discussion of issues
+                                      (as above can be resolved in
+
+                                      local governance meetings)
+
+                                      o May require remuneration to
+
+                                      take the role seriously
+
+Table D-6: Table template for communications between NIM and
+stakeholders
+
+Date Comment         Action           Response        Person          Issue
+                     requested        from            designated      resolved?
+                     from             project         with
+                     Project          developer       responsibility
+                     Developer                        by project
+                                                      developer
+
+2      The           Please           Drivers have    Mr. Kajura,     Internal
+April  construction  make less        been asked      Head of Site    monitoring
+2013   vehicles      noise on         to be           Transport       suggests
+       that drive    the roads        respectful of                   that drivers
+       to the site   around the       the                             now call
+       make lots     site and at      neighbours                      instead of
+       of noise,     the site         as they drive                   using their
+       and beep      entrance,        near the                        horns to
+       their horns   as there are     site, and                       gain entry
+                                      turn off their                  to the site.
+                                      engines                         Mr Kajura
+                                                                 41
+
+       to access     houses       when they                      has spoken
+       the site.     nearby.      are waiting                    to project
+                                  to enter.                      neighbours,
+                                  They have                      and they
+                                  also been                      agree that
+                                  asked to                       noise levels
+                                  telephone                      from the
+                                  the site                       site have
+                                  office to gain                 reduced.
+                                  entry to the                   June 2013.
+                                  site, instead
+                                  of beeping                      Project
+                                  their horns.                   community
+                                  May 2013.                      meeting
+                                                                 held 30th
+3      There is      Access to    For safety      Ms. Mandela,   May 2013.
+April  now less      more land    reasons,        Site Manager.  Map
+2013   land to       for grazing  some areas                     produced
+       graze our     the          have to be                     and copies
+       cattle        animals.     restricted so                  distributed
+       because the                that there                     to local
+       area around                are no                         people to
+       the turbines               accidents.                     indicate
+       has a fence.               However, we                    which areas
+                                  will hold a                    are
+                                  meeting with                   accessible.
+                                  local people                   Explained
+                                  to explain                     the dangers
+                                  which areas                    of high
+                                  are                            voltages for
+                                  dangerous                      the animals
+                                  and                            to show
+                                  therefore                      why access
+                                  restricted,                    to some
+                                  but use a                      land had
+                                  map and                        been
+                                  discuss with                   restricted.
+                                  local people                   Community
+                                  to see if                      members
+                                  there are                      agreed, but
+                                  other areas                    have asked
+                                  of the site                    for an
+                                  that can be                    animal
+                                  used for                       passage to
+                                  grazing                        be made to
+                                  animals. May                   access the
+                                  2013.                          western
+                                                                 area of the
+                                                                                                                                      42
+
+                                                                                                         site. This
+                                                                                                         will be done
+                                                                                                         with new
+                                                                                                         fencing in
+                                                                                                         August
+                                                                                                         2013.
+
+3. Stakeholder Consultation (SC) Meeting
+
+At the SC meeting, the methods of input shall be explained and discussed to
+ensure that local stakeholders agree that the details of the selected methods will
+be the most appropriate e.g. the location of the book is accessible and secure,
+local stakeholders agree that the mediator is someone that they can approach
+and trust to represent their comments to the project without prejudice, the
+website is in appropriate language(s) and will be easy for local stakeholders to
+use etc.
+
+The SC Report shall document any comments, criticisms or improvements that
+were made to the continuous input & grievance expression methods discussed at
+the SC meeting.
+
+Recommended Best Practice for Continuous Input & Grievance
+Expression from Stakeholders (local governance meetings)
+
+The Gold Standard recommends that, where practical, project developers have
+regular meetings to invite local stakeholders to give their feedback on the
+project, ensure that the project goals are understood and investigate if there are
+any improvements that could be made. These could be in the form of:
+
+Annual project open days to allow local stakeholders to visit the site and see the
+project
+
+A meeting (e.g. coincide with training and repairs, or at the same time as
+auditor field visits) that includes general information about the project,
+education about climate change and carbon offsetting, etc.
+
+These regular meetings can be very useful for projects as they allow project
+developers to hear the views of local stakeholders (including employees) and, as
+they allow for greater communication and understanding, can improve relations
+between the project and the local community. If regular meetings are planned,
+they shall be mentioned at both rounds of the LSC and advertised in accordance
+with The Gold Standard requirements.
+
+As part of the Validation, the VVB shall check whether the approved/selected
+methods of continuous input & grievance from the SC Report or other
+consultations have been implemented on site and discussed in the project
+documentation.
+
+The continuous input & grievance log (the template table in Section 2.0) is part
+of the project documentation that the auditor shall use to audit the project.
+The GSVVB shall check:
+                                                                                                                                      43
+
+         (a) That the project developer has responded in a reasonable manner
+                   to comments that have been raised.
+
+         (b) That the responses are adequate, timely and appropriate to address
+                   the problem or comments raised.
+
+         (c) That any issues the auditor considers serious are taken up as a
+                   Forward Action Request (FAR) for the project as part of the
+                   certification to ensure further monitoring of the issue.
+
+The auditor shall make use of the comments when in discussions with local
+stakeholders as part of the field visits. The comments can provide useful starting
+points for conversations with the local stakeholders. If there are comments from
+a stakeholder that has chosen not to remain anonymous, the auditor can request
+to speak to this individual if they think an issue is of serious concern for the
+project.
+
+Where the auditor has doubts about the activities of the project, or the
+comments raised relate to a serious problem, the auditor shall:
+
+         (a) Confirm that the actions, as per the response from the project
+                   developer, recorded in the table have taken place.
+
+         (b) Confirm that stakeholders accept the results.
+         (c) Consider using a Forward Action Request (FAR) to ensure further
+
+                   monitoring of the issue.
+
+If no comments have been made through the input & grievance mechanisms,
+the auditor shall record this information as part of their report. When engaging
+with local stakeholders they shall inquire whether stakeholders are aware of the
+continuous input & grievance mechanisms, whether there are any problems,
+concerns or comments about the project, and encourage the stakeholders and
+the project developer to use the continuous input & grievance mechanisms.
+

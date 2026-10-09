@@ -1,0 +1,2031 @@
+=== p1
+ 
+ 
+ Climate Security and Sustainable Development 
+ 
+OPTIONAL REQUIREMENT 
+GHG EMISSIONS REDUCTION & SEQUESTRATION 
+PRODUCT REQUIREMENTS
+ 
+PUBLICATION DATE 12.12.2025 
+VERSION 3.2 
+NEXT PLANNED UPDATE 12.12.2027 
+ 
+CONTACT DETAILS  
+The Gold Standard Foundation 
+International Environment House 2 
+Chemin de Balexert 7-9 
+1219 Châtelaine 
+Geneva, Switzerland 
+Tel: +41 22 788 70 80 
+Email: standards@goldstandard.org 
+ 
+ 
+SUMMARY 
+This document provides specific rules and requirements for projects/PoAs seeking 
+issuance of GS4GG specific products, namely Gold Standard Verified Emission 
+Reductions (GSVERs), Gold Standard labels for Certified Emission Reductions 
+(GSCERs) and Planned Emissions Reductions (PERs) for Land Use & Forests. It also 
+provides the requirements for projects/PoAs transitioning from other standards to 
+GS4GG.  
+  
+=== p2
+ 
+OPTIONAL REQUIREMENT - GHG Emissions Reduction & Sequestration Product Requirements Ver. 3.2 
+2 
+ 
+TABLE OF CONTENTS  
+1| SCOPE AND APPLICABLITY _________________________________________________ 4 
+2| GENERAL ELIGIBILITY CRITERIA ____________________________________________ 4 
+3| LOCATION OF PROJECT ___________________________________________________ 5 
+ GSVER project ................................ ................................ ..................  5 
+ GSCER project (LUF – N/A) ................................ ................................ . 5 
+4| ELIGIBLE GREENHOUSE GASES _____________________________________________ 5 
+5| TYPES OF PROJECT _______________________________________________________ 5 
+ GSVERs and GSCERs project ................................ ...............................  5 
+6| ODA DECLARATION ______________________________________________________ 6 
+ GSVERs and GSCERs project ................................ ...............................  6 
+7| FINANCIAL ADDITIONALITY & ONGOING FINANCIAL NEED _______________________ 7 
+ GSVER projects ................................ ................................ ................  7 
+ GSCER projects (LUF – N/A) ................................ ...............................  7 
+8| ELIGIBLE METHODOLOGIES ________________________________________________ 7 
+ General Requirement ................................ ................................ ......... 7 
+ GSVER projects ................................ ................................ ................  8 
+ GSCER projects (LUF – N/A) ................................ ...............................  8 
+9| PROJECT SCALE _________________________________________________________ 8 
+ GSVER Projects ................................ ................................ ................  8 
+ GSCER projects (LUF – N/A) ................................ .............................. 11 
+10| CREDITING CYCLE & ISSUANCE __________________________________________11 
+ Crediting Period ................................ ................................ .............11 
+ Crediting Period Start Date ................................ .............................. 13 
+ Issuance of GSVERs or GSCERs ................................ ........................ 13 
+ Issuance for Retroactive Period ................................ ......................... 14 
+ Issuance of GSVERs or GSCERs with REACs ................................ ........14 
+ GSCERs Project Cycle (LUF – N/A) ................................ ..................... 14 
+ Pre-CDM GSVERS and Parallel Registration ................................ .........14 
+ Project Design Change ................................ ................................ ....15 
+11| LAND USE & FORESTS SPECIFIC REQUIREMENTS_____________________________15 
+ Compliance Buffer ................................ ................................ ..........15 
+ Planned Emissions Reductions (PERs)................................ ................. 15 
+ Bundled PERs ................................ ................................ ................ 16 
+=== p3
+ 
+OPTIONAL REQUIREMENT - GHG Emissions Reduction & Sequestration Product Requirements Ver. 3.2 
+3 
+ 
+ Carbon Performance ................................ ................................ .......16 
+12| GS-VVB REQUIREMENTS ________________________________________________17 
+13| UPGRADING PROJECT FROM OTHER CARBON STANDARDS OR CERTIFICATION 
+SCHEMES ________________________________________________________________18 
+ Transition of Project, POA/CPA from Other Standards ........................... 18 
+ GSCER Project to GSVER Project ................................ ....................... 18 
+ Issued GSCERs to GSVERs (LUF – N/A) ................................ ..............18 
+ GSVER to GSCER/JI Project (LUF – N/A) ................................ .............19 
+14| DOUBLE COUNTING REQUIREMENTS_______________________________________19 
+ Double Issuance ................................ ................................ ............19 
+ Double Use ................................ ................................ ................... 19 
+ Double Claiming ................................ ................................ .............20 
+15| REQUIREMENTS TO AVOID DOUBLE CLAIMING WITH NATIONAL CLIMATE POLICIES_22 
+ Requirements ................................ ................................ ................ 22 
+ Procedures ................................ ................................ .................... 23 
+ANNEX A – REQUIREMENTS FOR CREDITS AUTHORISED FOR USE UNDER ARTICLE 6 OF 
+THE PARIS AGREEMENT ____________________________________________________26 
+ANNEX B – REQUIREMENTS & PROCEDURE TO TRANSITION PROJECTS FROM OTHER 
+STANDARDS TO GOLD STANDARD FOR THE GLOBAL GOALS _______________________37 
+ANNEX C – LAND-USE & FORESTS ISSUANCE GUIDELINES ________________________44 
+ 
+ 
+  
+  
+=== p4
+ 
+OPTIONAL REQUIREMENT - GHG Emissions Reduction & Sequestration Product Requirements Ver. 3.2 
+4 
+ 
+1| SCOPE AND APPLICABLITY   
+1.1.1 | This document represents the Product Requirements for the issuance of: 
+a. Gold Standard Verified Emission Reductions (GSVERs) 
+b. Gold Standard labels for Certified Emission Reductions (GSCERs) 
+c. Planned Emissions Reductions (PERs) for Land Use & Forests  
+1.1.2 | Certain Requirements noted in this document do not apply to Projects 
+applying the Gold Standard Land Use & Forests Activity Requirements 
+(hereafter “LUF requirements”), these are noted as “LUF – N/A”. 
+1.1.3 | Claims made regarding Gold Standard Voluntary Emission Reductions 
+(GSVERs), Certified Emission Reductions (GSCERs) or Planned Emission 
+Reductions (PERs) shall be in line with the Claims Guidelines. 
+1.1.4 | Unless otherwise indicated in this document or associated documents, all 
+projects applying these Requirements shall be consistent with applicable 
+UNFCCC rules and requirements for Clean Development Mechanism (CDM) 
+or Joint Implementation (JI) projects, as periodically updated. 
+2| GENERAL ELIGIBILITY CRITERIA 
+2.1.1 | Unless otherwise stated elsewhere in the Principles & Requirements, 
+Projects involving a mix of eligible and ineligible components can only 
+claim credits for the Emission Reductions and/or sequestration associated 
+with the eligible component of the project. 
+2.1.2 | Bundled Projects1: Projects submitted together for certification within a 
+bundle, each Project that is part of bundle shall individually conform to all 
+GS4GG Requirements. Eligibility criteria with regards to the scale of the 
+Project shall apply to the bundle as a whole and not to the individual 
+Projects. 
+2.1.3 | Voulntary project activities (VPAs): A group of Projects submitted together 
+for Gold Standard Design Certification within a Programme of Activities. 
+Each of these Projects shall conform to all Requirements including the 
+Programme of Activity Requirements. A microscale VPA can only be part of 
+a Microscale PoA and shall conform to all requirements including those 
+listed in Annex A of the Programme of Activity Requirements. 
+ 
+1 Several project activities which form a single project activity or portfolio without the loss of 
+distinctive characteristics of each component. 
+=== p5
+ 
+OPTIONAL REQUIREMENT - GHG Emissions Reduction & Sequestration Product Requirements Ver. 3.2 
+5 
+ 
+3| LOCATION OF PROJECT 
+ GSVER project 
+3.1.1 | VER Projects may be located in any host country or state. However, where 
+host countries or states have mandatory operational schemes2 to reduce 
+GHG emissions in any form (e.g. cap & trade, carbon tax etc.), Projects 
+shall only be eligible if the Project Developer has either: 
+a. provided Gold Standard with satisfactory justification that no double 
+counting of emission reductions occur or  
+b. committed to retiring eligible units equal to the quantity of Gold 
+Standard VERs, which must be done prior to VER issuance. Refer to 
+Section 15| below of this document. 
+ GSCER project (LUF – N/A) 
+3.2.1 | CDM Projects shall be located in a Non-Annex I country, as defined by the 
+UNFCCC.  
+3.2.2 | JI Projects shall be located in an Annex I country with a commitment 
+inscribed in Annex B of Kyoto Protocol, as defined by the UNFCCC.  
+4| ELIGIBLE GREENHOUSE GASES 
+4.1.1 | Only Carbon Dioxide (CO2), Methane (CH4) and/or Nitrous Oxide (N2O) are 
+eligible for GSVERs or GSCERs, provided Projects comply with all GS4GG 
+Requirements and eligibility criteria. 
+4.1.2 | Projects involving the reduction of eligible and non-eligible greenhouse 
+gases (GHGs) shall be eligible for the crediting of emission reductions 
+associated with eligible GHGs only.  
+5| TYPES OF PROJECT 
+ GSVERs and GSCERs project  
+5.1.1 | The Following Project types are eligible for issuance of GSVERs or GSCERs: 
+a. Renewable Energy Supply: Project activities that generate and 
+deliver energy services (e.g. mechanical work/electricity/heat) from 
+non-fossil and renewable energy sources. Note that specific 
+requirements apply to the issuance of Gold Standard Labelled 
+Renewable Energy GSCERs and GSVERs, as listed in section 2 of the 
+Renewable Energy Activity Requirements.  
+ 
+2 Alignment with Paris Agreement rules may be required in the future. Please refer to relevant 
+Gold Standard Requirements, as applicable. 
+=== p6
+ 
+OPTIONAL REQUIREMENT - GHG Emissions Reduction & Sequestration Product Requirements Ver. 3.2 
+6 
+ 
+b. End-Use Energy Efficiency Improvement: Project activities that 
+reduce energy requirements as compared to baseline scenario without 
+affecting the level and quality of services or products, where the end 
+user of the products and services are clearly identified and when the 
+physical intervention is required at the user end. For example, efficient 
+cooking, heating, lighting, etc.  
+c. Waste Handling & Disposal: The waste handling and disposal 
+category refers to all waste handling Projects that deliver an energy 
+service (e.g. LFG with some of the recovered methane used for 
+electricity generation) or a usable product with sustainable 
+development benefits (e.g. composting). 
+d. Land Use and Forests: including Afforestation/Reforestation and 
+Agriculture Projects (CDM A/R projects are not eligible for issuance of 
+GSCERs, however project may issue GSVERs after transitioning to 
+GS4GG). 
+e. Carbon Dioxide Removal (Working definition): refers to project 
+activities that involves measures for carbon dioxide removal from 
+atmosphere, permanent safe storage and/or reuse as products and 
+achieve net negative emissions. The eligibility of CDR project is subject 
+to the availability of an applicable approved Gold Standard 
+methodology.    
+6| ODA DECLARATION 
+ GSVERs and GSCERs project  
+6.1.1 | Projects are ineligible for carbon crediting under GS4GG if the OFFICIAL 
+DEVELOPMENT ASSISTANCE (ODA) is provided to the project under the 
+condition that the credits generated by the Project will be transferred, 
+either directly or indirectly, to the donor country providing ODA support. 
+The OECD defines ODA as financial flows: 
+a. To developing countries and multilateral institutions; 
+b. Provided by government agencies (e.g. USAID); 
+c. Whose main objective is the economic development and welfare of 
+developing countries; and 
+d. That are concessional in character, conveying a grant element of at 
+least 25%. 
+6.1.2 | Project Developer submitting a Project located in a country named by the 
+OECD Development Assistance Committee’s ODA recipient list shall sign 
+and submit the ODA Declaration. 
+6.1.3 | Where there is a material change in the role of ODA for the development 
+or implementation of a Project, the Project Developer shall immediately 
+submit an amended ODA Declaration. 
+=== p7
+ 
+OPTIONAL REQUIREMENT - GHG Emissions Reduction & Sequestration Product Requirements Ver. 3.2 
+7 
+ 
+7| FINANCIAL ADDITIONALITY & ONGOING FINANCIAL NEED 
+ GSVER projects 
+7.1.1 | All Projects shall be demonstrated to be additional, meaning that they shall 
+reduce anthropogenic emissions of greenhouse gases below those that 
+would have occurred in the absence of the proposed Project. 
+7.1.2 | All Projects shall demonstrate Ongoing Financial Need at Certification 
+Renewal following latest version of Principles & Requirements available at 
+the time of renewal of their crediting period, unless otherwise stated in the 
+relevant Activity Requirements. 
+7.1.3 | If the stakeholder consultation for the Project was conducted after the 
+start date of the Project, the Project Developer shall demonstrate that the 
+revenues from carbon credits were seriously considered in the decision to 
+implement the Project. Evidence to support carbon revenue consideration 
+and continuous actions may include contracts, draft versions of Project 
+information, correspondence with financial institutions or other 
+stakeholders, minutes and notes of Board/Management meetings, 
+agreements or negotiations with auditors, publications in newspapers. 
+ GSCER projects (LUF – N/A) 
+7.2.1 | Gold Standard CDM and JI Projects are not required to carry out additional 
+assessment for demonstration of additionality over and above what has 
+been done for registration/determination with the CDM EB/JISC unless the 
+Project falls into a category that is deemed non-Additional in an applicable 
+GS4GG Activity Requirement. In such cases the relevant Activity 
+Requirement shall take precedence. 
+7.2.2 | Gold Standard CDM and JI Projects shall demonstrate Ongoing Financial 
+Need at Certification Renewal following latest version of Principles & 
+Requirements available at the time of renewal of their crediting period, 
+unless otherwise stated in the relevant Activity Requirements. 
+8| ELIGIBLE METHODOLOGIES 
+ General Requirement 
+8.1.1 | All Projects shall:  
+a. conform to the relevant Activity Requirements and Gold Standard 
+Approved Methodologies, including eligible CDM Methodologies3. 
+b. also meet the additional GS4GG methodology eligibility requirements, 
+where applicable. Refer to eligible CDM Methodologies.  
+ 
+3 In case any CDM methodology is not present in the GS4GG list of eligible CDM 
+methodologies, the PD/CME may reach out to standard@goldstandard.org for further steps. 
+=== p8
+ 
+OPTIONAL REQUIREMENT - GHG Emissions Reduction & Sequestration Product Requirements Ver. 3.2 
+8 
+ 
+8.1.2 | The Gold Standard, subject to decision from the TAC, reserves the right to 
+enforce revision to the applied methodology(ies) at any point, in case its 
+application by a project/VPA has resulted and/or will result in 
+overestimation of emission reductions. 
+ GSVER projects 
+8.2.1 | GSVER Projects shall apply a Gold Standard Approved methodology. The 
+Project shall apply the latest version of the methodology and applicable 
+tools available at the time of first submission (preliminary review). For 
+transition projects, refer to Annex B for methodology version applicability 
+requirements.  
+8.2.2 | The methodology and tool version applied at the time of first submission 
+(preliminary review) may be used for Design Certification as long as the 
+Project is submitted for validation4 within six months after the time of first 
+submission for Preliminary Review. If this condition is not met, the latest 
+version of the methodology and applicable tool(s) available at the time of 
+submission for validation shall be applied. 
+8.2.3 | GSVER Projects shall apply the latest version of the methodology and 
+applicable tools available at time of submission for validation5 of Crediting 
+Period Renewal. Please refer to relevant GS4GG requirements on Crediting 
+Period Renewal for further guidelines. 
+ GSCER projects (LUF – N/A) 
+8.3.1 | CDM and JI Projects seeking issuance of GSCERs shall use an approved 
+CDM methodology and applicable tools available at the time of registration 
+with CDM. The project shall also meet additional GS4GG methodology 
+eligibility requirements, where applicable. Refer to eligible CDM 
+methodology. 
+8.3.2 | CDM and JI Projects shall update to the latest version of an approved CDM 
+methodology and applicable tools available at the renewal of the crediting 
+period. 
+9| PROJECT SCALE 
+ GSVER Projects 
+9.1.1 | GSVER Projects may be registered as ‘large scale’, ‘small scale’ (for the 
+applicability of methodologies and tools only) or ‘microscale’. Scale is 
+ 
+4 The time of submission for validation is the date when the VVB is contracted for the 
+Validation of the Project, as formally confirmed by the VVB in the audit report. 
+5 The time of submission for validation for crediting period renewal is the date when the VVB is 
+contracted for the re-validation of the Project, as formally confirmed by the VVB in the 
+audit report. 
+=== p9
+ 
+OPTIONAL REQUIREMENT - GHG Emissions Reduction & Sequestration Product Requirements Ver. 3.2 
+9 
+ 
+defined in the relevant Activity Requirements or where these do not exist 
+then per following paragraphs. 
+9.1.2 | All Projects exceeding the small scale thresholds are defined as large scale. 
+Small scale projects are defined following CDM project standard for project 
+activities, as below; 
+a. Type 1: Renewable energy Projects: maximum output capacity of 
+15 MW(e) or 45MW(th). In this context: 
+i. “Output” is the installed/rated capacity as indicated by the 
+manufacturer of the equipment or plant, irrespective of the actual 
+load factor of the plant. The installed/rated capacity of renewable 
+electricity generating units that involve turbine generator systems 
+shall be based on the installed/rated capacity of the generator; 
+ii. Regarding the “appropriate equivalent” of 15 MW, refers to MW, 
+but the project participants may refer to MW(p)6,3 MW(e) or 
+MW(th). As MW(e) is the most common denomination, MW is 
+defined as MW(e), and otherwise an appropriate conversion factor 
+shall be applied; 
+iii. For biomass, biofuel and biogas project activities, the maximal 
+limit of 15 MW(e) is equivalent to a 45 MW thermal output of the 
+equipment or the plant (e.g. boilers). For thermal applications of 
+biomass, biofuels or biogas (e.g. cookstoves), the limit of 45 
+MW(th) is the installed/rated capacity of the thermal application 
+equipment or device(s) (e.g. biogas stoves). For electrical or 
+mechanical applications, the limit of a 15 MW installed/rated 
+output shall be used. In the case of co-firing renewable and fossil 
+fuels, the rated capacity of the system when using fossil fuel shall 
+apply; 
+iv. For thermal applications of solar energy project activities, 
+“maximum output” shall be calculated using a conversion factor of 
+700 W(th)/m2 of aperture area of glazed flat plate or evacuated 
+tubular collector, that is, the eligibility limit in terms of aperture 
+area is 64,000 m2 of the collector7. The project participants may 
+also use other conversion factors determined, but shall then 
+justify why the chosen conversion factor is more appropriate to 
+the project activity; 
+ 
+6 For solar photovoltaic applications, 15 MW(p) may be defined by manufacturers’ 
+specifications under testing conditions of 1000 W/m2 and 25 deg C or 600 W/m2 and 35 deg 
+C. 
+7 This conversion is not applicable for solar thermal parabolic and trough-type collectors used 
+for high-grade solar thermal energy applications. 
+=== p10
+ 
+OPTIONAL REQUIREMENT - GHG Emissions Reduction & Sequestration Product Requirements Ver. 3.2 
+10 
+ 
+Example of technologies includes but not limited to solar photovoltaic, 
+hydro, wind and renewable biomass that supply electricity to grid, 
+mini-grid, individual households/users or groups of households/users.  
+b. Type 2: End-use energy efficiency project improvement:  
+activities that reduce energy consumption, on the supply and/or 
+demand side, with a maximum energy saving of 60 GWh per year (or 
+an appropriate equivalent) in any year of the crediting period. In this 
+context, for project activities that improve thermal energy efficiency, 
+the maximum energy saving of 60 GWh(e) per year is equivalent to 
+180 GWh(th) per year saving;  
+Examples of technologies and measures include high efficiency 
+biomass fired project devices (cookstoves or ovens or dryers) to 
+replace the existing devices and/or energy efficiency improvements in 
+existing biomass fired cookstoves or ovens or dryers. 
+c. Type 3: Other project activities:  project involves technologies 
+such Safe Water Supply, Waste management, etc. not included in 
+Type I or Type II that result in GHG emission reductions not 
+exceeding 60,000 ton CO2e per year in any year of the crediting 
+period. 
+Examples of technologies and measures include solid waste 
+composting, Water purification technologies including, but are not 
+limited to, water filters (e.g. membrane, activated carbon, ceramic 
+filters), solar energy powered ultraviolet (UV) disinfection devices, 
+solar disinfection techniques, photocatalytic disinfection equipment, 
+pasteurization appliances, chemical disinfection methods (e.g. 
+chlorination), combined treatment approaches (e.g. flocculation plus 
+disinfection), boreholes, wells, water kiosks. 
+9.1.3 | ‘Microscale’ Projects are those projects associated with annual emission 
+reductions of less than or equal to 10,000 tCO2eq in each year of the 
+crediting period. In the case of LUF Project, a microscale project is defined 
+as a project with a maximum project area of 500ha and shall generate 
+annual emission reductions of less than or equal to 10,000 tCO2eq. It 
+should be noted that the Gold Standard definition of ‘microscale projects’ 
+is different from the CDM’s definition of ‘microscale projects’. 
+9.1.4 | In case, during project operation, a small scale or microscale Project 
+exceeds the scale definition, the Project shall only be eligible for GSCERs, 
+GSVERs or ERUs up to the maximum number of allowable emission 
+reductions per year corresponding to project scale definition for the given 
+project type. E.g., when a micro-scale project achieves emission 
+reductions greater than 10,000 tonnes of CO2eq in a given crediting year, 
+the claimable emissions reductions shall be capped at 10,000 tonnes of 
+CO2eq. 
+9.1.5 | GSVER project and VPAs applying suppressed demand baseline, 
+irrespective of the applied methodology (approved GS or CDM 
+=== p11
+ 
+OPTIONAL REQUIREMENT - GHG Emissions Reduction & Sequestration Product Requirements Ver. 3.2 
+11 
+ 
+methodology) and individual technology units, shall demonstrate 
+compliance with applicable project type Small Scale thresholds at the 
+aggregate level of the project or VPA, as defined in paragraph 9.1.1 
+|above. Refer to Rule update for further details and CORSIA eligibility- 
+Application of Suppressed Demand, Project Type And Applicable Scale 
+Threshold.  
+ GSCER projects (LUF – N/A) 
+9.2.1 | Gold Standard CDM or JI Projects may be ‘large scale’ or ‘small scale’. All 
+Project exceeding the small scale thresholds are defined as large scale. 
+The applicability of methodologies is defined following CDM project 
+standard for project activities. 
+9.2.2 | Small Scale Projects are defined as per section - Project type and 
+eligibility, CDM project standard for project activities, summarised herein : 
+a. Type I: Renewable energy project activities with a maximum output 
+capacity of 15 MW (or an appropriate equivalent) 
+b. Type II: Energy-efficiency improvement project activities < = 60 
+GWh(e) or 180 GWh(th) energy savings per year 
+c. Type III: Other project activities not included in Type I or Type II < = 
+60,000 tCO2eq per year 
+9.2.3 | A small scale CDM project activity may contain more than one component, 
+each belonging to one of the three project types referred above. In this 
+case, the sum of the scale of components belonging to the same project 
+type shall not exceed the limit of that project type. 
+9.2.4 | Microscale CDM projects are defined as per para 121, CDM project 
+standard for project activities as follows; 
+a. Type I: project activities with up to 5 MW output capacity that employ 
+renewable energy as their primary technology 
+b. Type II: project activities that aim to achieve energy savings at a 
+scale of no more than 20 GWh per year; or 
+c. Type III: Other project activities not included in Type I or Type II that 
+aim to achieve GHG emission reductions at a scale of no more than 
+20 kt CO2e per year. 
+9.2.5 | GSVERs may be claimed for eligible Project elements that are not covered 
+by a CDM Project as long as the eligible elements are validated and 
+verified separately as a GSVER activity. 
+10| CREDITING CYCLE & ISSUANCE 
+ Crediting Period 
+a. GSVER projects 
+10.1.1 | Gold Standard Projects are eligible to claim GSVERs for no more than: 
+=== p12
+ 
+OPTIONAL REQUIREMENT - GHG Emissions Reduction & Sequestration Product Requirements Ver. 3.2 
+12 
+ 
+a. The maximum Certification Renewals/Cycles (i.e. Crediting Period) as 
+stipulated in the relevant Activity Requirements OR 
+b. A maximum of one Certification Renewal Cycle (i.e. Crediting Period 
+of 10 years) in the absence of the Activity Requirements  
+NOTE  
+- Project, PoA/VPAs registered with previous versions of Gold Standard 
+and renewing their crediting period under GS4GG shall maintain their 
+existing crediting cycle and maximum crediting periods following 
+Transition Requirements.  
+- Project, PoA/ CPAs registered with other standards like CDM seeking 
+transition to GS4GG for GSVERs issuance shall refer to Annex B of this 
+document as applicable.  
+10.1.2 | Where a Gold Standard Project has been or is registered under one or 
+more other carbon standards or certification schemes, the total aggregated 
+crediting period under all schemes combined shall not exceed the standard 
+crediting period allowed under Gold Standard. Gold Standard status shall 
+immediately be withdrawn from any activities that are found to have 
+violated this requirement and the Gold Standard reserves its right to 
+pursue remedies in accordance with and pursuant to Terms & Conditions. 
+Refer to Annex B for further details on crediting period requirements for 
+transition projects. 
+b. GSCER projects 
+10.1.3 | CDM or JI Projects are eligible to claim GSCERs for no more than: 
+a. The maximum Certification Renewals/Cycles (i.e. Crediting Period) as 
+stipulated in the relevant Activity Requirements OR 
+b. A maximum of one Certification Renewal Cycle (i.e. Crediting Period 
+of 10 years) in the absence of the Activity Requirements  
+10.1.4 | For CDM or JI projects, registered crediting period cannot be 
+changed/extended. 
+10.1.5 | For CDM or JI projects, the labelling of emission reductions after 
+registration with GS4GG is allowed up to maximum crediting period as per 
+relevant GS4GG activity requirements or end of crediting period with 
+standard X, whichever occurs first. The following examples explains how 
+this requirement shall be applied – 
+If a given project applies for labelling of emission reductions and is 
+registered with Standard X with  
+- fixed crediting period (10 years): the project can seek labelling under 
+GS4GG for maximum up to 10 years but shall not be extended beyond 
+the end date of crediting period with Standard X.  
+- renewable crediting period (7*3 year): the project can seek labelling up 
+to the maximum crediting period allowed under relevant GS4GG 
+=== p13
+ 
+OPTIONAL REQUIREMENT - GHG Emissions Reduction & Sequestration Product Requirements Ver. 3.2 
+13 
+ 
+activity requirements. For example; under GS4GG, the maximum 
+crediting period allowed for renewable energy project is 15 years.  
+o A renewable energy project that has already claimed 5 years 
+under Standard X can claim labelling for 15 years of remaining 
+crediting period after transitioning to GS4GG.  
+o A renewable energy project that has already claimed 10 years 
+under Standard X can claim labelling for 11 years of remaining 
+crediting period after transitioning to GS4GG, i.e., the end date 
+of crediting period with Standard X. 
+10.1.6 | CDM or JI projects that were registered with previous versions of Gold 
+Standard (i.e. prior to release of the Gold Standard for the Global Goals) 
+are allowed to seek labelling of issued CERs up to their maximum CDM 
+crediting period, i.e., 10 or 21 as per Section 3.0 of Transition 
+requirements. 
+ Crediting Period Start Date 
+a. GSVER projects 
+10.2.1 | The start date of Crediting Period is the date of start of operation (start of 
+planting for A/R Projects) or a maximum of two years (three years for A/R 
+& AGR) prior to the date of Project Design Certification, whichever occurs 
+later.  
+10.2.2 | In case the start date of the Crediting Period is after date of Project Design 
+Certification then it may be postponed in line with the requirements listed 
+in paragraph 3.1.3 (b) and (c), of the Design Change requirements. (LUF 
+– N/A). 
+b. GSCER projects 
+10.2.3 | CDM or JI project seeking GSCERs, the start date of the crediting period 
+with Gold Standard shall be the start date of the crediting period under 
+CDM or maximum of two years prior to the date of first submission 
+(submission for preliminary review), whichever occurs later. 
+ Issuance of GSVERs or GSCERs 
+10.3.1 | Upon completion and approval of the Performance Review the Gold 
+Standard shall certify the entire amount of emission reductions specified in 
+the monitoring report and achieved by the Project. Certification of only 
+part of total volume of emission reductions specified in the report 
+approved by Gold Standard is not allowed. 
+10.3.2 | Once issued, GSVERs remain valid until they are permanently retired in 
+the Impact Registry or until the time they are used for compliance or 
+retired in an authorised registry (GSCERs). Once issued, GSCERs, or 
+GSVERs cannot be retroactively cancelled. 
+=== p14
+ 
+OPTIONAL REQUIREMENT - GHG Emissions Reduction & Sequestration Product Requirements Ver. 3.2 
+14 
+ 
+ Issuance for Retroactive Period 
+a. GSVER projects 
+10.4.1 | Projects may be eligible for retroactive crediting for realised emission 
+reductions for maximum two years (three years for A/R and AGR) Projects. 
+Note - Retroactive crediting of 10 years for A/R Projects and 5 years for 
+agriculture projects is allowed as an exception if time of first submission 
+(preliminary review) was before 01 January 2016 for A/R Projects and 01 
+January 2017 for agriculture projects. 
+b. GSCER projects 
+10.4.2 | The project shall be eligible for retroactive crediting for a maximum of two 
+years. However, the total duration of the crediting period of the project 
+shall not exceed the standard crediting period allowed under relevant 
+GS4GG activity requirements. 
+ Issuance of GSVERs or GSCERs with REACs 
+10.5.1 | Co-issuance of Renewable Energy Attributes Certificates (REACs)8 with 
+GSVERs or GSCERs for same MWh of electricity generated is not 
+permitted. It is, however, possible for a Project to request issuance of 
+either GSVERs or Gold Standard Labelled Renewable Energy Products – 
+see the Renewable Energy Label Product Requirements for further details. 
+10.5.2 | Furthermore, if the Project also applies the Gold Standard Renewable 
+Energy Label Product Requirements, then the Gold Standard 
+Validation/Verification Body (hereafter VVB) shall check for double 
+counting at both validation and verification stages by reviewing all relevant 
+registries that could hold REACs from the considered project activity. The 
+list of registries examined by the VVB shall be reported in the Validation 
+Report and Verification Report. Refer to Renewable Energy Label Product 
+Requirements for further details. 
+ GSCERs Project Cycle (LUF – N/A) 
+10.6.1 | CDM Project seeking labelling of issued CERs (GSCERs) shall mirror the 
+CDM crediting period renewal cycle for Certification Renewals (e.g. 7 
+years).  
+ Pre-CDM GSVERS and Parallel Registration 
+10.7.1 | Project Developers can claim pre-CDM GSVERs for a maximum of two 
+years before start of the CDM or JI crediting period (date of Design 
+Certification/determination under UNFCCC) provided that the project 
+enters into an agreement with the Gold Standard committing to surrender 
+ 
+8 For example; Green or White Certificates 
+=== p15
+ 
+OPTIONAL REQUIREMENT - GHG Emissions Reduction & Sequestration Product Requirements Ver. 3.2 
+15 
+ 
+to the Gold Standard, for immediate retirement, CERs or ERUs that will be 
+issued in respect of GHG Reductions generated by the Project during the 
+CDM or JI crediting period in an amount equal to the Pre-CDM VERs or 
+Pre-JI VERs. The agreement shall make use of the Emission Reduction 
+Acquisition Agreement template and no delivery is required for a grace 
+period of the initial two years of issuance after CDM Design Certification/JI 
+determination. 
+10.7.2 | An eligible project may be submitted for Design Certification to both the 
+GS CDM/JI stream and the GSVER stream in parallel. 
+a. If the proposed CDM/JI Project is successfully registered under the 
+UNFCCC, Project Developer shall immediately inform The Gold 
+Standard and the GSVER Project shall be cancelled. 
+b. If the proposed CDM/JI Project is rejected by the UNFCCC, Project 
+Developer shall immediately inform the Gold Standard. Only if the 
+Project was rejected due to inapplicability of the methodology, can it 
+continue to Design Certification stage under the GSVER stream. 
+ Project Design Change 
+10.8.1 | Permanent changes in project or PoA/CPAs design shall be assessed as per 
+the requirements listed in the Design Change Requirements. 
+11| LAND USE & FORESTS SPECIFIC REQUIREMENTS 
+ Compliance Buffer 
+11.1.1 | For projects applying the LUF Requirements, 20% of the issued PERs and 
+GSVERs shall be transferred into the Gold Standard Buffer. Contribution to 
+the buffer is not required for projects that issue GSVERs for permanent 
+GHGs reductions and/or avoidance (e.g. methane avoidance in rice 
+cultivation) i.e., involves no risk of GHGs reversal. In cases, when same 
+project activity involves carbon sequestration and GHGs reductions and/or 
+avoidance, the project shall contribute to buffer for 20% of the GSVERs 
+and PERs issued for the carbon sequestration component only.   
+11.1.2 | The buffer transfer is distributed pro rata according to the vintage years. 
+Upon written notice to the Gold Standard at or prior to issuance, the 
+Project Developer may transfer issued GSVERs from other Gold Standard 
+certified Projects to the Gold Standard Conformity Buffer in lieu of the 
+GSVERs from the Project.   
+ Planned Emissions Reductions (PERs) 
+11.2.1 | After a successful Project Design Certification or subsequent Performance 
+Certification, LUF Projects may issue PERs for maximum 5 years and 
+Agriculture Projects may issue PERs up to 3 years. PERs shall not be issued 
+to;  
+=== p16
+ 
+OPTIONAL REQUIREMENT - GHG Emissions Reduction & Sequestration Product Requirements Ver. 3.2 
+16 
+ 
+a. Project that results in permanent GHGs reductions and/or avoidance 
+(e.g. methane avoidance in rice cultivation), or 
+b. Project for Soil Organic Carbon (SOC) sequestration, or 
+c. Smallholder project that involves carbon sequestration and applies 
+default values for baseline, leakage and CO2 fixation.  
+11.2.2 | ANNEX C – LAND-USE & FORESTS ISSUANCE GUIDELINES contains a 
+guideline that provides an overview of the issuance, transfer and 
+retirement of Planned Emissions Reductions and GSVERs issued from 
+Projects following the LUF Requirements. 
+11.2.3 | PERs may be issued by Projects following the LUF Requirements. They are 
+subject to the following requirements: 
+a. PERs shall be issued only from project areas that have scientifically 
+robust carbon modelling as required by the relevant Approved 
+Methodology. 
+b. PERs shall be issued only from project areas where the VVB confirms, 
+by certification, that trees have been planted or activity has taken 
+place. 
+c. PERs shall be issued only after a successful Design Certification or 
+subsequent Performance Certification. 
+d. 80% of the PERs shall be issued to the project’s registry account 
+according to their expected vintage years (years of delivery). The 
+remaining 20% shall be issued to the Compliance Buffer. 
+e. All transfers and assignments of PERs shall be recorded in the Impact 
+Registry. 
+f. After Performance Certification, where the effective emission 
+reductions are verified, the PERs are converted into GSVERs, which 
+are issued into the Impact Registry. 
+g. Project Developers shall transparently communicate the differences 
+between PERs and GSVERs as described by the definitions in Claims 
+Guidelines. 
+ Bundled PERs 
+11.3.1 | Gold Standard allows for the ‘bundling’ of PERs with other GSVERs and 
+GSCERs. The applicability, eligibility and Requirements can be found in the 
+Gold Standard Bundled PER Guidelines & Requirements. 
+ Carbon Performance 
+11.4.1 | The Project Developer must ensure that the project carbon stocks are 
+aligned with the number of issued PERs and GSVERs over time. This 
+section also defines the activities that shall be implemented if the project 
+carbon stocks decline below the levels of issued PERs and GSVERs. For the 
+=== p17
+ 
+OPTIONAL REQUIREMENT - GHG Emissions Reduction & Sequestration Product Requirements Ver. 3.2 
+17 
+ 
+Performance Certification the project owner shall provide documentation 
+using the most recent version of the Carbon Performance template. 
+a. At any time during a crediting period, the Project Developer shall 
+ensure that  
+- the quantity of the PERs is equal or less than to the project’s 
+expected (ex-ante) carbon stocks 
+- the quantity of GSVERs is equal or higher (not less) to the 
+project’s expected carbon stocks. 
+b. Incidents, or events, that affect compliance with requirement (a) shall 
+be reported to the Gold Standard. If they occur outside a certification 
+process, the incidents or events shall be reported to the Gold 
+Standard no more than 30 days after their discovery. The Carbon 
+Performance template shall be used for this reporting. 
+c. If compliance with requirement (a) is not maintained, the project will 
+be in a performance shortfall scenario. The Project Developer shall 
+follow the requirements in the Performance Shortfall Guidelines and 
+shall demonstrate to the Gold Standard how the project will 
+realistically address the performance shortfall and recover appropriate 
+levels of carbon stocks to comply with requirement (a). 
+d. The Project Developer shall use one or more of the following 
+approaches according to the requirements in the Performance 
+Shortfall Guidelines: 
+- retiring/locking of PERs or GSVERs from the project which are not 
+yet transferred or retired/locked 
+- purchasing of GSVERs or GSCERs from any other Gold Standard 
+projects (these can also be from non LUF project types such as 
+renewable energy) and transferring these to the GS Impact 
+Registry. 
+11.4.2 | During the period where the project owner is not in compliance with 
+requirement 11.4.1 |a, above, an equal number of PERs or GSVERs from 
+the Gold Standard Compliance Buffer will be put ‘on-hold’. Further PERs or 
+GSVERs shall only be issued for the project after the project owner has 
+complied with requirement  11.4.1 |a, above. If after 5 years, the project 
+developer cannot demonstrate that compliance with requirement  11.4.1 
+|a, above will occur, the project owner shall follow the Non-Conformity 
+process as per Principles & Requirements. 
+12| GS-VVB REQUIREMENTS 
+12.1.1 | Gold Standard Project Developers may use a GS approved VVB as stated 
+in the Gold Standard Validation & Verification Body Requirements. 
+12.1.2 | At minimum, the VVB shall conduct physical site visit;  
+a. Within two years of project start date; and  
+=== p18
+ 
+OPTIONAL REQUIREMENT - GHG Emissions Reduction & Sequestration Product Requirements Ver. 3.2 
+18 
+ 
+b. Once every three years after the first physical site visit. 
+12.1.3 | The VVB may combine both validation and verification audits in first 
+physical site visit provided the site visit is conducted within two years of 
+project start date. 
+12.1.4 | A physical site visit by VVB is; 
+a. not mandatory at the validation (Design Certification or Design 
+Certification Renewal) of a project. 
+b. mandatory at the first verification of a project 
+where a physical site visit is not mandatory, the VVB shall determine (by 
+carrying out a risk assessment) whether a remote audit is viable for an 
+audit instance of a given project. Refer to Site Visit and Remote Audit 
+Requirements and Procedures for remote audit requirements.  
+12.1.5 | GS4GG requirements for validation and verification site visits shall 
+supersede the CDM requirements for GSCER & GSVER projects, PoA/CPAs. 
+A CDM project or CDM PoA/CPA may be exempted from undertaking an 
+audit site visit for CDM validation or CDM verification process, but it shall 
+comply with the GS4GG requirements in order to pursue Gold Standard 
+Design Certification and Performance Certification for issuance and 
+labelling of CERs. 
+13| UPGRADING PROJECT FROM OTHER CARBON STANDARDS OR 
+CERTIFICATION SCHEMES 
+ Transition of Project, POA/CPA from Other Standards  
+13.1.1 | Project, PoA/CPA registered with other carbon standard or certification 
+scheme, for example CDM may transition and register with GS4GG to issue 
+GSVERs following the applicable requirements and guidelines provided in 
+Annex B of this document.   
+13.1.2 | It is possible to upgrade an eligible A/R project from CDM/JI or 
+VERRA/CCBA to GSVERs following applicable requirements and guidelines 
+provided in Annex B of this document.  
+ GSCER Project to GSVER Project 
+13.2.1 | The Project Developer may convert registered GSCER Project into a GSVER 
+Project following applicable requirements and guidelines provided in Annex 
+B of this document. 
+ Issued GSCERs to GSVERs (LUF – N/A) 
+13.3.1 | The Project Developer may convert issued GSCERs into GSVERs following 
+the applicable requirements and guidelines provided in Annex B of this 
+document.  
+=== p19
+ 
+OPTIONAL REQUIREMENT - GHG Emissions Reduction & Sequestration Product Requirements Ver. 3.2 
+19 
+ 
+ GSVER to GSCER/JI Project (LUF – N/A) 
+13.4.1 | Project Developers may seek to convert a GSVER Project to a Gold 
+Standard CDM/JI Project at any time during the crediting period for future 
+emission reductions, provided the Project Developer either applies under 
+the Gold Standard CDM/JI stream before any GSVERs have been issued, or 
+enters into an agreement with the Gold Standard according to which they 
+commit to surrender to the Gold Standard, for immediate retirement, CERs 
+or ERUs that will be issued in respect of GHG Reductions generated by the 
+Project in an amount equal to VERs already issued. The agreement shall 
+make use of Emission Reduction Acquisition Agreement template. 
+14| DOUBLE COUNTING REQUIREMENTS 
+ Double Issuance 
+14.1.1 | Double issuance occurs when more than one emission reduction/removal 
+unit is issued for the same emissions reductions or removals (for example 
+when a project is registered under two different standards, programs, or 
+schemes or twice under the same standard, program, or scheme). 
+14.1.2 | As outlined in the Principles & Requirements, a project shall not be 
+included in any other voluntary or compliance standard or program unless 
+expressly approved by Gold Standard (for example through permitted dual 
+certification in accordance with the Gold Standard rules and requirements). 
+Where dual certification is allowed, the project shall claim emission 
+reductions or removal units of a given vintage only once and under one 
+standard only following applicable requirements. Please refer to Section 2| 
+below for applicable requirements. 
+ Double Use 
+14.2.1 | Double use occurs when the same issued emissions unit is counted twice 
+towards achieving climate change mitigation targets or pledges (for 
+example when a unit is used twice by the same buyer towards claims in 
+different calendar years, or retired once on the Impact Registry but then 
+used by two separate entities towards their distinct and individual 
+mitigation claims). 
+14.2.2 | As outlined in the Principles & Requirements, project developer must 
+demonstrate full and uncontested legal ownership of any products, 
+including GSVERs, generated under Gold Standard certification. Where 
+ownership is transferred, the legal chain of title must be demonstrated 
+transparently, with full documentary support, and with free, prior and 
+informed consent (FPIC). 
+14.2.3 | In addition, registry Account Holders must accept the Gold Standard 
+Impact Registry Terms of Use, which require Account Holders to 
+acknowledge and agree, with respect to the retirement of GSVERs 
+(referred to as Units), that: 
+=== p20
+ 
+OPTIONAL REQUIREMENT - GHG Emissions Reduction & Sequestration Product Requirements Ver. 3.2 
+20 
+ 
+a. The Account Holder is retiring Units permanently; 
+b. Neither the Account Holder nor any third party has any further rights 
+to take the benefit of such Unit nor the underlying Environmental 
+Benefits corresponding to such Units, and 
+c. The Account Holder will procure that all relevant third parties enter 
+into such agreements as are necessary to ensure that neither the 
+Account Holder nor any third parties have any further rights to take 
+the benefit of such Units nor the underlying Environmental Benefits 
+corresponding to such Units. 
+14.2.4 | Account Holders that fail to comply with requirements (para 14.2.3 | 
+above) may face the suspension of their access to the Impact Registry, 
+delisting, and other penalties under the Terms of Use. 
+ Double Claiming 
+14.3.1 | Double claiming occurs when the same emission reduction or removal is 
+claimed by both (i) an emitting entity that reports lower emission levels to 
+demonstrate achievement of mitigation targets or pledges and (ii) by 
+another entity that uses the same emission units resulting from the same 
+emission reduction to achieving its own mitigation targets or pledges. The 
+practice of double claiming may involve more than two claimants, for 
+example where emission reductions are passed through multiple parties in 
+a value chain, used by a company for offsetting to meet a corporate GHG 
+target and also counted towards the Nationally Determined Contribution 
+(NDC) under Article 4 of the Paris Agreement of the Host Country in which 
+the emission reductions occurred.  
+a. Double claiming with a Nationally Determined Contribution (NDC) 
+14.3.2 | The avoidance of double claiming with the NDC of a project’s Host Country 
+is not mandatory for all projects seeking issuance of GSVERs with a 
+vintage of 2021 or later, but is required for GSVERs with a vintage of 2021 
+or later to be eligible for certain use purposes. These uses include: 
+i. Use towards an NDC or domestic climate mitigation target other than 
+that of the Host Country; 
+ii. Use by an aeroplane operator towards its compliance obligation under 
+the Carbon Offsetting and Reduction Scheme for International 
+Aviation (CORSIA) 
+14.3.3 | With respect to the use of GSVERs with a vintage of 2021 or later towards 
+voluntary compensatory claims, entities should use and make claims with 
+respect to GSVERs in accordance with Gold Standard’s Claims Guidelines, 
+once revised later in 2022. 
+14.3.4 | Project intending to avoid double claiming between the end-user of 
+GSVERs and the NDC of the Host Country must apply and abide by Gold 
+Standard’s ‘Requirements for Credits Authorised for Use Under Article 6 of 
+=== p21
+ 
+OPTIONAL REQUIREMENT - GHG Emissions Reduction & Sequestration Product Requirements Ver. 3.2 
+21 
+ 
+the Paris Agreement’ set out in ANNEX A – REQUIREMENTS FOR CREDITS 
+AUTHORISED FOR USE UNDER ARTICLE 6 OF THE PARIS AGREEMENT of 
+this document. GSVERs that abide by these Requirements will be 
+designated accordingly in the Impact Registry. 
+14.3.5 | The avoidance of double claiming between the end-user of a GSVER and 
+the NDC of the Host Country is not applicable for: 
+a. GSVERs issued to projects for emission reductions or removals that 
+occurred within the international boundary of aviation or maritime 
+operations, unless these activities are included within the NDC of any 
+country. 
+b. GSVERs issued to projects for emission reductions or removals that 
+occurred in 2020 or an earlier year, prior to the implementation of 
+NDCs under the Paris Agreement.    
+b. Double claiming with National Policies 
+14.3.6 | Double claiming with national climate policies and carbon pricing schemes 
+may occur when a GSVER is included within, and claimed as an emission 
+reduction under, a Host Country-regulated jurisdictional climate mitigation 
+target, emissions trading scheme, or carbon pricing system, and is also 
+claimed by another country, jurisdiction or entity that reports lower 
+emission levels to demonstrate achievement of mitigation targets or 
+pledges. Where a risk of such double claiming exists, project developer 
+shall apply the requirements and follow the procedures set out in Section 
+15| below  of this document. 
+c. Double claiming with progress towards a voluntary climate mitigation 
+pledge 
+14.3.7 | Double claiming between the end-user of a GSVER and progress by 
+another company towards achievement of a voluntary climate mitigation 
+pledge, such as a Science Based Target (SBT), is governed by 
+requirements of the Greenhouse Gas Protocol and is the responsibility of 
+reporting companies. Further tracking and adjustment mechanisms are 
+likely to emerge but are not yet fully in place in third party schemes. 
+14.3.8 | Where a GSVER is generated from within the inventory boundary of a 
+company and sold to another entity, the transferring company’s inventory 
+should be appropriately adjusted to reflect this transfer. Likewise, 
+companies purchasing GSVERs should ensure that they do not report the 
+GSVER towards a target or pledge if they are aware that another company 
+is doing so. 
+14.3.9 | Project developer should check for potential instances of double claiming 
+prior to and during the implementation of a project, inform participants of 
+this requirement and make Gold Standard aware wherever instances of 
+double claiming arise. Gold Standard reserves the right to take action 
+where it becomes apparent that such double claiming is occurring. 
+=== p22
+ 
+OPTIONAL REQUIREMENT - GHG Emissions Reduction & Sequestration Product Requirements Ver. 3.2 
+22 
+ 
+15| REQUIREMENTS TO AVOID DOUBLE CLAIMING WITH NATIONAL 
+CLIMATE POLICIES 
+ Requirements 
+15.1.1 | Double claiming with national climate policies describes a situation in 
+which a GSVER is included within and counted under a regulated domestic 
+climate mitigation target, including under a regulated GHG emissions 
+trading scheme, and also claimed by another country, jurisdiction or entity 
+to achieve respective mitigation targets or pledges. 
+15.1.2 | Where a potential risk of such double claiming exists, the project 
+developer shall, as a requirement for the Design Certification of the 
+project, demonstrate with documentary evidence that no double counting 
+can occur, for instance by demonstrating one of the following: 
+a. The GHG emissions reductions/removals scope (e.g., sector or 
+activity) are not accounted for within the relevant system of the host 
+country/regional regulator;  
+b. Participation in the regulatory scheme is voluntary (e.g., there is not 
+mandated or automatic capture of emissions reductions within the 
+regulator’s inventory)  
+c. The host country/regional regulator does not account for voluntary 
+GHG emissions reduction/removal contributions. This must be 
+demonstrated credibly either through an appropriate policy 
+instrument or by the regulator cancelling an equivalent volume of 
+scheme units or applying appropriate accounting adjustments. Such 
+cancellation or adjustment must be demonstrated as permanent. 
+15.1.3 | If none of the above can be demonstrated, then the project owner shall 
+demonstrate that Eligible Cancellation Units are cancelled by or on behalf 
+of the project, in scenarios where this is relevant.   
+15.1.4 | With respect to GHG emissions trading schemes, Eligible Cancellation Units 
+include units eligible within the Host Country’s emissions trading scheme 
+that are valid at the time of issuance (for example valid for a given 
+commitment period), where applicable.   
+15.1.5 | With respect to potential double claiming with targets under the Kyoto 
+Protocol, Eligible Cancellation Units are limited to:  
+a. AAUs  
+b. CERs, with eligibility further restricted as follows: 
+i. Must be from scopes/sectors eligible for Gold Standard labelling   
+ii. Must have completed the UNFCCC SD Tool10  
+iii. Units may not be temporary/validated (i.e. tCER and lCERs from 
+CDM A/R are not eligible).   
+iv. From 1 March 2021 onwards, must be from project activities or 
+programmes of activities registered on or after 1 January 2013.   
+=== p23
+ 
+OPTIONAL REQUIREMENT - GHG Emissions Reduction & Sequestration Product Requirements Ver. 3.2 
+23 
+ 
+15.1.6 | It must be demonstrated that the Eligible Cancellation units have been 
+cancelled for the purposes of the respective Gold Standard project 
+addressing double counting.  
+15.1.7 | An equivalent number of Eligible Cancellation Units shall be cancelled prior 
+to each issuance of an affected project. The GSVER issuance process will 
+occur in line with the timescales as appropriate under the Gold Standard 
+Rules and Requirements, but GSVER issuance will not be completed until 
+the cancellation of an equivalent number of Eligible Cancellation Units has 
+been confirmed/attested. 
+ Procedures 
+15.2.1 | At first submission to Gold Standard, a desk appraisal shall be conducted 
+to establish the presence of a risk of double counting with national climate 
+policies. This appraisal shall be completed by Gold Standard and provided 
+to the project developer for consideration.  
+15.2.2 | The project developer may provide evidence that no double counting can 
+occur, as described above, or commit in writing to the cancellation of 
+Eligible Cancellation Units as described above if such evidence cannot be 
+provided. To enable Registration (and Issuance) to occur, approval is 
+required from the Gold Standard Technical Advisory Committee, which 
+shall review the matter in a timely manner.   
+15.2.3 | The Project Owner shall notify the Host Country Designated National 
+Authority and any relevant regulatory bodies concerning the proposed 
+issuance of voluntary GSVERs no less than two months prior to Design 
+Certification. Any comments raised by such bodies in response to 
+notifications shall be addressed prior to Design Certification. Gold Standard 
+reserves the right to reject a project Listing or Design Certification should 
+the Host Country, Designated National Authority, or applicable regulatory 
+body object to the Gold Standard listing of project or issuance of the 
+GSVERs on the basis of double counting risk(s). 
+15.2.4 | Should a regulatory scheme be proposed or commence development 
+during the project crediting period, the project developer is hereby 
+required to: 
+a. Promptly notify the Host Country, Designated National Authority, or 
+any newly formed regulatory body of the existence of their voluntary 
+project in the Host Country and that steps have been taken to avoid 
+double counting in accordance with the Gold Standard requirements, 
+and 
+b. Request that the Host Country account for and report on the activity 
+accordingly.  
+15.2.5 | In cases where the project owner is required to cancel Eligible Cancellation 
+Units, Gold Standard does not require the project owner to cancel the 
+respective number of Units at the beginning of Gold Standard application 
+=== p24
+ 
+OPTIONAL REQUIREMENT - GHG Emissions Reduction & Sequestration Product Requirements Ver. 3.2 
+24 
+ 
+process. Instead, it will be required when the audit report has confirmed 
+the final quantity of GSVERs. Evidence of the cancellation of Eligible 
+Cancellation Units shall be provided to the Gold Standard prior to the 
+issuance of any GSVERs.   
+ 
+ 
+
+=== p25
+ 
+OPTIONAL REQUIREMENT - GHG Emissions Reduction & Sequestration Product Requirements Ver. 3.2 
+25 
+ 
+  
+=== p26
+ 
+OPTIONAL REQUIREMENT - GHG Emissions Reduction & Sequestration Product Requirements Ver. 3.2 
+26 
+ 
+ANNEX A – REQUIREMENTS FOR CREDITS 
+AUTHORISED FOR USE UNDER ARTICLE 6 OF THE 
+PARIS AGREEMENT 
+1| REQUIREMENTS AND PROCEDURE 
+ Scope and Applicability 
+1.1.1 | The Requirements detailed below shall be followed in order for GSVERs to 
+be identified on the Impact Registry as authorised by the relevant Host 
+Country for use as Internationally Transferred Mitigation Outcomes 
+(ITMOs), under and in accordance with Article 6 of the Paris Agreement 
+and all relevant decisions by the Conference of the Parties serving as the 
+meeting of the Parties to the Paris Agreement (the ‘Relevant Paris 
+Requirements’). 
+1.1.2 | These optional requirements are not mandatory for all projects generating 
+GSVERs, though as outlined in Section 14| above they must be followed in 
+order for GSVERs with a vintage of 2021 or later to be eligible for certain 
+specified use cases.  
+1.1.3 | All users of these Gold Standard Requirements and Procedures, in 
+consideration for their use of and benefits from the Gold Standard, 
+expressly acknowledge that: 
+a. Gold Standard shall update these requirements from time-to-time, 
+including to ensure alignment with any further relevant decisions by the 
+Conference of the Parties serving as the meeting of the Parties to the 
+Paris Agreeement; 
+b. Country-specific accounting requirements may also apply to GSVERs. In 
+the case where country-specific requirements and these Gold Standard 
+Requirements and Procedures conflict, Gold Standard will apply the 
+more stringent of the conflicting requirements, with a view to ensuring 
+environmental integrity of all affected GSVERs;  
+c. There may be additional relevant requirements and procedures 
+imposed by international bodies that are beyond the authority of the 
+United Nations Framework Convention on Climate Change (UNFCCC) 
+including the International Maritime Organisation and the International 
+Civil Aviation Organisation. In the case that these such requirements 
+and the Gold Standard Requirements and Procedures conflict, Gold 
+Standard will apply the more stringent of the conflicting requirements, 
+with a view to ensuring environmental integrity of all affected GSVERs;  
+d. The Gold Standard Foundation, and all of its directors, officers, 
+employees, contractors, advisors, successors and assigns, shall have no 
+liability whatsoever related to the use, promulgation, or existence of 
+=== p27
+ 
+OPTIONAL REQUIREMENT - GHG Emissions Reduction & Sequestration Product Requirements Ver. 3.2 
+27 
+ 
+these requirements and procedures, and/or the action or inaction of a 
+Party to the Paris Agreement. 
+1.1.4 | These requirements do not affect other Gold Standard products such as 
+labelling of CERs or Water Benefit Certificates. Any Gold Standard-labelled 
+Units issued by another GHG crediting programme should follow the 
+double counting requirements and procedures established by that 
+programme.  
+ Required information 
+1.2.1 | The project developer shall submit the following documents and evidence 
+to Gold Standard, prior to GSVERs being identified in Impact Registry as 
+authorised by the relevant Host Country for use under Article 6: 
+a. Article 6 Authorisation Checklist, available under template section here  
+b. Evidence of the authorisation of the use of GSVERs as Internationally 
+Transferred Mitigation Outcomes (ITMOs) from a cooperative approach 
+(hereafter an ‘Authorisation of ITMOs’) under Article 6 that includes all 
+information required by Gold Standard under Paragraph 1.3.2 (see 
+Section 1.3 | below) 
+c. Evidence of either of the below options to demonstrate the Host 
+Country’s initial compliance with reporting requirements under the 
+Relevant Paris Requirements: 
+i. That the Authorisation of ITMOs has been submitted to, and is 
+publicly available on, the UNFCCC’s Centralized Accounting and 
+Reporting Platform, or; 
+ii. That the Host Country has recorded the Authorisation of ITMOs 
+on the registry it is using for the purpose of tracking under Article 
+6.2.  
+d. For GSVERs to be identified as eligible for use under the first phase or 
+later phases of CORSIA: A mechanism to ensure the avoidance of 
+double claiming between GSVERs used for compliance under CORSIA 
+and Host Country national accounting towards NDCs. This shall be 
+either: 
+i. Evidence of the application of a corresponding adjustment by the 
+Host Country in its Biennial Transparency Report in accordance 
+with Section IV of Decision 2/CMA.3 or the Article 6 database 
+implemented by the UNFCCC Secretariat, that is traceable to the 
+relevant GSVERs included in the Authorisation of ITMOs. 
+ii. A guarantee, in a form acceptable to Gold Standard, that any 
+VERs that are labelled in the Impact Registry as eligible under 
+CORSIA’s first phase or later phases shall be replaced with an 
+equivalent volume of CORSIA-eligible units in the event that the 
+VERs are retired for use under CORSIA and the Host Country 
+does not apply a corresponding adjustment (‘double-claimed 
+=== p28
+ 
+OPTIONAL REQUIREMENT - GHG Emissions Reduction & Sequestration Product Requirements Ver. 3.2 
+28 
+ 
+units’). The replacement units shall be GSVERs if available, or 
+comparable units, that are eligible for the same phase of CORSIA 
+as the double-claimed units. This guarantee could be from a 
+reputable third-party, such as the Multilateral Investment 
+Guarantee Agency (MIGA) or an approved insurance provider. 
+1.2.2 | The project developer may obtain and submit these documents and 
+evidence to Gold Standard at any time prior to or following the issuance of 
+GSVERs for emission reductions or removals achieved in 2021 or later, 
+provided this is prior to the retirement of relevant GSVERs and consistent 
+with the definition of ‘first transfer’ specified in the Authorisation of ITMOs 
+(see footnote 14 below). In all cases, the documentation specified in 
+Paragraph 1.2.1 |a, Paragraph 1.2.1 |b, Paragaph 1.2.1 |c and when 
+required, Paragraph 1.2.1 |d shall be deemed complete and in conformity 
+with Gold Standard requirements prior to GSVERs being identified on the 
+Impact Registry as being authorised by the relevant Host Country for use 
+as ITMOs towards the use-purposes specified by the Host Country, in 
+accordance with Paragraph 1.3.2 |e. 
+1.2.3 | The Article 6 Authorisation Checklist and Authorisation of ITMOs for use 
+under Article 6 shall be made public on the Impact Registry. 
+1.2.4 | If a project reduces emissions or enhances removals in more than one 
+country, the project developer shall submit separate Article 6 Authorisation 
+Checklists and obtain from each government an Authorisation of ITMOs, or 
+alternatively shall specify if only one government has issued such 
+documentation. In this case, GSVERs for verified emission reductions or 
+removals in each country will be identified appropriately in the Impact 
+Registry to reflect their authorisation status. 
+1.2.5 | The project developer shall notify Gold Standard of any material changes 
+to the required information that they have provided, such as a revocation 
+of, or amendments to the terms of the Authorisation of ITMOs. Following a 
+review, Gold Standard shall, if required, revise the identifiers of the 
+affected GSVERs on the Impact Registry and, if applicable, shall follow the 
+procedures for non-application of corresponding adjustments provided for 
+in Section 1.5 | below. 
+1.2.6 | Gold Standard reserves the right to remove identifiers related to Article 6 
+authorisations on the Impact Registry where a Host Country withdraws its 
+Authorisation of ITMOs and/or Gold Standard has convincing and 
+conclusive evidence that necessitates a reversal of its decision to identify 
+projects and GSVERs as having authorisations or applied corresponding 
+adjustments attached to them. This may include, for instance, a breach by 
+the Host Country of the participation requirements outlined in the Article 
+6.2 Decision, a failure by the Host Country to include the authorisation in 
+its subsequent Annual Information and/or Biennial Transparency Report to 
+the UNFCCC, or the identification of an inconsistency during an Article 6 
+technical review, in accordance with the Relevant Paris Requirements. 
+=== p29
+ 
+OPTIONAL REQUIREMENT - GHG Emissions Reduction & Sequestration Product Requirements Ver. 3.2 
+29 
+ 
+1.2.7 | In cases where VERs have been labelled as eligible for use under CORSIA’s 
+first or later phases, VERs shall remain labelled as eligible for use under 
+the relevant phase(s) of CORSIA and the guarantee referred to in 
+paragraph 1.2.1 |c (i). and the obligations contained therein shall remain 
+in force, even in the event that a Host Country withdraws or amends its 
+Authorisation of ITMOs or does not apply required corresponding 
+adjustments.  
+ Authorisation of ITMOs 
+1.3.1 | The project developer shall request a written Authorisation of ITMOs from 
+the relevant Government Authority designated by the Host Country, under 
+its arrangements for providing Article 6 authorisations made in accordance 
+with the Relevant Paris Requirements. 
+1.3.2 | Gold Standard shall review the Authorisation of ITMOs to ensure that it 
+fulfils the following minimum requirements:  
+a. Issued by the Government Authority that has complete rights in respect 
+of Authorisation and/or Corresponding Adjustment decisions, or, where 
+applicable, all those host country ministries and regulatory bodies that 
+collectively have complete rights in respect of Authorisation and/or 
+Corresponding Adjustment decisions; 
+b. Complies with all relevant requirements in relevant Decisions related to 
+Article 6.2 of the Paris Agreement, as adopted by the Conference of the 
+Parties serving as the meeting of the Parties to the Paris Agreement 
+(CMA), and in particular includes the required elements listed in 
+Decision 4/CMA.6 Section B, paragraph 5; 
+c. Identifies the project/activity9. In the case of PoAs, the host country 
+shall specify if the LoA applies to the entire PoA or specific VPA(s); 
+d. Authorises the project’s emission reductions or removals, issued as 
+GSVERs (tCO2eq units10), for use as ITMOs under Article 6 of the Paris 
+Agreement; 
+e. Declares that the Host Country will report on the authorisation of the 
+Project’s emission reductions or removals in a transparent manner in 
+accordance with the Host Country’s reporting requirements under the 
+Relevant Paris Requirements, will not use the project’s emission 
+reductions or removals to implement and achieve its NDC, and will 
+account for the project’s emission reductions and removals as ITMOs 
+ 
+9 Project/activity refers to an individual project activity and PoAs/VPAs.  
+10 If the GWP value used by a country in its NDC reporting is different than the GWP value 
+applied for issued credits, Gold Standard will convert the issued credit volume by applying the 
+GWP values that country uses in its NDC reporting so as to provide the numbers that host 
+country should adjust. 
+=== p30
+ 
+OPTIONAL REQUIREMENT - GHG Emissions Reduction & Sequestration Product Requirements Ver. 3.2 
+30 
+ 
+under Article 6 of the Paris Agreement by applying corresponding 
+adjustments11 in accordance with Relevant Paris Requirements; 
+f. Specifies whether the project’s emission reductions or removals, issued 
+as GSVERs, are authorised for use towards:  
+a. Achievement of an NDC 
+b. International mitigation purposes, and/or; 
+c. Other purposes (referred to in combination with ‘international 
+mitigation purposes’ as ‘other international mitigation purposes’) 
+g. In cases where the Host Country has authorised the use of GSVERs 
+towards other international mitigation purposes, or more specifically to 
+either international mitigation purposes or other purposes, specifies 
+whether the Host Country will apply corresponding adjustments upon 
+(i) the authorisation or (ii) the issuance of mitigation outcomes, in 
+accordance with the Relevant Paris Requirements; and 
+h. Include an official email address for the designated Government 
+Authority.  
+1.3.3 | An Authorisation of ITMOs may also include additional stipulations or 
+specifications, such as to establish a maximum number of the project’s 
+emission reductions or removals, issued as GSVERs, that the Host Country 
+authorises for use, any limits on the time period over which the Host 
+Country provides such authorisation, any restrictions related to the 
+CORSIA compliance period for which ITMOs are authorised (where 
+applicable), or the specification of authorised entities. Gold Standard shall 
+take steps, including through its Impact Registry, to ensure relevant 
+stipulations are complied with.   
+1.3.4 | Unless otherwise specified in the Host Country’s Authorisation of ITMOs, 
+Gold Standard will consider: 
+a. An authorisation for use towards an NDC to deem the associated 
+GSVERs authorised for use towards any NDC of a Party to the Paris 
+Agreement; 
+b. An authorisation for use towards international mitigation purposes, or 
+other international mitigation purposes, to deem the associated 
+GSVERs authorised for use towards compliance obligations under the 
+International Civil Aviation Organisation (ICAO, including any 
+compliance period under CORSIA for which the GSVERs may be 
+eligible) and any future compliance obligations under the International 
+Maritime Organisation (IMO). 
+ 
+11 Relevant adjustments may include indicative adjustments, if the host country is applying 
+corresponding adjustments to their single-year NDC by calculating the average annual amount 
+of ITMOs first transferred and used over the implementation period.  
+=== p31
+ 
+OPTIONAL REQUIREMENT - GHG Emissions Reduction & Sequestration Product Requirements Ver. 3.2 
+31 
+ 
+c. An authorisation for use towards other purposes, or other international 
+mitigation purposes, to deem the associated GSVERs authorised for use 
+by entities towards voluntary targets or compliance obligations other 
+than use towards an NDC or under ICAO or IMO. 
+1.3.5 | A voluntary template for the authorisation of the use of ITMOs from a 
+cooperative approach is provided by the UNFCCC Secretariat12. Gold 
+Standard will entertain other forms of Authorisation with the requisite 
+information at its sole discretion, which shall be exercised reasonably. 
+1.3.6 | In line with its Safeguarding Principles & Requirements, Gold Standard 
+certification requires that projects shall not involve any prohibited practice 
+or otherwise be complicit in, or inadvertently contribute to, corruption or 
+corrupt practices or projects. Project developers shall abide by this 
+requirement when obtaining an Authorisation of ITMOs or other related 
+documentation and should notify Gold Standard if they become aware of 
+any potential for corrupt means in relation to the process of obtaining this 
+documentation.  
+ Procedures for assuring consistency with Host Country reporting 
+and application of corresponding adjustments 
+1.4.1 | For all GSVERs authorised for use as ITMOs under Article 6 and accordingly 
+identified in the Impact Registry, Gold Standard shall follow the steps 
+outlined in this Section 1.4 to ensure consistency between information in 
+its Impact Registry and information in national reports published on, as 
+appropriate, the Centralized Accounting and Reporting Platform (CARP) or 
+the Biennial Transparency Report platform administered by the UNFCCC, in 
+relation to Host County authorisations, accounting and the application of 
+corresponding adjustments. In all cases, verification by Gold Standard 
+shall occur within three months of the relevant report by a Host Country 
+being made publicly available. 
+1.4.2 | Gold Standard shall verify that the Host Country has submitted to the 
+CARP an Initial Report, or as appropriate an updated Initial Report, in 
+accordance with Section IV of Decision 2/CMA.3, and that this report has 
+been submitted prior to or in conjunction with its submission of Annual 
+Information referred to in Decision 2/CMA.3, annex, paragraph 22. Gold 
+Standard shall also verify that the Host Country has identified in its Initial 
+Report an eligible method for applying corresponding adjustments in 
+accordance with Chapter III.B of Decision 2/CMA.3. 
+1.4.3 | Gold Standard shall verify that the Host Country’s authorisation of GSVERs 
+for use as ITMOs under Article 6 of the Paris Agreement is reflected in the 
+Host Country’s subsequent submission to the CARP of Annual Information 
+and its subsequent Biennial Transparency Report in accordance with 
+ 
+12 https://unfccc.int/documents/646071  
+=== p32
+ 
+OPTIONAL REQUIREMENT - GHG Emissions Reduction & Sequestration Product Requirements Ver. 3.2 
+32 
+ 
+Section IV of Decision 2/CMA.3 and other relevant Decisions under the 
+Relevant Paris Requirements, and that the quantity of ITMOs reported to 
+be authorised in its Annual Information and Biennial Transparency Reports 
+is consistent with any quantity specified in the Host Country’s 
+Authorisation of ITMOs and any quantity of GSVERs issued by that time 
+that have been identified as authorised for use under Article 6 by the Host 
+Country. Gold Standard shall subsequently, on an ongoing basis, ensure 
+that any issuance of GSVERs labelled as authorised for use under Article 6 
+does not exceed the quantity of ITMOs that the host country has reported 
+to the UNFCCC as authorised. 
+1.4.4 | Gold Standard shall verify that the Host Country has applied and reported 
+a corresponding adjustment for GSVERs authorised for use as ITMOs under 
+Article 6, in the Host Country’s Common Tabular Format (CTF) tables 
+annexed to its next Biennial Transparency Report following their ‘first 
+transfer’, in accordance with the definition of first transfer specified by the 
+Host Country in its Authorisation of ITMOs (see Paragraph 1.3.2 |g). Gold 
+Standard shall verify that the GSVERs are fully accounted for in the CTF 
+tables through the application of a corresponding adjustment in a 
+traceable way (e.g. through serial numbers reported in Annual Information 
+reports or recorded in national registry operated by the Host Country), and 
+that the quantity of ITMOs, represented as GSVERs, first transferred is 
+consistent with the quantity for which the Host Country has applied a 
+corresponding adjustment.  
+1.4.5 | In the event that Gold Standard cannot verify that a Host Country has 
+submitted an Initial Report within six months of the latest date it may be 
+submitted, or in the event that Gold Standard cannot verify that an 
+authorisation has been fully reflected in either the Host Country’s 
+subsequent submission of Annual Information or its subsequent Biennial 
+Transparency Report within six months of the latest date it may be 
+submitted, Gold Standard reserves the right to remove identifiers related 
+to Article 6 authorisations on the Impact Registry for the associated 
+GSVERs, until such time as Gold Standard is able to verify all missing 
+information.  
+1.4.6 | Where evidence has been obtained that the Host Country has applied 
+relevant corresponding adjustments for all relevant GSVERs as evidenced 
+in the relevant Biennial Transparency Reports and CTF tables, and 
+demonstrated fulfilment of the participation responsibilities as evidenced in 
+the Initial Report, Gold Standard shall publish or link to this evidence as 
+part of the project’s certification documents in the Gold Standard Impact 
+Registry and indicate in the Impact Registry that the associated GSVERs 
+have been correspondingly adjusted for by the Host Country. Until this 
+time, the Gold Standard Impact Registry shall indicate that GSVERs are 
+authorised for use as ITMOs under Article 6 and shall indicate the specific 
+use cases for which the GSVERs are authorised, but shall indicate that a 
+corresponding adjustment has not yet been applied.  
+=== p33
+ 
+OPTIONAL REQUIREMENT - GHG Emissions Reduction & Sequestration Product Requirements Ver. 3.2 
+33 
+ 
+1.4.7 | Gold Standard may introduce further labels for use in the Impact Registry 
+related to GSVERs authorised for use as ITMOs, for example to indicate the 
+authorisation of activities or the reporting of authorisations in reports to 
+the UNFCCC by the Host Country prior to its Biennial Transparency Report 
+and CTF tables.  
+ Non-application of corresponding adjustment by Host Countries 
+1.5.1 | In cases where GSVERs authorised by the relevant Host Country for use as 
+ITMOs have been retired in the Gold Standard Impact Registry, and Gold 
+Standard has (a) not been able to verify the application of a corresponding 
+adjustment within three months after the Host Country was required to 
+apply and report this corresponding adjustment in its Biennial 
+Transparency Report according to the relevant definition of ‘first transfer’; 
+or (b) has received evidence that an authorisation or a corresponding 
+adjustment has been withdrawn, the affected GSVERs shall be reconciled 
+in accordance with the following procedures.  
+1.5.2 | Where applicable, Gold Standard shall first seek information and instruct 
+the relevant project developer to seek information from the relevant Host 
+Country to explain why evidence has not or cannot be provided that a 
+corresponding adjustment has been applied with respect to the associated 
+GSVERs, and assurance that either a corresponding adjustment will be 
+applied or, if applicable, that steps will be taken under a process the Host 
+Country has in place to avoid double counting resulting from changes to 
+authorisations. 
+1.5.3 | In cases where such evidence and assurance is not provided within three 
+months of initial request13 or such longer period agreed by Gold Standard 
+in writing at its sole discretion, Gold Standard shall formally provide notice 
+to the relevant project developer, each account holder of retired affected 
+GSVERs in the Gold Standard Impact Registry and, where applicable, any 
+country that has accounted for use of the affected GSVERs towards their 
+NDC. 
+1.5.4 | In cases where GSVERs have been retired for use towards an NDC, Gold 
+Standard shall provide information, as required, to support both the Host 
+Country and using country towards a resolution of the double claim or 
+potential double claim between their respective NDCs.  
+ 
+13 Satisfactory evidence and assurance could include the following: A host country has 
+prepared and submitted their Biennial Transparency Report following the retirement of relevant 
+GSVERs but before they had received evidence to trigger application of a corresponding 
+adjustment (or if extenuating circumstances meant this evidence was not seen in time). The 
+host country commits in writing to apply a corresponding adjustment and to reflect the status 
+of the relevant ITMOs in their Registry and Annual Information. In such cases, the provisions 
+to reconcile non-adjusted GSVERs could be deferred, if there is evidence that the host country 
+is tracking ITMOs appropriately. 
+=== p34
+ 
+OPTIONAL REQUIREMENT - GHG Emissions Reduction & Sequestration Product Requirements Ver. 3.2 
+34 
+ 
+1.5.5 | In cases where GSVERs have been retired for use towards CORSIA or 
+other international mitigation purposes, the project developer shall, within 
+six months of formal notice being provided by Gold Standard that a 
+corresponding adjustment has not been applied or such longer period 
+agreed by Gold Standard in writing at its sole discretion, provide evidence 
+of one of the below to Gold Standard: 
+a. Formal confirmation by the relevant Host Country that a corresponding 
+adjustment will be applied in its next Biennial Transparency Report. If a 
+corresponding adjustment is not subsequently applied, or if the project 
+developer is unable to secure such a formal confirmation, one of the 
+below options shall be followed. 
+b. For CORSIA: The replacement by the project developer of all affected 
+GSVERs through the retirement of a volume of CORSIA-eligible units 
+equivalent to the number of double-claimed GSVERs, in accordance 
+with its guarantee provided to Gold Standard under Paragraph 1.2.1 
+||b. The replacement units shall be GSVERs if available, or comparable 
+units, that are eligible for the same phase of CORSIA as the double-
+claimed units.  
+c. For other international mitigation purposes: Evidence of alternative 
+steps that have been taken in response to the non-adjustment of 
+affected GSVERs14. In the case of GSVERs retired for voluntary 
+purposes, this could, for instance, include an alteration to public claims 
+made by using entities. 
+1.5.6 | This evidence shall be made public on the Gold Standard Impact Registry 
+as part of the project’s Certification Documents, subject to confidentiality 
+restrictions. In cases where affected GSVERs have been retired for the 
+purpose of complying with CORSIA, this evidence will be shared with ICAO. 
+1.5.7 | Gold Standard may introduce further options for the reconciliation of non-
+adjusted GSVERs in the future. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+14 Gold Standard may elaborate requirements for the reconciliation of double-claimed GSVERs 
+retired for non-CORSIA other international mitigation purposes in the future, for instance to 
+comply with any future compliance regime. 
+=== p35
+ 
+OPTIONAL REQUIREMENT - GHG Emissions Reduction & Sequestration Product Requirements Ver. 3.2 
+35 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Figure 1: Process flow for managing double-claiming risk for CORSIA-eligible 
+units 
+No assurance 
+Communication with ICAO 
+No corresponding 
+adjustment 
+Assurance 
+GSVERs authorised for use towards 
+international mitigation purposes and LoA 
+complies with GS requirements  
+Option 1: Evidence provided of 
+application of corresponding 
+adjustment 
+Option 2: Guarantee to replace 
+double-claimed units in event of 
+non-application of 
+corresponding adjustment 
+GSVERs labelled as eligible 
+for relevant CORSIA 
+phase(s) and corresponding 
+adjustment marked as 
+‘applied’ in Impact Registry 
+GSVERs labelled as eligible 
+for relevant CORSIA 
+phase(s) 
+Gold Standard cannot 
+verify application of 
+corresponding adjustment 
+for authorised GSVERs 
+Corresponding 
+adjustment marked as 
+‘applied’ in Impact 
+Registry 
+Gold Standard verifies 
+application of 
+corresponding adjustment 
+for authorised GSVERs 
+Scenario 1: Affected 
+GSVERs not yet 
+retired for 
+compliance with 
+CORSIA 
+CORSIA-eligible 
+label remains on 
+GSVERs in Impact 
+Registry 
+Scenario 2: Affected 
+GSVERs retired for 
+compliance with 
+CORSIA 
+Engagement with 
+host country for 
+assurance on CA 
+application 
+Evidence of 
+application of 
+corresponding 
+adjustment 
+Project developer 
+replaces double-
+claimed units in 
+accordance with 
+guarantee 
+Evidence of 
+reconciliation 
+uploaded on 
+Impact Registry 
+Scenario 2: 
+Affected GSVERs 
+retired for 
+compliance with 
+CORSIA 
+Scenario 1: 
+Affected GSVERs 
+used for non-
+Article 6 purposes 
+=== p36
+ 
+OPTIONAL REQUIREMENT - GHG Emissions Reduction & Sequestration Product Requirements Ver. 3.2 
+36 
+ 
+ Reporting 
+1.6.1 | Gold Standard shall, on an annual basis and prior to 15 April of each 
+calendar year, publish on its website and submit to relevant Host Countries 
+a report containing information related to GSVERs in its Impact Registry 
+that represent emission reductions or removals authorised for use as 
+ITMOs, to enable Host Countries to fulfil Reporting, Recording and Tracking 
+obligations in accordance with the Paris Requirements. This shall include at 
+least the following annual information15:   
+a. Authorisations provided to specific projects or PoAs, including the 
+authorising Host Country, project name and ID, activity type, sector 
+and authorised uses of associated GSVERs.  
+b. Issuance of authorised GSVERs, specifying: 
+i. The year in which the underlying emission reduction or removal 
+occurred (‘vintage year’)  
+ii. The unique identifiers 
+c. Retirement of authorised GSVERs, specifying: 
+i. The retirement purpose, in accordance with the authorisation 
+granted by the Host Country16 
+ii. The Using Party or Entity  
+iii. The quantity of GSVERs voluntarily cancelled towards overall 
+mitigation in global emissions   
+d. Other relevant information, which may include changes to or revocation 
+of an Authorisation of ITMOs.  
+1.6.2 | Through the information outlined above, the annual report shall provide 
+transparency on: 
+a. The retirement of GSVERs for use towards the NDC of Countries other 
+than the Host Country. 
+b. The retirement of GSVERs by aeroplane operators for use towards 
+compliance obligations under CORSIA. 
+1.6.3 | Gold Standard may also provide information outlined in paragraph 1.6.1 to 
+Host Countries prior to its annual reporting. 
+ 
+15 Certain information may be treated as confidential and not published, subject to any future 
+Decisions under the CMA related to the confidentiality of reported information.  
+16 Gold Standard shall ensure that GSVERs cannot be retired for purposes other than 
+authorised by the Host Country. 
+=== p37
+ 
+OPTIONAL REQUIREMENT - GHG Emissions Reduction & Sequestration Product Requirements Ver. 3.2 
+37 
+ 
+ANNEX B – REQUIREMENTS & PROCEDURE TO 
+TRANSITION PROJECTS FROM OTHER STANDARDS 
+TO GOLD STANDARD FOR THE GLOBAL GOALS 
+1| SCOPE AND APPLICABILITY  
+1.1.1 | This annex provides the requirements and procedures for projects currently 
+registered with other standards (e.g. CDM) to transition to GS4GG and to 
+issue GSVERs or to convert emission reductions to GSVERs.  
+ 
+Note that Gold Standard Projects registered with previous versions of the Gold 
+Standard (version 2.2 and earlier) are required to transition to GS4GG. For 
+such projects, the developer should refer to requirement, procedure and 
+timelines as per Transition requirements. 
+1.1.2 | The requirements are applicable to projects that intend to (i) issue GSVERs or 
+(ii) convert issued emission reductions to GSVERs, for example to convert 
+issued GSCERs to GSVERs. 
+1.1.3 | Unless otherwise stated in this annexe, the requirements mentioned in 
+previous sections or applicable standard documents and/or applicable activity 
+requirements apply. 
+1.1.4 | ‘Other standard’, where mentioned in this annex, refers to GHGs certification 
+schemes, such as CDM, VERRA, CCBA, that issue carbon credits.  
+2| ELIGIBILITY REQUIREMENT 
+2.1 | General Requirements  
+2.1.1 | The project or CPA is eligible for transition to GS4GG, if the project or CPA;  
+a. is a GS4GG eligible project type. Refer to 5| aboveTYPES OF PROJECT, 
+above; AND 
+b. has a valid17 registration status with the other standard at the time of 
+first submission (preliminary review) to Gold Standard; AND  
+c. has a crediting period start date with the other standard on or after 01 
+January 2016; OR  
+d. has a crediting period start date with other standard before 01 January 
+2016, but can demonstrate, at the time of preliminary review; 
+i. that project faces a serious risk of discontinuation without carbon 
+revenue, and 
+ 
+17 Must not have expired crediting period.  
+=== p38
+ 
+OPTIONAL REQUIREMENT - GHG Emissions Reduction & Sequestration Product Requirements Ver. 3.2 
+38 
+ 
+ii. how the project has been operational in the absence of carbon 
+revenue, if carbon credits have not been issued to the project in 
+recent years 
+2.1.2 | For CDM PoAs, the eligibility requirements mentioned in paragraph 2.1.1, are 
+applicable to the individual CPA requesting to transition to GS4GG, regardless 
+of the PoA start date. 
+2.1.3 | The transition project, PoA/CPAs shall claim emission reductions of a given 
+vintage only once and under one standard only. The project developer shall 
+provide a declaration, in writing, in the monitoring report to state that the 
+project developer has not or will not issue both a CER and a GSVER for the 
+same vintage from a project that is registered under GS4GG. 
+2.1.4 | The transition project, PoA/CPAs shall provide Gold Standard specific project 
+documentation or the project documentation provided under the other carbon 
+certification scheme together with the Transition Request Form.  
+2.2 | Deregistration from the other Standard 
+2.2.1 | A CDM project, PoA/CPAs -- including those that are already registered with 
+GS4GG for CER labelling -- seeking to transition to GS4GG to issue GSVERs, 
+are not required to deregister from CDM.  
+2.2.2 | Eligible CDM A/R projects are required to deregister from CDM to transition to 
+GS4GG and issue GSVERs. 
+2.2.3 | A transition project, PoA/CPAs that is registered with a standard other than 
+CDM will need to deregister the project and provide evidence to confirm 
+deregistration to VVB before project submission for design review.  
+3| FINANCIAL ADDITIONALITY & ONGOING FINANCIAL NEED 
+3.1.1 | CDM, JI projects and PoA/CPAs are not required to carry out additional 
+assessment for demonstration of additionality over and above what has been 
+done for registration/determination with the CDM EB/JISC, unless the project 
+falls into a category that is deemed non-Additional in an applicable Activity 
+Requirement. In such cases, the relevant GS4GG Activity Requirement shall 
+take precedence. 
+3.1.2 | Transition project, PoAs/CPAs registered with standards other than CDM are 
+required to undergo additionality revalidation to re-establish the validity of the 
+underlying assumptions applied in the demonstration of additionality at the 
+time of registration with the other standard. 
+3.1.3 | As applicable to all registered GS4GG projects, projects/PoAs/CPAs 
+transitioning from other standards shall demonstrate Ongoing Financial Need 
+as per the GS4GG requirements, at the time of renewal of their crediting 
+period under GS4GG. 
+=== p39
+ 
+OPTIONAL REQUIREMENT - GHG Emissions Reduction & Sequestration Product Requirements Ver. 3.2 
+39 
+ 
+4| ELIGIBLE METHODOLOGIES  
+4.1 | General Requirement 
+4.1.1 | Transition project, PoA/CPAs shall  
+a. Conform to the relevant Activity Requirements and Gold Standard 
+Approved Methodologies, including eligible CDM Methodologies. 
+b. Meet additional GS4GG methodology eligibility requirements, where 
+applicable. Refer to CDM Methodologies. 
+4.2 | Methodology and Tool Version 
+4.2.1 | Transition projects, PoAs/CPAs shall apply the version of the Gold Standard 
+approved CDM methodology18 or methodology tool at the time of first 
+submission (preliminary review) for transition to GS4GG as follows; 
+a. Projects – version applied at the time of registration/renewal of 
+crediting period with other standard, as applicable 
+b. PoAs – version applied at the time registration/renewal of crediting 
+period with other standard, as applicable   
+c. CPAs – version applied for inclusion in the registered PoAs with other 
+standard 
+d. New CPAs/VPAs - latest version applied by the registered PoAs for 
+inclusion of new VPAs after transition to GS4GG19 (Refer to paragraph 
+4.2.3 |below) 
+4.2.2 | Transition projects & PoAs/CPAs shall update to the latest version of GS 
+approved CDM methodology or methodology tool available at the time of 
+renewal of crediting period with GS4GG as follows; 
+a. Projects – latest version available at the time of submission for 
+validation of renewal of crediting period with GS4GG. 
+b. PoAs - latest version available at the time of submission for validation 
+of renewal of certification cycle with GS4GG 
+c. CPAs/VPAs - latest version applied in the most recent version of PoA 
+available at the time of submission for renewal of crediting period with 
+GS4GG 
+ 
+18 In case any CDM methodology is not included in the GS4GG list of eligible CDM 
+methodologies, the PD/CME may reach out to standard@goldstandard.org for further steps. 
+19 All new VPAs submitted for inclusion after end date of a crediting period of PoA shall follow 
+the latest version of the PoA available at the time of submission for inclusion. For example, if a 
+new VPA was listed before the end of 1st Crediting cycle of PoA, but submitted for inclusion 
+after the start of 2nd crediting cycle of PoA, the VPA must be designed and included as per PoA 
+Design Document version and applicable methodology registered for 2nd crediting cycle. 
+=== p40
+ 
+OPTIONAL REQUIREMENT - GHG Emissions Reduction & Sequestration Product Requirements Ver. 3.2 
+40 
+ 
+4.2.3 | Transition PoA shall also apply the latest version of the methodology(ies) and 
+applicable tool(s), for inclusion of new VPAs under GS4GG, if applicable. The 
+Transition PoA may include the latest version of the methodology and 
+applicable tool for inclusion of new VPA(s), at the time of first submission 
+(preliminary review) or at any later stage of certification cycle, but before 
+submitting the request for inclusion for new VPAs. In such cases, VVB shall 
+validate the updated PoA and VPA documents as per applied version of the 
+methodology and or methodology tool before or with the request for inclusion 
+of new VPAs. 
+4.2.4 | Transition project, PoA/CPAs may apply the latest version of GS approved 
+CDM methodology or methodology tool available at the time first submission 
+(preliminary review for transition). In such cases, VVB shall validate the 
+updated Project Documents as per applied version of the methodology and or 
+methodology tool at the time of at the time of first submission (preliminary 
+review). 
+5| PROJECT SCALE 
+5.1.1 | Refer to Section 9| above for requirements and definition of Scale.   
+5.1.2 | Transition project, PoA/CPAs shall not change their scale (for e.g. from small 
+scale to large scale) at the time of transition.  
+5.1.3 | CDM project shall maintain project scale as registered in accordance with CDM 
+project standard for project activities.   
+5.1.4 | When the scale of a project, PoA/CPA gets changed due to circumstances 
+outside the control of the CME/PD, the Design Change Requirements shall be 
+followed. 
+6| CREDITING CYCLE & ISSUANCE 
+6.1 | Crediting Period  
+6.1.1 | Transition project & CPA seeking issuance of GSVERs or conversion of issued 
+GSCERs to GSVERs shall issue GSVERs for a maximum crediting period 
+allowed as per relevant GS4GG activity requirements or crediting period with 
+the other standard, whichever ends first. Under no circumstance, can the 
+crediting period registered with other standard be extended. 
+6.1.2 | Transition PoA duration shall not exceed 20 years or the crediting period of 
+first CPA allowed as per GS4GG activity requirements plus 5 years, whichever 
+is greater. 
+ Crediting Period Start Date 
+6.2.1 | The start date of crediting period for transition project or CPA remains 
+unchanged and shall be the date as registered with other standard. 
+=== p41
+ 
+OPTIONAL REQUIREMENT - GHG Emissions Reduction & Sequestration Product Requirements Ver. 3.2 
+41 
+ 
+6.2.2 | Transition PoA start date is the crediting period start date of the earliest CPA 
+included in the PoA that transitions to GS4GG.   
+6.3 | Issuance of GSVERs 
+6.3.1 | The total duration of the crediting period shall not exceed the maximum 
+crediting period allowed under relevant GS4GG activity requirements. It also 
+includes the period that project or CPA has been issued emission reductions 
+for under other standard. The following example explains how this 
+requirement shall apply – 
+If a given project was registered under Standard X with; 
+- fixed crediting period i.e., 10 years: The total crediting period i.e., 
+Standard X + GS4GG crediting period, must remain 10 years. If the 
+project has issued emission reduction for 3 years under standard X, the 
+project can be issued GSVERs for remaining 7 years of its eligible 10 year 
+crediting period under GS4GG. 
+ 
+- renewable crediting period i.e., maximum of 21 years (7*3 year): The 
+total crediting period i.e., Standard X + GS4GG crediting period must be 
+equal to that allowed under relevant GS4GG activity requirements. For 
+example; RE activity requirements allows issuance of GSVERs for 
+maximum 15 years. An eligible renewable energy project that has already 
+claimed emission reductions for 5 years under Standard X, can issue 
+GSVERs for 10 more years under GS4GG. 
+ Issuance for Retroactive Period 
+6.4.1 | The transition project or CPA may request issuance of GSVERs or convert 
+issued GSCERs to GSVERs, for retroactive period - which starts with crediting 
+period start date with other standard or maximum two years before the date 
+of first submission (submission for preliminary review), whichever occurs 
+later. A/R projects are eligible for retroactive crediting for maximum three 
+years.  
+6.5 | Project Cycle 
+6.5.1 | Transition project, PoA/CPAs shall follow GS4GG certification cycle for 
+crediting period renewal (e.g. 5 years) in order to issue or convert issued 
+emission reductions to GSVERs under GS4GG.  
+6.5.2 | The first crediting period renewal under GS4GG considers the crediting years 
+that have already been issued with other standards. For example, if a project 
+crediting period start date with standard X is 1st Jan 2019, the project shall 
+renew its crediting period with GS4GG on or before 1st Jan 2024, irrespective 
+of date of transition approval with GS4GG.  
+6.5.3 | Transition project, PoA/CPA may opt for early renewal of crediting period to 
+follow GS4GG certification cycle.   
+=== p42
+ 
+OPTIONAL REQUIREMENT - GHG Emissions Reduction & Sequestration Product Requirements Ver. 3.2 
+42 
+ 
+6.6 | Project Design Change 
+6.6.1 | Permanent changes in project or PoA/CPAs design shall be assessed per the 
+Design Change Requirements. 
+7| STAKEHOLDER CONSULTATION 
+7.1.1 | Transition project, PoA/CPAs shall demonstrate compliance with Stakeholder 
+Consultation and Engagement Requirements and establish an ongoing 
+engagement process. Refer to Form - Transition Request  for guidance.  
+8| SAFEGUARDING PRINCIPLES & REQUIREMENTS  
+8.1.1 | Transition project, PoA/CPAs shall demonstrate compliance with Safeguarding 
+Principles & Requirements. Refer to Form - Transition Request for guidance. 
+9| CONTRIBUTIONS TO SDGs 
+9.1.1 | Transition project, PoA/VPAs shall demonstrate a clear, direct contribution to 
+sustainable development, defined as making demonstrable, positive impacts 
+on at least three Sustainable Development Goals (SDGs), one of which must 
+be SDG 13 (defined herein as Emissions Reductions or Removals and/or 
+Adaptation to climate change). 
+9.1.2 | SDG contributions shall be demonstrated for the representative baseline 
+situations of the activity. If the activity specific baseline information does not 
+exist anymore, the assessment shall be carried out, if justified, using 
+representative example cases or based on documented evidence. For 
+example, for an improved cookstove activity the assessment shall be carried 
+out based on households that are still representative of project baseline 
+situation i.e., using baseline cookstoves and are of same socio-economic 
+circumstances of the project technology users; for a renewable energy activity 
+the assessment can be based on documented evidence related to the project 
+activity, which can provide sufficient information to justify the selected SDG 
+contributions. In all situations, the sustainable development assessment shall 
+be based on auditable and verifiable documentation and convincing 
+arguments based on representative circumstances. Where data gap exists, 
+the project must make conservative claims. 
+10| TRANSITION PROCEDURE 
+10.1 | Other Standard to GS4GG  
+10.1.1 | Transition project, PoA/CPA shall initiate a request for transition by submitting 
+a Transition Request Form.  
+10.1.2 | Transition project, PoA/CPA shall follow project certification cycle as provided 
+in the Principles and Requirements and the Programme of Activities 
+=== p43
+ 
+OPTIONAL REQUIREMENT - GHG Emissions Reduction & Sequestration Product Requirements Ver. 3.2 
+43 
+ 
+Requirements, as applicable. Refer to Transition Request Form for different 
+options available. 
+10.1.3 | CDM project, PoA/CPA already registered under GS4GG for issuance of 
+GSCERs may transition to GS4GG to issue GSVERs at any point by submitting 
+the Transition Request Form.  
+10.2 | GSCERs to GSVERs Conversion Procedure 
+10.2.1 | CDM project and CPAs for conversion of issued CERs to GSVERs, upon 
+completing the procedure outlined in para 10.1 |above follows below steps; 
+a. Project, CPAs transfers the issued CERs, to the Gold Standard Swiss 
+CDM Registry Account   
+b. Gold Standard retires the transferred CERs and the associated labels  
+c. Gold Standard issues an equivalent number of GSVERs to the project in 
+the Impact Registry, after payment of the relevant fee and retirement 
+of the CERs 
+10.3 | Converting issued emission reductions from other standards to GSVERs 
+10.3.1 | Project transitioning from standard other than CDM to GS4GG shall reach out 
+to Gold Standard to confirm the procedure for conversion of issued emission 
+reduction units to GSVERs.    
+  
+=== p44
+ 
+OPTIONAL REQUIREMENT - GHG Emissions Reduction & Sequestration Product Requirements Ver. 3.2 
+44 
+ 
+ANNEX C – LAND-USE & FORESTS ISSUANCE 
+GUIDELINES 
+Projects may choose to issue Planned Emissions Reduction (PER) Certificates for the 
+period of the 5 year certification cycle or up to 5 years following any Verification (3 
+years for Agriculture Projects). Projects may choose not to issue PERs if preferred. 
+1| DESIGN AND PERFORMANCE CERTIFICATION AND ISSUANCE: 
+1.1.1 | Step 1 – the Project Developer shall appoint an eligible GS approved VVB to 
+conduct a Validation or Verification of the project. The Project Developer shall 
+provide the PDD for Validation or Monitoring Report for the Monitoring Period 
+to be Verified, to the VVB. This shall include the Carbon Performance and all 
+other relevant templates. 
+1.1.2 | Step 2 – The VVB conducts Validation or Verification and submits decision to 
+Gold Standard. If the VVB considers that the Project should be certified/issued 
+then Gold Standard commences a Performance Review, based on the 
+documentation. The review completes when all CARs and comments are 
+closed.  Note that PERs may be issued at Design Certification (maximum of 5 
+years forward issuance period). GSVERs may only be issued following 
+successful Verification and Performance Certification. 
+1.1.3 | Step 3 – At the closure of Review all documents are updated by the Project 
+Developer/VVB in accordance with any changes required. Based on the 
+Carbon Performance Template submitted the Project Developer shall confirm 
+what issuance is being requested. 
+a. Sub-step 3a:  Issuance of PERs (optional): PERs are issued pro-rata 
+for each year for the forward period requested (up to a maximum of 5 
+years). 20% of the PERs are issued to the Gold Standard Buffer, the 
+remaining 80% are issued to the Project Developers requested accounts 
+upon payment of issuance fee. Note for PERs issuance, the GSVERs 
+issuance fee is applicable.  
+b. Sub-step 3b:  Conversion of PERs into GSVERs: PERs represent 
+expected sequestration of emissions. During a Monitoring Period the PERs 
+issue can be converted into GSVERs in the Gold Standard Impact 
+Registry. This replaces the PER (which is permanently removed) with the 
+GSVER. 20% of the conversions shall take place in the Gold Standard 
+Buffer with the Project Developer free to convert any of the remaining, 
+associated PER (i.e. the remaining 80%) 
+1.1.4 | Step - 4: In the event of a shortfall between Verified as compared to PERs 
+the Carbon Performance requirements shall apply. Refer to Section 11| above 
+above. 
+ 
+ 
+ 
+=== p45
+ 
+OPTIONAL REQUIREMENT - GHG Emissions Reduction & Sequestration Product Requirements Ver. 3.2 
+45 
+ 
+Figure 2: Issuance of PERs 
+ 
+ 
+Figure 3: Conversion of PERs 
+ 
+  
+ 
+ 
+ 
+ 
+
+=== p46
+ 
+OPTIONAL REQUIREMENT - GHG Emissions Reduction & Sequestration Product Requirements Ver. 3.2 
+46 
+ 
+Figure 4:  Carbon Performance – Conversion of PER to GSVER in the event of 
+over or underestimation scenarios 
+ 
+ 
+Figure 5:  Carbon Performance Requirements in the event of shortfall 
+ 
+2| ASSIGNMENT AND RETIREMENT PROCEDURE 
+2.1.1 | PERs can be transferred to a buyers account; they can be assigned but they 
+cannot be retired. They remain in the buyers account until converted at which 
+point they are replaced as per 3c above. 
+2.1.2 | GSVERs can be transferred to a buyers account (and further transferred from 
+there to other accounts) until they are permanently assigned or retired by the 
+final user/owner. The retirement takes place in the Gold Standard Impact 
+Registry. 
+
+=== p47
+ 
+OPTIONAL REQUIREMENT - GHG Emissions Reduction & Sequestration Product Requirements Ver. 3.2 
+47 
+ 
+3| SUBSTITUTION OF COMPLIANCE BUFFER PROCEDURE 
+3.1.1 | Certificates from other Gold Standard certified projects may be transferred to 
+the to the Gold Standard Compliance Buffer in lieu of the PERs or GSVERs 
+from the project. This can only be done at the same time as any Issuance 
+event, and not at any time thereafter. Written notification of the intention to 
+transfer along with specific amounts, along with the fee for issuance of 
+GSVERs from the buffer, shall be provided to registry@goldstandard.org 
+----- 
+ 
+ 
+ 
+  
+=== p48
+ 
+OPTIONAL REQUIREMENT - GHG Emissions Reduction & Sequestration Product Requirements Ver. 3.2 
+48 
+ 
+DOCUMENT REVISION HISTORY 
+Version  Release date Description 
+3.2 (Current 
+version) 
+December 
+2025 
+Revisions made to Annex A of the document 
+3.1 April 2024 Revisions made to Annex A of the document 
+3.0  Nov 2024 a. Revisions to to ANNEX A – REQUIREMENTS FOR CREDITS 
+AUTHORISED FOR USE UNDER ARTICLE 6 OF THE PARIS 
+AGREEMENT to reflect ICAO decision, Nov 2024 
+b. Editorial changes  
+Version 2.4 
+ 
+Aug 2024 Editorial change, removed footnote 14 referring to annex A 
+para 1.4.6 to maintain consistency for requirements. 
+Version 2.3  
+ 
+April 2024 Revisions to ANNEX A – REQUIREMENTS FOR CREDITS 
+AUTHORISED FOR USE UNDER ARTICLE 6 OF THE PARIS 
+AGREEMENT to clarify the GS roles and responsibilities and 
+requirements for project developer to be eligible for use under 
+the first phase or later phases of CORSIA 
+Version 2.2  
+ 
+Aug 2023 Revisions to ANNEX A – REQUIREMENTS FOR CREDITS 
+AUTHORISED FOR USE UNDER ARTICLE 6 OF THE PARIS 
+AGREEMENT to clarify the compliance requirements to PARIS 
+agreement and relevant decisions in subsequent meetings 
+Version 2.1  Feb 2022 a. Double counting requirements 
+b. Working definition for CDR project types 
+c. Buffer requirements for non-Carbon sequestration projects 
+& clarification on issuance of PERs  
+d. Minimum site visit requirements updates 
+e. Clarification on prior consideration justification 
+requirements for Retroactive projects 
+f. Making editorial improvements 
+Version 2.0  Feb 2021 a. Revision of the document template 
+b. Inclusion of project location requirements for GSCER 
+projects 
+c. Providing detailed rules and requirements for project scale 
+for GSVER and GSCER projects 
+d. Making editorial improvements 
+=== p49
+ 
+OPTIONAL REQUIREMENT - GHG Emissions Reduction & Sequestration Product Requirements Ver. 3.2 
+49 
+ 
+Version 1.2 October 2019 a. Revision of the document template 
+b. Defining ‘Renewable Energy Supply’ and ‘Land Use and 
+Forests’ project types 
+c. Introduction of two options and describing related rules 
+and requirements for issuance of GSVERs for a CDM 
+project 
+d. Making editorial improvements 
+Version 1.1 March 2018 a. Inclusion of the concept of Performance Shortfall and 
+reference to Shortfall Scenario Guidelines 
+b. Providing clarity on crediting cycle and maximum crediting 
+periods of transitioning projects 
+c. Making editorial improvements 
+Version 1.0  July 2017 Initial adoption 
+   
+------- 

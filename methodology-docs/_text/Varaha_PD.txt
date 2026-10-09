@@ -1,0 +1,1462 @@
+      DEVELOPING CARBON FINANCE
+    PROJECT FOR FARMERS ADOPTING
+REGENERATIVE AGRICULTURE PRACTICES
+
+       IN THE INDO-GANGETIC PLAINS
+
+           Document Prepared by: Varaha ClimateAg Private Limited
+
+                 Project Title Developing carbon finance project for Farmers adopting Regenerative
+                                   Agriculture practices in the Indo-Gangetic Plains
+
+                       Version 1
+               Date of Issue 1st June 2019
+                Prepared By Varaha ClimateAg Private Limited
+
+                      Contact NO. 52, F/F, MASJAD LANE, BHOGAL, NEAR GURUDWARA, SOUTH DELHI ­
+                                   110014, DELHI, INDIA, Phone ­ 9619014971, Email-
+                                   ankita.garg@varahaag.com, Website- https://varahaag.com/
+CONTENTS
+
+1 PROJECT DETAILS................................................................................................. 4
+
+    1.1 Summary Description of the Project ................................................................................ 4
+    1.2 Sectoral Scope and Project Type .................................................................................... 6
+    1.3 Project Eligibility .................................................................................................................. 6
+    1.4 Project Design ..................................................................................................................... 6
+    1.5 Project Proponent .............................................................................................................. 8
+    1.6 Other Entities Involved in the Project ............................................................................... 8
+    1.7 Ownership............................................................................................................................8
+    1.8 Project Start Date ............................................................................................................... 8
+    1.9 Project Crediting Period .................................................................................................... 9
+    1.10 Project Scale and Estimated GHG Emission Reductions or Removals ........................ 9
+    1.11 Description of the Project Activity .................................................................................. 10
+    1.12 Project Location ............................................................................................................... 15
+    1.13 Conditions Prior to Project Initiation ............................................................................... 15
+    1.14 Compliance with Laws, Statutes and Other Regulatory Frameworks ....................... 19
+    1.15 Participation under Other GHG Programs .................................................................... 20
+    1.16 Other Forms of Credit.......................................................................................................20
+    1.17 Sustainable Development Contributions ......................................................................21
+    1.18 Additional Information Relevant to the Project ........................................................... 22
+
+2 SAFEGUARDS ..................................................................................................... 23
+
+    2.1 No Net Harm ..................................................................................................................... 23
+    2.2 Local Stakeholder Consultation .....................................................................................23
+    2.3 Environmental Impact ..................................................................................................... 27
+    2.4 Public Comments ............................................................................................................. 27
+    2.5 AFOLU-Specific Safeguards ............................................................................................ 28
+
+3 APPLICATION OF METHODOLOGY................................................................... 28
+
+    3.1 Title and Reference of Methodology ............................................................................ 28
+    3.2 Applicability of Methodology ......................................................................................... 28
+    3.3 Project Boundary .............................................................................................................. 30
+    3.4 Baseline Scenario ............................................................................................................. 33
+    3.5 Additionality ...................................................................................................................... 35
+    3.6 Methodology Deviations ................................................................................................. 37
+
+4 QUANTIFICATION OF GHG EMISSION REDUCTIONS AND REMOVALS .......... 37
+
+    4.1 Baseline Emissions ............................................................................................................. 37
+    4.2 Project Emissions ............................................................................................................... 37
+    4.3 Leakage.............................................................................................................................37
+    4.4 Net GHG Emission Reductions and Removals .............................................................. 38
+
+5 MONITORING .................................................................................................... 38
+
+    5.1 Data and Parameters Available at Validation ............................................................ 38
+    5.2 Data and Parameters Monitored...................................................................................38
+    5.3 Monitoring Plan ................................................................................................................. 38
+
+APPENDIX ..................................................................................................................... 39
+                                                                                 Project Description: VCS Version 4.1
+
+1 PROJECT DETAILS
+
+1.1 Summary Description of the Project
+
+          The project intends to generate additional income to the small holder farmers of Indo- Gangetic
+          plain region for adopting improved agricultural practices such as zero till farming, cover cropping,
+          crop diversification, farm residue incorporation, optimizing fertilizer application and efficient
+          water management which provide a potential to not just prevent emissions into the atmosphere
+          but also create carbon sinks through sequestration of carbon back into the soil. Globally,
+          agriculture and allied, account for almost 22% of the total greenhouse gas (GHG) emissions, and
+          hence is considered a major problem contributing to climate change1.
+          In 2018, global emissions due to agriculture (within the farm gate and including related land
+          use/land use change) were 9.3 billion tonnes of CO2 equivalent (CO2eq). Out of this, India is the
+          third-largest emitter of greenhouse gases and accounted for about 650 Mt CO2 eq. of the total
+          global emissions (FAO 2018). These high emissions are largely attributed to conventional
+          practices such as flooded, transplanting method of cultivation in rice, multiple tillage operations,
+          residue burning, flooding, monocropping, excessive usage of fertilizers and water, and absence
+          of cover crops for Carbon (C) and Nitrogen (N) management in soils. The average Soil Organic
+          Carbon (SOC) content in these soils is around 0.2­0.4% (MoA & FW 2019) as against the ideal
+          (Bhattacharya, 2007).
+          In November 2021, India announced its new climate targets at COP26, Glasgow under its
+          `Panchamrit (or a 5 elixir) strategy'. Of these five strategies, three focused explicitly on reducing
+          Carbon emissions.2 In order to curb the current extent of agricultural GHG emissions (national
+          level  14%) and achieve these ambitious goals, business-as-usual approach would not suffice,
+          and India must intensively strategize towards development of low-emission agriculture pathways.
+          Despite its appeal, regenerative agriculture will take a long time to scale across Indian
+          geographies especially because there is a lack of incentive to invest in regenerative practices
+          with a long-term return on investment. The newly emerging carbon market for agriculture is
+          envisioned to stimulate low-emission agricultural technologies. However, the transition to
+          negative carbon agriculture requires a strong value proposition.
+          In this context, the project implements faster adoption of improved agricultural practices by
+          Indian farmers that can be the only solution to mitigate the GHG emissions, reverse land
+          degradation and enable carbon sequestration, along with improving overall soil health and crop
+          productivity. The benefits of regenerative agriculture to soil fertility are proven through extensive
+
+1 https://ourworldindata.org/ghg-emissions-by-sector
+2 https://pib.gov.in/PressReleasePage.aspx?PRID=1768712
+
+                                                                                                                                    4
+                                                                                 Project Description: VCS Version 4.1
+
+          research in India as well as globally3. For example, peer-reviewed research (Jat et. al., 2020)4
+          suggested that direct seeding of rice has a sequestration potential of 500 Kg Co2 eq/ Ha and
+          zero-till sequesters ~900 Kg Co2 eq/ Ha in maize and ~1600 Kg Co2/Ha in wheat, and cover
+          cropping sequesters ~1000 Kg Co2 eq / Ha.
+
+          On the other hand, crop residue burning releases CO2, CO and NOx emissions with a Global
+          Warming Potential (GWP) for wheat (1622), Paddy (745), maize (997) and Sugarcane (559) and
+          CH4 with a GWP for wheat (137), Paddy (186), maize (64) and Sugarcane (36)5. Prevention of
+          residue burning will stop these emissions. The reduction potential of laser leveling ranges
+          between 1000 ­ 5000 Kg CO2/Ha. In addition to environmental benefits, adoption of
+          regenerative practices also improves incomes for farmers along with increased productivity. For
+          example, in the case of the Rice-Wheat-Maize cropping system, in smallholder farming countries,
+          a net income increase of 12.5% -16% was reported, depending on the change in practices of the
+          farmers. This increase is due to a) increase in productivity over a period, b) income earned from
+          carbon credit sales, and c) a drop in the cost of production (Jat et. Al.,2020)6. The current project
+          is being implemented in the Indo Gangetic plains of the Indian subcontinent focused towards
+          promoting regenerative practices among the rice, wheat, maize, cotton, mustard, pulses, and
+          sugarcane farms based in Haryana, Punjab, Uttar Pradesh, Odisha, Uttarakhand, West Bengal,
+          and Bihar. These crops together cover >80% area of cropping in these states with an overall
+          cropped area of 63,924 thousand hectares7.
+
+          The project will be a grouped project, with new project activities being added over the lifespan of
+          the project. Starting with rice-wheat cropping system, the project will be further expanded to
+          maize-wheat, sugarcane, and cotton-wheat/cotton cropping systems. Pulses and Mustard are
+          cover crops widely interspersed in these cropping systems. The project considers 2019 as the
+          baseline year in which the interventions started. Starting with 12 thousand hectares (~28000
+          Tonnes CO2 Eq. per annum) in 2019, the area will be stabilized at 2 million hectares (~7.0 million
+          Tonnes CO2 Eq. per annum) in 2027 and maintained until 2038.
+
+          A small percentage of farmers have started implementing one or more of the regenerative
+          agricultural practices and the number of farmers participating is projected to grow over the
+          course of the project crediting period. VarahaAg Carbon Farming Program is being implemented
+          for scaling up different regenerative agricultural practices which offer significant potential to
+          mitigate climate change and deliver other benefits, promoting wide-scale implementation of
+          agricultural emissions mitigation. The detailed steps of the program are provided in section 1.11.
+
+3 https://www.ceew.in/publications/sustainable-agriculture
+india#:~:text=Natural%20farming%20is%20the%20fastest,after%20decades%20of%20sustained%20promotion)
+
+4 Jat, H. S., Kumar, V., Datta, A., Choudhary, M., Kakraliya, S. K., Poonia, T., ... & Sharma, P. C. (2020). Designing
+profitable, resource use efficient and environmentally sound cereal-based systems for the Western Indo-Gangetic
+plains. Scientific reports, 10(1), 1-16.
+5 Sahu, S. K., Mangaraj, P., Beig, G., Samal, A., Pradhan, C., Dash, S., & Tyagi, B. (2021). Quantifying the high -resolution
+seasonal emission of air pollutants from crop residue burning in India. Environmental Pollution, 286, 117165.
+6 Jat, H. S., Kumar, V., Datta, A., Choudhary, M., Kakraliya, S. K., Poonia, T., ... & Sharma, P. C. (2020). Designing
+profitable, resource use efficient and environmentally sound cereal-based systems for the Western Indo-Gangetic
+plains. Scientific reports, 10(1), 1-16.
+
+7 https://www.nfsm.gov.in/ReadyReckoner/CU1/CroppingIntensity_Jan2021.pdf.
+
+                                                                                                                                    5
+                                                                                 Project Description: VCS Version 4.1
+
+          The incentives generated from carbon finance projects will create an additional source of income
+          for farmers by ensuring motivation and consistency in adoption of improved practices that will
+          further enhance soil health and climate resilience and thus yield better crop benefits and
+          enriched livelihoods.
+
+1.2 Sectoral Scope and Project Type
+
+          The sectoral scope of the project is VCS scope 14 "Agriculture, Forestry and Other Land Use"
+          (AFOLU) and under the category Agriculture Land Management (ALM). The project constitutes
+          activities that reduce as well as remove carbon dioxide from the atmosphere. It falls under the
+          category of grouped project and is using the VCS methodology: "VM0042, Ver 1.0, Methodology
+          for Improved Agricultural Land Management ".
+
+1.3 Project Eligibility
+
+          The project will implement sustainable improved agricultural practices. The project is eligible
+          under the scope of the VCS Program. The grouped project is eligible as it fulfills the rules and
+          requirements of the VCS Program criteria for GHG projects and programs.
+
+          The project is being submitted under the VM0042 methodology for Improved Agricultural Land
+          Management Version 1.0.
+
+          The following conditions describe the compliance with the applicability conditions for the use of
+          the VCS methodology VM0042 methodology for Improved Agricultural Land Management Version
+          1.0.-
+
+          a) Project activities are implemented on land that is either cropland or grassland at the project
+               start date and remains cropland or grassland throughout the project crediting period (i.e.,
+               land use change is not eligible, including conversion from cropland to grassland and
+               grassland to cropland).
+
+          b) The project area has not been cleared of native ecosystems within the 10-year period prior
+               to the project start date.
+
+          c) The project activity is not expected to result in a sustained reduction greater than 5% in
+               productivity, as demonstrated by peer-reviewed and/or published studies on the activity in
+               the region or a comparable region.
+
+          d) The project activity does not involve the application of biochar.
+          e) The project activity does not occur on a wetland, however on crops subject to artificial
+
+               flooding where it is proven that crop cultivation does not impact the hydrology of any nearby
+               wetlands.
+
+          All the activities being promoted in this project were shown in peer-reviewed scientific studies to
+          successfully sequester soil organic carbon and mitigate gaseous emissions resulting from
+          adoption of improved agricultural management practices included in the project description.
+
+1.4 Project Design
+
+          The project is a grouped project. It includes multiple locations and project activity instances. The
+          geographic boundaries have been well defined, including where new project activity instances
+
+                                                                                                                                    6
+                                                       Project Description: VCS Version 4.1
+
+may be added. These establish the criteria for determining the eligibility of future instances. New
+project activity instances will continue to be added during the verification event.
+
+ The project includes a single location or installation only
+
+ The project includes multiple locations or project activity instances, but is not being developed
+as a grouped project
+
+ The project is a grouped project
+
+Eligibility Criteria
+
+The planned project activities fall under the VCS VM0042 Methodology. This methodology
+quantifies the GHG emission reductions and SOC resulting from the adoption of improved
+agricultural land management (ALM) practices. Eligible ALM practices include, but are not limited
+to reductions in tillage practices, use of organic fertilisers, residue management, water
+management, N-fixing crop planting and harvesting.
+
+Inclusion Criteria for new project activity instances
+
+The following table describes the minimum general eligibility criteria to be satisfied by new
+instances and evidence for how every criterion is fulfilled as per paragraph 3.1 of VCS Standard
+v4.2.
+
+S. No.  Eligibility                                    Description
+1.
+        Meet the applicability                         As per VM0042 methodology each new
+        conditions set out in the                      project activity instance must demonstrate
+        methodology applied to the                     compliance with the applicability conditions
+        project.                                       set out in the methodology.
+
+2.      Use the technologies or                        All the new project activities shall
+
+        measures specified in PD                       implement one of the activities mentioned
+
+                                                       in the project activity description in Section
+
+                                                       1.11 of the PDD
+
+3.      Apply the technologies or                      Each project activity instance shall adhere
+
+        measures in the same manner to the technology specifications (mentioned
+
+        as specified in the project                    in methodology / standard) employed by
+
+        description.                                   project activity.
+
+4.      Geographical boundaries: all Each project activity instance included must
+
+        new project activity instances be within the boundaries of the grouped
+
+        must be located within the                     project.
+
+        boundary of the grouped
+
+        project.
+
+                                                                                                       7
+                                          Project Description: VCS Version 4.1
+
+1.5 Project Proponent
+
+Organization name Varaha ClimateAg Private Limited
+
+Contact person  Ankita Garg
+
+Title           Cofounder and CEO
+
+Address         NO. 52, F/F, MASJAD LANE, BHOGAL, NEAR GURUDWARA, SOUTH DELHI
+                ­ 110014, DELHI, INDIA
+
+Telephone       9619014971
+
+Email           ankita.garg@varahaag.com
+
+1.6 Other Entities Involved in the Project
+
+          Left blank intentionally as per Section 3.1.3 of the VCS Procedural Document; Registration and
+          Issuance Process: (Version 4.1).
+
+1.7 Ownership
+
+          Land ownership: Majority of agricultural lands in India are owned directly by individual farmers.
+          These farmers have well-defined land records that are registered with their state governments
+          and can be confirmed using state government land record databases. The ownership is clear
+          and there is no dispute over land ownership in the project site. The practices being adopted on
+          farmer lands under the <Program Name>. The credits generated using the program belongs to
+          the owner of the land. The ownership records are available online at
+          https://jamabandi.punjab.gov.in/ (Punjab), https://jamabandi.nic.in/ (Haryana), and
+          https://upbhulekh.gov.in/public/public_ror/Public_ROR.jsp (Uttar Pradesh). These land
+          certificate records are also available with the Tehsildars of the respective states.
+
+          Credit ownership: During the project preparation, VarahaAg Private Ltd. (hereinafter "project
+          proponent") invested and cooperated with the local implementation partners for adoption of the
+          regenerative agricultural practices. Furthermore, as the owner of the farmlands, the farmers have
+          the right to authorize VarahaAg as a representative of the carbon project owner. Hence, VarahaAg
+          has overall control and responsibility for the project as the project proponent without violating
+          farmer's right. Also, the project proponent has signed a contract with the landowner that the
+          proponent would have the sole right to generate the credits from the referenced farmland. They
+          would have the end-to-end responsibility to enable verification, audit, and issuance. The
+          landowner commits to not having sold in the past, to not sell in future, any GHG reductions or
+          removals from regenerative agriculture practices to any party other than the proponent and has
+          agreed to provide all its legal rights under any applicable carbon standard.
+
+1.8 Project Start Date
+
+          According to VCS standard, v4.2, the project start date is the date on which activities that lead to
+          the generation of GHG emission reduction or removals are implemented. (Eg. Preparing land for
+
+                                                    8
+                                                                                 Project Description: VCS Version 4.1
+
+          seedling, planting, changing agricultural practices). The start date of the project is 1st June 2019
+          as the implementation of several improved agricultural practices including direct seeding or rice,
+          no-till farming, efficient nutrient, and water management have been followed for the rice crop
+          from this date.
+
+1.9 Project Crediting Period
+
+          The project crediting period is 20 years from the start date. The project period is thus 1st June
+          2019 to 31st May 2038.
+
+1.10 Project Scale and Estimated GHG Emission Reductions or Removals
+
+          The estimated annual GHG emission reductions/removals of the project are:
+           <20,000 tCO2e/year
+           20,000 ­ 100,000 tCO2e/year
+           100,001 ­ 1,000,000 tCO2e/year
+           >1,000,000 tCO2e/year
+
+Project Scale
+
+Project             NA
+
+Large project       X
+
+Year                    Estimated GHG emission reductions or removals
+                        (tCO2e)
+         2019-2020
+         2020-2021                                 28122
+         2021-2022                                 50212
+         2022-2023                                 93576
+         2023-2024                                191084
+         2024-2025                                500439
+                                                 1564032
+
+                                                                                                9
+            2025-2026            Project Description: VCS Version 4.1
+            2026-2026
+            2027-2028                3367788
+            2028-2029                5068024
+            2029-2030                7088425
+            2030-2031                7088425
+            2031-2032                7088425
+            2032-2033                7088425
+            2033-2034                7088425
+            2034-2035                7088425
+            2035-2036                7088425
+            2036-2037                7088425
+            2037-2038                7088425
+            2038-2039                7088425
+       Total estimated ERs           7088425
+                                     7088425
+Total number of crediting years    9,59,24,376
+
+       Average annual ERs                 20
+
+                                   47,96,218.8
+
+1.11 Description of the Project Activity
+
+          The project is not located within a jurisdiction covered by a jurisdictional REDD+ program. The
+          key objective of the project is to enable mitigation of greenhouse gas emissions by implementing
+          regenerative agriculture practices. Developing farm-level adoption of climate-resilient production
+          systems for rice, wheat, maize, cotton, mustard and sugarcane crops in the project area is critical
+          for empowering small holder farmers in the region to sustain their livelihood and ensure income
+          security.
+
+          Smallholder agriculture is hindered by several inter-dependent factors such as low soil fertility,
+          frequent dry spells, drought (climate change) and unsustainable agri-management practices.
+          Ongoing and traditional agricultural practices, such as continuous monocropping, excessive use
+          of synthetic fertilizers beyond the recommended dosage, poor soil, crop residue and irrigation
+          management in the project locations have deteriorated soil productivity to the extent that many
+
+                                                                                                                                  10
+                                                       Project Description: VCS Version 4.1
+
+of these agricultural soils are depleted of nutrients and unable to sustain crop productivity
+naturally. Improving crop productivity, soil fertility via improving Soil Organic Carbon (SOC) and
+providing economic benefits to these smallholder farmers is a crucial challenge. The project
+attempts to address this challenge sustainably, by combining three founding principles of
+conservation agriculture, such as minimum mechanical soil disturbance, permanent soil cover,
+and crop rotation (FAO, 2012). Regenerative agriculture practices are reported to improve soil
+quality, optimize crop yields, and reduce input costs.
+
+VarahaAg is implementing the project activities together with ground implementation teams and
+partners. As part of the project implementation process, field protocols are currently being
+developed and will be provided during verification. Further comprehensive information on field
+management and other aspects of the project implementation will be made available during
+validation processes.
+
+Following are the indicative and most influential (in terms of Soil health/SOC, crop residue
+management and GHG emissions) regenerative agricultural practices adopted by the farmers
+based on their own crop needs and climatic conditions. Complete description of these practices
+and additionality assessments of any new practices will be provided during verification.
+
+Table 1: Different Sustainable agricultural practices adopted and their benefits.
+
+   Adopted Practice          GHG Objectives            Additional Benefits
+
+   Zero tillage and dry      Sequestration,  emission  Improves soil, water, and air
+                             reduction       emission  quality. Reduces soil erosion
+   direct seeded rice
+                             Sequestration,            Improves water quality. Saves
+   (DSR) practice            reduction                 expenses, time, and labor.
+
+   Efficient       nutrient  Sequestration             Reduces erosion and water
+                                                       requirements. Improves soil and
+   management and Crop                                 water quality.
+
+   residue management
+
+   Crop diversity through
+
+   rotations and cover
+
+   crops
+
+·         Minimum/Zero tillage [ZT]/Reduced Tillage [RT]
+
+Zero tillage (ZT) implies planting crops in previously unprepared soil and is mainly considered a
+
+farm management system. It is also known as zero till, no till or direct planting. The modern
+
+concept of ZT tends to imply seeding a crop mechanically in undisturbed soil-covered plant
+
+residues (Ekboir 2002). Continuous rice-wheat-maize cropping systems cause build-up of pests
+
+and diseases. Reducing soil movement through ZT serves as an effective control measure for
+
+pests (Malik et al. 2002). Rice-wheat-maize systems also cause land degradation, with excessive
+
+groundwater pumping. Rice-wheat systems need to enhance their cost competitiveness in the
+
+context of trade liberalization. Zero tillage potentially enables savings in energy (electricity, fuel),
+
+water, labor, and other inputs such as use of machinery, costs of tillage operation, labor while
+
+greatly conserving soil moisture. The advantages of ZT technology are thus manifold generating
+
+higher yields at lower production costs and, being an environment- friendly practice that saves
+
+water and soil (Hobbs et al. 1997).
+
+                                                                                        11
+                             Project Description: VCS Version 4.1
+
+·  Direct Seeded Rice (DSR)
+
+Direct Seeded Rice (DSR) systems have significant potential to reduce the environmental
+
+footprint and land degradation (Yadav et al., 2020). DSR is a suitable alternative to advance
+
+climate-resilient methods in an efficient manner. The DSR option has the advantages of direct
+
+seeding in low residue pressure, using the zero-tillage and multi-crop planter, and in high residue
+
+pressure, with the Happy Seeder and Super Seeder. Furthermore, the DSR option has been
+
+known to sustain soil systems and increase productivity and profitability (Samal et al., 2017). In
+
+addition, adoption of the DSR option advances seeding by 15 days (Rao et al., 2021).
+
+·  Crop residue management
+
+The project activities aim to eliminate crop residue burning, as harvesting of various crops
+
+generates large volume of residues both on and off farm. The generation of crop residues is
+
+highest in Uttar Pradesh (60 Mt), followed by Punjab (51 Mt) and Maharashtra (46 Mt). Among
+
+different crops, cereals generate maximum residues (352 Mt), followed by fibres (66 Mt), oilseeds
+
+(29 Mt), pulses (13 Mt) and sugarcane (12 Mt). Cereal crops (rice, wheat, maize, millets)
+
+contribute 70%, while rice crop alone contributes 34% to the crop residues. Sugarcane residues
+
+consisting of top, and leaves generate 12 Mt, i.e., 2% of the crop residues in India.
+
+In the project locations, a large portion of crop residue (about 116 MT) (Porichha et. al., 2021) is
+recorded to be burnt `on-farm' primarily to clean the field for sowing the next crop. The problem
+of `on-farm' burning of crop residues is intensifying in recent years due to shortage of human
+labour, high cost of removing the crop residue from the field and mechanized harvesting of crops.
+As per available estimates, burning of crop residues is predominant in four states, namely,
+Haryana, Punjab, Uttar Pradesh & West Bengal.
+
+In the current project, farmers who have now stopped burning are being enrolled for carbon
+revenues because of preventing the CO2 and CH4 emissions because of burning activity.
+Preventing burning itself would aid in SOC increases as the Carbon losses through burning will
+be prevented. The crop residues could also be subjected to aerobic/vermicomposting or added
+as mulch to improve SOC in the soils. Alternatively, the recently popularized farm machinery such
+as Happy Seeders and Super Seeders could be used for direct incorporation of residues.
+
+·  Farm mechanization
+
+The Happy Seeder is a tractor-mounted machine that cuts and lifts rice straw, sows' wheat into
+
+the soil, and deposits the straw over the sown area as mulch. Super Seeder is another farm
+
+machinery which is considered as a single-pass solution to fulfil current farming needs to stop
+
+crop residue burning. It can be used to plough paddy stubble back into soil and sow wheat seed
+
+simultaneously in a single operation after the harvesting of the paddy. This enhances soil fertility
+
+and carbon sequestration.
+
+Table 2: List of specific project activities being implemented in the project locations
+
+            Crop        Crop specific Regenerative practices  Common Regenerative practices
+   Rice
+                  · Alternate wetting and drying (AWD)        · Water/irrigation
+                  · Dry Direct seeded rice (DSR)                   management
+                  · Wet DSR
+                  · Mechanical rice transplanter              · No or reduced Tillage
+
+                                                                                         12
+                                           Project Description: VCS Version 4.1
+
+           · System of rice intensification (SRI)          · Relay cropping
+
+           · Intensification and diversification of rice · Crop residue management
+              cropping systems
+                                                            (including composting)
+Wheat
+Maize      · Zero tillage (ZT)                             · Organic amendments (FYM)
+Cotton     · Happy Seeder (HS)                                  Cover crops (Green manuring)
+Mustard
+Sugarcane  · Mulching                                      · Organic mulching
+           · Laser land levelling (LLL)
+              Irrigation scheduling based on soil matric ·  Nutrient              management
+           ·  potential (SMP)
+                                                            (fertilizer management)
+
+           · Crop diversification                          · Application of Nitrification
+           · Permanent Raised bed (PRB) planting                inhibitors/Slow-release
+           · Cotton legume intercrop                            fertilizers
+           · Drip irrigation systems
+                                                           · Crop rotation
+
+           · Integrated nutrient management                · Double cropping
+
+           · Ratooning                                     · Cover cropping
+
+           · Zai pits                                      · Intercropping                          (Crop
+           · Rainwater harvesting systems                       diversification)
+
+           · Mixed cropping systems                        · Farm mechanization for crop
+           · Zero/reduced tillage                               establishment
+
+           · Ridge transplanting                           · Laser land levelling
+           · Bed Planting                                  · Rotavator
+           · Green manuring with sesbania                  · Laser land levelling
+           · Biofertilizers and bio stimulants
+
+           · Surface drip and sub-surface drip irrigation
+
+              practices
+
+           · Reduced tillage
+
+           · Urease inhibitors
+
+           · Improved fertigation
+
+           · Trash shredding and mulching
+
+           · Composting and biofertilizer
+
+           · Sugarcane-legume cropping
+
+           · Crop rotation
+
+           · Row-row wide spacing
+
+           · Crop residue management
+
+           · Green manuring
+
+Carbon revenues upon implementation of the above-mentioned regenerative practices will allow
+wide-spread adoption and recovery of soil fertility along with restoration of soil organic carbon.
+Soil carbon storage that results from this improved crop/soil management is expected to result
+in significant removal of CO2 from the atmosphere, as will be documented using the VM0042 ­
+Methodology for improved agricultural land management.
+
+In order to achieve project goals, Figure 1 provides step by step approach for VarahaAg's Carbon
+farming program. While scaling up of regenerative agriculture practices is in progress in the
+project locations, VarahaAg is concurrently in the process of developing digital platforms for
+ground truthing as well as farmer enrolments (providing detailed information about their farming
+activity data through applications) which will be made accessible on smartphones. Once the
+ground data is received, VarahaAg will process the data provided by farmers and will be
+
+                                                                                  13
+                                                                       Project Description: VCS Version 4.1
+modeled/analyzed further to quantify GHG emissions and the SOC sequestered in the project
+activities registered and approved for the MRV plans.
+
+Figure 1: Representation of carbon farming program being implemented by the Project Proponent.
+                                                                                                                        14
+                                                                                 Project Description: VCS Version 4.1
+
+1.12 Project Location
+
+          Project is currently being implemented in the region of Indo-Gangetic plain (IGP). States included
+          in the region are Punjab, Haryana, Uttar Pradesh, Uttarakhand, Bihar, West Bengal and Orissa.
+          The below map shows the project state where project is implemented.
+
+          Figure 2: Map showing the states in which project will be implemented.
+
+1.13 Conditions Prior to Project Initiation
+
+          Ecosystem type: The ecosystem type prior to the project initiation was basically terrestrial
+          ecosystem with land classified as agricultural lands.
+          Current and historical land-use: The historical land-use of the lands selected under the project
+          activity was agricultural activities. Land Use Land Cover (LULC) map for the project location has
+          been prepared (Figure 2) to proof the project location is the crop land or agriculture land.
+
+                                                                                                                                  15
+                                                                       Project Description: VCS Version 4.1
+
+Figure 3: Historic LULC map of the Project Location (Indo-Gangetic Plains).
+Climatic conditions: The IGP is found in subtropical to moderate temperate climates, with chilly
+and dry winters and hot and humid summers (Timsina and Connor 2001). The upper-IGP receives
+roughly 550 mm of yearly rainfall (low), whereas the lower-IGP receives 1200 mm (high).
+
+Figure 4: Annual rainfall Map of the Project Location (Indo-Gangetic Plains).
+                                                                                                                        16
+                                                                       Project Description: VCS Version 4.1
+Hydrology: The Indo-Gangetic Plain (IGP) is divided into two drainage basins: the Punjab and
+Haryana plains in the west, and the Ganges­Brahmaputra drainage systems in the east. Water
+from the rivers Ravi, Beas, and Sutlej, Yamuna and Ganga is used to irrigate the plains. With key
+crops such as rice and wheat, the Indo-Gangetic Plains are the world's most intensively farmed
+territory. Other crops farmed in this region include maize, sugarcane, and cotton.
+
+Figure 5: Inland water bodies Map of the Project Location (Indo-Gangetic Plains)
+The Indo Gangetic Plain (IGP) is one of the world's most densely populated locations, owing to its
+agriculturally productive soil. In terms of vegetation, the IGP is a reasonably similar biological
+zone, however it has been separated into five broad transects based on physiography and bio-
+climate (Narang and Virmani 2001). The Trans-Gangetic Plains (transects 1 and 2) cover huge
+portions of Pakistan and India, including Punjab and Haryana. The areas in Uttar Pradesh, Bihar,
+and Nepal are covered by Transects 3 and 4. Transect 5 includes the lower Gangetic Plains in
+West Bengal (India) and parts of Bangladesh.
+
+                                                                                                                        17
+                                                                       Project Description: VCS Version 4.1
+
+Figure 6: Elevation map of the Project Location (Indo-Gangetic Plains)
+Soil Health: Intensive use of irrigation water in rice led to increased salinity. In the short term,
+salinity built up leads to reduced yields, whereas, in the long term, it can lead to abandoning of
+crop lands. Also, the heat from burning paddy straw penetrates 1 cm into the soil, elevating
+the temperature to 33.8 to 42.2 degree Celsius. This kills the bacterial and fungal populations
+critical for a fertile soil. Burning also causes damage to other micro-organisms as well as its
+organic quality. One tonne of stubble burning leads to a loss of 5.5 kg N, 2.3 kg P, 25 kg K
+and more than 1kg of Sulphur. Therefore, conventional agricultural practices and crop burning
+practices are proving to be detrimental to soil health, crop productivity and farmer incomes in the
+IGP region.
+
+                                                                                                                        18
+           Project Description: VCS Version 4.1
+
+Figure 7: Soil Map of India showing the boundary of project area.
+
+Has the land been cleared of native ecosystems within 10 years of the project start date?
+
+ Yes   No
+
+1.14 Compliance with Laws, Statutes and Other Regulatory Frameworks
+
+          India does not regulate GHG emissions from Agriculture. However, the project activities comply
+          with all applicable laws, policies, and regulatory frameworks. There may be government initiatives
+          supporting certain subsets of project activities, but there are no enforceable rules mandating the
+          adoption or avoidance of any project activity.
+
+          However, national laws are given below, which the projects activities are not violating:
+
+                                                                                           19
+                                 Project Description: VCS Version 4.1
+
+          Environment Protection Act, 19868 - The project complies with all rules and regulations of the
+          Environment Protection Act. The project activities do not cause any harm, in fact improves the
+          environment by implementing improved agricultural practices reducing the emissions.
+
+          Wildlife Protection Act, 19729 - Any activity that may have an influence on wildlife is not included
+          in the project. Hence it is not relevant, yet the project activity follows all regulations and principles
+          of the act.
+
+          Forest Conservation Act, 198010 - The project activity is being implemented on croplands/
+          agricultural lands. There is no land use change from forest land to cropland. Therefore, the law
+          is not applicable to the project activity, but the project activity complies with all the rules and
+          guidelines of the act.
+
+1.15 Participation under Other GHG Programs
+
+         Projects Registered (or seeking registration) under Other GHG Program(s)
+
+          The project is not registered in any other GHG program other than VCS.
+
+         Projects Rejected by Other GHG Programs
+
+          The project has not been submitted to any other GHG Programs and has not been rejected by any
+          other GHG programs.
+
+1.16 Other Forms of Credit
+
+Emissions Trading Programs and Other Binding Limits
+
+Does the project reduce GHG emissions from activities that are included in an emissions trading
+program or any other mechanism that includes GHG allowance trading?
+
+ Yes                         No
+
+The project proponent itself does not have any binding limits on GHG emissions and does not
+look for any compliance with an emission trading program.
+
+Other Forms of Environmental Credit
+
+There is no other form of environmental credits included in the project framework or currently
+ongoing in the project area. The project has not participated in ant program for environmental
+
+8 https://web.archive.org/web/20020613044316/http://envfor.nic.in/legis/env/env1.html
+9 https://legislative.gov.in/sites/default/files/A1972-53_0.pdf
+10 https://legislative.gov.in/sites/default/files/A1980-69_0.pdf
+
+                                                                                       20
+                                      Project Description: VCS Version 4.1
+
+crediting for GHG emission removals. The project does not intend to generate any other kind of
+environmental crediting for GHG emission removals
+
+Has the project sought or received another form of GHG-related credit, including renewable
+energy certificates?
+
+ Yes                   No
+
+1.17 Sustainable Development Contributions
+
+          The United Nations adopted 17 interlinked global goals, Sustainable Development Goals (SDGs)
+          in 2015 which are "Blueprint to achieve a better and more sustainable future for all." There are
+          17 SDGs in total with each goals having their own set of targets. Niti Aayog ­ The Planning
+          Commission of India, has created the SDG India Index which covers 13 out of 17 SDGs (excluding
+          the SDGs 12, 13, 14 and 17)11. The SDG India Index emphasizes on holistic approach to assess
+          environmental, social and economic status of the country.
+
+Project's contribution for achieving nationally states sustainable development priorities.
+
+SDG India Index Goal       Relevance
+
+No Poverty                 The project activities facilitate additional incomes to the
+                           small and marginalised farmers in terms of Carbon credits
+                           as an incentive for adopting sustainable and regenerative
+                           agricultural practices.
+                           Environmentally friendly sustainable agricultural practices
+                           have long term positive effects on the crop productivity and
+                           ultimately food and income security.
+
+Zero Hunger                Improved regenerative agriculture practices enable
+                           improved crop productivity and improved income benefits,
+                           thus allowing people to afford (to buy sufficient) food
+
+Good Health                Carbon credits generated through the project are
+                           envisioned to encourage more and more farmers for
+                           adoption of prescribed crop residue management practices
+                           and contribute to complete elimination or stopping of
+                           burning practices. This will lead to prevention of pollution
+                           due to toxic gaseous emissions (Co2, CH4 and CO, etc.) into
+                           the environment and thus contribute to better health for
+                           human and animal life.
+
+11 https://pib.gov.in/PressReleasePage.aspx?PRID=1723952
+
+                                                                                                                                  21
+SDG India Index Goal                   Project Description: VCS Version 4.1
+Responsible
+Consumption           Relevance
+                      The project enables sustainable management and efficient
+Climate action        use of natural resources. The project also promotes
+                      environmentally sound management of chemical fertilizers
+Life on Land          applied to the soil, in accordance with national guidelines,
+                      and significantly reduces their release to air, water and soil
+                      in order to minimize their adverse impacts on human health
+                      and the environment.
+
+                      The project enables adoption of climate smart agriculture
+                      practices by the farmers preventing the climate change
+                      related adversities to their crop production and building
+                      resilience to any unforeseen climatic situations. The project
+                      activity also enhances carbon sequestration through
+                      integration of cover crops etc.
+                      The project ensures the conservation, restoration and
+                      sustainable use of natural resources such as water and soil
+                      and restores degraded land and soil ecosystems which
+                      have also been affected by drought/floods.
+
+1.18 Additional Information Relevant to the Project
+
+         Leakage Management
+          Nil
+
+         Commercially Sensitive Information
+          No commercially sensitive information has been excluded from the public version of the project
+          description.
+
+         Further Information
+          Not Applicable.
+
+                      22
+                                                                                 Project Description: VCS Version 4.1
+
+2 SAFEGUARDS
+
+2.1 No Net Harm
+
+          This project is not expected to result in negative environmental impacts. Instead, project activities
+          are expected to lead to positive environmental impacts beyond GHG emission reductions and
+          removals which has been confirmed during the stakeholder consultation meeting with the
+          farmers.
+
+          Negative socio-economic impacts at the community level are not anticipated. At the farm level,
+          farmers may experience financial setbacks in initial years due to upfront costs of practice
+          adoption and changes to yield as farmers identify the best ways to implement new practices on
+          their lands. Any potential economic impacts are expected to be minimal and temporary.
+
+          Additionally, financial support to farmers through payments and sale of carbon credits are
+          intended to counterbalance any initial increased expenses or changes to revenue. Over the years
+          Project Proponent expects farmers to see financial gains from increased yields in regular and,
+          especially, extreme weather years due to increased soil health and overall farm resilience.
+
+2.2 Local Stakeholder Consultation
+
+         The local stakeholder meetings were organised by Varaha Climate Ag Pvt. Ltd. with
+          smallholder farmers, and project partners (FPOs, Rice producing companies) in different areas of
+          Haryana and Punjab to apprise smallholder farmers about the carbon project development. The
+          main aim of the stakeholder meeting was to inform farmers, project partners, FPOs (Farmer
+          Producer Organisations) about the project and its design and give them an opportunity to discuss
+          and give feedback on the project and its potential environmental and social impacts. The overall
+          goal was to improve the project design based on stakeholders' comments and suggestions and
+          increase the local awareness and involvement in the project.
+
+          Stakeholders consultations were held at Karnal in Haryana, Gurdaspur and Ropar in Punjab on
+          28th July, 2022 and 8th -10th August, 2022 respectively. Furthermore, the Project Proponent is
+          currently conducting similar stakeholder consultations in various districts of the project area. This
+          will be covered in detail in the Final Project Description.
+          The meeting was attended by the following participants-
+
+          1. Dr. OP Lathwal, Regional Director, Rice Research Centre, Kaul, Haryana
+          2. Dr. Kanwalpreet Singh - Chief Agriculture Officer (Gurdaspur)
+          3. Dr. Sandeep Singh - Project Director (ATMA )
+          4. Dr. Prabhjot Singh (Deputy project director- ATMA)
+          5. Dr. Sumeesh Arora (KVK Farm Advisor)
+          6. Ms. Ankita Garg, Chief Operating Officer (COO), Varahaag
+          7. Ms. Supriya Kumari, Manager - Carbon Projects, Varahaag
+          8. Mr. Vikarmaditya Yadav, Manager - Carbon Credit Supply, Varahaag
+          9. Ms. Chanchal, Manager - Carbon Projects, Varahaag
+          10. 6 members from the field team of Varahaag
+          11. 10 representatives from different FPOs
+          12. 54 farmers from Haryana
+          13. 60 farmers from Punjab
+
+                                                                                                                                  23
+                                                                       Project Description: VCS Version 4.1
+
+Figure 8: Banner at Haryana and Punjab for Stakeholder consultation
+
+Figure 9: Manual in local language had been prepared for local stakeholders imparting
+the details of carbon project in their area
+Welcome Address by Ms. Supriya, Manager Carbon Projects, Varahaag
+Ms. Supriya welcomed the chief guest Dr. OP Lathwal, the
+FPO representatives, and the farmers in the stakeholder
+meeting, giving a brief about the purpose of the meeting as
+well as about the agenda of the stakeholder. She
+introduced Varahaag to the participants, as a social
+enterprise working on combating climate change through
+regenerative agricultural practices and helping smallholder
+farmers to improve their livelihood by providing additional
+income. She also highlighted the benefits of carbon
+farming to the farmers, focusing on the fact that farmers
+need not to invest a single penny at any stage of this
+carbon finance project development.
+
+                                                                                                                        24
+                                                                       Project Description: VCS Version 4.1
+
+Keynote address by Dr. OP Lathwal, Rice Station Head, Kaul, Karnal
+Welcoming the Varahaag team and the participants,
+Dr. Lathwal talked about the connection of this
+program with the farmers. He highlighted the
+importance and expansion of agriculture in all the
+different sectors and how different organisations are
+working to improve the livelihood of small farmers.
+Different sectors want to build a participatory
+approach with farmers to protect the environment, air
+and water. In comparison to the mid 90s, the yield as
+well as the soil quality has degraded. The yield has
+decreased from 90-95 quintal/ acre in the 1990s to
+40-45 quintal/ acre and the organic carbon has
+decreased from 1.2 percent in the 1940s to 0.2
+percent in 2022. Dr. Lathwal threw light on the major issues leading to this degradation i.e. the
+excessive use of fertilisers/ pesticides and the decreased microorganisms in the soil due to
+intensive farming practices. The physical, chemical and biological properties of the soil are
+damaged resulting in decrease in yield. He focussed on the adoption of conservation agriculture
+practices for restoring crop yield as well as improving soil conditions. He also talked about the
+three main principles of regenerative agriculture practices, i.e.minimum use of machinery on the
+farms (No-till), residue should be left undisturbed after harvesting, and crop rotation. He
+encouraged farmers to adopt regenerative practices and to enrol themselves in the Varaha
+Carbon Kheti Yojana to get additional benefits in terms of carbon credits.
+
+Video made by Varahaag team
+A small "At a glance" video was prepared by the Varaha team to provide insights of the program
+and to make the concept of carbon kheti easy to understand for the farmers. After the keynote
+address of Dr. OP Lathwas, the video was played to give them a brief about the "Varahaag's
+Carbon Kheti Yojana".
+
+                                                                                                                        25
+                                                                       Project Description: VCS Version 4.1
+
+Presentation by Ms. Ankita Garg, Chief Operating Officer (COO), Varahaag
+
+A detailed presentation was made by Ms Ankita Garg
+on "Generating additional income via carbon credits
+for farmers adopting regenerative agricultural
+practices". She explained the negative impacts of
+GHG emissions and the agriculture sector accounting
+for 25% of total emissions. Moving on to comparison
+between conventional and regenerative farming
+practices, she explained the importance of
+conservative farming practices and how these
+practices generate carbon credits. Encouraging
+farmers to be a part of this program, she also talked
+about the data collection process and the benefits of
+regenerative farming for the farmers.
+
+Presentation on Project Activities by Mr. Vikarmaditya Yadav, Manager, Carbon Credit Supply
+
+Mr. Vikarmaditya Yadav, gave detailed information on
+the activities the farmers are currently doing and
+credits generated from each regenerative practice. For
+instance, Direct Seeding Rice, zero till farming and
+incorporation of crop residue generates 1 credit/ acre
+/ activity. He also informed the participants about the
+project area, i.e. states in which the program is being
+implemented i.e. Haryana and Punjab and future
+expansion of the program. He highlighted that till now
+Varahaag has boarded approximately 40,000 acres of
+land in this project.
+
+Feedback from the participants:
+
+     · The participants were very optimistic about the project and extended their complete
+          support.
+
+     · Farmers suggested that such stakeholder meetings should be conducted regularly.
+     · Farmers agreed to assist the Varaha team during field visits and provide appropriate data
+
+          required for the project.
+     · Farmers appreciated the environmental benefits, additional monetary benefits and
+
+          productivity enhancement due to the implementation of project activities.
+
+                                                                                                                        26
+                                                                                 Project Description: VCS Version 4.1
+
+2.3 Environmental Impact
+
+          This project activity involves regenerative agricultural practices and comes under AFOLU
+          (Agriculture, Forestry and Other land Use) criteria thus this project activity does not have any
+          negative environmental impact. The project activity is completely environmentally friendly and has
+          positive impacts on the environment. This has been confirmed during the local stakeholder
+          consultations. The project will achieve various environmental benefits such as biodiversity
+          conservation, increased soil fertility, water conservation, increased food production, climate
+          change mitigation and adaption etc.
+
+2.4 Public Comments
+
+          Public comment to be addressed in the Final PD.
+                                                                                                                                  27
+                                                                                 Project Description: VCS Version 4.1
+
+2.5 AFOLU-Specific Safeguards
+
+          All the local stakeholders have been included in the consultation during the development of carbon
+          project. Any foreseeable risk identified during stakeholders' consultation will be addressed and
+          ensured that it would not impact the project activity. The project proponent and project instance
+          implementer will have a grievance redressal mechanism to address any issue and resolve it sooner.
+
+3 APPLICATION OF METHODOLOGY
+
+3.1 Title and Reference of Methodology
+
+          The VCS methodology "VM0042 Methodology for Improved Agricultural Land Management,
+          Version 1.0" is being used to quantify the emission reductions12.
+          Additional tools applied-
+          o VCS Standard, version 4.1 ­ 22 April 2021
+          o VCS Program Definitions, v. 4.1 ­ 15 April 2021
+          o VCS Program Guide, v. 4.0 ­ 19 September 2019
+          o Registration & Issuance Process, v4.0 ­ 19 September 2019
+          o AFOLU Non-Permanence Risk Tool, v4.0 ­ 19 September 2019
+          o VMD0053 Model Calibration, Validation, and Uncertainty Guidance for the Methodology For
+
+               Improved Agricultural Land Management13
+          o Estimation of carbon stocks and change in carbon stocks of trees and shrubs in A/R CDM
+
+               project activities
+          o Simplified baseline and monitoring methodology for small scale CDM afforestation and
+
+               reforestation project activities implemented on lands other than wetlands
+          o Tool for testing significance of GHG emissions in A/R CDM project activities
+          Full list of additional tools to be confirmed in final version of PD.
+
+3.2 Applicability of Methodology
+
+          All new activities must meet applicability conditions listed in the table below and will be
+          demonstrated with justification in the project document.
+          With the help of VM0042 methodology, quantification of CO2, CH4 and N2O emission fluxes can
+          be recorded, modeled and analyzed. The methodology is global in scope and applies to a broad
+          range of agricultural management project activities that increase SOC storage and/or contribute
+
+12 https://verra.org/wp-content/uploads/2020/10/VM0042_Methodology-for-Improved-Agricultural-Land-
+Management_v1.0.pdf
+13 https://verra.org/wp-content/uploads/2020/10/VMD0053_Model-Calibration-Validation-and-Uncertainty-Guidance-for-
+the-Methodology-for-Improved-Agricultural-Land-Management.pdf
+
+                                                                                                                                  28
+                                                     Project Description: VCS Version 4.1
+
+to the decrease of net emissions compared to the baseline scenario. The methodology is
+applicable for this project due to the following reasons:
+
+Applicability Conditions                             Justification
+
+1. Project must introduce or implement one or        Condition met. The project introduces
+     more new changes to pre-existing                improved regenerative agricultural practices
+     agricultural management practices; Reduced      that can replenish Soil Organic Carbon stock
+     (organic or inorganic) application, improved    levels in the project locations whilst
+     water management, reduce tillage, improved      restoring and enhancing soil health/soil
+     crop planting and harvesting and improve        fertility. The details are mentioned in section
+     grazing practices                               1.11.
+
+2. The project activities must be implemented        Condition met. The project involves only
+     on either cropland or grassland at the          croplands as per methodological guidelines.
+     project start date and remains cropland or      Our Geographic Information System (GIS)
+     grassland throughout the project crediting      analysis has verified that the croplands
+     period.                                         remained so over the past 10 years and will
+                                                     remain as croplands during the project
+                                                     lifetime. (Section 1.13, Figure 3).
+
+3. The project area must not have been cleared       Condition met. The project will focus on
+     of Native ecosystems within the last ten        lands that have been in the cropping system
+     years prior to the project start date:          proposed for at least 10 years. (Section
+                                                     1.13, Figure 3).
+
+4. The project activity proposed is not expected     There is sufficient literature published in
+     to result in a sustained reduction of greater   peer-reviewed journals proving that these
+     than 5% in productivity:                        practices positively impact the productivity.
+                                                     The activities under regenerative agriculture
+                                                     will help farmers to maintain and enhance
+                                                     their crop, soil, and water productivities in a
+                                                     sustained manner. However, crop yields will
+                                                     be relative to each farmer's baseline yields
+                                                     and the specific cropping system employed
+                                                     (also based on geographic location).
+                                                     Generally, regenerative agriculture practices
+                                                     can sustain as well as improve yields and/or
+                                                     lead to reduced crop production costs.
+                                                     Some practices, such as adding organic
+                                                     amendments to crops instead of synthetic
+                                                     fertilizer, have been reported to directly
+                                                     increase crop yields. For other practices, it
+                                                     has been observed that yields might be
+                                                     impacted to 10% in the first 2-3 years of
+                                                     adoption and will improve over time.
+
+5. If the project activity involves the application  If used, only the biochar produced using
+     of biochar, it must be produced using           feedstock that would otherwise have been
+     feedstock that would otherwise have been        left to decay in aerobic or anaerobic
+     left to decay in aerobic or anaerobic           conditions or burned uncontrolled will be
+     conditions or been burned in an uncontrolled    considered in the project activity.
+     manner:
+
+                                                                    29
+                                                       Project Description: VCS Version 4.1
+
+The methodology also uses the following CDM tools-
+
+Tools                                                            Justification
+Estimation of carbon stocks and change in carbon       The project uses this tool for
+stocks of trees and shrubs in A/R CDM project          estimation of carbon stocks and
+activities                                             change in carbon stocks of trees and
+                                                       shrubs in the baseline and project
+Tool for testing significance of GHG emissions in A/R  scenarios.
+CDM project activities                                 The project applies this tool to
+                                                       determine GHG emissions sources,
+                                                       possible decreases in carbon pools,
+                                                       and leakage emissions are
+                                                       insignificant.
+
+3.3 Project Boundary
+
+          The Grouped Project and each new project instance will define a project boundary as per the
+          VM0042 v1.0 methodology. The carbon pool included in Instance 01 is outlined in the table
+          below:
+
+                                                                                                       30
+                                           Project Description: VCS Version 4.1
+
+S. No.  Carbon pool                   Included? Justification
+1.
+2.      Above ground woody            No   Project activities does not involve
+3.      biomass                            agroforestry
+4.      Above ground non- woody
+        biomass                       No   As per VCS rules this has been excluded.
+        Below ground woody                 (VM0042, table 2)
+        biomass
+        Below ground non- woody       No   Project activities does not involve
+        biomass                            agroforestry
+
+                                      No   As per VCS rules this has been excluded.
+                                           (VM0042, table 2)
+
+                                           Carbon pool is not included because it is
+
+                                           not subject to significant changes or
+
+5.      Dead wood                     No   potential changes are transient in nature,
+
+                                           per the VCS rules.
+
+                                           Carbon pool is not included because it is
+
+                                           not subject to significant changes or
+
+6.      Litter                        No   potential changes are transient in nature,
+
+                                           per the VCS rules.
+
+                                           Included as per VCS AFOLU Requirements
+
+                                           as the land cover under the baseline
+
+7.      Soil Organic Carbon           Yes  scenario is comprised of croplands. The
+
+                                           proposed project activity increases this
+
+                                           pool in the project scenario.
+
+8.      Wood products                 No   As per VCS rules this has been excluded.
+                                           (VM0042, table 2)
+
+    The project area includes all the farms where sustainable agricultural practices have been
+    adopted. The project area includes cropland in the Indo gangetic plains. The details have been
+    provided in section 1.12.
+
+    The relevant GHG sources, sinks and reservoirs for the project and baseline scenario are given
+    in the table below:
+
+    Sources        Gas           Included? Justification/Explanation
+
+    Soil Organic   CO2           Yes       Soil Organic carbon is a direct source of CO2 into
+                                           the atmosphere. Our project will record the
+    Carbon                                 changes in the SOC pool. The activities taken up in
+                                           the project will have an impact on the SOC pool.
+
+    Fossil Fuel    CO2           Yes       The regenerative practices taken up as a part of
+                                           the project reduce the amount of fossil fuel. These
+                                           fuels are used during various process of farming
+
+                                                                                       31
+                                                Project Description: VCS Version 4.1
+
+Sources  Gas                       Included?    Justification/Explanation
+
+Soil                               Yes          such as (Land Preparation, tillage, irrigation, post-
+                          CH4      Conditional  harvest management etc.)
+                                   Conditional
+Methanogenesis                     Yes          Certain activities such as Direct Seeding of Rice
+Enteric                                         lead to a reduction in soil methanogenesis and
+                                   Yes          thus the CH4 released in the process as compared
+                          CH4      Optional     to the traditional practice of transplanting.
+Fermentation                       Excluded
+                                                If the livestock fall under the project boundary and
+                          CH4 and               is grazed on the field then Enteric Fermentation
+Manure Deposition                               will be considered
+
+                          N2O                   If the livestock fall under the project boundary and
+                                                is grazed on the field then manure deposition will
+Use of Nitrogen                                 be considered
+                          N2O
+                                                The regenerative practices taken up as a part of
+Fertilizer                                      the project reduce the amount of synthetic
+                                                nitrogen fertilizer and promote the use of organic
+Use of Nitrogen                                 manures. Thus, the usage of fertilizers will be
+                          N2O                   taken into consideration for Baseline and project
+                                                boundary.
+Fixing species
+                          CH4 and               The project activities promote the usage of
+                                                nitrogen fixing species as cover crops and
+Biomass Burning                                 intercrops. these decrease the release of nitrous
+                          N2O                   oxide into the environment.
+
+Woody Biomass CO2                               Burning will be taken as per the data received.
+
+                                                Woody Biomass is excluded since the activities
+                                                taken up in the project don't have a significant
+                                                impact on woody biomass
+
+                                                32
+                                                                                 Project Description: VCS Version 4.1
+          The geo-reference boundaries of the project areas will be clearly delineated and will be
+          available at any time when new areas are added.
+
+3.4 Baseline Scenario
+
+          As per VCS VM0042 methodology, the most plausible baseline scenario is that each farmer
+          continues to manage their field with the same conventional practices they were using before the
+          implementation of the project activities. It is distinct for each farmer and sample unit. Typically, the
+          baseline scenario for project instances includes conventional tillage practices that disturb soil,
+          leaving minimal residue on the soil surface.
+          The baseline scenario is formally defined by developing a schedule of activities existing prior to
+          the project implementation for a period of 3 years or longer. Using historical management
+          information from a sampling unit, the project proponent will establish the baseline schedule of
+          activities. This will be the basis of modelling changes in soil organic carbon stocks in the dynamic
+          baseline ex post following VM0042's Quantification Approach 1. Historical management
+          activities also define fertilizer, fossil fuel combustion, and cropping activities resulting in N2O,
+          CH4, and/or CO2 emissions, which are calculated for the baseline scenario using emission
+          factors and rates or values derived from historical management information under Quantification
+          Approach 3.
+
+                                                                                                                                  33
+                                                                       Project Description: VCS Version 4.1
+
+The schedule of activities described in Table 4 of VCS VM0042 will be collected for each
+participating farmer. Minimum specifications on agricultural management practices (for
+example) for the baseline scenario are-
+
+1. Crop planting and harvesting- Major crop include Rice, Wheat, Millets, Pulses, Beans
+2. Nitrogen fertilizer application- All the farmers apply synthetic nitrogen fertilizers,
+
+     such as urea prior to the start of cultivation practices.
+3. Tillage- Tillage is always used for land preparation on agricultural lands.
+4. Residue management- As a part of land preparation, farmers burn residue.
+5. Irrigation- Farmers use irrigation facilities during the dry season. Irrigation is rainfed during
+
+     the monsoon season.
+6. Grazing Practices- Grazing activities are not present because the project includes cropland
+
+     only. Hence, the activity in not present in business-as-usual condition.
+     As a result, in the context of our project, it is insignificant.
+The project proponent will follow VCS VM0042 requirements for how to gather evidence of
+qualitative versus quantitative aspects of agricultural management activities, using secondary
+data, farmer attestation, and remote sensing tools. Qualitative data will be determined via
+consultation group of expert farmers, focus group discussion (FDGs), farmer survey
+questionnaires etc. The collected information further will be validated by emerging technologies
+like Remote sensing and discussions with the group of expert farmers/agronomist. Since,
+VM0042 permits use of emerging technologies like remote sensing, they can be used to reliably
+determine quantitative information.
+The figure below illustrates the existing challenges in the project area and corresponding
+solutions using carbon finance project. The regenerative agricultural practices adopted in the
+Project scenario will lead to the generation of carbon credits, which will be an additional income
+for the farmers for continuous adoption of these practices.
+
+                                                                                                                        34
+                            Project Description: VCS Version 4.1
+
+·Unnecessary fossil fuel            Existing Challenges  ·Reduced Till/ Zero Till
+ burning                                                 · Residue Management
+                            ·Weather Crises and          ·Alterations in cropping
+·Residue burning             increasing temperature
+·Use of Synthetic                                         pattern or Crop
+                            ·Reduced Productivity         Rotation (ex- Legumes)
+ fertiliser                 ·Degraded soil quality       · Direct Seeding of Rice
+·Tillage                    ·GHG Emission                 (DSR)
+·Inefficient water usage                                 ·Organic Fertiliser
+                                                         ·laser land leveling
+         Business as usual
+                scenerio                                            Project Scenerio
+
+          Figure 10: Adapted from CCAFS South Asia and Aggarwal et al., (2013)14
+
+3.5 Additionality
+
+          Additionality is demonstrated in accordance with the VCS methodology requirements v4.1,
+          section 3.5.3, and using Project method as specified in methodology VM0042.
+
+          Regulatory Surplus
+          At present, the Project proponent has not identified any regulatory framework, enforced law or
+          any other regulations in the project area, which governs the regenerative agricultural practices
+          adopted by the participating farmers. Thus, the project fulfils the regulatory surplus
+          requirements of the methodology. In addition, the project proponent will assess and record any
+          existing law, or regulatory frameworks that mandates the project activity in new project
+          instances as well.
+          Other than the regulatory surplus, additionality evaluation will be carried out in the following
+          two steps prescribed by the VM0042 methodology:
+          1) Identify barriers that would prevent the implementation of a change in pre-existing
+
+                agricultural management practices
+          The implementation of regenerative agricultural methods has substantial technical, financial,
+          knowledge, and cultural barriers, as most of the farmers have limited access to both technical
+          and financial resources as well as information necessary for implementation of these methods.
+
+14 Aggarwal, P. K., Zougmoré, R. B., & Kinyangi, J. (2013). Climate-smart villages: A community
+approach to sustainable agricultural development.
+
+                                                                                      35
+                                                                                 Project Description: VCS Version 4.1
+
+          Technological Barriers: Farmers are practising common conventional/ traditional practices
+          since very long. They have limited technical knowledge related to the reduced fertiliser intake,
+          reduction in tillage, improvement in crop residue, soil testing and soil nutrient management etc.
+          Therefore, farmers were not able to change the traditional practices. Project Proponent through
+          the project partners will impart training to the farmers regarding the regenerative agricultural
+          practices to make them aware and will provide continuous technical support during the project
+          lifetime. Hence, without the interventions of the project proponent the practices would not have
+          been changed.
+
+          Financial Barriers: There are a number of schemes and subsidies in India, for farmers adopting
+          different practices, or for the equipment's used. But these funds are either insufficient15 or the
+          farmer is unable to get the money on time in order to execute the practices in sustainable and
+          timely manner. Moreover, farmers are unable to buy the expensive machineries and
+          equipment's and hence they have not changed their traditional practices. Revenue generated
+          from the sale of carbon credits along with overall increment in crop in productivity will overcome
+          the financial barriers due to the higher costs and a lack of suitable incentives.
+
+          Cultural and Social Barriers: There are a number of beliefs associated with different practices,
+          like burning of crop residue helps control pests and diseases, tillage improves soil productivity
+          etc. In addition, a large number of farmers have poor literacy rate having limited access to
+          networks connecting them with higher level of governance and agricultural experts. Due to the
+          implementation of the project, technicians and experts will visit the farms regularly to help
+          farmers in order to adapt the regenerative agricultural practices.
+
+          2) Demonstrate that the adoption of the suite of proposed project activities is not common
+                 practice
+
+          For grouped projects with diverse project activities, VM0042 requires that project proponents
+          demonstrate that the weighted average adoption rate of these project activities is less than
+          20%. This weighted average adoption rate is calculated based on the project area implementing
+          each regenerative practice or combination of practices using publicly available data. It has
+          been reported that less than 4 per cent of Indian farmers have adopted sustainable agricultural
+          practices and systems, according to a study done by the Council on Energy, Environment and
+          Water (CEEW)16,17. The study, supported by the Food and Land Use Coalition (FOLU), found that
+          scaling up sustainable agriculture would be critical to improve farm incomes and bolster India's
+          nutrition security in a climate-constrained future. Most conservation agriculture practices are
+          being adopted by less than five million (or four per cent) of all Indian farmers and many are
+          practised by less than one per cent (CEEW)18.
+
+15 Ending burning of crop stubble through Happy Seeder technology - Tata Trusts
+
+16https://economictimes.indiatimes.com/news/economy/agriculture/less-than-four-percent-indian-farmers-adopted-
+sustainable-agricultural-practices-
+saysstudy/articleshow/82165017.cms?utm_source=contentofinterest&utm_medium=text&utm_campaign=cppst
+
+17https://www.ceew.in/press-releases/less-4-indian-farmers-have-adopted-sustainable-agricultural-practices-ceew
+
+18 https://www.ceew.in/sites/default/files/CEEW_ZBNF_Issue_Brief_2nd_Edition_19Sep18.pdf
+
+                                                                                                                                  36
+                                           Project Description: VCS Version 4.1
+
+Table 3: Adoption rate by area of regenerative practices
+
+Common         Area Under the         Scale of Adoption  Extent (No. of  Adoption
+Regenerative   Regenerative           (millions of       states) of      Rate (By
+practices      Practice (millions of  farmers)           adoption        Area)
+               hectares)                                                 1.4%
+Cover crops                           1.5                All
+               1.9                                                       1.4%
+Organic farm                          1                  4-5
+Conservation   2.8
+Agriculture
+Crop rotation  2
+
+               30                     15                 All the states 21%
+
+Intercropping  1                      0.8                All the states 0.7
+
+Natural Farming 0.7                   0.8                3-4             0.5%
+
+          Because of low adoption of regenerative practices (<4%) in the project location, the proposed
+          project activities are not common practices. Therefore, the project will contribute to
+          additionality.
+
+3.6 Methodology Deviations
+
+          There are no deviations from the methodology adopted.
+
+4 QUANTIFICATION OF GHG EMISSION
+    REDUCTIONS AND REMOVALS
+
+4.1 Baseline Emissions
+
+          This part has been omitted under section 3.1.3 of the Verra Registration and Issuance Process
+          v4.0.
+
+4.2 Project Emissions
+
+          This part has been omitted under section 3.1.3 of the Verra Registration and Issuance Process
+          v4.0.
+
+4.3 Leakage
+
+                                                                                                                                  37
+                                                                                 Project Description: VCS Version 4.1
+          This part has been omitted under section 3.1.3 of the Verra Registration and Issuance Process
+          v4.0.
+
+4.4 Net GHG Emission Reductions and Removals
+
+          This part has been omitted under section 3.1.3 of the Verra Registration and Issuance Process
+          v4.0.
+
+5 MONITORING
+
+5.1 Data and Parameters Available at Validation
+
+          This part has been omitted under section 3.1.3 of the Verra Registration and Issuance Process
+          v4.0.
+
+5.2 Data and Parameters Monitored
+
+          This part has been omitted under section 3.1.3 of the Verra Registration and Issuance Process
+          v4.0.
+
+5.3 Monitoring Plan
+
+          This part has been omitted under section 3.1.3 of the Verra Registration and Issuance Process
+          v4.0.
+
+                                                                                                                                  38
+APPENDIX
+

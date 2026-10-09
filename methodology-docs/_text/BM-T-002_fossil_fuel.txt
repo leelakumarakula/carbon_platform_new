@@ -1,0 +1,379 @@
+=== p1
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+METHODOLOGICAL TOOL 
+ 
+BM-T-002  
+Tool to calculate project or leakage CO2 emissions 
+from fossil fuel combustion  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Publication Date: 27 March 2025 
+Version 1.0 
+ 
+ 
+ 
+ 
+ 
+ 
+
+=== p2
+2 
+ 
+Table of Contents 
+1. INTRODUCTION ........................................................................................................ 3 
+2. DEFINITIONS ............................................................................................................. 3 
+3. SCOPE & APPLICABILITY ....................................................................................... 3 
+3.1. Scope and Applicability .................................................................................. 3 
+4. PARAMETERS .......................................................................................................... 3 
+5. PROCEDURE ............................................................................................................ 3 
+5.1. Baseline methodology procedure .................................................................. 3 
+5.2.    Monitoring methodology procedure ................................................................. 4 
+ 
+ 
+  
+=== p3
+3 
+ 
+1. Introduction 
+1. This tool provides procedures to calculate emissions associated with the fossil fuels 
+combustion. 
+2. Definitions 
+2. The definitions contained in the Detailed Procedure for Offset Mechanism under CCTS 
+shall apply.  
+3. Scope & Applicability 
+3.1. Scope and Applicability 
+3. This tool provides procedures to calculate project and/or leakage CO2 emissions from the 
+combustion of fossil fuels. It can be used in cases where CO 2 emissions from fossil fuel 
+combustion are calculated based on the quantity of fuel combusted and its properties. 
+Methodologies using this tool should specify to which combustion process j this tool is 
+being applied. 
+4. Parameters 
+4. This tool provides procedures to determine the following parameters:  
+ 
+Parameter  SI Unit  Description  
+𝑷𝑬𝑭𝑪,𝒋,𝒚  tCO2/yr  CO2 emissions from fossil fuel 
+combustion in process j during the 
+year y  
+5. Procedure  
+5.1. Baseline methodology procedure  
+6. CO2 emissions from fossil fuel combustion in process j are calculated based on the 
+quantity of fuels combusted and the CO2 emission coefficient of those fuels, as follows:  
+𝑃𝐸𝐹𝐶,𝑗,𝑦=Σ𝐹𝐶𝑖,𝑗,𝑦×𝐶𝑂𝐸𝐹𝑖,𝑦𝑖                                                                                  Equation (1) 
+Where: 
+𝑃𝐸𝐹𝐶,𝑗,𝑦 = CO2 emissions from fossil fuel combustion in process j during the year y (tCO2/yr) 
+           𝐹𝐶𝑖,𝑗,𝑦 = Quantity of fuel type i combusted in process j during the year y (mass or volume 
+unit/yr) 
+𝐶𝑂𝐸𝐹𝑖,𝑦 = CO2 emission coefficient of fuel type i in year y (tCO2/mass or volume unit) 
+𝑖 = Fuel types combusted in process j during the year y 
+5. The CO 2 emission coefficient 𝐶𝑂𝐸𝐹𝑖,𝑦 can be calculated using one of the following two 
+Options, depending on the availability of data on the fossil fuel type i, as follows:  
+6. (a) Option A: The CO 2 emission coefficient 𝐶𝑂𝐸𝐹𝑖,𝑦 is calculated based on the chemical 
+composition of the fossil fuel type i, using the following approach:  
+=== p4
+4 
+ 
+If 𝐹𝐶𝑖,𝑗,𝑦 is measured in a mass unit: 
+𝐶𝑂𝐸𝐹𝑖,𝑦=𝑤𝐶,𝑖,𝑦×44/12                                                                                      Equation (2) 
+If 𝐹𝐶𝑖,𝑗,𝑦 is measured in a volume unit: 
+𝐶𝑂𝐸𝐹𝑖,𝑦=𝑤𝐶,𝑖,𝑦×𝜌𝑖,𝑦×44/12                                                                               Equation (3) 
+ Where: 
+𝐶𝑂𝐸𝐹𝑖,𝑦 = CO2 emission coefficient of fuel type i (tCO2/mass or volume unit); 
+𝑤𝐶,𝑖,𝑦     = Weighted average mass fraction of carbon in fuel type i in year y (tC/mass unit 
+of the fuel) 
+𝜌𝑖,𝑦 = Weighted average density of fuel type i in year y (mass unit/volume unit of the fuel) 
+𝑖 = Fuel types combusted in process j during the year y 
+(b) Option B: The CO 2 emission coefficient 𝐶𝑂𝐸𝐹𝑖,𝑦 is calculated based on net calorific 
+value and CO2 emission factor of the fuel type i, as follows: 
+𝐶𝑂𝐸𝐹𝑖,𝑦=𝑁𝐶𝑉𝑖,𝑦×𝐸𝐹𝐶𝑂2,𝑖,𝑦                                                                                                                  Equation (4) 
+Where: 
+𝐶𝑂𝐸𝐹𝑖,𝑦 = CO2 emission coefficient of fuel type i in year y (tCO2/mass or volume unit) 
+𝑁𝐶𝑉𝑖,𝑦 = Weighted average net calorific value of the fuel type i in year y (GJ/mass or 
+volume unit) 
+𝐸𝐹𝐶𝑂2,𝑖,𝑦 = Weighted average CO2 emission factor of fuel type i in year y (tCO2/GJ) 
+𝑖 = Fuel types combusted in process j during the year y 
+7. Option A should be the preferred approach, if the necessary data is available. 
+5.2.    Monitoring methodology procedure 
+5.2.1.   Monitoring procedures 
+8. Describe and specify in the  ICM-PDD all monitoring procedures, including the type of 
+measurement instrumentation used, the responsibilities for monitoring and QA/QC 
+procedures that will be applied. Where the methodology provides different options (e.g. 
+use of default values or on-site measurements), specify which option will be used. Meters 
+should be installed, maintained and calibrated according to equipment manufacturer 
+instructions and be in line with national standards, or, if these are not available, 
+international standards (e.g. IEC, ISO). 
+5.2.1.1. Data and parameters monitored 
+             Data / Parameter table 1. 
+Data / parameter:  FCi,j,y  
+Data unit:  Mass or volume unit per year (e.g. ton/yr or m3/yr)  
+Description:  Quantity of fuel type i combusted in process j during the 
+year y  
+Source of data:  Onsite measurements  
+=== p5
+5 
+ 
+Measurement procedures (if any):  • Use either mass or volume meters. In cases where 
+fuel is supplied from small daily tanks, rulers can be 
+used to determine mass or volume of the fuel 
+consumed, with the following conditions: The ruler 
+gauge must be part of the daily tank and calibrated 
+at least once a year and have a book of control for 
+recording the measurements (on a daily basis or 
+per shift);  
+• Accessories such as transducers, sonar and piezo 
+electronic devices are accepted if they are properly 
+calibrated with the ruler gauge and receiving a 
+reasonable maintenance;  
+• In case of daily tanks with pre-heaters for heavy oil, 
+the calibration will be made with the system at 
+typical operational conditions  
+Monitoring frequency:  Continuously  
+QA/QC procedures:  The consistency of metered fuel consumption quantities 
+should be cross-checked by an annual energy balance 
+that is based on purchased quantities and stock 
+changes.  
+Where the purchased fuel invoices can be identified 
+specifically for the ICM project, the metered fuel 
+consumption quantities should also be cross-checked 
+with available purchase invoices from the financial 
+records  
+Any comment:  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Project activities where end users of the subsystems or 
+measures are households/communities/small and 
+medium enterprises (SMEs), faced with data gaps due 
+to meter failure or other reasons unforeseen, may 
+estimate the quantity of fuel, using one of the following 
+options, provided the gap period does not exceed 30 
+consecutive days within six consecutive months:  
+• The purchased fuel/energy invoices/bills, where the 
+purchased fuel can be identified specifically for the 
+ICM project;  
+• The energy produced by the equipment, adjusted 
+by efficiency. Efficiency of the equipment is 
+determined using the ‘Methodological tool: 
+Determining the baseline efficiency of thermal or 
+electric energy generation systems’, and energy 
+produced is measured directly or calculated based 
+on operation hours;  
+• The highest value of the parameter for the same 
+calendar period of the previous years;  
+• The fuel consumption of a representative sample of 
+the first batch of project devices. It may be 
+assumed that the fuel consumption measured in a 
+representative sample of the first batch of project 
+devices apply to all subsequent batches. 
+              Data / Parameter table 2. 
+Data / parameter:  wC,i,y 
+Data unit:  tC/mass unit of the fuel 
+Description:  Weighted average mass fraction of carbon in fuel type i in year y  
+Source of data:  The following data sources may be used if the relevant conditions 
+apply: 
+  
+=== p6
+6 
+ 
+Data Source Conditions for using the data 
+source 
+a) Values provided by 
+the fuel supplier in 
+invoices 
+This is the preferred source 
+b) Measurements by the  
+non-obligated entity 
+If a) is not available 
+ 
+Measurement 
+procedures (if any):  
+Measurements should be undertaken in line with national or 
+international fuel standards  
+Monitoring frequency:  The mass fraction of carbon should be obtained for each fuel 
+delivery, from which weighted average annual values should be 
+calculated  
+QA/QC procedures:  Verify if the values under (a) and (b) are within the uncertainty range 
+of the product of the IPCC default values IPCC  Guidelines. If the 
+values fall below this range collect additional information from the 
+testing laboratory to justify the outcome or conduct additional 
+measurements. The laboratories in (b) should have ISO17025 
+accreditation or justify that they can compl y with similar quality 
+standards  
+Any comment:  Applicable where Option A is used  
+            Data/Parameter table 3. 
+Data / parameter:  ρi,y  
+Data unit:  Mass unit/volume unit  
+Description:  Weighted average density of fuel type i in year y  
+Source of data:  The following data sources may be used if the relevant conditions 
+apply:  
+ 
+Data Source Conditions for using the data 
+source 
+(a) Values provided by the fuel 
+supplier in invoices 
+This is the preferred source 
+(b) Measurements by the  non-
+obligated entity 
+If (a) is not available 
+(c) Regional or national default 
+values 
+If (a) is not available 
+These sources can only be 
+used for liquid fuels and should 
+be based on well -documented, 
+reliable sources (such as 
+national energy balances) 
+ 
+Measurement 
+procedures (if any):  
+Measurements should be undertaken in line with national or 
+international fuel standards  
+Monitoring frequency:  The density of the fuel should be obtained for each fuel delivery, from 
+which weighted average annual values should be calculated  
+QA/QC procedures:  - 
+Any comment:  Applicable where Option A is used and where FCi.j.y is measured in 
+a volume unit.  Preferably the same data source should be used for 
+wC,i,y and ρi,y  
+           Data/Parameter table 4. 
+Data / parameter:  NCVi,y  
+Data unit:  GJ per mass or volume unit (e.g. GJ/m³, GJ/ton)  
+Description:  Weighted average net calorific value of fuel type i in year y  
+Source of data:  The following data sources may be used if the relevant conditions 
+apply:  
+ 
+=== p7
+7 
+ 
+Data Source Conditions for using the data 
+source 
+(a) Values provided by the 
+fuel supplier in invoices 
+This is the preferred source if 
+the carbon fraction of the fuel is 
+not provided (Option A) 
+(b) Measurements by the  
+non-obligated entity 
+If (a) is not available 
+(c) Regional or national 
+default values 
+If (a) is not available 
+These sources can only be 
+used for liquid fuels and should 
+be based on well -documented, 
+reliable sources (such as 
+national energy balances) 
+(d) IPCC default values at 
+the upper limit of the 
+uncertainty at a 95% 
+confidence interval as 
+provided in IPCC  
+Guidelines on National 
+GHG Inventories 
+If (a) is not available 
+ 
+Measurement 
+procedures (if any):  
+For (a) and (b): Measurements should be undertaken in line with 
+national or international fuel standards  
+Monitoring frequency:  For (a) and (b): The NCV should be obtained for each fuel delivery, 
+from which weighted average annual values should be calculated.  
+For (c): Review appropriateness of the values annually.  
+For (d): Any future revision of the IPCC Guidelines should be taken 
+into account  
+QA/QC procedures:  Verify if the values under (a), (b) and (c) are within the uncertainty 
+range of the IPCC default values. If the values fall below this range 
+collect additional information from the testing laboratory to justify the 
+outcome or conduct additional measurements. The laboratories in 
+(a), (b) or (c) should have ISO17025 accreditation or justify that they 
+can comply with similar quality standards  
+Any comment:  Applicable where Option B is used  
+            Data/Parameter table 5. 
+Data / parameter:  EFCO2,i,y  
+Data unit:  tCO2/GJ  
+Description:  Weighted average CO2 emission factor of fuel type i in year y  
+Source of data:  The following data sources may be used if the relevant conditions 
+apply:  
+Data Source Conditions for using the data 
+source 
+(a) Values provided by the 
+fuel supplier in invoices 
+This is the preferred source if 
+the carbon fraction of the fuel is 
+not provided (Option A) 
+(b) Measurements by the  
+non-obligated entity 
+If (a) is not available 
+(c) Regional or national 
+default values 
+If (a) is not available 
+These sources can only be 
+used for liquid fuels and should 
+be based on well -documented, 
+reliable sources (such as 
+national energy balances) 
+=== p8
+8 
+ 
+(d) IPCC default values at 
+the upper limit of the 
+uncertainty at a 95% 
+confidence interval as 
+provided in IPCC  
+Guidelines on National 
+GHG Inventories 
+If (a) is not available 
+ 
+Measurement 
+procedures (if any):  
+For (a) and (b): Measurements should be undertaken in line with 
+national or international fuel standards  
+Monitoring frequency:  For (a) and (b): The CO2 emission factor should be obtained for each 
+fuel delivery, from which weighted average annual values should be 
+calculated.  
+For (c): Review appropriateness of the values annually.  
+For (d): Any future revision of the IPCC Guidelines should be taken 
+into account  
+Any comment:  Applicable where option B is used.  
+For (a): If the fuel supplier does provide the NCV value and the CO2 
+emission factor on the invoice and these two values are based on 
+measurements for this specific fuel, this CO2 factor should be used. 
+If another source for the CO2 emission factor is used  or no CO2 
+emission factor is provided, Options (b), (c) or (d) should be used  
+                                                       
+Revision/Changes in the Document 
+ 
+ 
+Version Date Description 
+ 
+1.0 27 March 2025 Initial Adoption 
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   

@@ -1,0 +1,1505 @@
+VCS Program Definitions
+
+Version 5.0
+
+                                                                       16 December 2025
+All intellectual property rights in this document and any related materials for its interpretation and application constitute
+"Website Materials" as defined in the Verra Website Terms and Conditions of Use. All applicable terms and conditions set
+out therein apply to this document.
+
+Website Materials are owned by Verra or by third parties who have licensed their materials to Verra and are protected by
+applicable intellectual property laws.
+
+Use of this Website Material in the establishment or operation of a project or development of a methodology under a Verra
+certification program is permitted ("Authorized Use"). Any other use, including copying, modifying, distributing, or creating
+derivative works, whether in whole or in part, is prohibited unless expressly authorized by Verra or the relevant rights
+holder.
+
+All proprietary notices must be retained in any copies made under the Authorized Use. Verra trademarks, logos, and brand
+names may not be used without Verra's prior written consent.
+
+All rights not expressly granted herein are reserved.
+                                                                                                                 1 Introduction
+
+1 INTRODUCTION
+
+This document provides the definitions for terms used in the VCS Program documents. In addition, the
+definitions set out in ISO 14064-2, ISO 14064-3, and ISO 14065 shall apply to the VCS Program. Note
+that defined terms in the VCS Program documents, in common with ISO convention, are used without
+capital first letters. Section 3 lists acronyms used in the VCS Program documents.
+This document will be updated from time to time, and readers must ensure that they are using the most
+current version of the document.
+
+                                                                                                                                    1
+                                                                                                                    2 Definitions
+
+2 DEFINITIONS
+
+Aboveground biomass
+Biomass above the soil, including the stem, stump, branches, bark, seeds, and foliage
+Accession representation
+The deed issued by a project proponent and an acceding entity, made in respect of an acceding entity
+joining a project as project proponent, and which is prepared using an applicable template (e.g., Deed of
+Accession in Respect of VCS Listing Deed of Representation Template, Deed of Accession in Respect of
+VCS Registration Deed of Representation Template)
+Activity method
+A methodological approach that determines additionality for a given class of project activity in accordance
+with the VCS Program rules
+Afforestation
+The direct human-induced conversion of land that has not been forested for a period of at least 50 years
+to forested land through planting, seeding, and/or the human-induced promotion of natural seed sources
+Afforestation, reforestation, and revegetation (ARR)
+Activities that increase carbon stocks in woody biomass (and in some cases soils) by establishing,
+increasing, and/or restoring vegetative cover through planting, sowing, and/or the human-assisted
+natural regeneration of woody vegetation
+AFOLU buffer deed
+Deed issued by a project proponent in respect of their obligations to replace credits in the AFOLU pooled
+buffer account in the event of a reversal, which is prepared using the AFOLU Buffer Account Remedy for
+Reversals Deed Template
+AFOLU pooled buffer account
+The account in the Verra Registry containing non-tradable AFOLU buffer credits for covering the risk of
+unforeseen losses in carbon stocks across the AFOLU project portfolio
+Agricultural land management (ALM)
+Activities that increase carbon stocks in soils and woody biomass and/or decrease CO2, N2O, and/or CH4
+emissions from soils on croplands and/or grasslands
+Agriculture, forestry, and other land use (AFOLU)
+The sectoral scopes that cover GHG emissions and GHG emission reductions and/or carbon dioxide
+removals from project or program activities in sectoral scope 14 (Forestry and other land use: forests,
+wetlands, and grasslands) and sectoral scope 15 (agriculture) and for which the VCS Program has
+established rules and requirements with respect to specific project categories
+
+                                                                                                                                    2
+                                                                                                                    2 Definitions
+
+Agro-ecological zones
+Geographic areas based on similar characteristics such as combinations of soil, landform, and climatic
+conditions
+Agroforestry
+An ecologically based natural resource management system in which trees are integrated into farmland
+and rangeland
+Agro and forest residue
+Agro residues are organic material produced as a by-product after harvesting and processing agricultural
+crops; examples include bagasse, stover, chaff, and straw. Forest residues are organic materials as a by-
+product of forest harvesting; examples include chips, sawdust, branches, and bark
+Area of review (AOR)
+The maximum areal extent that CO2 could impact underground sources of drinking water for a GCS
+project. This includes the area where potential natural and/or induced migration pathways could exist
+Authorized representative
+An entity authorized by the project or jurisdictional proponent to communicate with and provide
+instructions to the Verra Registry on its behalf, with such authorization granted through a communications
+agreement signed by both/all parties and submitted to the Verra Registry
+Avoidable reversal
+A reversal over which the project proponent has influence or control, that occurs in an AFOLU project (e.g.,
+occurring due to poor project management, insufficient measures to prevent foreseeable encroachment,
+removal of a portion of the project area from participation, harvesting or over-harvesting, tillage events)
+Belowground biomass
+Living biomass of live roots, sometimes excluding fine roots of less than 2 mm diameter because these
+often cannot be distinguished empirically from soil organic matter or litter
+Binding emission limit
+A system that creates binding limits on the total GHG emissions or emissions per unit of output or activity
+from a site, company, sector, or region but does not include emissions trading.
+Biodiversity1
+The variability among living organisms from all sources, such as terrestrial, marine, and other aquatic
+ecosystems, and the ecological complexes of which they are part. This includes diversity within species,
+between species, and of ecosystems.
+Biomass
+Non-fossilized and biodegradable organic material originating from plants, animals, fungi, or micro-
+organisms (e.g., agricultural, aquacultural, forest, or algaecultural materials; or organic fractions of
+
+1 Adapted from Secretariat of the Convention on Biological Diversity (CBD). 1992. "CBD Article 2."
+https://www.cbd.int/convention/articles?a=cbd-02
+
+                                                                                                                                    3
+                                                                                                                    2 Definitions
+
+industrial and municipal wastes), and the gases and liquids recovered from the decomposition of organic
+material
+Biomass feedstock
+Biomass, including biomass from waste, used to supply or fuel project activities
+Biomass from waste
+Biomass that, in the absence of a project, would be left in situ to decompose or would be collected for
+disposal (including incineration), treatment, or as part of a corrective management strategy. It does not
+include recycled or salvaged materials.
+Biomass origin
+The location of production or harvest, or the area of collection, of a biomass feedstock
+Blue carbon
+Organic carbon stored in above- and below-ground biomass and soil pools in tidal and marine ecosystems
+(e.g., mangrove forests, seagrass meadows, and tidal marshes)
+Cancellation
+The permanent removal of a VCU from circulation in the Verra Registry system for purposes other than
+retirement (e.g., converting VCUs into another form of GHG credit, compensating for excess VCU issuance)
+Capacity limit
+A limitation on any quantity in relation to the project imposed by a methodology applied to the project, the
+GHG program under which the methodology applied to the project was developed, or the GHG program
+with which the project was developed
+Capital expenditure
+The costs to the project activity of acquiring new assets or improving existing assets that are utilized for
+the duration of the project crediting period
+Caprock
+A layer of impermeable rock that acts as a trapping mechanism, overlying a geologic reservoir that is the
+target for permanent CO2 storage for a GCS project and has a fracture stress higher than the reservoir
+fracture stress
+Captured flare or vent gas
+CH4 that was previously flared or vented in a project activity's baseline and that is captured and used
+during the project activity
+Carbon capture and storage (CCS)
+GHG emission reduction or carbon dioxide removal activities that capture CO2 and sequester it into saline
+aquifers or into depleted oil or gas reservoirs with the intention of permanent sequestration on geological
+timescales. CCS is a type of geological carbon storage.
+
+                                                                                                                                    4
+                                                                                                                    2 Definitions
+
+Carbon dioxide removal (Removal)
+
+A long-term atmospheric benefit attributable to a project activity that increases durably stored carbon
+stocks in geological, terrestrial, ocean, or product carbon pools, net of associated project and leakage
+emission. Removals include anthropogenic enhancement of biological or geochemical sinks, and
+transfers of biogenic carbon from short-term to long-term carbon pools. Removals exclude natural CO2
+uptake such as growth of natural forests. Removals exclude maintenance of declining carbon stocks. One
+carbon dioxide removal represents one metric tonne of CO2 removed from the atmosphere.
+
+Carbon pools
+
+A reservoir of carbon that has the potential to accumulate (or lose) carbon over time, which for AFOLU
+projects or programs encompasses aboveground biomass, belowground biomass, litter, dead wood, soil,
+and wood products
+
+Carbon stock
+
+The quantity of carbon held within a carbon pool, measured in tonnes of CO2
+
+Child labor
+
+The employment of child workers younger than the applicable required minimum age or workers under
+the age of 18 to perform work that is physically, socially, or morally dangerous or harmful; that deprives
+children of an education; or that requires a child to combine education with long hours and heavy work.
+
+Climatic impact driver (CID)
+
+Physical climate system conditions (e.g., means, events, extremes) that affect an element of society or
+ecosystems
+
+Commercially sensitive information
+
+Trade secrets, financial, commercial, scientific, technical, or other information whose disclosure could
+reasonably be expected to result in a material financial loss or gain, prejudice the outcome of contractual
+or other negotiations, or otherwise damage or inappropriately enrich the person or entity to which the
+information relates
+
+Communications agreement
+
+The agreement by which the project or jurisdictional proponent authorizes a third party to communicate
+with and provide instructions to the Verra Registry on its behalf, the form and scope of which shall be
+determined solely by the Verra Registry and the signatories to the agreement
+
+Competing claims to land or resource rights (Competing claims)2
+
+Simultaneous, incompatible assertions by two or more parties regarding the same land or resource rights
+in a single area (e.g., where two parties independently claim exclusive use of a parcel of agricultural land).
+Competing claims may or may not be active disagreements and may affect the project proponent's right
+to operate and right to reductions and removals.
+
+Confining layer
+
+Single or multiple geological formations that are a barrier to substance movement
+
+2 Adapted from Food and Agriculture Organization (FAO). 2002. Land Tenure and Rural Development.
+https://www.fao.org/4/y4307e/y4307e00.pdf
+
+                                                                                                                                    5
+                                                                                                                    2 Definitions
+
+Containment
+
+A characterization of overall storage site integrity in a GCS project, whereby the geologic seals, caprock, or
+other trapping mechanisms contain the injected fluids
+
+Cooperative hub project
+
+A GCS project in which pore space tenure holders, storage site operators, and other entities with interests
+in capture sites and the transportation network have agreements to connect plants, equipment, and
+processes, and share common infrastructure that collectively serves to store CO2
+
+Crediting period
+
+· The time period for which GHG emission reductions or carbon dioxide removals generated by the
+     project are eligible for issuance as VCUs, not including any potential crediting period renewals. Also
+     referred to as the "project crediting period"; or
+
+· The time period for which GHG emission reductions or carbon dioxide removals generated by the
+     jurisdictional REDD+ program are eligible for issuance as VCUs, not including any potential crediting
+     period renewals. Also referred to as the "program crediting period"
+
+Cropland
+
+Arable and tillage land and agro-forestry systems where vegetation falls below the threshold used for the
+forest land category
+
+Customary rights3
+
+Rights based on long-standing patterns of community lands, territories, and resource use or physical
+access, grounded in Indigenous People's and local communities' customary laws, values, customs,
+traditions, territorial affiliation, shared common property arrangements, and self-governance systems,
+including their diverse institutions and livelihood practices. National laws may or may not recognize
+customary rights.
+
+Customary rights may extend to lands not permanently inhabited by Indigenous Peoples and local
+communities (e.g., due to displacement caused by conflict or land investments, through migratory
+patterns, transhumance, shifting cultivation, or seasonal access to land or resources).
+
+Date of project inactivity
+
+The end date of the monitoring period after which GHG emission reductions or carbon dioxide removals
+are no longer sought for crediting and the project is considered inactive by the respective GHG program
+
+Dead wood
+
+Non-living woody biomass not contained in the litter, either standing, lying on the ground, or in the soil.
+Dead wood includes wood lying on the surface, dead roots, and stumps larger than or equal to 10 cm in
+diameter or any other diameter used by the host country for its UNFCCC national inventory accounting
+
+3 Adapted from United Nations Collaborative Initiative on Reducing Emissions from Deforestation and Forest
+Degradation (REDD+) (UN-REDD Programme). n.d. "Glossary." https://www.un-redd.org/glossary/customary-rights
+and the Association of Southeast Asian Nations (ASEAN). 2022. Guidelines on Recognition of Customary Tenure in
+Forested Landscapes. https://asean.org/wp-content/uploads/2022/10/ASEAN-
+Guidelines_On_CT_Recognition_V06.pdf
+
+                                                                                                                                    6
+                                                                                                                    2 Definitions
+
+Deemed savings factor
+
+A type of default factor used to estimate the GHG emission reductions or carbon dioxide removals
+associated with a unit of activity implemented by the project, such as a project activity instance
+
+Default factor
+
+A parameter value that is specified in a methodology to standardize the calculation of net GHG emission
+reductions and/or carbon dioxide removals and provide greater consistency of calculations across
+projects
+
+Deforestation
+
+The direct human-induced conversion of forest land to non-forest land
+
+Distributed mini-grid
+
+Localized grid-connected electricity generation units that facilitate the delivery of electricity to the user but
+do not displace fossil fuels from the grid or sell electricity to the grid
+
+Double claiming
+
+Any situation in which the same GHG emission reduction or carbon dioxide removal is credited or claimed
+by more than one entity towards separate mitigation targets or emissions inventories. Double claiming
+does not include nested claims such as the same reduction or removal being claimed by a business and
+the jurisdiction(s) in which it operates. Double claiming includes when a GHG emission reduction or
+carbon dioxide removal is credited through the VCS Program and the same reductions and removals or
+GHG-related benefits are also credited or claimed through an emission trading program, binding
+emissions limit, or GHG-related environmental credit system. See definitions of "emissions trading
+program," "binding emissions limit," and "GHG-related environmental credit system."
+Double counting
+
+Any situation in which the same GHG emission reduction or carbon dioxide removal is counted, claimed,
+or credited more than once. Double counting includes double issuance, double use, and double claiming.
+
+Double issuance
+
+Any situation in which the same GHG emission reduction or carbon dioxide removal is credited by two or
+more projects, or through two or more GHG programs. Double issuance includes when the same GHG
+emission reduction or carbon dioxide removal issued as a VCU by the VCS Program is also credited
+through another GHG program, and such credits have not been cancelled by the other GHG program. See
+definition of "GHG program" for further clarification of what constitutes double issuance.
+Double selling
+
+Any situation when one or more entities sell a unit representing the same GHG emission reduction or
+carbon dioxide removal, such that two or more entities would have the same interest (legal, beneficial or
+otherwise) in or to that unit at the same time. "Double sold" and "double sell" are construed accordingly
+Double use
+
+Any situation where a GHG emission reduction or carbon dioxide removal or GHG-related benefit is further
+sold, transferred, retired, used, or canceled after having already been retired or used
+
+                                                                                                                                    7
+                                                                                                                    2 Definitions
+
+Drained peatland
+
+A peatland having a lower than natural average annual water level due to accelerated water loss or
+decreased water supply resulting from human activities and constructions, both on- and off-site
+
+Durability
+
+Characteristic of a project in which carbon stored in a given carbon pool (e.g., aboveground biomass, soil,
+geologic reservoirs) is likely to remain sequestered and not be emitted through a loss event for at least
+40 years
+
+Ecosystem4
+
+A complex of plants, animals, and microorganisms interacting with one another and with their non-living
+environment, and functioning as a unit
+
+Ecosystem conversion
+
+Permanent or long-term transformation of an ecosystem into a different ecosystem type, characterized by
+substantial changes in ecological composition, structure, and function that result in loss or alteration of
+the original ecosystem services (e.g., land clearing, replacement of natural vegetation such as by crops or
+tree plantations or through vegetation clearing, permanent flooding such as by a reservoir, and drainage)
+
+Ecosystem degradation
+Reduction in an ecosystem's integrity over time, caused by an event, series of events, or persistent
+activity, either natural or anthropogenic
+
+Ecosystem integrity
+
+Ability of an ecosystem to support and sustain its natural ecological composition, function, and structure
+
+Ecosystem restoration
+
+Process of reversing ecosystem degradation to enhance ecosystem integrity toward a pre-disturbance or
+adapted state appropriate for the project context and consistent with scientific evidence
+
+Emissions trading program
+
+A voluntary or regulatory program or scheme that allows for trading in GHG credits or allowances (e.g.,
+cap-and-trade emission trading schemes, such as the Regional Greenhouse Gas Initiative (RGGI) and
+European Union Emissions Trading System, baseline-and-credit systems such as Canada's Output Based
+Pricing System)
+
+Facility
+
+A single installation, set of installations, or production processes (stationary or mobile), which can be
+defined within a geographical boundary, organizational unit, or production process
+
+Forced labor
+
+Any work for which someone has not offered himself or herself voluntarily; any work performed under
+threat of penalty; any work that is demanded as repayment for a loan or debt; any work for which the
+worker was recruited, transported, harbored, obtained, or received through the use of deception,
+
+4 Adapted from Secretariat of the CBD. 1992. "CBD Article 2" https://www.cbd.int/convention/articles?a=cbd-02
+
+                                                                                                                                    8
+                                                                                                                    2 Definitions
+
+intimidation, threat, force, or other forms of coercion for the purpose of exploitation; and any work
+performed by a prisoner that is not performed voluntarily or for which he or she does not receive pay.
+
+Forest
+
+Land with woody vegetation that meets an internationally accepted definition (e.g., UNFCCC, FAO, or IPCC)
+of what constitutes a forest, which includes threshold parameters, such as minimum forest area, tree
+height, and level of crown cover, and may include mature, secondary, and wetland forests
+
+Forest degradation
+
+Persistent reduction in canopy cover and/or carbon stocks in a forest due to human activities (e.g.,
+animal grazing, fuelwood extraction, timber removal), but that does not result in the conversion of forest
+to non-forest land and falls under the IPCC 2003 Good Practice Guidance land category of "forest
+remaining forest"
+
+Free-rider
+
+An activity that is undertaken without requiring any intervention from the carbon market but that
+nonetheless receives credit for the GHG emission reductions or carbon dioxide removals that it generates
+
+Free, prior, and informed consent (FPIC)5
+
+A safeguard to protect the rights of Indigenous peoples (IPs), as well as local communities (LCs) holding
+customary rights, that particularly relates to decision-making processes affecting IPs' and LCs' lands,
+territories, and resources. FPIC is an ongoing process where:
+
+     · consent is given voluntarily, without coercion, intimidation, manipulation, threats, bribery, or
+          undue influence ("free").
+
+     · consent is obtained at the earliest stages of project development, before key decisions are made
+          or irreversible actions are taken ("prior").
+
+     · IPs and LCs are fully and transparently informed, in a culturally appropriate manner, of all
+          relevant information about the nature, scope, lifespan, likely participants, and potential impacts
+          and assessments of a project ("informed").
+
+     · IPs and LCs can grant, condition, or withhold collective consent to any aspect of a project that
+          affects their lands, territories, and resources using their own customary decision-making
+          processes, representatives, and institutions, prior to implementation of any activities that may
+          affect them, their territories, or resources ("consent").
+
+For IPs, FPIC is a specific right recognized in the United Nations Declaration on the Rights of Indigenous
+Peoples (UNDRIP) related to sovereignty and the legal principle of self-determination.
+
+Geological carbon mineralization (GCM)
+
+GHG emission reduction or removal activities that store CO2 in underground sinks through mineralization
+processes. It relies on chemical reactions of injected CO2 with reservoir rock and fluids to immobilize and
+trap CO2 permanently as carbonates or other solids. GCM is a type of geological carbon storage.
+
+5 Adapted from United Nations Development Programme. 2022. SES Supplemental Guidance: Frequently Asked
+Questions (FAQs) on Applying Free, Prior, Informed Consent (FPIC). UNDP. https://ses-
+toolkit.info.undp.org/sites/g/files/zskgke446/files/SES%20Document%20Library/Uploaded%20October%202016/
+FINAL%20FPIC%20FAQ%20Guidance%20-%20June%2015%202022.pdf
+
+                                                                                                                                    9
+                                                                                                                    2 Definitions
+
+Geological carbon storage (GCS)
+
+GHG emission reduction or removal activities that store CO2 in underground sinks with the intention of
+permanent sequestration on geologic timescales. It includes CCS, GCM, and utilization of CO2 in
+underground reservoirs
+
+GCS pooled buffer account
+
+The account in the Verra Registry containing non-tradable GCS buffer credits for covering the risk of
+unforeseen losses in carbon stocks across the GCS project portfolio
+
+GHG emission reduction (Reduction)
+
+A long-term atmospheric benefit attributable to a project activity that reduces or avoids anthropogenic or
+natural GHG emissions into the atmosphere, net of associated project and leakage emissions. One GHG
+emissions reduction represents one metric tonne of CO2 equivalent emissions reduced.
+
+GHG program
+
+A formal or organized program, system, or arrangement for the recognition of activities leading to GHG
+emission reductions or carbon dioxide removals, and/or the crediting or issuance of instruments
+representing or acknowledging GHG emission reductions or carbon dioxide removals. Some examples of a
+GHG program are any form of GHG crediting mechanism that issues carbon credits or offsets, such as
+international and independent programs (e.g., CDM, JI, ACR, CAR, Gold Standard), and any other carbon
+crediting mechanisms or offset systems administered by government agencies, such as the Switzerland
+CO2 Attestations Crediting Mechanism and Canada's GHG Offset System.
+
+GHG-related environmental credit system
+
+A system for the crediting, issuance of instruments, or acknowledging activities that could be interpreted
+as having GHG emission reduction or carbon dioxide removal value. Examples of a GHG-related
+environmental credit system include, but are not limited to, energy attribute certificates (EAC); renewable
+energy certificates (REC); Guarantee of Origin (GO); or renewable thermal certificates (RTC).
+
+GHG statement
+A clearly identifiable, factual, and objective declaration made by the project proponent of the project's
+GHG emission reductions or carbon dioxide removal enhancements, and which provides the subject
+matter for the verification or validation body's opinion. Such a statement could be presented at a point in
+time or could cover a period of time and must be capable of consistent evaluation or measurement
+against suitable criteria by the validator or verifier
+
+Grassland
+
+An ecosystem dominated by herbaceous plants (e.g., bushlands, grassy woodlands, prairies, rangelands,
+steppes, savannahs), irrespective of human and/or animal activities such as grazing occurring on the
+land
+
+Grid-connected electricity generation
+
+The generation of electricity primarily for delivery to a national or regional grid where at least 50% of
+annual electricity generation (by quantity of energy, not capacity) is planned to be delivered to such a grid.
+Generation of electricity for on-site self-consumption, delivery to a micro-grid, distributed mini-grid, or off-
+grid consumption is not included in this definition.
+
+                                                                                                                                  10
+                                                                                                                    2 Definitions
+
+Grievance redress mechanism
+
+A formal mechanism established by the project proponent for receiving, assessing, and resolving project
+grievances raised by project stakeholders, ensuring that stakeholder concerns are addressed in a fair,
+timely, and transparent manner, including provisions against retaliation and to prevent harm to
+stakeholders
+
+Grouped project
+
+A project with multiple project activity instances that allows the inclusion of new instances after
+registration
+
+Grouped project eligibility area (Eligibility area)
+
+Area within which new project activity instances of a grouped project may be added after registration
+
+Human trafficking
+
+The process through which individuals are placed or maintained in an exploitative situation for economic
+gain. This can include recruitment, transportation, transfer, harboring, or receipt of an individual by
+means of threat or use of force or other form of coercion.
+
+Implementing partner
+
+The individual or organization operating the project or program activity (or activities) in partnership with
+the project or jurisdictional proponent, respectively
+
+Improved forest management (IFM)
+
+Activities that change forest management practices and increase carbon stock on forest lands managed
+for wood products such as saw timber, pulpwood, and fuelwood
+
+Indigenous Peoples (IPs)6
+
+Groups that comprise:
+
+     · tribal peoples whose social, cultural, and economic conditions distinguish them from other
+          sections of the national community, and whose status is regulated wholly or partially by their own
+          customs or traditions or by special laws and regulations
+
+     · peoples who are regarded as Indigenous on account of their descent from the populations which
+          inhabited a country, or a geographic region to which the country belongs, at the time of conquest
+          or colonization or the establishment of present state boundaries and who, irrespective of their
+          legal status, retain some or all of their own social, economic, cultural, and political institutions
+
+Self-identification is a fundamental criterion to identify Indigenous Peoples as there is no internationally
+recognized definition of IPs. Countries may use alternative terms, such as tribes, first peoples or nations,
+aboriginals, ethnic groups, Adivasi, and Janajati. Occupational and geographic terms such as hunter-
+gatherers, nomads, peasants, and hill people also exist and, for all practical purposes, can be used
+interchangeably with "Indigenous Peoples."
+
+6 Adapted from General Council of the International Labour Organisation (ILO). 1989. "ILO Convention No. 169 on
+Indigenous and Tribal Peoples."
+https://normlex.ilo.org/dyn/nrmlx_en/f?p=NORMLEXPUB:12100:0::NO::P12100_ILO_CODE:C169
+
+                                                                                                                                  11
+                                                                                                                    2 Definitions
+
+Initial crediting period start date
+Start date of the first project crediting period and the date on which GHG emission reductions or carbon
+dioxide removals resulting from the project activity begin to occur. Methodologies may set out criteria to
+determine initial crediting period start date.
+Initial project activity instance (Initial instance)
+Project activity instance that has either been implemented or planned in sufficient detail to enable
+assessment of baseline scenario and additionality at project validation
+Injection zone
+The geological interval in the subsurface into which a substance is injected for GCS projects
+Instance
+See definition of "project activity instance"
+Internal allocation mechanism
+The mechanism for the distribution of GHG credits and/or other benefits, established by the jurisdictional
+proponent as part of the jurisdictional REDD+ program
+Invasive species
+A non-native species whose introduction and spread by human activity either accidentally or intentionally
+may cause socio-cultural, economic, or environmental harm or harm to human health as set out in the
+Global Invasive Species Database and/or a jurisdictional registry which takes precedence over any global
+dataset
+Issuance representation
+The unilateral representation issued by the project proponent at each VCU issuance request, made in
+respect of the GHG emission reductions and/or carbon dioxide removals generated by the project, and
+which is prepared using the VCS Issuance Deed of Representation Template; or
+The unilateral representation issued by the jurisdictional proponent at each VCU issuance request, made
+in respect of the GHG emission reductions and/or carbon dioxide removals generated by the jurisdictional
+program, and which is prepared using the VCS JNR Program Issuance Deed of Representation Template
+JNR expert
+A person with expertise and experience in jurisdictional baselines and/or REDD+ programs who is
+approved by Verra for participation on expert panels for the validation/verification of jurisdictional REDD+
+programs
+JNR program description (Program description)
+The document that describes the jurisdictional baseline and/or program GHG emission reductions or
+carbon dioxide removals and that uses the VCS JNR Baseline Description Template (for jurisdictions
+registering only a jurisdictional baseline) or the VCS JNR Program Description Template (for jurisdictional
+REDD+ programs), respectively
+
+                                                                                                                                  12
+                                                                                                                    2 Definitions
+
+Jurisdiction
+
+Administrative unit such as a nation, state, province, region, department, or district, or an eco-region or
+other demarcated area. For Jurisdictional and Nested REDD+ projects, the jurisdiction is defined by the
+jurisdictional proponent, and for non-nested projects is defined by Verra.
+
+Jurisdictional and Nested REDD+ (JNR)
+
+The approach in the VCS Program by which reduced emissions from deforestation, reduced emissions
+from degradation, and carbon dioxide removals from carbon stock enhancements can be credited at the
+jurisdictional and/or nested project levels
+
+Jurisdictional approval authority
+
+The government agency, department, or organization that has control of and responsibility for reviewing
+and giving approval, or the no-objection letter, to lower-level jurisdictional REDD+ programs and/or
+projects, and that may or may not be the same entity as the jurisdictional proponent
+
+Jurisdictional baseline period
+
+The time period for which the baseline for a jurisdictional REDD+ program is valid
+
+Jurisdictional pooled buffer account
+
+The account in the Verra Registry containing non-tradable jurisdictional and nested REDD+ buffer credits
+for covering the risk of unforeseen losses in carbon stocks across the jurisdictional REDD+ program and
+REDD+ project portfolio
+
+Jurisdictional proponent
+
+The government agency, department, or organization that has overall control and responsibility for the
+jurisdictional REDD+ program, or a government agency, department, or organization that together with
+others, each of which is also a jurisdictional proponent, has overall control of or responsibility for the
+jurisdictional REDD+ program. The entity(s) that can demonstrate right to operate in respect of the
+jurisdictional REDD+ program
+
+Jurisdictional REDD+ program
+
+A program established by a national or subnational jurisdictional proponent that establishes and
+operationalizes rules and requirements to enable accounting and crediting of REDD+ policies and
+measures, implemented as GHG mitigation activities, and described in a jurisdictional program
+description. Also referred to as "program" or "jurisdictional program." A jurisdictional REDD+ program
+may establish and operationalize rules and requirements for nesting projects and lower-level
+jurisdictional programs. The VCS Program rules applicable to projects are also applicable to programs.
+
+Label (VCU label, Verra unit label)
+
+A marker on a Verra unit, representing that the unit has met the requirements of another certification or
+is eligible or approved for use under a national, sectoral, or investor-specific market
+
+Land-based accounting
+
+A method of GHG accounting in which all land in an entire geographic area or jurisdiction is included in
+the accounting through categorization of land-use types and a sampling or modeling approach sufficient
+to capture carbon stocks and changes in carbon stocks, irrespective of activity
+
+                                                                                                                                  13
+                                                                                                                    2 Definitions
+
+Land or resource rights
+
+Rights to land, territories, or natural resources within or adjacent to a project area. These rights include:
+
+     · property rights, as well as rights to access, use, exclude others from, control, market, and
+          manage resources.
+
+     · rights held by different rights holders with overlapping claims or competing claims, regardless of
+          whether the claims are recognized or fully formalized under the national legal framework (e.g.,
+          identified, mapped, documented, or registered).
+
+Large project
+
+A project that generates 300 000 tonnes of CO2e or more of GHG emissions reductions or carbon dioxide
+removals per year
+
+Large-scale commercial deforestation
+
+An area of deforestation that exceeds 1,000 ha, cleared in a single monitoring period (or, between two
+points of remotely sensed historical data), that has a single post-deforestation land use (e.g., commercial
+agriculture or timber plantation), not including areas covered by the footprint of large infrastructure (such
+as a dam) or those affected by natural disturbances (i.e., due to geological or weather-related events)
+
+Leakage
+
+Net changes in anthropogenic emissions by GHG sources that occur outside the project or program
+boundary, but are attributable to the project or program
+
+Leakage area
+
+Sum of individual leakage belts, which need not be contiguous
+
+Leakage belt
+
+Geographic area around a project area, in which activity-shifting leakage is expected to occur
+
+Leakage management zone
+
+Discrete geographic area outside of a project area, in which project activities are implemented to reduce
+the risk of activity-shifting leakage (e.g., sustainable agriculture)
+
+Listing representation
+
+  · The unilateral representation issued by the project proponent at the time of the project pipeline
+        listing request, made in respect of the project, and which is prepared using the VCS Listing
+        Representation Template; or
+
+  · The unilateral representation issued by the jurisdictional proponent at the time of the jurisdictional
+        baseline or program listing request, made in respect of the jurisdictional baseline or program, and
+        which is prepared using the VCS JNR Baseline Listing Deed of Representation Template or the VCS
+        JNR Program Listing Deed of Representation Template, respectively
+
+Litter
+
+Non-living biomass, with a size less than a minimum threshold diameter (e.g., 10 cm) chosen by the host
+country for its UNFCCC national inventory accounting, lying dead, in various states of decomposition
+above the mineral or organic soil, including litter, fumic, and humic layers. Live fine roots (of less than the
+
+                                                                                                                                  14
+                                                                                                                    2 Definitions
+
+threshold diameter for belowground biomass) are included in litter where they cannot be distinguished
+from it empirically
+Local communities (LCs)7
+Groups that meet all of the following conditions:
+
+     · Traditionally hold and use lands and resources collectively under customary and/or statutory
+          tenure
+
+     · Are socially bound by a common identity and a shared interest in local resources for cultural,
+          livelihood, and economic advancement, whether they live in a specified physical area or not (e.g.,
+          transhumant or nomadic)
+
+     · Do not self-identify as Indigenous Peoples
+Long-term carbon pool
+A carbon pool where carbon stocks are maintained for more than 100 years but may be regularly
+exchanged with atmospheric carbon (e.g., stable forests or biochar)
+Long-Term Monitoring System (LTMS)
+System for remotely monitoring agriculture, forestry, and other land use (AFOLU) projects, detecting loss
+events, and quantifying reversals
+Loss event
+In an AFOLU project or jurisdictional REDD+ program, an event or group of events that results in a loss of
+carbon stock from pools included in a project or program boundary, where the loss is expected to be
+maintained under the project scenario and is equivalent to:
+· more than 5% of previously verified net GHG emission reductions in an AFOLU project or jurisdictional
+
+     REDD+ program that generates GHG emission reductions (e.g., resulting from illegal logging in the
+     project area of a logged to protected forest (LtPF) project, natural disturbances like fire and
+     hurricanes in a REDD project area, construction of roads or other infrastructure not included in the
+     baseline of a jurisdictional program)
+· more than 5% of previously verified net carbon dioxide removals in an AFOLU project that generates
+     carbon dioxide removals (e.g., resulting from illegal logging or fire in a planted forest, increased tillage
+     in an ALM project where tillage had previously been reduced)
+In a GCS project, an event that constitutes a non-negligible CO2 containment loss
+Loss event report
+The document that describes and records a loss event using the Loss Event Report Template
+
+7 Adapted from Larson A., A. Frechette, H. Ojha, et al. 2022. "Land Rights of Indigenous Peoples and Local
+Communities." In The Land Gap Report, edited by K. Dooley, H. Keith, A. Larson, et al.
+https://landgap.org/downloads/2022/Land-Gap-Report_Chapter-4.pdf
+
+                                                                                                                                  15
+                                                                                                                    2 Definitions
+
+Loss event representation
+· The unilateral representation issued by the project proponent prepared using the VCS Loss Event
+
+     Deed of Representation Template and made in respect of the carbon stock loss estimate in a loss
+     event report; or
+· The unilateral representation issued by the jurisdictional proponent prepared using the VCS JNR
+     Program Loss Event Deed of Representation Template and made in respect of the carbon stock loss
+     estimate in a loss event report
+Marginalized people8
+People within a given culture, context, and history who face systemic and longer-term discrimination or
+exclusion from societal benefits due to their identity (e.g., due to age, sex, gender, ethnicity, race, religion,
+or belief)
+Market leakage evaluation
+The evaluation by the project or jurisdictional proponent of the project's or program's market leakage
+impacts and discount factor, documented in the project description, program description, or monitoring
+report, as applicable
+Materiality
+The concept applied to determine if errors, omissions, and misstatements in information could affect the
+GHG statement and influence decisions resulting from it
+Methodology
+A specific set of criteria and procedures, which apply to specific project activities, for identifying the
+project boundary, determining the baseline scenario, demonstrating additionality, quantifying net GHG
+emission reductions and/or carbon dioxide removals, and specifying the monitoring procedures
+Methodology development and review process
+The process by which new or revised methodologies, modules, and tools are developed and reviewed in
+the VCS Program
+Methodology deviation
+A deviation from the criteria and procedures for monitoring or measurement set out in a methodology
+applied to the project
+Methodology revision
+A revision to the criteria and procedures of an existing methodology
+Micro-grid
+A localized grid that facilitates the delivery of electricity to discrete and often remote sets of infrastructure
+that do not otherwise have reliable access to electricity
+
+8 Adapted from United Nations Economic and Social Commission for Western Asia (UN ESCWA). "Glossary."
+https://www.unescwa.org/sd-glossary/marginalized-groups
+
+                                                                                                                                  16
+                                                                                                                    2 Definitions
+
+Model
+A formula or set of formulae that uses parameters and input values to establish the value of one or more
+output variables
+Module
+A set of criteria and procedures that apply to specific project activities and are used to perform a specific
+task in conjunction with a methodology. Various methodologies may refer to the same module.
+Monitoring report
+· The document that records data to allow the assessment of the GHG emission reductions or carbon
+
+     dioxide removals generated by the project during a given time period in accordance with the
+     monitoring plan set out in the project description, and which is prepared using the VCS Monitoring
+     Report Template or an approved combined monitoring report template available on the Verra
+     website; or
+· The document that records data to allow the assessment of the GHG emission reductions or carbon
+     dioxide removals generated by the program during a given time period in accordance with the
+     monitoring plan set out in the jurisdictional program description, and which is prepared using the VCS
+     JNR Monitoring Report Template available on the Verra website
+Monoculture
+A crop or a population of a single species
+Native species
+A species that has been observed in the region, is naturally occurring and self-sustaining as
+demonstrated by peer-reviewed literature, expert judgement, or government registry
+Natural disturbance
+Non-anthropogenic events or non-anthropogenic circumstances that cause significant emissions from
+forests and are beyond the control of, and not materially influenced by, a project or jurisdictional
+proponent, such as wildfires, insect and disease infestations, extreme weather events, and/or geological
+disturbances. Harvesting and prescribed burning are not considered natural disturbances.
+Nested project
+A registered REDD+ project, that is not currently subject to a grandparenting period, and that is located
+within a jurisdiction covered by a registered jurisdictional REDD+ program
+Nested subnational jurisdiction
+A subnational jurisdiction that is located within a national jurisdiction covered by a jurisdictional REDD+
+program that is also registered with the VCS Program
+Net GHG emission reductions and carbon dioxide removals (Net reductions and removals)
+Total GHG emission reductions and carbon dioxide removals net of project and leakage emissions, and
+including deductions for uncertainty where relevant
+
+                                                                                                                                  17
+                                                                                                                    2 Definitions
+
+Non-native species
+
+A species that is not endemic to the region, or is not projected to exist in the ecosystem, as demonstrated
+by peer-reviewed literature, expert judgement, or government registry
+
+Non-negligible CO2 containment loss
+
+Movement of CO2 from a GCS site(s) to the atmosphere or above the injected zone, greater than 0.001%
+(one part in 100,000) of accumulated injected volumes, or 1 tCO2, whichever is higher
+
+Non-permanence risk
+
+The risk that carbon stored in a carbon pool (e.g., above-ground biomass, soil, geologic reservoirs) is
+released back into the atmosphere as CO2 or CH4. This risk may be associated with natural events such
+as fires, pests, extreme weather events, leaks from geologic reservoirs, or human-caused events such as
+tree harvests or changes in soil management practices
+
+Non-permanence risk analysis
+
+· The assessment of the risk of a potential loss in carbon stock in the project over a period of 100
+     years, prepared by the project proponent using the VCS Non-Permanence Risk Report Template; or
+
+· The assessment of the risk of a potential loss in carbon stock in the jurisdictional program over a
+     period of 100 years, prepared by the jurisdictional proponent using the VCS JNR Non-Permanence
+     Risk Report Template
+
+Non-project area
+
+Forest area (or area converted to forest or otherwise revegetated) within a jurisdiction, but outside project
+boundaries or nested subnational jurisdiction boundaries, that is included in the accounting of GHG
+emissions and reductions and/or removals (e.g., areas where reductions or removals are generated
+through implementation of government policies and programs, rather than by projects or activities
+implemented within nested subnational jurisdictions)
+
+No-objection letter
+
+A written letter or other written communication from the jurisdictional approval authority of the higher-
+level jurisdiction stating that it does not object to a specific (lower-level) jurisdictional REDD+ program
+element or project being submitted for registration with the VCS Program
+
+Official translation
+
+A translation by a member of a member body of the International Federation of Translators
+
+Overlapping claims to land or resource rights (Overlapping claims)9
+
+Where two or more parties claim different and co-existing land or resource rights in the same area (e.g.,
+one party may have a property right, another may have a license or a concession title granted by a
+government, and a further party may have a customary right with respect to the land)
+
+Partial release representation
+
+The deed issued by project proponents and the Verra Registry, made in respect of a project proponent
+leaving a project, and which is prepared using an applicable template (e.g., Deed of Partial Release in
+
+9 Adapted from FAO. 2002. Land Tenure and Rural Development. https://www.fao.org/4/y4307e/y4307e00.pdf
+
+                                                                                                                                  18
+                                                                                                                    2 Definitions
+
+Respect of VCS Listing Deed of Representation Template, Deed of Partial Release in Respect of VCS
+Registration Deed of Representation Template)
+Peatland
+An area with a layer of naturally accumulated organic material (peat) that meets an internationally
+accepted threshold (e.g., host-country, FAO, or IPCC) for the depth of the peat layer and the percentage of
+organic material composition. Peat originates because of water saturation. Peat soil is either saturated
+with water for long periods or artificially drained. Common names for peatland include mire, bog, fen,
+moor, muskeg, pocosin, and peat swamp (forest)
+Performance benchmark
+A benchmark against which the performance of individual projects is assessed to determine additionality
+and/or the crediting baseline
+Performance benchmark metric
+The indicator, specified in terms of tonnes of CO2e per unit of output, tonnes of CO2e per unit of input, or
+as a sequestration metric, used to define the performance benchmark
+Performance method
+A methodological approach that establishes a performance benchmark to determine additionality and/or
+the crediting baseline in accordance with the VCS Program rules
+Pore space tenure
+The legal instrument that provides the exclusive subsurface right to inject CO2 into the target geologic
+reservoir for permanent CO2 storage in a GCS project
+Pore space tenure holder
+The person(s) or organization(s) legally entitled to pore space tenure for a GCS project
+Post-closure period
+The period extending indefinitely after GCS storage site closure
+Post-injection assessment period (PIAP)
+The period extending 1000 years from the end of injection, used as the timeframe over which GCS
+permanence is assessed
+Post-injection site care (PISC)
+The activities required at a GCS storage site during the closure and post-closure monitoring periods,
+typically including monitoring, any site remediation, and closure activities.
+Post-injection site care period (PISC period)
+The period extending from the end of injection at a GCS storage site to the end of post-closure monitoring
+Program activity
+The specific set of REDD+ policies and measures, specified by the jurisdictional REDD+ program, that
+alter the conditions identified in the baseline scenario and which result in GHG emission reductions or
+carbon dioxide removals
+
+                                                                                                                                  19
+                                                                                                                    2 Definitions
+
+Program crediting period
+See definition of "crediting period"
+Program initial crediting period start date
+See definition of "initial crediting period start date"
+Program sensitive information
+Internal policy decisions, classified, financial, commercial, scientific, technical, or other information
+whose public disclosure could reasonably be expected to undermine or negatively affect the development
+and/or implementation of a project or program, or damage national security
+Program start date
+See definition of "project start date"
+Project
+An initiative established by one or more project proponents to implement project activities that reduce
+GHG emissions or remove carbon dioxide and encompassing all associated actions necessary for
+participation in a GHG program
+Project activity
+A specific set of technologies, measures, and/or outcomes, set out in a methodology applied to a project,
+that alter the conditions identified in the baseline scenario, represent a change at the project site, and
+result in GHG emission reductions or carbon dioxide removals. Equivalent to "program activity"
+Project activity instance (Instance)
+Smallest standalone unit of a project activity that enables the generation of GHG emission reductions or
+carbon dioxide removals in conformance to the applied methodology (e.g., cookstove, home solar system,
+landfill gas facility, discrete management unit of forest, farm, grassland, or wetland)
+Project area
+Geographic area in which project activities leading to the generation of GHG emission reductions or
+carbon dioxide removals are implemented. A project area does not include roads, water bodies,
+waterways, settlements, or other areas where project activities are not implemented.
+Project boundary
+Specification of GHG sources, sinks, and reservoirs associated with the project and baseline scenarios
+
+Project crediting period
+See definition of "crediting period"
+Project initial crediting period start date
+See definition of "initial crediting period start date"
+
+                                                                                                                                  20
+                                                                                                                    2 Definitions
+
+Project description
+Document that describes the project's GHG emission reduction or carbon dioxide removal activities and
+that uses the VCS Project Description Template, an approved combined project description template, or a
+digital template via the Verra Project Hub
+
+Project description deviation
+
+A deviation from the project design, procedures, and other specifications set out in the project description
+
+Project documents
+
+The documents required to register the project and/or issue VCUs, as set out in the Registration and
+Issuance Process
+
+Project grievance10
+
+A project-related issue, concern, problem, or claim (perceived or actual) that an individual or group wants
+to have addressed and resolved (e.g., issues regarding overlapping claims or competing claims to land or
+resource rights, or conflicts)
+
+Project lifetime
+
+The time period over which project activities are implemented
+
+Project longevity
+
+The number of years, beginning from the project start date, that project activities will be maintained. In
+some cases, project longevity period can be longer than a project's crediting period
+Project method
+
+A methodological approach that uses a project-specific approach for the determination of additionality
+and/or the crediting baseline in accordance with the VCS Program rules
+
+Project pipeline
+The list of projects on the Verra Registry, which are either under development or under validation
+
+Project proponent
+
+Individual or organization that has overall control of, and responsibility and accountability for, a project, or
+an individual or organization that together with others, each of which is also a project proponent, has
+overall control of, and responsibility and accountability for a project. Such entities can demonstrate the
+right to operate and the right to reductions and removals.
+
+Project proponent representation
+
+A unilateral deed of representation issued by the project proponent(s) and/or individuals or organizations
+accorded certain rights in respect of a project
+
+Project sensitive information
+See definition of "program sensitive information."
+
+10 Adapted from ICAT. 2020. Stakeholder Participation Guide, edited by J. C. Durbin and S. Vincent. CCBA, Verra, and
+ICAT. https://climateactiontransparency.org/wp-content/uploads/2020/04/Stakeholder-Participation-Assessment-
+Guide.pdf
+
+                                                                                                                                  21
+                                                                                                                    2 Definitions
+
+Project start date
+
+The date on which the first significant action to implement the project activity is undertaken. Where the
+applied methodology does not set out criteria to determine project start date, the first significant action to
+implement the project activity is:
+
+     · execution of the first written agreement or legally binding document committing to implement or
+          construct the project activity (e.g., contract for major project expenditures) or
+
+     · where the project activity does not involve such commitments, the first physical action
+          undertaken to implement the project activity.
+
+Equivalent to "program start date"
+Project worker
+
+A person directly working on project implementation in return for compensation (financial or otherwise),
+including employees (in managerial and operational positions), contracted workers, sub-contracted
+workers, and community members
+
+Proxy
+
+A parameter that is monitored or measured to determine the value of a strongly correlated parameter
+that is not monitored or measured
+
+Reduced emissions from deforestation and degradation (REDD)
+
+Activities that reduce GHG emissions by slowing or stopping conversion of forests to non-forest land
+and/or reduce the degradation of forest land where forest biomass is lost
+
+REDD+
+
+Activities that reduce GHG emissions from deforestation and/or degradation by slowing or stopping
+conversion of forests to non-forest land and/or reducing the degradation of forest land where forest
+biomass is lost; and/or activities that enhance carbon stocks through improved forest management
+and/or afforestation, reforestation or revegetation
+
+Reference region
+
+Region in which historical and current deforestation and degradation quantities and trends are
+ascertained to predict future deforestation and degradation quantities in the baseline scenario
+
+Reforestation
+
+The direct human-induced conversion of non-forested land to forested land through planting, seeding
+and/or the human-induced promotion of natural seed sources on land that was once forested but has
+been converted to non-forested land
+
+Registration representation
+
+· The unilateral representation issued by the project proponent at the time of the project registration
+      request, made in respect of the project, and which is prepared using the VCS Registration Deed of
+      Representation Template; or
+
+· The unilateral representation issued by the jurisdictional proponent at the time of the program
+      registration request, made in respect of the jurisdictional baseline or program, and which is prepared
+
+                                                                                                                                  22
+                                                                                                                    2 Definitions
+
+      using the VCS JNR Baseline Registration Deed of Representation Template or the JNR Program
+      Registration Deed of Representation Template, respectively
+Regulatory surplus
+For high-income countries,11 project activities are not mandated by any law or regulatory framework. For
+all other countries, project activities are not mandated by any systematically enforced law or regulatory
+framework.
+Remedial liability
+The responsibilities and resourcing associated with any site remediation activities and/or costs
+Remote sensing (RS)
+The use of an instrument, such as a radar device or camera, to scan the earth from a distance in order to
+collect data (e.g., for forest inventory or monitoring)
+Renewable biomass
+Biomass produced or harvested in a manner that maintains stable or increasing carbon stocks over time;
+does not negatively impact existing ecosystems or food and water security; maintains land use; and
+meets all relevant regulations
+Reservoir model
+A model of the subsurface for GCS projects which incorporates geological characteristics of the storage
+reservoir
+Retirement
+The permanent removal of a VCU from circulation in the Verra Registry system to denote it has been used
+by the owner in a claim.
+Revegetation
+A direct human-induced activity to increase carbon stocks of woody biomass on sites through the
+establishment of vegetation that covers a minimum area of 0.05 hectares, does not meet the definitions
+of afforestation and reforestation, and falls under the IPCC 2003 Good Practice Guidance land category
+of non-forest remaining non-forest
+Reversal
+A situation where the net reductions and removals in any monitoring period are negative. The size of a
+reversal is calculated as the difference between the current total to-date net reductions and removals of
+a project or program and the total to-date net reductions and removals of the project or program at the
+previous verification.
+Rewetting
+The elevation of the average annual water table in drained peatland by partially or entirely reversing the
+existing drained state
+
+11 As classified by the World Bank, available at:
+https://datahelpdesk.worldbank.org/knowledgebase/articles/906519-world-bank-country-and-lending-groups
+
+                                                                                                                                  23
+                                                                                                                    2 Definitions
+
+Right to operate
+
+The legal right, and where customary rights exist, consent from customary rights holders, to control and
+operate project activities and access the project area
+
+Right to reductions and removals
+
+The full and exclusive legal and equitable title and rights to all and any GHG emission reductions or
+carbon dioxide removals generated by a project during the crediting period for which a project proponent
+is eligible to request VCU issuance. Where customary rights exist, such legal and equitable title includes
+consent from any customary rights holders that fully and validly transfers to the issuance representor
+those rights to the reductions and removals generated.
+
+Safeguard
+
+A measure designed to prevent negative environmental, social, and governance impacts of projects,
+ensuring that climate mitigation efforts do no harm and uphold human rights (including Indigenous
+Peoples' rights, where relevant)
+Scope 3 emissions double claiming
+
+A situation where an organization reports the same GHG emission reductions or carbon dioxide removals
+in its Scope 3 emissions statement as are also associated with a project registered with the VCS Program
+
+Scope 3 inventory emissions
+
+All indirect GHG emissions (including both upstream and downstream emissions not included in Scope 2)
+that occur in an organization's Scope 3 emissions inventory boundary, as defined in the Corporate Value
+Chain (Scope 3) Accounting and Reporting Standard12
+
+Sequestration zone
+
+The subsurface intended for permanent storage of CO2 for GCS projects
+
+Short-term carbon pool
+
+A carbon pool that is not a long-term carbon pool (e.g., biomass residues from agricultural or industrial
+activities)
+
+Shrubland
+
+Areas dominated by shrubs, with a density of trees too low to meet an internationally accepted definition
+of forest, including chaparral, scrubland, heathland and thickets
+
+Site
+
+The location where a Project Proponent (or a representative on their behalf or at their direction) carries
+out work or a service. A site may include one or several facilities
+
+Soil organic carbon
+
+Organic carbon in mineral and organic soils (including peat) to a specified depth chosen by the host
+country for its UNFCCC national inventory accounting and applied consistently through the crediting
+
+12Greenhouse Gas Protocol. 2011. "Corporate Value Chain (Scope 3) Accounting and Reporting Standard."
+https://ghgprotocol.org/sites/default/files/standards/Corporate-Value-Chain-Accounting-Reporing-
+Standard_041613_2.pdf
+
+                                                                                                                                  24
+                                                                                                                    2 Definitions
+
+period. Live fine roots (of less than the threshold diameter limit for belowground biomass) are included
+with soil organic matter where they cannot be distinguished from it empirically. In organic soils, soil
+organic carbon encompasses the entire depth of the organic layer (i.e., up to the depth of the mineral
+substrate). In the case of peatland, this depth can be several meters
+
+Stakeholder
+
+Any individual, organization, or entity that can potentially affect or be affected by a project
+
+Stakeholder engagement13
+
+A continual process that encompasses activities and interactions with stakeholders with the objective of
+building trust, mitigating risks, and enhancing a project's legitimacy and sustainability. Stakeholder
+engagement begins prior to the project start date and occurs throughout the project lifetime.
+
+Stakeholder group
+
+A group of individual stakeholders who derive similar income, livelihood, well-being and/or cultural values
+from a project, or who might be similarly impacted by the project, and whose values are different from
+those of other groups (e.g., Indigenous Peoples, small communities that have homogeneous patterns of
+social organization, political structure, and livelihoods, women, youth, other social, cultural, and economic
+groups). Stakeholder groups are often segments of a population rather than officially designated
+assemblages.
+
+Stakeholder groups may include, for example, people living in the vicinity of the project, local
+municipalities, project employees, communities using resources in the project area, the operator of a
+plant or factory, and local environmental organizations.
+
+Stakeholder private and confidential information
+
+Information or data received during FPIC and stakeholder engagement that relates to security,
+livelihoods, or rights violations and that, if compromised, misused, or disclosed without authorization,
+could cause harm (directly or indirectly), discrimination, or other negative consequences for an individual
+or organization
+
+Standardized method
+
+A methodological approach that standardizes elements of additionality and/or the crediting baseline, for
+a given class of project activity, via a performance method or activity method
+
+Storage site
+
+The surface facilities, wells, subsurface, and geologic formations that allow pore spaces in a geologic
+reservoir to be assessed and used for permanent CO2 storage in a GCS project
+
+Storage site closure
+A milestone at the end of a GCS project's life cycle, denoted by the end of CO2 injection and demarcating
+the time when closure activities initiate. Storage site closure is determined by the regulating authority in
+the jurisdiction where the storage site(s) is/are located
+
+13 Adapted from UNDP. Social and Environmental Safeguards ­ Stakeholder Engagement Guidance Note.
+https://ses-
+toolkit.info.undp.org/sites/g/files/zskgke446/files/SES%20Document%20Library/Social%20and%20Environmental
+%20Standards/UNDP%20SES%20Stakeholder%20Engagement%20GN_Oct2017.pdf
+
+                                                                                                                                  25
+                                                                                                                    2 Definitions
+
+Storage site operator
+The person(s) or organization(s) that have approval for drilling, constructing, and operating a storage site
+issued from the regulating authority in the jurisdiction where the GCS site(s) is located
+Subnational jurisdiction
+An administrative- or other sub-unit within a country, such as a state, province, region, department,
+district, or an eco-region or other defined area, specified in the jurisdictional program description
+Supply chain
+A network of organizations (e.g., manufacturers, wholesalers, distributors, and retailers) involved in the
+production, delivery, and sale of a product or service to the consumer. Supply chain entities include
+organizations upstream and downstream of the products whose GHG emission footprints are impacted by
+project activities.
+Sustainable development contribution (SD contribution)
+A demonstration of how project activities, or additional activities implemented by the project proponent,
+contribute to sustainable development, as defined by and tracked against the United Nations Sustainable
+Development Goals (SDGs)
+Tool
+A set of criteria and procedures that apply to specific project activities and are used to perform a specific
+analysis in conjunction with a methodology. Various methodologies may refer to the same tool.
+Unavoidable reversal
+A reversal over which the project proponent has no control, that occurs in an AFOLU project (e.g., due to
+natural disasters such as hurricanes, earthquakes, flooding, drought, fires, tornados and winter storms,
+human-induced events such as acts of terrorism, crime, or war). Encroachment by outside actors (e.g.,
+logging, mining, or fuelwood collection) may be considered unavoidable where it is demonstrably and
+unambiguously unforeseeable and out of the project proponent's control.
+Uncertainty
+Uncertainty is a parameter associated with the result of measurement that characterizes the dispersion
+of the values that could be reasonably attributed to the measured amount
+Underground source of drinking water (USDW)
+An aquifer or source of water with a quantity sufficient to supply a water system for local use cases, and
+for human consumption with less than 10 000 mg/L total dissolved solids
+Upstream displacement activity
+A project activity that reduces GHG emissions upstream of where the project activity is implemented, such
+as through product substitution, fuel switching, decreased demand for a given activity, product, or
+service, or other forms of displacement (e.g., displacing high-carbon products with lower-carbon
+alternatives). This does not include project activities that displace electricity from an electrical grid
+
+                                                                                                                                  26
+                                                                                                                    2 Definitions
+
+Validation
+
+The independent assessment of the project by a validation/verification body that determines whether the
+project conforms to the VCS Program rules and evaluates the reasonableness of assumptions, limitations,
+and methods that support a claim about the outcome of future activities
+
+Validation report
+
+The written report of validation prepared by the validation/verification body in accordance with the VCS
+Program rules which contains the validation opinion
+
+Validation representation
+
+· The deed issued by the validation/verification body, referencing the validation report to which it
+      relates, containing a unilateral representation that it has validated the project's conformance to the
+      applicable VCS Program rules, and which is prepared using the VCS Validation Deed of
+      Representation Template; or
+
+· The deed issued by the validation/verification body, referencing the validation report to which it
+      relates, containing a unilateral representation that it has validated the jurisdictional baseline's or
+      program's conformance to the applicable VCS Program rules, and which is prepared using the VCS
+      JNR Baseline Validation Deed of Representation Template or the VCS JNR Program Validation Deed
+      of Representation Template, respectively
+
+Validation/verification body (VVB)
+
+An organization approved by Verra to act as a validation/verification body in respect of providing
+validation and/or verification services in accordance with the VCS Program rules
+
+VCS Program
+
+The GHG program operated by Verra which establishes rules and requirements that operationalize the
+VCS Standard to enable the validation of GHG projects and programs, and the verification of GHG
+emission reductions and carbon dioxide removals
+
+VCS Program rules
+
+The rules and requirements set out in the VCS Program Guide, the VCS Standard and the other VCS
+Program documents; such rules and requirements may be updated periodically
+
+VCU issuance levy
+
+The fee charged by Verra at the time of VCU issuance to cover the administration costs of the VCS
+Program
+
+Verification
+
+The periodic ex-post independent assessment by a validation/verification body of the GHG emission
+reductions and carbon dioxide removals that have occurred as a result of the project during the
+monitoring period. The assessment is based on historical data and information to determine whether the
+claim is materially correct and conforms to specified requirements and is conducted in accordance with
+the VCS Program rules
+
+Verification period
+
+The time period specified in a verification report during which the GHG emission reductions or carbon
+dioxide removals were generated and have been verified by a validation/verification body
+
+                                                                                                                                  27
+                                                                                                                    2 Definitions
+
+Verification report
+
+The written report of the verification prepared by the validation/verification body in accordance with the
+VCS Program rules
+
+Verification representation
+
+     · The deed issued by the validation/verification body, referencing the verification report to which it
+          relates, containing a unilateral representation that it has verified the relevant GHG emission
+          reductions or removal claims in accordance with the applicable VCS Program rules, and which is
+          prepared using the VCS Verification Deed of Representation Template; or
+
+     · The deed issued by the validation/verification body, referencing the verification report to which it
+          relates, containing a unilateral representation that it has verified the relevant GHG emission
+          reductions or removal claims in accordance with the applicable VCS Program rules, and which is
+          prepared using the VCS JNR Program Verification Deed of Representation Template
+
+Verified Carbon Unit (VCU)
+
+A unit issued by and held in the Verra Registry representing the right of an account holder in whose
+account the unit is recorded to claim the achievement of a GHG emission reduction or removal in an
+amount of one (1) metric tonne of CO2 equivalent that has been verified by a validation/verification body
+in accordance with the VCS Program rules. Recordation of a VCU in the account of the holder at the Verra
+Registry is prima facie evidence of that holder's entitlement to that VCU
+
+Verra Project Hub
+
+Online platform (https://projecthub.verra.org/) that hosts a comprehensive set of applications and tools
+for listing, registering, and managing projects in Verra's programs
+
+Verra Registry
+
+The platform that records all projects and programs (listed and registered) and VCUs issued by the VCS
+Program. Provides public access to all project, program, and VCU information, including retirement and
+tracking of the AFOLU and jurisdictional pooled buffer accounts, and provides project and jurisdictional
+proponents with the ability to list and register projects and programs, and issue, hold and retire VCUs
+
+Verra unit
+
+A unit issued or assigned by and held in the Verra Registry representing the right of an account holder in
+whose account the unit is recorded to claim the achievement of a specific type of environmental or social
+benefit (i.e., SD VISta Asset, Verified Carbon Unit, Waste Collection Credit, or Waste Recycling Credit)
+
+Verra website
+
+The Verra website: www.verra.org
+
+Vertically integrated project
+
+A GCS project in which the operator of the storage site(s) and the pore space tenure holder is the project
+proponent and is the controlling entity for all the capture site(s) and transport infrastructure associated
+with the project
+
+Vintage
+
+The set of GHG emission reductions or carbon dioxide removals generated by a project or program during
+a single vintage period
+
+                                                                                                                                  28
+                                                                                                                    2 Definitions
+
+Vintage period
+The time period in which a particular set of GHG emission reductions or carbon dioxide removals are
+generated. A vintage period is a calendar year, or where the start or end date of a verification period
+occurs mid-year, the vintage period is a portion of the calendar year, starting on 1 January or ending on
+31 December.
+Violent conflict14
+A disagreement between parties over fundamental needs, values, or interests, expressed through
+violence or the use or threat of armed force. Violent conflict varies in its form (direct violence or structural
+violence), location (confined to specific geographic areas or widespread), actors (some groups may be
+involved in combat, while others are displaced by it), and over time (particularly for protracted violent
+conflicts).
+Vulnerable people15
+People who are susceptible to harm or risks due to circumstances, temporary states, or inherent
+attributes (e.g., elderly people, mentally and physically disabled people, children and youth, internally
+displaced people and returning refugees, HIV/AIDS-affected individuals and households)
+Wetland
+Land that is inundated or saturated by water for all or part of the year (e.g., peatland), at such frequency
+and duration that under natural conditions they support organisms adapted to poorly aerated and/or
+saturated soil. Wetlands (including peatlands) cut across the different AFOLU categories. Project activities
+may be specific to wetlands or may be combined with other AFOLU activities
+Wood products
+Products derived from wood harvested from a forest, including fuelwood and logs and the products
+derived from them such as sawn timber, plywood, wood pulp and paper
+WRC buffer zone
+A discrete geographic area within or outside the project area of a WRC project that is established to
+mitigate potential negative impacts to the hydrology in the project area
+
+14 Adapted from UNDP. 2012. Toolkit and Guidance for Preventing and Managing Land and Natural Resources
+Conflict. https://www.un.org/en/land-natural-resources-conflict/pdfs/GN_Land%20and%20Conflict.pdf
+15 Adapted from UN ESCWA. "Glossary." https://archive.unescwa.org/vulnerable-groups
+
+                                                                                                                                  29
+3 ACRONYMS                                                     3 Acronyms
+                                                                            30
+AcoGS   Avoiding conversion of grasslands and shrublands
+AFOLU   Agriculture, forestry, and other land use
+ALM     Agricultural land management
+AOR     Area of review
+ARR     Afforestation, reforestation, and revegetation
+CCS     Carbon capture and storage
+CDM     Clean Development Mechanism
+CID     Climatic impact driver
+FAO     Food and Agriculture Organization
+FPIC    Free, prior, and informed consent
+GCM     Geological carbon mineralization
+GCS     Geological carbon storage
+GHG     Greenhouse gas
+IFM     Improved forest management
+IPs     Indigenous Peoples
+IPCC    Intergovernmental Panel on Climate Change
+ISO     International Organization for Standardization
+JI      Joint Implementation program
+JNR     Jurisdictional and Nested REDD+
+LCs     Local communities
+LtPF    Logged to protected forests
+PIAP    Post-injection assessment period
+PISC    Post-injection site care
+REDD    Reduced emissions from deforestation and degradation
+RS      Remote sensing
+UNFCCC  United Nations Framework Convention on Climate Change
+USDW    Underground sources of drinking water
+VCS     Verified Carbon Standard
+VCU     Verified Carbon Unit
+VVB     Validation/verification body
+WRC     Wetland restoration and conservation
+                                                                Document History
+
+DOCUMENT HISTORY
+
+Version Date  Comment
+
+v5.0  16 Dec 2025 Updated version released under VCS Version 5
+
+                                                                31
+ABOUT VERRA
+
+Verra sets the world's leading standards for climate action and sustainable development. We build
+standards for activities as diverse as reducing deforestation, improving agricultural practices,
+addressing plastic waste, and achieving gender equality. We manage programs to certify that these
+activities achieve measurable high-integrity outcomes. We work with governments, businesses, and civil
+society to advance the use of these standards, including through the development of markets.
+Everything we do is in service of increasingly ambitious climate and sustainable development goals,
+and an accelerated transition to a sustainable future.
+Verra's certification programs include the Verified Carbon Standard (VCS) Program and its Jurisdictional
+and Nested REDD+ (JNR) framework, the Climate, Community & Biodiversity Standards (CCBS)
+Program, the Sustainable Development Verified Impact Standard (SD VISta) Program, and the Plastic
+Waste Reduction Program.
+
+                                                                                                                                  32
+

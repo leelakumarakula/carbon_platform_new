@@ -1,0 +1,1279 @@
+ ACTIVITY MODULE METHODOLOGY
+
+SOIL ORGANIC CARBON ACTIVITY MODULE FOR
+ZERO TILLAGE
+
+SDG 13
+
+PUBLICATION DATE 20.02.2024
+VERSION 1.0
+NEXT PLANNED UPDATE 19.02.2027
+RELATED DOCUMENTS
+­ v. 1.0 Soil Organic Carbon Framework Methodology
+
+CONTACT DETAILS
+
+The Gold Standard Foundation
+International Environment House 2
+Chemin de Balexert 7-9
+1219 Châtelaine Geneva, Switzerland
+Tel +41 22 788 70 80
+Email help@goldstandard.org
+
+                                        Climate Security and Sustainable Development
+METHODOLOGY - SOC Activity Module for Zero Tillage v 1.0
+
+SUMMARY
+
+This Soil Organic Carbon (SOC) Activity Module focuses on zero tillage/no-till practice,
+an agricultural technique for growing crops or pasture without mechanically disturbing
+the soil through tillage. It is applicable globally.
+
+Zero tillage is an effective greenhouse gas (GHG) mitigation approach which
+accumulates and avoids emission of SOC (Ogle et al. 2005 and Derpsch et al. 2010).
+Cooper et al. (2021) assessed carbon change to a soil depth of 50 centimetres (cm)
+and demonstrated that long-term zero tillage has the dual benefits of mitigating
+potential soil carbon dioxide (CO2) fluxes, increasing methane (CH4) oxidation, and
+enhancing carbon storage through a reduction in soil porosity whilst reducing the risk
+of runoff during heavy rainfall through development of a highly effective, well-
+connected porosity. Ogle et al. (2019) report a sufficient amount of SOC in the topsoil
+to enhance the amount of SOC across the entire soil profile in sandy soils of tropical
+moist/wet, tropical dry, warm temperate moist, and cool temperate moist climates as
+well as loamy, silty, and clayey soils in tropical moist/wet, warm, and cool temperate
+moist climates.
+
+Of particular significance to farmers is the role of long-term zero tillage in improving
+soil quality through:
+
+    - increased microbial biomass and earthworm activity (Cooper et al. 2021, Pelosi
+         et al. 2009, Stroud, J. L. 2020),
+
+    - prevention of soil erosion (Nearing et al. 2017, Derpsch et al. 2010),
+    - improvement of the nutrient cycling (Triplett and Dick 2008),
+    - conservation of water in the soil through improving infiltration and reducing
+
+         evaporation (Palm et al. 2014, Pittelkow et al. 2015a),
+    - creation of greater aggregate stability (Fernandez et al. 2010), and
+    - contribution to ensuring food security (Ogle et al. 2019).
+In addition, GHG emissions are reduced through the decreased use of fossil fuels in field
+preparation.
+
+In line with the Gold Standard for the Global Goals Soil Organic Carbon Framework
+Methodology (hereafter SOC Framework Methodology), this SOC Activity Module only
+accounts for benefits in the SOC pool. No other pools or emission reductions, e.g. in
+nitrous oxide (N2O) due to reduced fertilizer need or reduced fossil fuel use, can be
+accounted for as benefits.
+
+In the baseline situation, a farmer applies conventional or conservation tillage practices
+in which soil disturbance is caused by applying instruments such as harrows,
+mouldboard ploughs, offset harrows, subsoilers, and rippers for extensive seedbed
+preparation in a conventional tillage approach or less soil disturbance following a
+reduced tillage approach applying chisels, sweeps, and/or discs. The project introduces
+the zero tillage/no-till practice, which applies direct seeding of crops in a field without
+mechanical disturbance of the soil.
+
+Climate Security and Sustainable Development                                                 2
+METHODOLOGY - SOC Activity Module for Zero Tillage v 1.0
+
+This SOC Activity Module is limited to two of the three approaches for quantification of
+SOC increase which are listed in the SOC Framework Methodology. Due to variability in
+research results on impacts of no-till on SOC, this SOC Activity Module focuses on
+Approach 1, which requires on-site measurements to directly document pre-project and
+project SOC stock levels. Nevertheless, more research findings, data, and proven
+modelling approaches are released daily for specific applications of zero tillage, and
+globally leading GHG and agricultural institutions such as the Intergovernmental Panel
+on Climate Change (IPCC),1 the Food and Agricultural Organization (FAO)2 of the United
+Nations, the World Resources institute (WRI),3 the World Business Council for
+Sustainable Development (WBCSD),4 and the European Conservation Agriculture
+Foundation (ECAF)5 continue to promote zero tillage practices. Therefore, this SOC
+Activity Module also allows Approach 2, which applies project-specific datasets,
+parameters, and/or models to quantify baseline and project SOC stock levels, with
+strong requirements for application at the project level, including verification
+measurements for baseline and project impact. This SOC Activity Module does not allow
+Approach 3 (IPCC defaults) as described in the SOC Framework Methodology.
+
+ACKNOWLEDGEMENT
+
+TREES Consulting                Agoro Carbon Alliance US Inc.
+Sihleggstrasse 32               100 North Tampa Street, Suite 3200
+8832 Wollerau                   Tampa, Florida 33602
+Switzerland                     USA
+
+1 https://www.ipcc.ch
+2 https://www.fao.org/home/en/
+3 https://www.wri.org
+4 https://www.wbcsd.org
+5 https://ecaf.org
+
+                   Climate Security and Sustainable Development                           3
+METHODOLOGY - SOC Activity Module for Zero Tillage v 1.0
+
+TABLE OF CONTENTS
+
+    SUMMARY........................................................................................................... 2
+             DEFINITIONS ............................................................................................... 5
+             SCOPE, APPLICABILITY, AND ENTRY INTO FORCE ............................................... 5
+             2.1 | SCOPE ............................................................................................. 5
+             2.2 | APPLICABLITY ................................................................................... 5
+             2.3 | ENTRY INTO FORCE ........................................................................... 7
+             ADDITIONALITY ............................................................................................ 7
+             PROJECT BOUNDARIES................................................................................... 7
+             4.1 | Spatial Boundary ............................................................................... 7
+             4.2 | Temporal Boundary............................................................................ 8
+             4.3 | Carbon Pools .................................................................................... 8
+             4.4 | Greenhouse Gases ............................................................................. 9
+             EMISSION REDUCTION QUANTIFICATION APPROACH .......................................... 9
+             5.1 | Approaches for Baseline and Project Scenario Quantification ..................... 9
+             5.2 | Approach 1 (On-Site Measurements of SOC) .......................................... 9
+             5.3 | Approach 2 (Application of Models, Research data) .................................11
+             BASELINE SCENARIO ....................................................................................12
+             6.1 | Baseline Calculations .........................................................................12
+             PROJECT SCENARIO .....................................................................................12
+             7.1 | Project Calculations...........................................................................12
+             PROCEDURES FOR CALCULATION APPROACH CHANGE........................................13
+             UNCERTAINTY .............................................................................................13
+                OTHER EMISSIONS ....................................................................................13
+             10.1 | Project emissions..............................................................................13
+             10.2 | Increased Nitrogen Fertilizer Input.......................................................14
+             10.3 | Increased Combustion of Fossil Fuels and Electricity Use .........................15
+             10.4 | Other Agrochemical Emissions ............................................................16
+                LEAKAGE .................................................................................................17
+                MONITORING ...........................................................................................18
+             a. Data and Parameters fixed:......................................................................18
+             b. Data and Parameters monitored ................................................................20
+                REFERENCES ............................................................................................25
+
+      DOCUMENT HISTORY ..........................................................................................26
+
+Climate Security and Sustainable Development                                                                                 4
+METHODOLOGY - SOC Activity Module for Zero Tillage v 1.0
+
+DEFINITIONS
+
+1.1.1 | Terms and definitions are listed in the SOC Framework Methodology and
+            GS4GG Glossary. In addition, the following module-specific definitions apply:
+
+Term           Definition
+Zero Tillage/  Zero tillage/no-till is an agricultural technique for growing
+No-Till        crops or pasture without mechanically disturbing the soil
+               through tillage (including disturbance from non-turning tillage
+Conventional   such as rippers and disc harrows). Crop is sown directly into
+Tillage        soil that has not been tilled since the harvest of the previous
+               crop. This technique has more than 30% coverage of the soil
+Conservation   surface with residues.
+Tillage        Seedbed preparation using cultivation instruments such as
+               harrows, mouldboard ploughs, offset harrows, subsoilers, and
+               rippers. Conventional tillage methods, involving extensive
+               seedbed preparation, cause the greatest soil disturbance and
+               leave little plant residue on the surface.
+               Conservation tillage includes any form of minimum or reduced
+               tillage in which residue, mulch, or sod is left on the soil surface
+               to protect soil and conserve moisture. After planting, at least
+               30% of the soil surface remains covered by residue to reduce
+               soil erosion by water.
+
+SCOPE, APPLICABILITY, AND ENTRY INTO FORCE
+
+2.1 | SCOPE
+
+2.1.1 | This activity module is applicable to project activities that introduces zero
+            tillage/no-till practice, an agricultural technique for growing crops or pasture
+            without mechanically disturbing the soil through tillage.
+
+2.2 | APPLICABLITY
+
+2.2.1 | Projects applying this SOC Activity Module shall comply with the applicability
+            conditions that are specified below and are within the SOC Framework
+            Methodology. In addition, projects shall comply with applicable Land Use &
+            Forests Activity Requirements (hereafter LUF Activity Requirements) and the
+            Gold Standard for the Global Goals Principles & Requirements (hereafter
+            Principles & Requirements).
+
+2.2.2 | Applicability conditions specific to this SOC Activity Module:
+            a. Geographic location ­ The activity module is applicable globally.
+            b. Project area ­
+                      i. Generally, entire farms or selected fields/areas of a farm are
+                             eligible (see Section 4.1: Spatial Boundary).
+
+               Climate Security and Sustainable Development                                   5
+METHODOLOGY - SOC Activity Module for Zero Tillage v 1.0
+
+         ii. The methodology shall not be applicable to farms which have been
+                 applying zero tillage techniques in more than one full rotation cycle
+                 in the baseline period prior to project start, even if such
+                 application was on fields not included in the project. For single
+                 crop systems, baseline practices shall not include more than two
+                 subsequent years of zero tillage practices. In the baseline period,
+                 at least one tillage event (soil disturbance) shall be no less than
+                 two years prior to project start.
+
+c. Zero tillage refers to practices on arable land for which no tillage is applied
+    between harvest and sowing. Crop is sown directly into soil that has not
+    been tilled since the harvest of the previous crop. At least 30% of the soil
+    surface remains covered by residue to reduce soil erosion by water.
+
+d. Soil type ­
+
+       i. Proposed projects on sites with organic soils (Histosols), as defined
+              by the World Reference Base for Soil Resources (FAO 2015), are
+              ineligible. While no-till practices can reduce C losses from organic
+              soils, they shall not commonly lead to an increase in soil carbon as
+              targeted by this SOC Activity Module. Thus, only mineral soil types
+              are eligible.
+
+e. In line with the SOC Framework Methodology, any reduction in crop yield
+    which can be attributed to the project activity shall be avoided. To date,
+    the majority of studies report little or no difference in yield between the
+    zero and conventional tillage managements (Shakoor et al. 2021, Huang
+    et al. 2018). However, it has been reported that yields in the first one to
+    two years following zero tillage implementation can decline (Pittelkow et
+    al. 2015b). This SOC Activity Module thus requires monitoring whether the
+    project activity impacts crop yields, calculated as the five-year average.
+    Reductions of more than 5% in five-year average yield during the crediting
+    period shall be accounted for as leakage (see Section 11). An exception to
+    this may be allowed for reductions in the first three years after project
+    start to allow refinement of practices, subject to review at verification.
+
+f. In line with the SOC Framework Methodology, this SOC Activity Module
+    only accounts for benefits in the SOC pool. No other pools or emission
+    reductions (e.g. in N2O due to reduced fertilizer need) can be accounted
+    for as benefits.
+
+g. No reversal to conventional or reduced tillage practices is allowed on the
+    project area fields. This explicitly prohibits tillage rotation approaches
+    applying periodic tillage runs between or after several years of zero tillage
+    during the crediting period.
+
+h. Organic carbon inputs to the field (other than on-field crop residue) shall
+    not be changed as part of the project activity by more than 5% from
+    baseline period average.
+    Exception: If this activity module is stacked with an additional Gold
+    Standard methodology or activity module which uses the same
+    quantification approach in the project (measurement or compatible SOC
+
+Climate Security and Sustainable Development                                            6
+METHODOLOGY - SOC Activity Module for Zero Tillage v 1.0
+
+                 model allowing distinction of impacts between zero tillage and organic
+                 inputs) and considers respective leakage effects, this applicability condition
+                 may be omitted.
+            i. If project activity includes change of other agricultural practices impacting
+                 SOC (e.g. cover crops, organic inputs), the same quantification approach
+                 (measurements and/or models) shall be used for all activities and shall be
+                 fully aligned to ensure that overall benefits are quantified correctly and not
+                 double-counted.
+            j. Application of herbicides to prepare fields and/or terminate crops shall be
+                 minimized, and negative environmental impacts shall be prevented, in
+                 accordance with Gold Standard Principle 9.6. Use of herbicides related to
+                 project activities, specifically for crop termination and weed control, shall
+                 not be increased by more than 5% from baseline period average.
+
+2.3 | ENTRY INTO FORCE
+
+2.3.1 | The date of entry into force of this activity module is dd/02/2024.
+
+      ADDITIONALITY
+
+3.1.1 | The regulatory surplus shall be demonstrated by all the projects, irrespective
+            of scale. The project shall demonstrate that proposed activity is neither
+            directly mandated by law nor otherwise triggered by legal requirements (e.g.,
+            legally binding agreements, covenants, consent decrees, or contracts (with
+            government agencies or private parties). If such legal requirements are
+            identified, then crediting for the activity shall only be allowed until the date
+            the legal requirements take effect.
+
+3.1.2 | All projects seeking Gold Standard certification shall demonstrate that they
+            would not have been implemented without the benefits of carbon revenue.
+            Specific rules and guidelines on how to assess additionality can be found in
+            the Additionality section in the latest version of the Gold Standard SOC
+            Framework Methodology..
+
+      PROJECT BOUNDARIES
+
+4.1 | Spatial Boundary
+
+4.1.1 | For spatial boundaries, the rules and requirements defined in the SOC
+            Framework Methodology apply.
+
+4.1.2 | Spatial boundary description specific to this SOC Activity Module:
+            a. Generally, entire farms or selected fields/areas of a farm are eligible. If
+                 project activities are only implemented on selected fields, all applicability
+                 conditions and requirements from the SOC Framework Methodology and
+                 from this SOC Activity Module shall be applied to these specific fields.
+                 These fields shall remain in the project during the entire crediting period
+
+Climate Security and Sustainable Development                                                     7
+METHODOLOGY - SOC Activity Module for Zero Tillage v 1.0
+
+    (i.e. no change of participating fields within a farm during the crediting
+    period is allowed).
+
+b. This SOC Activity Module requires GHG sources, sinks, and reservoirs
+    (SSR) as identified in Figure 4-01 to be considered, with a focus on their
+    impact on SOC and increase of emissions from project activities. The
+    boundary thus includes all impacted field activities (machine use, tillage,
+    and application of fertilizer and pesticides). Since SOC increase from zero
+    tillage is also driven through inputs of biomass (root and residue), residue
+    management for all crops is essential to assess SOC impact. For the same
+    reason, other organic inputs (e.g. manure, compost) have to be
+    monitored. Since no changes are expected to be made to farm
+    infrastructure or handling of main crops, these activities are not included
+    in the project boundary for quantification.
+
+                                   Farm facilities                         Farm facilities construction,
+                                                                      operations,* and decommissioning
+                                         Farm equipment manufacture
+                                                 and transportation*
+
+Off-field activity                 On-field activity                  Fertilizer application
+           Fertilizer production*           Crop residue management   Pesticide application
+                                                       Machine use
+                                                     Organic inputs             Tillage
+
+Project-controlled SSR             Post-harvest processing                Crop processing
+Project-related SSR                                  Crop transport
+Excluded SSR
+
+Materials/products flow
+
+* Fertilizer production, farm equipment, and facilities operations are excluded under the assumption that no
+      significant change to these emissions results from implementation of the project activity.
+
+                                   Figure 4-01: Spatial project boundary
+
+4.2 | Temporal Boundary
+
+4.2.1 | The maximum crediting period allowed under this Activity Module is 10 years
+            The crediting period renewal at the end of 5th year is required as per
+            Principles and requirements.
+
+4.3 | Carbon Pools
+
+4.3.1 | Carbon pool description:
+            a. In line with the SOC Framework Methodology, this SOC Activity Module
+                 only accounts for benefits in the SOC pool. Additional pools (e.g. biomass
+                 and litter) may be used for calculation of SOC change, but no GHG
+
+                                   Climate Security and Sustainable Development                               8
+METHODOLOGY - SOC Activity Module for Zero Tillage v 1.0
+
+                 sequestration in pools other than soil carbon shall be accounted for as
+                 benefits.
+            b. No emission reduction from other GHG sources (e.g. fossil fuel use or
+                 fertilizer application) shall be reported for benefits under this methodology.
+                 To account for emission reductions from reduced fuel use or fertilizer
+                 application, a separate Gold Standard methodology may be applied.
+
+4.4 | Greenhouse Gases
+
+4.4.1 | Following the SOC Framework Methodology, all GHG sinks and sources
+            affected by its activities shall be monitored.
+
+4.4.2 | For this SOC Activity Module, this specifically includes any significant
+            increases in CO, CH4, and NO emissions from project activities.
+
+      EMISSION REDUCTION QUANTIFICATION APPROACH
+
+Calculations for overall benefits follow the equations set out in the Emissions
+Reduction Quantification Approaches section of the SOC Framework Methodology.
+Sections below describe the approaches and calculations specific to this SOC Activity
+Module.
+
+5.1 | Approaches for Baseline and Project Scenario Quantification
+
+5.1.1 | This SOC Activity Module allows application of quantification Approaches 1 and
+            2, as described in the SOC Framework Methodology. It does not allow
+            application of Approach 3 (default equations and parameters). Project
+            developers shall select the most specific approach possible with the data
+            available, as outlined in the decision tree in Figure 2 of the SOC Framework
+            Methodology.
+
+5.2 | Approach 1 (On-Site Measurements of SOC)
+
+5.2.1 | Additional requirements:
+            a. SOC measurements shall be taken at a suitable time of year, e.g. at the
+                 beginning of the season for main crops, with repeated measurements
+                 performed at the same time of year to avoid bias due to short-term
+                 variation in soil carbon pools. The project documentation shall specify the
+                 timing of soil sampling, i.e. the season and crop rotation phase, as
+                 applicable, to be implemented by all farms participating in the project or
+                 program.
+            b. To avoid overestimation of SOC stocks, measurements shall always be
+                 performed before any significant carbon inputs, such as organic or partially
+                 organic fertilizers, including compost and manure, as well as other carbon
+                 sources (e.g. in lime or other soil inputs).
+            c. In line with the SOC Framework Methodology, soil samples shall be
+                 collected to a depth of 50 cm.
+            d. Since sampling constitutes a disturbance in the zero tillage field, the
+                 project description shall include an approach to avoid repeated sampling at
+
+Climate Security and Sustainable Development                                                     9
+METHODOLOGY - SOC Activity Module for Zero Tillage v 1.0
+
+                 the same position (e.g. by adequately marking sampling sites after closure
+                 or recording exact GPS coordinates and prescribing a minimum distance
+                 for the next sampling round).
+
+            e. As introduction of zero tillage practices can lead to soil compaction, bulk
+                 density must be considered in all quantification approaches. Quantification
+                 is to be done on an equivalent mass basis to properly quantify carbon
+                 impacts, i.e. if increased bulk density is measured in the project scenario,
+                 respective layer depth shall be reduced proportionally when calculating
+                 SOC change.
+
+            f. Special care shall be taken to ensure that superficial litter (crop residue) is
+                 not included in the SOC quantification.
+
+5.2.2 | Alternative SOC quantification approaches beyond physical sampling and
+            chemical laboratory analysis, such as proximal sensing (in situ) or lab
+            spectroscopy approaches may be used in projects if such approaches are
+            approved by Gold Standard at the level of Activity Requirement. Application of
+            such SOC quantification is subject to scientific proof that the results obtained
+            under project conditions6 do not show significant differences to the laboratory
+            results to a soil depth of 50 cm. Revalidation of measurements in the project
+            area shall be undertaken in accordance with LUF Activity Requirements.
+
+            If a new technology has not been tested under comparable conditions, a
+            project may establish project-specific datasets to test the accuracy of the
+            technology. This testing shall include repeated SOC stock measurements in at
+            least two points in time, with each sample quantified with the new technology
+            and parallel laboratory analysis. If a system (re)calibration is needed,
+            separate datasets shall be used for calibration of the technology and
+            validation for the project site. Upon confirmation of accuracy for
+            measurements with the new technology, the project shall request a design
+            change and get approval from Gold Standard to start using the alternative
+            technology (subject to potential additional guidance in LUF Activity
+            Requirements). After confirmation by Gold Standard, the project may use the
+            new technology for quantification.
+
+            In any case, uncertainty of the SOC quantification under project conditions
+            shall have to be considered according to Gold Standard Uncertainty
+            Requirements and following an Uncertainty Assessment as outlined in the SOC
+            Framework Methodology.
+
+6 Refer to stratification criteria (Section 7.1.4) for factors determining applicability to project
+  conditions. All factors listed for stratification shall be assessed to confirm applicability.
+
+Climate Security and Sustainable Development                                                         10
+METHODOLOGY - SOC Activity Module for Zero Tillage v 1.0
+
+5.3 | Approach 2 (Application of Models, Research data)
+
+5.3.1 | Additional requirements:
+            a. Project developers shall provide evidence that calculation approaches,
+                 datasets, parameters, and models from peer-reviewed publications to
+                 estimate baseline and project SOC stocks in the project are conservative
+                 and applicable to the project site conditions and management practices.7
+            b. Models and datasets applied must be calibrated locally, i.e. using project-
+                 specific data. Global models without such local parametrization and
+                 validation shall not be applied. Application of global defaults for soil
+                 respiration, e.g. Q10 values to quantify temperature effects on respiration,
+                 is not allowed.
+            c. Project documentation shall include evidence that the sources used are
+                 applicable to main crops and levels of yield (production intensity) as well
+                 as management practices (including tillage practice) in the project area for
+                 baseline and project scenarios. Evidence shall also be provided that
+                 datasets and models have sufficient temporal resolution (i.e. multiple data
+                 points per year) to account for impacts of seasonal variations in practices
+                 and other factors such as changing weather conditions.
+            d. Parameters for process-based models shall be calibrated and verified
+                 following best practice, using at least five years of data for calibration and
+                 three years of independent data for verification. Both calibration and
+                 verification datasets shall match project conditions as outlined above. Any
+                 gaps in datasets and procedures how gaps were addressed for the model
+                 calibration and verification shall be reported at validation.
+            e. SOC measurements for a representative sample in each stratum of the
+                 project area shall be made at project start and at least once every five
+                 years, applying proven methodology (see Section 5.2.2) and used to
+                 statistically assess model results or research data used for quantification.
+                 If significant differences from modelled results or research data are found,
+                 the models shall be refined.
+
+7 Refer to stratification criteria (Section 7.1.4) for factors determining applicability to project conditions. All factors
+  listed for stratification shall be assessed to confirm applicability.
+
+Climate Security and Sustainable Development                                                                                 11
+METHODOLOGY - SOC Activity Module for Zero Tillage v 1.0
+
+      BASELINE SCENARIO
+
+6.1 | Baseline Calculations
+
+6.1.1 | Quantification for SOC in the baseline (SOCBL,y) shall follow the rules,
+            approaches, calculations, and parameters set out in the Baseline Scenario
+            section of the SOC Framework Methodology.
+
+6.1.2 | Baseline data is required for five years as required by the SOC Framework
+            Methodology. If five-year baseline data is not fully available for a field within a
+            stratum (e.g. as it was leased less than five years prior to project start),
+            evidence shall be provided that average baseline conditions for the stratum
+            apply to the field lacking data, referencing the stratification criteria described
+            below.
+
+6.1.3 | Baseline period may be extended to cover full rotation periods; respectively
+            avoid including fragments of rotations in the baseline quantification (e.g. in a
+            three-year crop rotation system, a six-year baseline period shall deliver more
+            consistent results, including all relevant practices, inputs and crop yields for
+            two full rotation periods).
+
+6.1.4 | To determine the baseline of the eligible project area, the land shall be
+            stratified into modelling units (MUs) according to criteria set out in Section 6
+            of the SOC Framework Methodology. In addition, the following criteria shall be
+            considered in stratification:
+            · Mineral soil type
+            · Tillage practices (e.g. tillage depth, frequency, tillage equipment)
+            · Specific crops (or crop rotations) and production periods
+            For each stratum, SOC measurements shall be performed (Approach 1)
+            and/or model parameters identified and verified (Approach 2).
+
+6.1.5 | If a model is used to quantify baseline SOC (Approach 2), full transparency
+            shall be provided on input data, parametrization, and quantification approach.
+            Application of "black box" models is not allowed.
+
+      PROJECT SCENARIO
+
+7.1 | Project Calculations
+
+7.1.1 | Quantification for SOC in the project scenario (SOCt,y) shall follow the rules,
+            approaches, calculations, and parameters set out in the Project Scenario
+            section of the SOC Framework Methodology.
+
+7.1.2 | This SOC Activity Module addresses change to zero tillage practices.
+            Quantifications shall consider all changes in practices (including changes to
+            crop management, fertilization, and application of other agrochemicals). For
+            model application (Approach 2), calculation and parameter must be adapted
+            to the specific project situation.
+
+7.1.3 | If other agricultural activities besides zero tillage are introduced in a project
+            (e.g. cover crops, organic inputs), interactions shall be considered by applying
+            the same SOC quantification approaches (Approach 1 or 2). If models are
+
+Climate Security and Sustainable Development                                                     12
+METHODOLOGY - SOC Activity Module for Zero Tillage v 1.0
+
+            applied (Approach 2), they shall specifically cover all activities in the project
+            scenario.
+7.1.4 | For the project scenario, the eligible project area shall be stratified into MUs
+            according to criteria set out in Section 7 of the SOC Framework Methodology.
+            In addition, the following criteria shall be considered in stratification.
+
+            · Mineral soil type
+            · Tillage practices (zero tillage)
+
+            · Specific crops (or crop rotations) and production periods
+            For each stratum, SOC measurements shall be performed (Approach 1)
+            and/or model parameters identified and verified (Approach 2).
+7.1.5 | If a model is used to quantify project SOC (Approach 2), full transparency
+            shall be provided on input data, parametrization, and quantification approach.
+            Application of "black box" models is not allowed.
+
+      PROCEDURES FOR CALCULATION APPROACH CHANGE
+
+8.1.1 | Any approach change between baseline and project scenario calculations shall
+            be in compliance with requirements of section 8: Procedure for approach
+            change of SOC Framework Methodology.
+
+      UNCERTAINTY
+
+9.1.1 | Calculation of uncertainty shall follow the rules and equations set out in the
+            SOC Framework Methodology.
+
+9.1.2 | If no information on Standard deviation (SD) or Standard error (SE) is known
+            for a parameter, SE of 50% of the parameter value shall be assumed. For the
+            calculations of the upper and lower confidence intervals, a t-value of 3 shall
+            be applied. Exceptions to this rule are accepted default values considered
+            constant (e.g. physical conversion rates, global warming potentials).
+
+OTHER EMISSIONS
+
+10.1 | Project emissions
+
+10.1.1 |Significant additional GHG emissions (>5% total) due to the project activity
+            need to be accounted for. For this SOC Activity Module, this explicitly includes
+            increased fertilizer input, fuel and electricity use, and other agrochemical
+            emissions (AE).
+
+10.1.2 |As such emissions may differ between strata, calculation for this SOC Activity
+            Module shall follow the rules and Equations 1 through 7 that are described
+            below, which replace the area-wide calculation set out in Equations 12
+            through 18 of the SOC Framework Methodology. They follow the same
+            approach but allow application of different emission factors and quantities for
+            different strata.
+
+-0 = -0 + -0 + -0                                         (1)
+
+Climate Security and Sustainable Development                                                   13
+METHODOLOGY - SOC Activity Module for Zero Tillage v 1.0
+
+Where:
+
+PEt-0   = emissions from project activities in the calculation period [tCO2e]
+FEt-0   = emissions from increased fertilizer use in the calculation period [tCO2e]
+FUt-0   = emissions from increased fuel and electricity use in the calculation
+        period [tCO2e]
+AEt-0   = other agrochemical emissions in the calculation period [tCO2e]
+
+10.2 | Increased Nitrogen Fertilizer Input
+
+10.2.1 |Emissions from increased nitrogen (N) fertilizer input in project scenario as
+
+compared to the baseline scenario are calculated as follows. No differentiation
+
+is made between synthetic and organic N fertilizer. This equation shall not be
+
+applied for reductions in N fertilizer input, in which case FEt-0 is considered 0.
+To account for reductions in fertilizer input and the respective GHG emissions
+
+reductions, a separate Gold Standard methodology shall be applied.
+
+-0 = [, × =1(,, - ,)]                                               (2)
+
+Where:
+
+FEt-0 = emissions from increased fertilizer use in the calculation period [tCO2e].
+
+        Must be  0 in this methodology (i.e. no accounting of reductions).
+
+FEPR,y,a = N fertilizer input in stratum y under the project scenario in year a of the
+
+        calculation period [kgN]
+
+FEBL,y = mean annual N fertilizer input in stratum y under the baseline scenario
+
+        [kgN]
+
+T       = number of years in the calculation period [yr]
+
+EFFE,y  = Conversion factor for emissions from N fertilizer in stratum y [tCO2e
+        kgN-1]. IPCC 2019 aggregated default value8 for EFFE is 0.01.
+
+        Disaggregated default values in IPCC 2019 Table 11.1 may be used if
+
+        fertilizer inputs are known per fertilizer type.
+
+FEPR and FEBL shall be documented by the project developer. For FEBL, mean
+annual input is calculated based on respective management records for five
+years prior to project start. If no adequate documentation can be provided,
+FEBL shall be no more than 50% of FEPR.
+
+8 IPCC 2019, Vol 4 AFOLU, Table 11.1 (Aggregated default value)
+
+               Climate Security and Sustainable Development                             14
+METHODOLOGY - SOC Activity Module for Zero Tillage v 1.0
+
+10.3 |Increased Combustion of Fossil Fuels and Electricity Use
+
+10.3.1 |Additional CO2 emissions from use of fossil fuel and electricity in project
+            activities (e.g. fuel used by farm machines due to needs for stronger tractors
+            or additional passes to close/treat the surface or fuel/electricity for irrigation
+            pumps) need to be accounted for unless project developer can demonstrate
+            that the fossil fuel/electricity used in the project scenario is less than or does
+            not differ significantly from fossil fuel/electricity used in the baseline, in which
+            case FUt-0 is considered 0.
+
+-0 = [=1(,, - ,) + (,, - ,)]                                    (3)
+
+Where:
+
+FUt-0 = emissions from increased fossil fuel and electricity use in the calculation
+
+        period [tCO2e]
+
+FUPR,y,a = emissions from use of fossil fuels in stratum y under the project
+
+        scenario in year a of the calculation period [tCO2e]
+
+FUBL,y = mean annual emissions from use of fossil fuels in stratum y under the
+
+        baseline scenario [tCO2e]
+
+EUPR,y,a = emissions from use of electricity in stratum y under the project scenario
+
+        in year a of the calculation period [tCO2e]
+
+EUBL,y = mean annual emissions from use of electricity in stratum y under the
+
+        baseline scenario [tCO2e]
+
+T       = number of years in the calculation period [yr]
+
+10.3.2 |FUPR and FUBL shall be documented by the project developer and generally
+            calculated with the equation below, based on fuel consumption by machine
+
+type and fuel emission factor.
+
+,, =  ,,, × ,,                                                  (4)
+
+Where:
+
+FUi,y,a = emissions from use of fossil fuels in stratum y in year a [tCO2e ha-1]
+
+FULi,y,MT,a = fuel consumption in stratum y by the machinery type MT used in year
+
+        a [litres]
+
+FEFi,y,MT = emissions factor for the fuel used in stratum y in machinery MT [tCO2e
+            litres-1]
+
+MT      = machinery type (gasoline two-stroke, gasoline four-stroke, diesel)
+
+i       = formula used for baseline (i=BL) as well as project scenario (i=PR)
+
+For FUBL, mean annual emissions are calculated based on respective
+management records for five years prior to project start. If this is not
+available, the amount of fuel combusted can be estimated using fuel efficiency
+(for example l/100 kilometres (km), l/tonne-km, l/hour) of the vehicle and the
+appropriate unit of use for the selected fuel efficiency (e.g. km driven if
+
+        Climate Security and Sustainable Development                                              15
+METHODOLOGY - SOC Activity Module for Zero Tillage v 1.0
+
+efficiency is given in l/100 km). If no adequate documentation can be
+provided, FUBL shall be no more than 50% of FUPR.
+
+Non-CO2 GHG emissions caused by the use of fossil fuel from project activities
+(management operations, machinery, etc.) are insignificant and may thus be
+neglected.
+
+10.3.3 |EUPR and EUBL shall be documented by the project developer and generally
+            calculated with the equation below, based on electricity consumption by
+            appliance and respective emission factor. If electricity is generated on-site
+            using fossil fuels (e.g. in diesel generators for irrigation pumps), emissions
+            from fuel combustion shall be calculated instead, following the approach
+            described above.
+
+,, =  ,,, × ,,                                                                   (5)
+
+Where:
+
+EUi,y,a    = emissions from electricity consumption in stratum y in year a [tCO2e
+           ha-1]
+
+EUWi,y,SE,a = electricity consumption in stratum y from source SE in year a [kWh]
+
+EEFi,y,SE  = emissions factor for the electricity used in stratum y in source SE
+           [tCO2e kWh-1]
+
+SE         = electricity source type (grid, fossil fuel generator, etc)
+
+i          = formula used for baseline (i=BL) as well as project scenario (i=PR)
+
+For EUBL, mean annual emissions are calculated based on respective
+management records for five years prior to project start. If no adequate
+documentation can be provided, EUBL shall be no more than 50% of EUPR.
+
+10.4 | Other Agrochemical Emissions
+
+10.4.1 |Additional AE related to the project activities from increased use of
+
+agrochemicals, especially pesticides or non-N fertilizers, need to be accounted
+
+for unless the project developer can demonstrate that agrochemicals used in
+
+the project scenario are less than or do not differ significantly from
+
+agrochemicals used in the baseline, in which case AEt-0 is considered 0.
+
+10.4.2 |If use of agrochemicals (herbicides, pesticides) or non-N fertilizer is
+
+significantly higher in the project than in the baseline scenario, the project
+developer shall calculate respective emissions by using specific amounts and
+
+emission factors. Emission factors applied shall be based on manufacturer
+
+information or scientific sources.
+
+-0 = [=1(,, - ,)]                                                        (6)
+
+Where:
+
+  AEt-0 = additional emissions from project activity in the calculation period
+               [tCO2e]
+
+           Climate Security and Sustainable Development                                     16
+METHODOLOGY - SOC Activity Module for Zero Tillage v 1.0
+
+AEPR,y,a = other emissions in stratum y under the project scenario in year a of the
+
+            calculation period [tCO2e]
+
+AEBL,y = other emissions (annual mean) in stratum y under the baseline scenario
+
+            [tCO2e]
+
+T           = number of years in the calculation period [yr]
+
+10.4.3 |AEPR and AEBL shall be documented for each emitter type (agrochemical) by
+            the project developer and calculated with the equation below, based on
+
+emission type, underlying quantity, and respective emission factor.
+
+,, =  ,,, × ,,                                                                    (7)
+
+Where:
+
+AEi,y,a     = emissions from use of other agrochemicals in stratum y in year a
+            [tCO2e ha-1]
+
+AQi,y,ET,a = quantity of agrochemicals in stratum y for emitter type ET applied in
+
+            year a [kg]
+
+AEFi,y,ET = emissions factor of the agrochemical used in stratum y (for emitter type
+            ET) [tCO2e kg-1]
+
+ET          = emitter type (specific pesticide, fertilizer, or other agrochemical)
+
+i           = formula used for baseline (i=BL) as well as project scenario (i=PR)
+
+10.4.4 |For AEBL, mean annual emissions are calculated based on respective
+            management records for five years prior to project start. If no adequate
+            documentation can be provided, AEBL shall be no more than 50% of AEPR.
+
+LEAKAGE
+
+11.1.1 |Calculation of leakage shall follow the rules and equations set out in the SOC
+            Framework Methodology. If a reduction in yield is detected in a performance
+            certification, it is assumed that the lost production capacity has to be made
+            up for on land outside the project area. Emissions caused by such a shift shall
+            be accounted for as leakage according to the equation listed in the SOC
+            Framework Methodology. Note that accounting of positive leakage is not
+            allowed according to the SOC Framework Methodology.
+
+11.1.2 |Additional requirements: Under this SOC Activity Module, leakage shall be
+            assessed at stratum level. Instead of Equation 19 in the SOC Framework
+            Methodology, leakage shall thus be calculated for each stratum separately,
+            using Equation 8:
+
+LK-0     =    [  [,-,      ;  0]  ×  , ]  ×               (BC  +  ,-0  +  ,-0  +  ,-0)  (8)
+
+                        ,
+
+Where:      = emissions due to shift of production to non-project lands (leakage area)
+  LKt-0     [tCO2e]
+
+              Climate Security and Sustainable Development                                   17
+METHODOLOGY - SOC Activity Module for Zero Tillage v 1.0
+
+CYt,y = crop yield in stratum y at time t (five-year average*) [kg ha-1]
+
+CYmin,y = lowest crop yield (five-year average**) in stratum y in any calculation
+            period since project start [kg ha-1]
+
+CYBL,y = crop yield in stratum y under the baseline scenario (five-year average*)
+            [kg ha-1]
+
+y,t  = eligible project area in stratum y (five-year average*) [ha]
+
+BCLA = emissions from change in biomass carbon stocks in leakage area
+            [tCO2e ha-1]
+
+SOCLA,t-0 = emissions from change in SOC stocks in leakage area [tCO2e ha-1]
+FELA,t-0 = change in emissions from use of fertilizer in leakage area [tCO2e ha-1]
+FULA,t-0 = change in emissions from fuel use in leakage area [tCO2e ha-1]
+
+ * If the baseline period is extended to cover full rotation cycles, crop yield
+        and stratum area shall be calculated as the average across an equal length
+        period. In the project scenario, the five-year average shall be calculated as
+        a running average from year t-4 to year t (for longer baseline periods,
+        averaging period shall be increased accordingly).
+
+** Baseline years shall be in included in CYmin for the project period (i.e. in
+        project year 1, CYmin = CYBL).
+
+      MONITORING
+
+12.1.1 |Monitoring approach and parameters shall be followed as set out in the SOC
+            Framework Methodology. Also, the project developer shall collect and
+            document evidence that this SOC Activity Module's applicability conditions are
+            met at all times and that project activity has been implemented as stated,
+            specifically that no tillage events have occurred. Acceptable evidence are
+            detailed field reports listing key interventions, dates and machinery used,
+            remote sensing analysis of vegetation, and crop residue cover or time-
+            stamped photographs of fields before, during, and after the cropping season,
+            including fallow periods as applicable.
+
+12.1.2 |Additional requirements: The following parameters shall be monitored in this
+            SOC Activity Module, depending on the quantification approach selected.
+            Where the parameters listed below overlap with the SOC Framework
+            Methodology Monitoring section, the below descriptions shall be applied under
+            this SOC Activity Module to ensure stratum-level quantification and
+            appropriate data sources.
+
+    a. Data and Parameters fixed:
+
+12.1.3 |Data and parameters collected for baseline calculation, when project areas
+            (farms/land parcels) are being added, and at renewable of crediting period if
+            required:
+
+     Climate Security and Sustainable Development                                           18
+METHODOLOGY - SOC Activity Module for Zero Tillage v 1.0
+
+Data/parameter:       CYBL,y
+Unit
+Description           kg ha-1
+Source of data
+Value(s) applied      Average annual crop yield per hectare (ha) in stratum y in the
+Measurement           project area during the baseline period (five-year average*)
+procedures
+                      Farm records, e.g. field records, sales receipts
+Monitoring frequency
+QA/QC procedures       -
+Additional comments
+                      Yield is recorded for each crop season and accumulated annually
+                      (as sum of each crop type). For the baseline, an average annual
+                      yield is calculated across the five-year baseline period.*
+
+                      * If the baseline period is extended to cover full rotation cycles,
+                          crop yield shall be calculated as the average across an equal
+                          length period. In the project scenario, the five-year average
+                          shall be calculated as a running average from year t-4 to year
+                          t (for longer baseline periods, averaging period shall be
+                          increased accordingly).
+
+                      Project start
+
+                       -
+
+                      Used in Equation 8. This parameter replaces parameter CYBL in
+                      the SOC Framework Methodology (Equation 19).
+
+Data/parameter:       EFFE,y
+Unit                  tCO2e kgN-1
+Description           Conversion factor for emissions from N fertilizer in stratum y
+Source of data        IPCC 2019
+Value(s) applied      IPCC 2019 aggregated default value for EFFE is 0.01.
+                      Disaggregated default values in IPCC 2019 Table 11.1 may be
+Measurement           used if fertilizer inputs are known per fertilizer type.
+procedures
+Monitoring frequency  -
+QA/QC procedures
+Additional comments   Project start
+                      -
+                      Used in Equation 2
+
+Data/parameter:       FEBL,y
+Unit                  kgN
+Description           Mean annual N fertilizer input in stratum y under the baseline
+                      scenario
+Source of data        Farm records (field level)
+Value(s) applied      Average annual N input in stratum y, calculated across baseline
+                      period (five years)
+Measurement
+procedures            Project start
+Monitoring frequency  Used in Equation 2
+QA/QC procedures
+
+                      Climate Security and Sustainable Development                         19
+METHODOLOGY - SOC Activity Module for Zero Tillage v 1.0
+
+b. Data and Parameters monitored
+
+Data/parameter:       y,t
+                      ha
+Unit                  Eligible project area in stratum y at time t (five-year average*)
+Description           Farm records (GPS data, GIS files)
+Source of data
+Value(s) applied      Documentation allowing unambiguous identification and
+Measurement           documenting area size at field level
+procedures
+
+Monitoring frequency  * If the baseline period is extended to cover full rotation cycles,
+QA/QC procedures      area shall be calculated as the average across a period of equal
+Additional comments   length.
+                      Annually (for calculation of five-year average*)
+
+                      Used in Equation 8
+
+Data/parameter:       AQi,y,ET,a
+Unit                  km
+Description           Quantity of agrochemicals in stratum y for emitter type (ET)
+                      applied in year a
+Source of data        Farm records
+Value(s) applied
+Measurement           Documentation of quantity and type of non­N fertilizer
+procedures            agrochemicals used for zero tillage (e.g. for crop termination,
+                      weed control)
+Monitoring frequency  Annually
+QA/QC procedures
+Additional comments   Used in Equation 7
+
+Data/parameter:       AEFi,y,ET
+Unit                  tCO2e kg-1
+Description           Emissions factor of the agrochemical used in stratum y (for
+                      emitter type [ET])
+Source of data        Supplier information
+Value(s) applied
+Measurement           Supplier's life cycle assessment (LCA) information for production
+procedures            and transport. If no supplier information is available, national or
+                      international default values may be applied.
+Monitoring frequency  Annually
+QA/QC procedures
+Additional comments   Used in Equation 7
+
+                      Climate Security and Sustainable Development                         20
+METHODOLOGY - SOC Activity Module for Zero Tillage v 1.0
+
+Data/parameter:       CYt,y
+Unit                  kg ha-1
+Description           Average annual crop yield per ha in stratum y in the project area
+                      (five-year average*)
+Source of data        Farm records, e.g. field records, sales receipts
+Value(s) applied
+Measurement           Yield is recorded for each crop season and cumulated annually
+procedures            (as sum of each crop type). Average annual yield is calculated for
+                      each stratum across the five-year reporting period.*
+
+Monitoring frequency  * If the baseline period is extended to cover full rotation cycles,
+QA/QC procedures      crop yield shall be calculated as the average across a period of
+Additional comments   equal length.
+                      Annually (for calculation of five-year average*)
+
+                      Used in Equation 8. This parameter replaces parameter CYt in the
+                      SOC Framework Methodology (Equation 19).
+
+Data/parameter:       CYmin,y
+Unit                  Kilogram (kg) ha-1
+Description           Minimum annual crop yield per ha in stratum y since project start
+Source of data        Farm records, e.g. field records, sales receipts
+Value(s) applied
+Measurement           Yield is recorded for each crop season and cumulated annually
+procedures            (as sum of each crop type). CYmin,y represents lowest average
+                      annual yield per stratum (CYt,y) since project start and serves as
+                      threshold to assess yield reduction.
+
+Monitoring frequency  Note: As the running average yield (CYt,y) also includes baseline
+QA/QC procedures      years, CYmin,y for project year one is equal to CYBL.
+Additional comments   At verification
+
+                      Used in Equation 8. This parameter replaces parameter CYmin in
+                      the SOC Framework Methodology (Equation 19).
+
+                      Climate Security and Sustainable Development                         21
+METHODOLOGY - SOC Activity Module for Zero Tillage v 1.0
+
+Data/parameter:       BCLA
+Unit                  tCO2e ha-1
+Description           Emissions from change in biomass carbon stocks in leakage area
+Source of data        Remote sensing analysis or public data on leakage area
+Value(s) applied
+Measurement           Emissions from change in biomass are calculated as the expected
+procedures            difference between pre-leakage carbon stocks and post-leakage
+                      carbon stocks (e.g. deforestation or removal of woody biomass
+                      due to intensification) in the leakage area. Loss of carbon shall be
+                      accounted for as tons of CO2 equivalent released.
+
+Monitoring frequency  In line with the requirement in the SOC Framework Methodology
+QA/QC procedures      that no positive leakage must be accounted, no increase in
+Additional comments   biomass in the leakage area shall be accounted for.
+                      At verification
+
+                      Used in Equation 8
+
+Data/parameter:       SOCLA,t-0
+Unit                  tCO2e ha-1
+Description           Emissions from change in SOC stocks in leakage area
+Source of data        Remote sensing analysis or public data on leakage area
+Value(s) applied
+Measurement           Emissions from change in SOC stocks are calculated as the
+procedures            expected difference between pre-leakage SOC stocks and post-
+                      leakage SOC stocks (e.g. loss in SOC due to tillage or other
+                      agricultural practices) in the leakage area. Loss of SOC shall be
+                      accounted for as tons of CO2 equivalent released.
+
+Monitoring frequency  In line with the requirement in the SOC Framework Methodology
+QA/QC procedures      that no positive leakage must be accounted, no increase in SOC
+Additional comments   in the leakage area shall be accounted for.
+                      At verification
+
+                      Used in Equation 8
+
+                      Climate Security and Sustainable Development                          22
+METHODOLOGY - SOC Activity Module for Zero Tillage v 1.0
+
+Data/parameter:       EEFi,y,SE
+Unit                  tCO2e kWh-1
+Description           Emissions factor for the electricity used in stratum y in electricity
+Source of data        source type
+                      a) If the electricity supply source is a regional/national electric
+Value(s) applied
+Measurement               grid, apply the provisions of the latest version of TOOL05.
+procedures            b) If the electricity supply source is a mini grid, apply the
+Monitoring frequency
+QA/QC procedures          provisions of the latest version of "AMS-I.F.: Renewable
+Additional comments       electricity generation for captive use and mini-grid".
+                      c) If the electricity supply source is a renewable energy captive
+                           power plant, a value of 0 tCO2/MWh shall be applied.
+                      d) For fossil-based captive sources, use national GHG inventory
+                           sources such as:
+                           · USA: Emission Factors for Greenhouse Gas Inventories
+
+                                (epa.gov)
+                           · EU: EMEP/EEA air pollutant emission inventory guidebook
+
+                                2019 -- European Environment Agency (europa.eu) and
+                                EMEP/EEA air pollutant emission inventory guidebook
+                                2023 (europa.eu)
+                           · If no national data is available, default emission factors in
+                                IPCC 2006 Volume 2, Chapter 3, Table 3.3.1 may be
+                                applied (taking into account listed uncertainties).
+
+                      Project start, annual review for national updates
+
+                      Used in Equation 5
+
+Data/parameter:       EUWi,y,SE,a
+Unit                  kWh
+Description           Electricity consumption in stratum y from source SE in year a
+Source of data        Farm records
+Value(s) applied
+Measurement           1) Document electric equipment and power source used for zero
+procedures                  tillage practices in each stratum.
+
+Monitoring frequency  2) Quantify electricity used for zero tillage activity based on:
+QA/QC procedures             a. direct records (electricity documentation), or
+Additional comments          b. duration of equipment use (hours) and power
+                                  consumption per equipment type (kWatt).
+
+                      Annually: use-based documentation, aggregated (sum) per year
+
+                      Used in Equation 5
+
+Data/parameter:       FEPR,y,a
+Unit                  kgN
+Description           N fertilizer input in stratum y under the project scenario in year a
+Source of data        Farm records (field level)
+
+                      Climate Security and Sustainable Development                           23
+METHODOLOGY - SOC Activity Module for Zero Tillage v 1.0
+
+Value(s) applied      Sum of N inputs in stratum y in year a
+Measurement           Use-based, aggregated annually
+procedures            Used in Equation 2
+Monitoring frequency
+QA/QC procedures
+Additional comments
+
+Data/parameter:       FEFi,y,MT
+Unit                  tCO2e liter-1
+Description           Emissions factor for the fuel used in stratum y in machinery type
+Source of data        (MT)
+                      a) National GHG inventory sources such as:
+Value(s) applied
+Measurement                · USA: Emission Factors for Greenhouse Gas Inventories
+procedures                      (epa.gov)
+Monitoring frequency
+QA/QC procedures          · Canada: Emission_Factors.pdf (ec.gc.ca)
+Additional comments        · EU: EMEP/EEA air pollutant emission inventory guidebook
+
+                                2019 -- European Environment Agency (europa.eu) and
+                                EMEP/EEA air pollutant emission inventory guidebook
+                                2023 (europa.eu)
+
+                      b) If no national data is available, default emission factors in
+                           IPCC 2006 Volume 2, Chapter 3, Table 3.3.1 may be applied
+                           (taking into account listed uncertainties).
+
+                      Project start, annual review for national updates
+
+                      Used in Equation 4
+
+Data/parameter:       FULi,y,MT,a
+Unit                  Liter
+Description           Fuel consumption in stratum y by the machinery type (MT) used
+                      in year a
+Source of data        Farm records
+Value(s) applied
+Measurement                1) Document machines and fuel type for equipment used for
+procedures                      zero tillage practices in each stratum.
+
+Monitoring frequency       2) Document amount of equipment use for zero tillage from:
+                                      a. direct records (fuel use), or
+QA/QC procedures                      b. equipment usage (hours or distance) and fuel
+Additional comments                        consumption (litres/hour or litres/km).
+
+                      Baseline: project start
+                      Project: use-based documentation, aggregated (sum) per year
+
+                      Used in Equation 4
+
+                      Climate Security and Sustainable Development                       24
+METHODOLOGY - SOC Activity Module for Zero Tillage v 1.0
+
+      REFERENCES
+
+13.1.1 |In addition to the methodologies, methodological tools, guidelines, and key
+            sources listed in the SOC Framework Methodology, this SOC Activity Module
+            refers to the following key publications:
+              · Cooper, H. V., Sjögersten, S., Lark, R. M., Mooney, S.J. (2021). To till or
+                   not to till in a temperate ecosystem? Implications for climate change
+                   mitigation. Environmental Research Letters, 16, 054022.
+              · Derpsch, R., Friedrich, T., Kassam, A. & Hongwen, L. (2010). Current
+                   status of adoption of no-till farming in the world and some of its main
+                   benefits. International Journal of Agriculture and Biological Engineering,
+                   3, 1­25.
+              · FAO (2015). World reference base for soil resources 2014 (Update 2015).
+                   http://www.fao.org/3/i3794en/I3794en.pdf
+              · Fernández, R., Quiroga, A., Zorati, C. & Noellemeyer, E. (2010). Carbon
+                   contents and respiration rates of aggregate size fractions under no-till
+                   and conventional tillage. Soil Tillage Research, 109, 103­109.
+              · Huang, Y., Ren, W., Wang, L., Hui, D., Grove, J. H., Yang, X., Tao, B.,
+                   Goff, B. (2018). Greenhouse gas emissions and crop yield in no-tillage
+                   systems: a meta-analysis. Agriculture, Ecosystems & Environment, 268;
+                   144­53.
+              · IPCC (2019). 2019 Refinement to the 2006 IPCC Guidelines for National
+                   Greenhouse Gas Inventories, Volume 4, Agriculture, Forestry and Other
+                   Land Use. https://www.ipcc-nggip.iges.or.jp/public/2019rf/vol4.html
+              · Nearing, M. A., Xie, Y. & Ye, Y. (2017). Natural and anthropogenic rates
+                   of soil erosion. International Journal of Soil and Water Conservation
+                   Research, 5, 77­84.
+              · Ogle, S. M., Breidt, F. J. & Paustian, K. (2005). Agricultural management
+                   impacts on soil organic carbon storage under moist and dry climatic
+                   conditions of temperate and tropical regions. Biogeochemistry, 72, 87­
+                   121.
+              · Ogle, S. M., Alsaker, C., Baldock, J., Bernoux, M., Breidt, F. J.,
+                   McConkey, B., Regina, K., Vazquez-Amabile, G. G. (2019). Climate and
+                   soil characteristics determine where no-till management can store carbon
+                   in soils and mitigate greenhouse gas emissions. Scientific Reports, 9,
+                   11665.
+              · Palm, S., Blanco-Canqui, H., DeClerck, F., Gatere, L. & Grace, P. (2014).
+                   Conservation agriculture and ecosystem services: an overview.
+                   Agriculture, Ecosystems, and Environment, 187, 87­105.
+              · Pelosi, C., Bertrand, M. & Roger-Estrade, J. (2009). Earthworm
+                   community in conventional, organic and direct seeding with living mulch
+                   cropping systems. Agronomy for Sustainable Development, 29, 287­295.
+                   https://doi.org/10.1051/agro/2008069
+
+Climate Security and Sustainable Development                                                   25
+METHODOLOGY - SOC Activity Module for Zero Tillage v 1.0
+
+              · Pittelkow, C. M., Linquist, B. A., Lundy, M. E., Liang, X., van Groenigen,
+                   K. J., Lee, J., van Gestel, N., Six, J., Venterea, R. T. & van Kessel, C.
+                   (2015a). Productivity limits and potentials of the principles of
+                   conservation agriculture. Nature, 517, 365­368.
+
+              · Pittelkow, C. M., Linquist, B. A., Lundy, M. E., Liang, X., van Groenigen,
+                   K. J., Lee, J., van Gestel, N., Six, J., Venterea, R. T. & van Kessel, C.
+                   (2015b). When does no-till yield more? A global meta-analysis. Field
+                   Crops Research, 183, 156­168.
+
+              · Shakoor, A., Shahbaz, M., Farooq, T. H., Sahar, N. E., Shahzad, S. M.,
+                   Altaf, M. M., Ashraf, M. (2021). A global meta-analysis of greenhouse
+                   gases emission and crop yield under no-tillage as compared to
+                   conventional tillage. Science of the Total Environment, 750, 142299.
+
+              · Stroud, J. L. (2020). Earthworms in No-Till: The Key to Soil Biological
+                   Farming. In: Dang, Y., Dalal, R., Menzies, N. (eds). No-till Farming
+                   Systems for Sustainable Agriculture, 267­280.
+                   https://doi.org/10.1007/978-3-030-46409-7_16
+
+              · Triplett, G. B. Jr., Dick, W. A. (2008). No-tillage crop production: a
+                   revolution in agriculture. Agronomy Journal, 100, S-153­165.
+
+DOCUMENT HISTORY
+
+ Version  Release date  Description
+1.0       20/02/2024    First release
+
+          Climate Security and Sustainable Development                                        26
+

@@ -1,0 +1,310 @@
+=== p1
+METHODOLOGY
+BM FR05.001 
+Afforestation and reforestation of degraded 
+mangrove habitats
+Publication Date: 27 March 2025
+Version 1.0
+Sectoral scope(s): Forestry
+
+=== p2
+Offset Mechanism under Carbon Credit Trading Scheme
+BM FR05.001 2
+Table of Contents
+1. Introduction............................................................................................................................3
+2. Definitions..............................................................................................................................3
+3. Scope & Applicability .............................................................................................................3
+3.1. Scope.............................................................................................................................3
+3.2. Applicability....................................................................................................................4
+3.3. Methodology Approval Date ..........................................................................................4
+3.4. Applicability of approved tools .......................................................................................4
+4. Methodology: Baseline and Monitoring Component..............................................................4
+4.1. Selection of carbon pools and greenhouse gases accounted .......................................4
+4.2. Identification of the baseline scenario and demonstration of additionality.....................5
+4.3. Stratification...................................................................................................................5
+4.4. Baseline net GHG removals by sinks ............................................................................6
+4.5. Actual net GHG removals by sinks................................................................................6
+4.6. Leakage.........................................................................................................................7
+4.7. Net anthropogenic GHG removals by sinks...................................................................7
+4.8. Calculation of CCCs ......................................................................................................8
+5. Monitoring Procedure ............................................................................................................9
+5.1. Monitoring plan ..............................................................................................................9
+5.2. Monitoring of project implementation.............................................................................9
+5.3. Precision requirements..................................................................................................9
+5.4. Data requirements under the methodology ...................................................................9
+=== p3
+Offset Mechanism under Carbon Credit Trading Scheme
+BM FR05.001 3
+1. Introduction
+1. This methodology is adopted and refers to the latest approved version of the UNFCCC 
+Clean Development Mechanism Methodology AR-AM0014 (as valid from 04 October 
+2013).
+2. It shall be the responsibility of the non-obligated entity and Accredited Carbon Verification 
+Agency (ACVA) to note of any subsequent changes or revisions in the above-mentioned 
+methodology while developing projects and performing validation and/or verification 
+activity respectively
+3. This methodology allows afforestation and reforestation of wetland that constitutes 
+degraded mangrove habitat. The methodology allows use of mangrove species and non-
+mangrove species but in case of more than 10 per cent area being covered by planting of 
+non-mangrove species it prohibits changes in the hydrology of the project area. The 
+methodology restricts the extent of soil disturbance in the project to be no more than 10 
+per cent. Project activities applying this methodology may choose to exclude or include 
+accounting of any of the carbon pools of dead wood and soil organic carbon, but cannot 
+include the litter carbon pool. 
+2. Definitions
+4. The definitions contained in the following documents shall apply: 1
+(a) “Detailed Procedure for Offset Mechanism under CCTS”; 
+(b) “2019 Refinement to the 2006 IPCC Guidelines for National Greenhouse Gas 
+Inventories”
+5. For the purpose of this methodology, the following specific definitions also apply:
+(a)Degraded mangrove habitat - refers to wetlands where, in their natural state, 
+mangrove vegetation can grow and have soil or sediment that is usually water-
+logged with water that is saline or brackish, and that were subjected to impacts 
+resulting in decrease of forest cover below that reported by the host Party.
+(b)Soil disturbance - refers to any activity that results in a decrease in soil organic 
+carbon (SOC), for example ploughing, ripping, scarification, digging of pits and 
+trenches, stump removal, etc.
+3. Scope & Applicability
+3.1. Scope
+6. This methodology applies to afforestation and reforestation project activities implemented 
+in degraded mangrove habitats. 
+1 These documents are available online at the following URLs:
+(a) <http://www.ipcc nggip.iges.or.jp/public/gpglulucf/gpglulucf.html>. 
+=== p4
+Offset Mechanism under Carbon Credit Trading Scheme
+BM FR05.001 4
+3.2. Applicability
+7. This methodology is applicable under the following conditions:
+(a) The land subject to the project activity is degraded mangrove habitat;
+(b) More than 90 per cent of the project area under the project scenario is planted with 
+mangrove species. If more than 10 per cent of the project area is planted with non-
+mangrove species then the project activity does not lead to alteration of hydrology 
+of the project area and hydrology of connected up-gradient and down-gradient 
+wetland area;
+(c) Soil disturbance attributable to the A/R Indian Carbon Market (ICM) project activity 
+does not cover more than 10 per cent of area.2
+8. A project activity applying this methodology shall also comply with the applicability 
+conditions of the tools contained within the methodology and applied by the project activity.
+3.3. Methodology Approval Date
+9. The date of adoption of this document shall be effective from 27 March 2025.
+3.4. Applicability of approved tools
+10. This methodology also refers to the latest approved versions of the following adopted ICM 
+tools:
+(i) “BM-T-AR-0001: “Combined tool to identify the baseline scenario and demonstrate 
+additionality in A/R ICM project activities” (hereinafter referred to as BM-T-AR-001);
+(ii) “BM-T-AR-004: Estimation of carbon stocks and change in carbon stocks of trees 
+and shrubs in A/R ICM project activities” (hereinafter referred to as BM-T-AR-004);
+(iii) “BM-T-AR-003: Estimation of carbon stocks and change in carbon stocks in dead 
+wood and litter in A/R ICM project activities” (hereinafter referred to as BM-T-AR-
+003);
+(iv) “BM-T-AR-002: Estimation of non-CO 2 GHG emissions resulting from burning of 
+biomass attributable to an A/R ICM project activity” (hereinafter referred to as BM-T-
+AR-002);
+(v) “BM-T-AR-005: Estimation of the increase in GHG emissions attributable to 
+displacement of pre-project agricultural activities in A/R ICM project activity” 
+(hereinafter referred to as BM-T-AR-005).
+4. Methodology: Baseline and Monitoring Component
+4.1. Selection of carbon pools and greenhouse gases accounted
+11. The carbon pools selected for accounting of carbon stock changes are shown in table 1.
+2 For example, digging pits of size 0.50 m × 0.50 m (length × width) at a spacing of 3 m × 3 m is equal to 
+a coverage of 2.78 per cent; continuous ploughing of land is equal to a coverage of 100 per cent.
+=== p5
+Offset Mechanism under Carbon Credit Trading Scheme
+BM FR05.001 5
+Table 1. Carbon pools selected for accounting of carbon stock changes
+Carbon pool Whether 
+selected Justification/Explanation
+Above-ground 
+biomass
+Yes This is the major carbon pool subjected to project 
+activity
+Below-ground biomass Yes Carbon stock in this pool is expected to increase due to 
+the implementation of the project activity
+Litter No Litter biomass is subjected to high turnover and 
+displacement due to tidal currents. It is a conservative 
+choice to exclude the pool from accounting because the 
+project activity will not decrease the rate of 
+accumulation of litter
+Dead wood and Soil 
+organic carbon
+Optional Carbon stock in these pools may increase due to 
+implementation of the project activity
+12. The emission sources and associated greenhouse gases (GHGs) selected for accounting 
+are shown in table 2.
+Table 2. Emission sources and GHGs selected for accounting
+Sources Gas Whether
+Selected Justification/Explanation 
+CO2 No CO2 emissions due to burning of biomass 
+are accounted as a change in carbon stock
+CH4 Yes Burning of woody biomass for the purpose 
+of site preparation, or as part of forest 
+management, is allowed under this 
+methodology
+Burning of woody 
+biomass
+N2O Yes Burning of woody biomass for the purpose 
+of site preparation, or as part of forest 
+management, is allowed under this 
+methodology
+4.2. Identification of the baseline scenario and demonstration of additionality
+13. The non-obligated entity shall identify the baseline and demonstrate that the project 
+activity is additional by using BM-T-AR-0001.
+4.3. Stratification
+14. If biomass distribution over the project area is not homogeneous, stratification should be 
+carried out to improve the precision of biomass estimation. Different stratifications may be 
+appropriate for the baseline and project scenarios in order to achieve optimal precision of 
+estimation of net GHG removals by sinks. In particular: 
+(a) For baseline net GHG removals by sinks, it is usually sufficient to stratify the area 
+according to major vegetation types and their crown cover and/or land use types; 
+(b) For actual net GHG removals by sinks the stratification for ex ante estimations is 
+based on the project planting/management plan and the stratification for ex post 
+estimations is based on the actual implementation of the project 
+=== p6
+Offset Mechanism under Carbon Credit Trading Scheme
+BM FR05.001 6
+planting/management plan. If natural or anthropogenic impacts (e.g. local fires) or 
+other factors (e.g. soil type) significantly alter the pattern of biomass distribution in 
+the project area, then the ex post stratification is revised accordingly.
+4.4. Baseline net GHG removals by sinks
+15. The baseline net GHG removals by sinks shall be calculated as follows:
+∆𝐶𝐵𝑆𝐿,𝑡 = ∆𝐶𝑇𝑅𝐸𝐸_𝐵𝑆𝐿,𝑡 + ∆𝐶𝑆𝐻𝑅𝑈𝐵_𝐵𝑆𝐿,𝑡 + ∆𝐶𝐷𝑊_𝐵𝑆𝐿,𝑡 Equation (1)
+Where:
+∆𝐶𝐵𝑆𝐿,𝑡 = Baseline net GHG removals by sinks in year t; t CO2-e
+∆𝐶𝑇𝑅𝐸𝐸_𝐵𝑆𝐿,𝑡 = Change in carbon stock in baseline tree biomass within the project 
+boundary in year t, as estimated in BM-T-AR-0004”; t CO2-e
+∆𝐶𝑆𝐻𝑅𝑈𝐵_𝐵𝑆𝐿,𝑡 = Change in carbon stock in baseline shrub biomass within the 
+project boundary, in year t, as estimated in BM-T-AR-0004; t CO2-
+e
+∆𝐶𝐷𝑊_𝐵𝑆𝐿,𝑡 = Change in carbon stock in baseline dead wood biomass within the 
+project boundary, in year t, as estimated in BM-T-AR-0003”; t CO2-
+e
+4.5. Actual net GHG removals by sinks
+16. GHG emissions resulting from removal of herbaceous vegetation, combustion of fossil 
+fuel, fertilizer application, use of wood, decomposition of litter and fine roots of N-fixing 
+trees, construction of access roads within the project boundary, and transportation 
+attributable to the project activity shall be considered insignificant and therefore accounted 
+as zero.
+17. The actual net GHG removals by sinks shall be calculated as follows:
+∆𝐶𝐴𝐶𝑇𝑈𝐴𝐿,𝑡 = ∆𝐶𝑃,𝑡 ― 𝐺𝐻𝐺𝐸,𝑡 Equation (2)
+Where:
+∆𝐶𝐴𝐶𝑇𝑈𝐴𝐿,𝑡 = Actual net GHG removals by sinks, in year t; t CO2-e
+∆𝐶𝑃,𝑡 = Change in the carbon stocks in project, occurring in the selected 
+carbon pools, in year t; t CO2-e
+𝐺𝐻𝐺𝐸,𝑡 = Increase in non-CO2 GHG emissions within the project boundary 
+as a result of the implementation of the A/R ICM project activity, in 
+year t, as estimated in BM-T-AR-0002; t CO2-e
+18. Change in the carbon stocks in project, occurring in the selected carbon pools in year t 
+shall be calculated as follows:
+∆𝐶𝑃,𝑡 = ∆𝐶𝑇𝑅𝐸𝐸_𝑃𝑅𝑂𝐽,𝑡 + ∆𝐶𝑆𝐻𝑅𝑈𝐵_𝑃𝑅𝑂𝐽,𝑡 + ∆𝐶𝐷𝑊_𝑃𝑅𝑂𝐽,𝑡 + ∆𝑆𝑂𝐶𝑃𝑅𝑂𝐽,𝑡 Equation (3)
+=== p7
+Offset Mechanism under Carbon Credit Trading Scheme
+BM FR05.001 7
+Where:
+∆𝐶𝑃,𝑡 = Change in the carbon stocks in project, occurring in the selected 
+carbon pools, in year t; t CO2-e
+∆𝐶𝑇𝑅𝐸𝐸_𝑃𝑅𝑂𝐽,𝑡 = Change in carbon stock in tree biomass in project in year t, as 
+estimated in BM-T-AR-0004; t CO2-e
+∆𝐶𝑆𝐻𝑅𝑈𝐵_𝑃𝑅𝑂𝐽,𝑡 = Change in carbon stock in shrub biomass in project in year t, as 
+estimated in BM-T-AR-0004; t CO2-e
+∆𝐶𝐷𝑊_𝑃𝑅𝑂𝐽,𝑡 = Change in carbon stock in dead wood in project in year t, as 
+estimated in BM-T-AR-0003; t CO2-e
+∆𝑆𝑂𝐶𝑃𝑅𝑂𝐽,𝑡 = Change in carbon stock in the soil organic carbon (SOC) pool 
+within the project boundary, in year t; t CO2-e
+19. The change in carbon stock in the SOC pool within the project boundary, in year t, shall 
+be estimated as follows:
+∆𝑆𝑂𝐶𝑃𝑅𝑂𝐽,𝑡 = 44
+12 ×
+𝑡
+𝑡=1
+𝐴𝑃𝐿𝐴𝑁𝑇,𝑡 × 𝑑𝑆𝑂𝐶𝑡 × 1 𝑦𝑒𝑎𝑟 Equation (4)
+Where:
+∆𝑆𝑂𝐶𝑃𝑅𝑂𝐽,𝑡 = Change in SOC stock within the project boundary, in year t; 
+t CO2-e
+𝐴𝑃𝐿𝐴𝑁𝑇,𝑡 = Area planted in year t; ha
+𝑑𝑆𝑂𝐶𝑡 = The rate of change in SOC stocks within the project boundary, in 
+year t; t C ha-1 yr-1. 
+The following default value of is used, unless transparent and 
+verifiable information can be provided to justify a different value: 
+(i) 𝑑𝑆𝑂𝐶𝑡= 0.50 t C ha-1 yr-1 for t = tPLANT to t = tPLANT + 20 years, 
+where tPLANT is the year in which planting takes place; 
+(ii) 𝑑𝑆𝑂𝐶𝑡 = 0 t C ha-1 yr-1 for t > tPLANT +20.
+4.6. Leakage
+20. Leakage shall be estimated as follows:
+𝐿𝐾𝑡 = 𝐿𝐾𝐴𝐺𝑅𝐼𝐶,𝑡 Equation (5)
+Where:
+𝐿𝐾𝑡 = GHG emissions due to leakage, in year t; t CO2-e
+𝐿𝐾𝐴𝐺𝑅𝐼𝐶,𝑡 = Leakage due to the displacement of agricultural activities in year t, 
+as estimated in BM-T-AR-0005; t CO2-e
+4.7. Net anthropogenic GHG removals by sinks
+=== p8
+Offset Mechanism under Carbon Credit Trading Scheme
+BM FR05.001 8
+21. The net anthropogenic GHG removals by sinks shall be calculated as follows:
+∆𝐶𝐴𝑅,𝑡 = ∆𝐶𝐴𝐶𝑇𝑈𝐴𝐿,𝑡 ― ∆𝐶𝐵𝑆𝐿,𝑡 ― 𝐿𝐾𝑡 Equation (6)
+Where:
+∆𝐶𝐴𝑅,𝑡 = Net anthropogenic GHG removals by sinks, in year t; t CO2-e
+∆𝐶𝐴𝐶𝑇𝑈𝐴𝐿,𝑡 = Actual net GHG removals by sinks, in year t; t CO2-e
+∆𝐶𝐵𝑆𝐿,𝑡 = Baseline net GHG removals by sinks, in year t; t CO2-e
+𝐿𝐾𝑡 = GHG emissions due to leakage, in year t; t CO2-e
+4.8. Calculation of CCCs
+22. The tCCCs and lCCCs for a verification period T = t 2 – t1, (where t1 and t2 are the years of 
+the start and the end, respectively, of the verification period) shall be calculated as 
+follows3:
+𝑡𝐶𝐶𝐶𝑡2 =
+𝑡2
+1
+∆𝐶𝐴𝑅,𝑡 Equation (7)
+𝑙𝐶𝐶𝐶𝑡2 =
+𝑡2
+𝑡1+1
+∆𝐶𝐴𝑅,𝑡 Equation (8)
+Where:
+𝑡𝐶𝐶𝐶𝑡2 = Number of units of temporary Carbon Credit Certificates issuable 
+in year t2
+𝑙𝐶𝐶𝐶𝑡2 = Number of units of long-term Carbon Credit Certificates issuable 
+in year t2
+∆𝐶𝐴𝑅,𝑡 = Net anthropogenic GHG removals by sinks, in year t; t CO2-e
+𝑡1, 𝑡2 = The years of the start and the end, respectively, of the verification 
+period
+23.If  lCCCt2 < 0 then lCCC t2 presents the number of lCCCs that shall be replaced because of 
+a reversal of net anthropogenic greenhouse gas removals by sinks since the previous 
+certification. 
+3 Temporary CCCs or tCCCs expire at the end of the commitment period following the one during which 
+these were issued. Long-term CCCs or lCCCs expire at the end of its crediting period. tCCCs are issued 
+for the net anthropogenic greenhouse gas removals by sinks achieved by the project activity since the 
+project start date; lCCCs are issued for the net anthropogenic greenhouse gas removals by sinks achieved 
+by the project activity during each verification period.
+=== p9
+Offset Mechanism under Carbon Credit Trading Scheme
+BM FR05.001 9
+5. Monitoring Procedure
+5.1. Monitoring plan
+24. The monitoring plan shall provide for collection of all relevant data necessary for:
+(a) Verification that the applicability conditions listed under paragraphs 3 and 4 have 
+been met;
+(b) Verification of changes in carbon stocks in the pools selected; 
+(c) Verification of project emissions and leakage emissions. 
+25. The data collected shall be archived for a period of at least two years after the end of the 
+last crediting period of the project activity.
+5.2. Monitoring of project implementation 
+26. Information shall be provided, and recorded in the project design document (PDD), to 
+establish that the commonly accepted principles and practices of forest inventory and 
+forest management in the host country are implemented. If such principles and practices 
+are not known or available, standard operating procedures (SOPs) and quality 
+control/quality assurance (QA/QC) procedures for inventory operations, including field 
+data collection and data management, shall be identified, recorded and applied. Use or 
+adaptation of SOPs available from published handbooks, or from the “IPCC Good Practice 
+Guidance for Land Use, Land-Use Change and Forestry 2003”, is recommended.
+5.3. Precision requirements 
+27. For this methodology, the precision requirements are those listed in BM-T-AR-0004.
+5.4. Data requirements under the methodology
+28. Description of data and parameters can be found in the tools used in this methodology. 
+29. Data and parameters obtained from measurement shall be monitored as required in the 
+tools.
+- - - - -
+=== p10
+Offset Mechanism under Carbon Credit Trading Scheme
+BM FR05.001 10
+Revision/Changes in the Document
+Version Date Description
+1.0 27 March 2025 Initial Adoption

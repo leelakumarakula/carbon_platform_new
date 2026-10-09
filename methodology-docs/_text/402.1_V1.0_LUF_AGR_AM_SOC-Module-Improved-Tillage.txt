@@ -1,0 +1,766 @@
+GOLD STANDARD FOR THE GLOBAL GOALS
+
+Soil Organic Carbon Activity Module:
+Increasing Soil Carbon Through Improved Tillage
+Practices
+
+(This Activity Module must be applied in conjunction with the Gold Standard Soil
+Organic Carbon Framework Methodology>>.)
+
+Version 1.0
+Published January 2020
+SDG: 13 Climate Action
+                                                                                                                          2
+
+TABLE OF CONTENTS
+
+        Methodology Summary...................................................................3
+        Definitions and References .............................................................3
+        Applicability.................................................................................... 5
+        Project Boundaries .........................................................................6
+        Emissions Reduction Quantification Approaches ..............................6
+        Baseline Scenario ...........................................................................7
+        Project Scenario .............................................................................7
+        Uncertainty ....................................................................................8
+        Other Emissions .............................................................................8
+        Leakage .........................................................................................8
+        Project Buffer .................................................................................8
+        Additionality ...................................................................................9
+        Sustainable Development Goals......................................................9
+        Monitoring ......................................................................................9
+Annex A: Soil Carbon Accumulation Examples ....................................... 11
+Annex B: Additional References ............................................................. 14
+
+ACKNOWLEDGEMENT:
+
+Developed by: TREES Consulting
+                                                                                                                          3
+
+       Methodology Summary
+
+This Soil Organic Carbon (SOC) Activity Module presents requirements and guidance to
+quantify greenhouse gas (GHG) emissions from agriculture by changing soil tillage
+practices within agricultural systems. Activities can achieve avoidance of emissions as
+well as sequestration of carbon in the soil, both of which result in increased SOC content.
+This activity module shall be applied in conjunction with the Soil Organic Carbon
+Framework Methodology.
+
+This Activity Module incentivizes and captures benefits from tillage improvements. It is
+applicable for a wide area of technological levels, from low tech land use to industrialized
+land management, using a variety of improved tillage techniques. As tillage techniques
+and scientific knowledge of their impact are constantly changing, the methodology does
+not require a specific approach but provides flexibility to apply the most current and
+best-fit systems. Where local information is unavailable, project owners may use data or
+models from other scientific sources.
+
+Mangalassery et al., 2014 summarizes the importance of agricultural land use and tillage
+with regards to climate change: "Globally, agriculture accounts for 10­12% of total
+anthropogenic emissions of greenhouse gases (GHGs) estimated to be 5.1­6.1 Gt CO2eq
+yr-1 in 2005. Conservation tillage is one among many different mitigation options
+suggested to reduce GHG emissions from agriculture. Conservation tillage practices such
+as reduced/minimum/no tillage, direct drilling and strip cropping are also widely
+recommended to protect soil against erosion and degradation of structure, create greater
+aggregate stability, increase soil organic matter content, enhance sequestration of
+carbon, mitigate GHG emissions and improve biological activities."
+
+In many countries conventional tillage methods are still in use today, applying
+instruments such as harrows, mouldboard ploughs, offset harrows, subsoilers, and
+rippers for extensive seedbed preparation. Conventional tillage methods cause great soil
+disturbance such as soil compaction, loss of organic matter, degradation of soil
+aggregates, death or disruption of soil microbes and other organisms including
+mycorrhiza, arthropods, and earthworms, and soil erosion where topsoil is washed or
+blown away1. Also, it leaves little plant residues on the surface and thus lead to not only
+greenhouse gas emissions but also moisture loss/imbalances and in many cases nutrient
+efflux. It is thus essential that ­ while ensuring food security and sustainability ­
+incentives are provided to improve the relevant practices.
+
+Under this SOC Activity Module, conservation tillage methods are introduced to project
+areas previously under more conservative management. This includes forms of minimum
+or reduced impact tillage which causes less soil disturbance than conventional forms of
+tillage and where residue, mulch, or sod is left on the soil surface to protect soil and
+conserve moisture. After planting, at least 30 percent of the soil surface remains covered
+by residue to reduce soil erosion by water (compare applicability chapter).
+
+       Definitions and References
+
+1 Lichtfouse, E., Hamelin, M., Navarrete, M., Debaeke, P., 2011; Sustainable Agriculture
+Volume 2
+                                                                                                4
+
+2.1 Definitions
+
+In addition to terms and definition listed in the SOC Framework Methodology the
+following definitions apply for the purposes of this activity module:
+
+Conservation tillage: Includes any form of minimum or reduced tillage, where
+                                     residue, mulch, or sod is left on the soil surface to
+                                     protect soil and conserve moisture. After planting, at
+                                     least 30 percent of the soil surface remains covered by
+                                     residue to reduce soil erosion by water.
+
+Conventional tillage: Seedbed preparation using cultivation instruments such
+                                     as harrows, mouldboard ploughs, offset harrows,
+                                     subsoilers, and rippers. Conventional tillage methods,
+                                     involving extensive seedbed preparation, cause the
+                                     greatest soil disturbance and leave little plant residues
+                                     on the surface.
+
+No tillage:  A way of growing crops or pasture without tillage (no
+             turning of topsoil), minimizing soil disturbance. Also
+             called no-till farming or zero tillage.
+
+2.2 References
+
+This SOC Activity Module is based on and replaces the Gold Standard Agriculture
+Methodology for Increasing Soil Carbon Through Improved Tillage Practices V0.9
+(released for road testing).
+
+In addition to the methodologies, methodological tools, guidelines, and key
+sources listed in the SOC Framework Methodology, this Activity Module refers to
+the following key publications:
+
+· Batjes, N.H. (2010)2: A global framework of soil organic carbon stocks
+    under native vegetation for use with the simple assessment option of the
+    Carbon Benefits Project system (Ver. 1.0) ISRIC - World Soil Information.
+
+· Batjes, N.H. (2011)3: Soil organic carbon stocks under native vegetation ­
+    Revised estimates for use with the simple assessment option of the
+    Carbon Benefits Project system. Agriculture, Ecosystems and
+    Environment, 142, 365­ 373.
+
+2 https://pdfs.semanticscholar.org/6512/4d60f6556c4cdce6a673367ba7dd3ba03759.pdf
+3 https://www.sciencedirect.com/science/article/abs/pii/S0167880911001988
+                                                                                                                          5
+
+    · Mangalassery et al (2014)4: To what extent can zero tillage lead to a
+         reduction in greenhouse gas emissions from temperate soils? Scientific
+         Reports 4, article number 4586.
+
+    · Lichtfouse (Editor; 2011)5: Genetics, Biofuels and Local Farming Systems.
+         Springer, Sustainable
+
+    · West and Post (2002): Soil Organic Carbon Sequestration Rates by Tillage
+         and Crop Rotation: A Global Data Analysis. Soil Sci. Soc. Am. J. 66:1930­
+         1946.
+
+In addition to the references above, sources listed in Annex B were consulted for
+the development of the original tillage methodology.
+
+       Applicability
+
+A project applying this Activity Module shall comply with the applicability
+conditions specified below and within the SOC Framework Methodology. In
+addition, the project shall comply with applicable Land Use & Forests Activity
+Requirements (hereafter LUF Activity Requirements) and the Gold Standard for
+the Global Goals Principles & Requirements. (hereafter Principles &
+Requirements).
+
+    a. Soil type:
+         · Proposed projects on sites with organic soils (Histosols), as defined by
+              the World Reference Base for Soil Resources (FAO 2015)6, are
+              ineligible. Only mineral soil types are eligible.
+
+    b. Cropping system:
+         · Managed cropping systems (e.g. single crop or crop rotation) must
+              have been in place for at least 5 years prior to project implementation,
+              i.e. the project does not lead to land use change.
+
+    c. Tillage practice:
+         · Under this Activity Module, conservation tillage methods are applied,
+              meaning forms of minimum or reduced tillage, where residue, mulch,
+              or sod is left on the soil surface to protect soil and conserve moisture.
+              After planting, at least 30 percent of the soil surface remains covered
+              by residue to reduce soil erosion by water.
+
+4 http://www.nature.com/srep/2014/140404/srep04586/full/srep04586.html
+
+5 https://www.springer.com/gp/book/9789400715202
+
+6 World reference base for soil resources 2014 (Update 2015):
+  http://www.fao.org/3/i3794en/I3794en.pdf
+                                                                                                                          6
+
+         · Due to the uncertainties on the actual carbon benefits of no-till
+              techniques, this activity module is not applicable to no-till techniques,
+              including strip tillage and direct drill practices.
+
+       Project Boundaries
+
+4.1 Spatial boundary
+For spatial boundaries, rules and requirements defined in the SOC Framework
+Methodology apply.
+
+4.2 Temporal boundary
+The project crediting period shall be fixed ten years7 and cannot be renewed.
+
+4.3 Carbon Pools
+This SOC Activity Module focuses entirely on the soil carbon pool. The project
+shall account for carbon pools for assessment in line with the SOC Framework
+Methodology.
+
+       Emissions Reduction Quantification Approaches
+
+Calculations for overall benefits follow the equations set out in Section:
+Emissions Reduction Quantification Approaches of the SOC Framework
+Methodology. Sections below specify approaches and calculations specific to this
+SOC activity module.
+
+5.1 Approaches for baseline and project scenario quantification
+To accommodate that soil measurements are not always available to projects,
+especially for small community-based activities, this SOC Activity Module allows
+selection of any of the three approaches to baseline and project activity
+quantification as described in the SOC Framework Methodology. If a different
+approach is used for baseline and project scenarios in a stratum,
+conservativeness and comparability have to be ensured.
+
+       Approach 1: Requires on-site measurements to directly document pre-
+       project and project SOC stocks.
+
+       Approach 2: Uses peer-reviewed publications to quantify pre-project SOC
+       stocks and project impact. Project owners shall prove that the research
+
+7 The crediting period is defined based on results from key peer reviewed scientific
+  publications. Mangalassery et al (2014) found that increases in soil organic matter
+  occurred within five years following conversion from conventional tillage to zero tillage:
+  http://www.nature.com/srep/2014/140404/srep04586/full/srep04586.html). West and
+  Post (2002) in similar work recorded a large increase in soil between 5­10 years.
+                                                                                                                          7
+
+       results are conservative and applicable to the project site and management
+       practice.
+
+       Approach 3: Applies default factors to quantify SOC changes from
+       improved tillage, relating to the general methodology described in the IPCC
+       2019 Guidelines for National Greenhouse Gas Inventories (IPCC 2006a).
+       However, instead of IPCC default SOC reference values (SOCREF), a project-
+       oriented SOCREF value shall be used in connection with IPCC impact factors.
+
+Generally, project owners shall apply the most specific approach possible with
+the data available, giving preference to local data sources and models. A
+decision tree to determine an eligible approach is provided in the SOC
+Framework Methodology.
+
+       Baseline Scenario
+
+Under the additionality and applicability conditions set in the SOC Framework
+Methodology and this SOC Activity Module, the relevant baseline scenario is the
+continuation of the historical cropping practices where, in the absence of the
+project activity, conventional tillage is done in a business as usual (BAU)
+manner.
+
+To determine the baseline of the eligible project area the land shall be stratified
+into modelling units (MU) according to:
+
+    · Mineral soil type
+    · Climate zone
+    · Land management / cropping system
+    · Input levels (e.g. fertilization)
+    · Tillage practices
+
+For each stratum (MU), SOC measurements have to be performed (Approach 1)
+and/or model parameters identified and verified (Approach 2 or 3).
+
+6.1 Baseline Calculations
+
+Quantification for soil organic carbon in the baseline (SOCBL,y) shall follow the
+rules, approaches, calculations, and parameters set out in Section: Baseline
+Scenario of the SOC Framework Methodology.
+
+       Project Scenario
+
+Under the project scenario, SOC relevant practices are applied in the project
+area.
+
+As with the baseline, the eligible project area shall be stratified into modelling
+units (MU) according to
+
+    · Mineral soil type
+    · Climate zone
+    · Cropping systems
+                                                                                                                          8
+
+    · Input levels (e.g. fertilization)
+    · Tillage practices
+
+For each stratum (MU), SOC measurements have to be performed (Approach 1)
+and/or modelling parameters identified (Approach 2 or 3).
+
+7.1 Project Scenario Calculations
+
+Quantification for soil organic carbon in the project scenario (SOCt,y) shall follow
+the rules, approaches, calculations, and parameters set out in Section: Project
+scenario of the SOC Framework Methodology.
+
+       Uncertainty
+
+Calculation of uncertainty shall follow the rules and equations set out in the SOC
+Framework Methodology.
+
+       Other Emissions
+
+Significant additional greenhouse gas emissions (>5% total) due to the project
+activity need to be accounted for. For this SOC Activity Module, this explicitly
+includes emissions from increased fertilizer input, fossil fuel combustion, and
+other agrochemical emissions. Calculation thereof shall follow the rules and
+equations set out in the SOC Framework Methodology.
+
+       Leakage
+
+Calculation of leakage shall follow the rules and equations set out in the SOC
+Framework Methodology.
+
+For this SOC activity module, leakage from C runoff is considered 0 as projects
+are not allowed on wetlands. Also, as the project site is being actively
+maintained for commodity production during the project-crediting period, yield-
+related leakage risks are relatively small. Crop producers are commonly risk
+averse and are unlikely to intentionally suffer reduced crop yields. Moreover,
+according to LUF Activity Requirements, projects shall not lead to a decrease in
+agricultural productivity, thus all projects shall be set up to maintain or increase
+yield. Thus for initial project calculations, LKt-0 is considered equal 0.
+
+If a reduction in yield is detected in a performance certification, it is assumed
+that the lost production capacity will have to be made up for on land outside the
+project area. Emissions caused by such a shift shall be accounted for as leakage
+according to the equation listed in the SOC Framework Methodology.
+
+       Project Buffer
+
+Allocation to Gold Standard Compliance Buffer shall follow requirements defined
+in GHG Emissions Reduction & Sequestration Product Requirements and in the
+SOC Framework Methodology.
+                                                                                9
+
+       Additionality
+
+All Gold Standard projects shall demonstrate that they would not have been
+implemented without the benefits of carbon certification. Specific rules and
+guidelines on how to assess additionality can be found in the Additionality
+section LUF Activity Requirements and the AGR Additionality (AGR projects)
+Template.
+
+       Sustainable Development Goals
+
+Documentation of contribution to SDG 13 shall follow the requirements defined
+in the SOC Framework Methodology. Contribution to further specific Sustainable
+Development Goals (SDGs) is not defined here as it is specified at the project
+level following Principles & Requirements.
+
+       Monitoring
+
+Monitoring approach and parameters shall be followed as set out in the SOC
+Framework Methodology. In addition to the data and parameters listed in the
+SOC Framework Methodology, the following parameters need to be monitored
+and recorded:
+
+14.1 Data and Parameters collected for baseline calculation and
+         when project areas (farms/land parcels) are being added
+         and at renewable of crediting period if required
+
+Data/parameter: FMG,BL,y
+
+Unit                 [dimensionless]
+
+Description          tillage factor before project start in stratum y
+
+Source of data       IPCC defaults or national / local studies (preferred)
+
+Value(s) applied
+
+Measurement
+procedures
+
+Monitoring frequency Project start
+
+QA/QC procedures
+
+Additional comments
+
+14.2 Data and Parameters monitored
+
+Data/parameter:      FMG,PR,y
+Unit                 [dimensionless]
+Description          tillage factor after project start in stratum y
+Source of data       IPCC defaults or national / local studies (preferred)
+Value(s) applied
+                                                                                                                        10
+
+ Measurement
+ procedures
+ Monitoring frequency Annually
+ QA/QC procedures
+ Additional comments
+
+Also, the project owner shall collect and document evidence that this SOC
+activity module's applicability conditions are met at all times, especially that:
+
+· Measures are taken to prevent soil erosion
+· Adequate input of organic crop residue, mulch, sod or other organic C source
+
+   is applied to the project area fields
+                                                                                                                        11
+
+Annex A: Soil Carbon Accumulation Examples
+
+The following section is an extract of the original non-binding Annex of the 2016
+approved Gold Standard methodology "Increasing Soil Carbon Through
+Improved Tillage Practices" which is replaced by the SOC Framework
+Methodology and this SOC Activity Module.
+
+At the time of the methodology approval (2016), a background review covering
+international literature on improved tillage techniques and effects on carbon
+stock in soils showed the annual rates of soil carbon sequestration per hectare
+under some different environmental and climate patterns as listed in Table A-01.
+It indicates the variation across climate and soil types as well as the rather
+broad ranges within these categories. This corroborates that in order to apply
+such parameters, projects must match the sources conditions, i.e. climate, soil,
+cropping system and any other parameters in the reference (e.g. soil clay
+content). It is the project owners' responsibility to provide evidence that this
+requirement is met.
+
+Please note that the results in table A-01 are focused on India and Africa (with
+examples from other regions), with the intention to provide startup information
+for smallholder projects common in these regions. Yet these values are rough
+indications only, with more specific research needed for individual projects.
+
+To expand on this, the literature listed below is sourced more broadly; including
+temperate climates for which a broad variety of information is available (e.g.
+studies in America and Europe). However, it is recommended for project
+developers to conduct an up-to-date literature research to capture new sources.
+                                                                               12
+
+Table A-01: Soil carbon (SOC) accumulation for improved tillage approaches for climate and soil
+combinations
+
+IPCC Climate IPCC Country  SOC              Crop -       Reference
+                           accumulation
+Zone          Soil         range            Biomass
+                           (tCO2e ha-1 yr-
+              Type         1)               productivit
+
+                                            y
+
+Tropical Dry HAC India     0.83             No change Kurothe et al., 2014
+
+Tropical Dry LAC India     1.94 to 2.24     No change Bhattacharyya et al.,
+                                                                2009
+
+Tropical Dry LAC India     0.89 to 1.38     No change Das et al., 2013
+
+Tropical Dry LAC India     1.36             Higher       Bhattacharyya et al.,
+                                                         2012
+
+Tropical Dry  Sand Zimbabwe 2.57            N/A          Thierfelder et al.,
+              y
+                                                         2012
+
+Tropical Moist LAC Brazil  0.44 to 1.03     N/A          Costa Junior et al.,
+                                                         2013
+
+Tropical Moist LAC Brazil  1.28             N/A          Metay et al., 2007
+
+Tropical      HAC Zimbabwe 5.32             Higher       Thierfelder and Wall,
+Montane                                                  2012
+
+Tropical      LAC Zambia 5.35 to 6.53       Higher       Thierfelder et al.,
+Montane                                                  2013
+
+Tropical      Sand Zimbabwe 5.79            No change Thierfelder et al.,
+Montane       y                                                 2012
+
+Tropical      Sand Zimbabwe 2.93 to 5.87    No change Thierfelder and Wall,
+Montane       y                                                 2012
+
+Tropical Wet LAC Nigeria 2.25               N/A          Lal, 1997
+
+Warm          HAC Morocco 1.14              N/A          Mrabet et al., 2001
+Temperate
+Dry
+
+Warm          HAC Spain    1.32             N/A          Lopes and Fando
+Temperate
+Dry                                                      Pardo, 2011
+
+Warm          HAC Tunisia 1.47 to 2.79      N/A          Jemai et al., 2012
+
+Temperate
+
+Dry
+
+Warm          HAC Argentina 3.30            Higher       Bono et al., 2008
+Temperate
+Dry
+
+Warm          HAC Slovakia 0.69             N/A          Macák et al., 2010
+Temperate
+Dry
+Warm       HAC Madagasc 2.78 to 4.92  N/A                             13
+                                           Sá et al., 2006
+Temperate  ar
+                                           Razafimbelo et al.,
+Moist                                      2008
+
+Warm       LAC Madagasc 2.53          N/A
+
+Temperate  ar
+
+Moist
+                                                                                                                        14
+
+Annex B: Additional References
+
+In addition to the references listed in section 2.2, the following sources were
+consulted for the development of the original Gold Standard methodology
+"Increasing Soil Carbon Through Improved Tillage Practices".
+
+NOTE: This list is provided for information only and has not been
+updated since its original release. As soil and tillage research is
+progressing rapidly, this list does not replace a thorough literature
+review for up-to-date studies and results.
+
+Aumtong, S.; Magid, J.; Bruun, S.; Neergaard, A. (2009): Relating soil carbon
+       fractions to land use in sloping uplands in northern Thailand. Agriculture,
+       Ecosystems and Environment, 131, 229­239.
+
+Baker, J. M., Ochsner, T. E., Venterea, R. T. & Griffis, T. J. (2007): Tillage and
+       soil carbon sequestration--What do we really know? Agric. Ecosyst. Environ.
+       118, 1­5.
+
+Bernoux, M.; Cerri, C.C.; Cerri, C.E.P.; Siqueira Neto, M.; Metay, A.; Perrin, A.;
+       Scopel, E.;Razafimbelo, T.; Blavet, D. Piccolo, M.; Pavei, M.; Milne, E.
+       (2006): Cropping systems, carbon sequestration and erosion in Brazil, a
+       review. Agronomy for Sustainable Development, 26, 1­8.
+
+Bhattacharyya, R.; Prakash, V.; Kundu, S.; Srivastva, A.K.; Gupta, H.S. (2009):
+       Soil aggregation and organic matter in a sandy clay loam soil of the Indian
+       Himalayas under different tillage and crop regimes. Agriculture, Ecosystems
+       and Environment, 132, 126­134.
+
+Bhattacharyya, R.; Tuti, M.D.; Bisht, J.K. (2012): Conservation Tillage Impacts
+       on Soil Aggregation and Carbon Pools in a Sandy Clay Loam Soil of the
+       Indian Himalayas. Soil Science Society of America Journal, 76, 617­627.
+
+Birkás, M. (2009): Classic cultivation requirements and the need of reducing
+       climatic damage. Növénytermelés 58 (2009) 2: 123-134. (Hungarian
+       Scientific Research Paper). English Translation available for Gold Standard
+       Foundation.
+
+Bono, A.; Alvarez, R.; Buschiazzo, D.E.; Cantet, R.J.C. (2008): Tillage Effects
+       on Soil Carbon Balance in a Semiarid Agroecosystem. Soil Science Society
+       of America Journal, 72, 1140-1149.
+
+Campbell, C. et al. (2000): Quantifying short-term effects of crop rotations on
+       soil organic carbon in southwestern Saskatchewan. Can. J. Soil Sci. 80,
+       193­202.
+
+Costa Junior, C.; Corbeels, M.; Bernoux, M.; Píccolo, M.C.; Siqueira Neto, M.;
+       Feigl, B.J.; Cerri, C.E.P.; Cerri, C.C.; Scopel, R.; Lal, R. (2013): Assessing
+       soil carbon storage rates under no-tillage: Comparing the synchronic and
+       diachronic approaches. Soil and Tillage Research, 207-212.
+                                                                                                                        15
+
+Das, T.K.; Bhattacharyya, R.; Sharma, A.R.; Das, S.; Saad, A.A.; Pathak, H.
+       (2013): Impacts of conservation agriculture on total soil organic carbon
+       retention potential under an irrigated agro-ecosystem of the western Indo-
+       Gangetic Plains. European Journal of Agronomy, 51, 34­ 42.
+
+Farage, P.K.; Ardo, J.; Olsson, L.; Rienzi, E.A.; Ball, A.S.; Pretty, J.N. (2007):
+       The potential for soil carbon sequestration in three tropical dryland farming
+       systems of Africa and Latin America: A modelling approach. Soil and Tillage
+       Research, 94, 457­47.
+
+Franzluebbers, AJ (2010): Achieving soil organic carbon sequestration with
+       conservation agricultural systems in the southeastern United States. Soil
+       Science Society of America Journal, Vol. 74 No. 2, p. 347-357.
+
+Guo, L.B.; Gifford, R.M. (2002): Soil carbon stocks and land use change: a meta
+       analysis. Global Change Biology, 8, 345­360.
+
+Haak, D. (2006): Tillage System Default Coefficient Technical Background
+       Document. Completed with the national Soil Management Technical
+       Working Group (SMTWG).
+
+Hermle, S., Anken, T., Leifeld, J. & Weisskopf, P. (2008): The effect of the tillage
+       system on soil organic carbon content under moist, cold-temperate
+       conditions. Soil Tillage Res. 98, 94­105.
+
+IPCC (2006): 2006 IPCC guidelines for national greenhouse gas inventories,
+       prepared by the National Greenhouse Gas Inventories Programme (eds.
+       Eggleston HS, Buendia L, Miwa K, Ngara T, Tanabe K). IGES, Japan.
+
+Jemai, I; Aissa, N.B.; Guirat, S.B.; Ben-Hammouda, M.; Gallali, T. (2012): On-
+       farm assessment of tillage impact on the vertical distribution of soil organic
+       carbon and structural soil properties in a semiarid region in Tunisia. Journal
+       of Environmental Management, 113, 488-494.
+
+ Coleman, K.; Jenkinson, D.S. (1999): A model for the turnover of carbon in soil.
+       Available at: http://www.uni-kassel.de/~w_dec/Modellierung/wdec-
+       rothc_manual.pdf
+
+Kamoni, P.T.; Gicheru, P.T.; Wokabi, S.B., Easter, M.; Milne, E.; Coleman, K.;
+       Falloon, P.;Paustian, K. (2007): Predicted soil organic carbon stocks and
+       changes in Kenya between 1990 and 2030. Agriculture, Ecosystems and
+       Environment, 122, 105­113.
+
+Kurothe, R.S.; Kumar, G.; Singh, R.; Singh, H.B.; Tiwari, S.P.; Vishwakarma,
+       A.K.; Sena, D.R.; Pandey, V.C. (2014): Effect of tillage and cropping
+       systems on runoff, soil loss and crop yields under semiarid rainfed
+       agriculture in India. Soil Tillage and Management, 140, 126-134.
+                                                                                                                        16
+
+Kushwaha, C.P.; Tripathi, S.K. (2001): Singh, K.P. Soil organic matter and
+       water-stable aggregates under different tillage and residue conditions in a
+       tropical dryland agroecosystem. Applied Soil Ecology, 16, 229­241.
+
+Lal, R. (1997): Long-term tillage and maize monoculture effects on a tropical
+       Alfisol in western Nigeria. II. Soil chemical properties. Soil and Tillage
+       Research, 42, 161-174.
+
+Li, C.; Frolking, S.; Frolking, T.A. (1992a): A model of nitrous oxide evolution
+       from soil driven by rainfall events: 1. Model structure and sensitivity.
+       Journal of Geophysical Research, 97, 9759­9776.
+
+Li, C.; Frolking, S.; Frolking, T.A. (1992 b): A model of nitrous oxide evolution
+       from soil driven by rainfall events: 2. Model applications. Journal of
+       Geophysical Research, 97, 9759­9776.
+
+López-Fando, C.; Pardo, M.T. (2011): Soil carbon storage and stratification
+       under different tillage systems in a semi-arid region. Soil and Tillage
+       Research, 111, 224­230.
+
+Macák, M.; Hanáckova, E.; Candráková, E.; Smatanová, N. (2010): Soil carbon
+       sequestration as influenced by tillage and residue management by growing
+       of common pea. Research Journal of Agricultural Science, 42, 233-237.
+
+Maia, S.M.F.; Ogle, S.M.; Cerri, C.E.P.; Cerri, C. (2010): Soil organic carbon
+       stock change due to land use activity along the agricultural frontier of the
+       southwestern Amazon, Brazil, between 1970 and 2002. Global Change
+       Biology, 16, 2775­2788.
+
+Mangalassery et al (2014): To what extent can zero tillage lead to a reduction in
+       greenhouse gas emissions from temperate soils? Scientific Reports 4,
+       article number 4586.
+       (http://www.nature.com/srep/2014/140404/srep04586/full/srep04586.htm
+       l#ref39).
+
+Milne, E., Easter, M., Cerri, C.E.P., Paustian, P. and Williams S. (Eds.), (2005):
+       Assessment of soil organic carbon stocks and change at national scale.
+       Technical Report of GEF Co- financed Project No. GFL-2740-02-4381. NREL,
+       Fort Collins, USA.
+
+Mohammad, W.; Shah, S.M.; Shehzadi, S.; Shah, S.A. (2012): Effect of tillage,
+       rotation and crop residues on wheat crop productivity, fertilizer nitrogen
+       and water use efficiency and soil organic carbon status in dry area (rainfed)
+       of north-west Pakistan. Journal of Soil Science and Plant Nutrition, 12, 715-
+       727.
+
+Mrabeta, R.; Saberb , N.; El-Brahlia, A.; Lahloub, S.; Bessam, F. (2001): Total,
+       particulate organic matter and structural stability of a Calcixeroll soil under
+                                                                                                                        17
+
+       different wheat rotations and tillage systems in a semiarid area of Morocco.
+       Soil and Tillage Research, 57, 225-235.
+
+Mujuru, L.; Mureva, A.; Velthorst, E.J.; Hoosbeek., M.R. (2013): Land use and
+       management effects on soil organic matter fractions in Rhodic Ferralsols
+       and Haplic Arenosols in Bindura and Shamva districts of Zimbabwe.
+       Geoderma, 209­210, 262­272.
+
+Ogle, S.M., Breidt, F.J., Paustian, K. (2005): Agricultural management impacts
+       on soil organic carbon storage under moist and dry climatic conditions of
+       temperate and tropical regions. Biogeochemistry 72, 87­121.
+
+Ogle, S.M., Conant, R.T., Paustian, K.H. (2004): Deriving grassland
+       management factors for a carbon accounting approach developed by the
+       Intergovernmental Panel on Climate Change. Environmental Management,
+       33, 474­484.
+
+Pandey, D.; Agrawal, M.; Bohra, J.S.; Adhya, T.K.; Bhattacharyya, P. (2014):
+       Recalcitrant and labile carbon pools in a sub-humid tropical soil under
+       different tillage combinations: A case study of rice­wheat system. Soil and
+       Tillage Research, 143, 116­122.
+
+Parton, W.J.; Schimel, D.S.; Cole, C.V.; Ojima, D.S. (1987): Analysis of factors
+       controlling soil organic matter levels in Great Plains grasslands, Soil Science
+       Society of America Journal, 51: 1173­1179.
+
+Parton, W.J.; Stewart, J.W.B.; Cole, C.V. (1998): Dynamics of C, N, P and S in
+       grassland soils: a model, Biogeochemistry, 5: 109­131.
+
+Post, W. M. et al. (2004) : Enhancement of carbon sequestration in US soils.
+       Bioscience 54, 895­908.
+
+Razafimbelo, T.M.; Albrecht, A.; Oliver, R.; Chevallier, T.; Chapuis-Lardy, L.;
+       Feller, C. (2008): Aggregate associated-C and physical protection in a
+       tropical clayey soil under Malagasy conventional and no-tillage systems.
+       Soil and Tillage Research, 98, 140­149.
+
+Sá, J.C.M.; Séguy, L.; Goze, E.; Bouzinac, S.; Husson, O.; Boulakia, S.; Tivet,
+       F.; Forest, F.; Santos, J.B. (2006): Carbon sequestration rates in no-tillage
+       soils under intensive cropping systems in tropical agroecozones. Edafología,
+       13, 139-150.
+
+Schaufler, G. et al. (2010): Greenhouse gas emissions from European soils
+       under different land use: effects of soil moisture and temperature. Eur. J.
+       Soil Sci. 61, 683­696.
+
+Shirato, Y.; Paisancharoen, K.; Sangtong, P.; Nakviro, C.; Yokozawa, M.;
+       Matsumoto, N. (2005): Testing the Rothamsted Carbon Model against data
+       from long-term experiments on upland soils in Thailand. European Journal
+       of Soil Science, 56, 179-188.
+                                                                                                                        18
+
+Singh, A.; Phogat, V.K.; Dahiya, R.; Batra, S.D. (2014): Impact of long-term
+       zero till wheat on soil physical properties and wheat productivity under
+       rice­wheat cropping system. Soil and Tillage Research, 140, 98-105.
+
+Siqueira Neto, M. Scopel, E.; Corbeels, M.; Cardoso, A.N.; Douzet, J.; Feller, C.;
+       Piccolo, M.C.; Cerri, C.C; Bernoux, M. (2010): Soil carbon stocks under no-
+       tillage mulch-based cropping systems in the Brazilian Cerrado: An on-farm
+       synchronic assessment. Soil and Tillage Research, 110, 187­195.
+
+Thierfelder, C.; Cheesman, S.; Rusinamhodzi, L. (2012): A comparative analysis
+       of conservation agriculture systems: Benefits and challenges of rotations
+       and intercropping in Zimbabwe. Field Crops Research, 137, 237­250.
+
+Thierfelder, C.; Mwila, M.; Rusinamhodzi, L. (2013): Conservation agriculture in
+       eastern and southern provinces of Zambia: Long-term effects on soil quality
+       and maize productivity. Soil and Tillage Research, 126, 246­258.
+
+Thierfelder, C.; Wall, P.C. (2012): Effects of conservation agriculture on soil
+       quality and productivity in contrasting agro-ecological environments of
+       Zimbabwe. Soil Use and Management, 28, 209­220.
+
+Tivet, F.; Sá, J.C.M.; Borszowskei, P.R.; Letourmy, P.; Briedis, C.; Ferreira,
+       A.O.; Santos, J.B.; Inagaki, T.M. (2011): Soil Carbon Inventory by Wet
+       Oxidation and Dry Combustion Methods: Effects of Land Use, Soil Texture
+       Gradients, and Sampling Depth on the Linear Model of C-Equivalent
+       Correction Factor. Soil Science Society of America Journal, 76, 1048­1059.
+
+Twongyirwe, R.; Sheil, D.; Majaliwa, J.G.M.; Ebanyat, P.; Tenywa, M.M.; van
+       Heist, M.; Kumar, L. (2013): Variability of Soil Organic Carbon stocks under
+       different land uses: A study in an afro-montane landscape in southwestern
+       Uganda. Geoderma, 193­194, 282­289.
+
+Ussiri, D. A. N. & Lal, R. (2009): Long-term tillage effects on soil carbon storage
+       and carbon dioxide emissions in continuous corn cropping system from an
+       alfisol in Ohio. Soil Tillage Res. 104, 39­47.
+
+VandenBygaart, A.J.; McConkey, B.G.; Angers, D.A.; Smith, W.; de Gooijer, H.;
+       Bentham, M.; Martin, T. S(2008): Soil carbon change factors for the
+       Canadian agriculture national greenhouse gas inventory. Canadian Journal
+       of Soil Science, 88, 671-680.
+
+West, T.; Post, W.M. (2002): Soil Organic Carbon Sequestration Rates by Tillage
+       and Crop Rotation: A Global Data Analysis. Soil Science Society of America
+       Journal, 66, 1930­1946.
+
+Woomer, P.L.; Bekunda, M.; Bwamik, D. (1998): Modelling banana growth and
+       soil organic matter dynamics with the century model. African Crop Science
+       Journal, 6, 205-214.Available at:
+       http://www.bioline.org.br/request?cs98023
+                                                                                                                        19
+
+World Bank. Kenya Agricultural Carbon Project. Project ID. P107798. Available
+       at: http://projects.worldbank.org/P107798/kenya-agricultural-carbon-
+       project?lang=en&tab=overview
+

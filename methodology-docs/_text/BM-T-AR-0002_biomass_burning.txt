@@ -1,0 +1,560 @@
+=== p1
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+METHODOLOGICAL 
+TOOL 
+ 
+BM-T-AR-0002 
+Estimation of non-CO2 GHG emissions resulting 
+from burning of biomass attributable to an A/R ICM 
+project activity 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+  
+ 
+Publication Date: 27 March 2025 
+Version 1.0 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+=== p2
+Table of Contents 
+1. INTRODUCTION ........................................................................................................ 3 
+2. SCOPE & APPLICABILITY ....................................................................................... 3 
+2.1. Scope ............................................................................................................. 3 
+2.2. Applicability .................................................................................................... 3 
+2.3. Assumptions .................................................................................................. 3 
+2.4. Parameters..................................................................................................... 3 
+2.5. Methodological Tool Approval Date ............................................................... 4 
+3. METHODOLOGY:...................................................................................................... 4 
+3.1. Estimation of Emissions of Greenhouse Gases ............................................ 4 
+3.2. Emission resulting from use of fire in site preparation .................................. 4 
+3.3. Non-CO2 emissions resulting from use of fire to clear the land of 
+harvest residue prior to replanting of the land ............................................... 5 
+3.4. Non-CO2 emissions resulting from forest fires .............................................. 7 
+5.         DATA AND PARAMETERS USED IN THE TOOL ........................................ 9 
+ 
+ 
+  
+=== p3
+1. Introduction 
+1. This tool offers a systematic method to determine the baseline scenario while concurrently 
+demonstrating additionality. 
+2. Scope & Applicability 
+2.1. Scope 
+2. This tool can be used for the estimation of non-CO2 GHG emissions resulting from burning 
+of biomass and forest fires. 
+2.2. Applicability 
+3. The tool is applicable to all occurrences of fire within the project boundary. 
+4. Non-CO2 GHG emissions resulting from any occurrence of fire within the project boundary 
+shall be accounted for each incidence of fire which affects an area greater than the 
+minimum threshold area reported by the host Party for the purpose of defining forest, 
+provided that the accumulated area affected by such fires in a given year is ≥5% of the 
+project area. 
+2.3. Assumptions  
+5. This tool applies the following assumptions: 
+a. Aboveground biomass of living trees shall be considered not to result in significant 
+            non-CO2 GHG emission in case of fire, when 
+i. A forest fire burns through the understory but does not climb into the tree 
+canopy; or 
+ii. A forest fire singes trees but does not cause mortality such that leaf 
+regeneration can be observed within six months (this may be 
+demonstrated in remote sensing imagery) 
+b. 60% of the dead organic matter is entirely burnt in all fires. 
+2.4. Parameters 
+6. This tool provides steps to estimate the parameter(s) given in Table 1. 
+Table 1: Parameters determined by the tool 
+Parameter  Unit Description 
+GHGE,t t CO 2-e Emission of non-CO2 GHGs resulting from burning of 
+biomass and forest fires within the project boundary, 
+in year t 
+=== p4
+ 
+2.5. Methodological Tool Approval Date 
+7. The date of adoption of this document shall be effective from 27 March 2025. 
+ 
+3. Methodology:  
+3.1. Estimation of Emissions of Greenhouse Gases 
+8. Emission of non-CO 2 GHGs resulting from burning of biomass and forest fires within the 
+project boundary in year t is estimated as follows:  
+            GHGE,t = GHGSPF,t   + GHGFMF,t + GHGFF,t                                                                                                                    (1) 
+Where: 
+GHGE,t  
+Emission of non-CO2 GHGs resulting from burning of biomass and forest 
+fires within the project boundary in year t; t CO2-e 
+GHGSPF,t  
+Emission of non-CO2 GHGs resulting from use of fire in site preparation in 
+year t; t CO2-e 
+GHGFMF,t  
+Emission of non-CO2 GHGs resulting from use of fire to clear the land of 
+harvest residue prior to replanting of the land or other forest management, in 
+year t; t CO2-e 
+GHGFF,t  Emission of non-CO2 GHGs resulting from fire in year t; t CO2-e 
+t  1, 2, 3, . years counted from the start of the A/R ICM project activity 
+ 
+3.2. Emission resulting from use of fire in site preparation 
+9. Emission of non-CO 2 GHGs resulting from use of fire in site preparation in year t is 
+estimated as follows: 
+a.  For all areas of land where: (i) Slash-and-burn is a common practice in the baseline, and 
+(ii) Fire has been used in the area at least once during the period of ten years preceding 
+the start of the A/R ICM project activity: 
+   GHGSPF,t = 0                                                                                                                  (2) 
+b. For all areas of land where the condition (a) above is not satisfied: 
+GHGSPF,t=i= 0.07 * i =1∑M(ASPF,t,i * 44/12 * (CF TREE * b TREE,i,t + BDR SF * 
+CFSHRUB* CCSHRUB,i,t * BFOREST)                                                                              (3) 
+ where 
+CFSHRUB Carbon fraction of shrub biomass; t C (t d.m.)-1 
+=== p5
+The IPCC default value of 0.50 is used 
+ASPF t 
+Area of land in which fire is used in site preparation in stratum i in year t; ha 
+BDRSF 
+Ratio of shrub biomass per unit area in land having a shrub crown 
+cover of 1.0 and the default above-ground biomass content in forest 
+in the region/country where the A/R ICM project is located; 
+dimensionless 
+A default value of 0.10 is used unless transparent and verifiable information 
+can be provided to justify a different value 
+BFOREST 
+Default above-ground biomass content in forest in the region/country where 
+the A/R ICM project is located; t d.m. ha-1 The value of this parameter is 
+selected according to the guidance provided in the relevant entry in the tables 
+at the end of this tool 
+CCSHRUB i t 
+Crown cover of shrubs in an area of land within the project boundary 
+at the start of the project in which fire is used for site preparation in 
+stratum i in year t; dimensionless 
+GHGSPF,t 
+Emission of non-CO2 GHGs resulting from use of fire in site preparation in 
+year t; t CO2-e 
+0.07 
+The ratio of non-CO2 GHG emissions to CO2 emissions resulting from 
+burning of biomass; dimensionless 
+The value of this ratio has been adapted from Table 2.5 of the 2006 
+IPCC Guidelines for National GHG Inventories, taking into account 
+methane (CH4) and nitrous oxide (N2O) emissions only 
+bTREE,i,t  
+Mean tree biomass per hectare within stratum i in the project 
+boundary at the start of the project; t d.m. ha-1 
+Estimated using the tool .Estimation of carbon stocks and change 
+in carbon stocks of trees and shrubs in A/R ICM project 
+activities. Where pre-project living trees are not burned during site 
+preparation, bTREE,i shall be set equal to zero 
+CFTREE  
+Carbon fraction of biomass; t C (t d.m)-1. 
+The IPCC default value of 0.50 is used 
+t 1, 2, 3, . years counted from the start of the A/R ICM project activity 
+i Stratum within the baseline 
+3.3. Non-CO2 emissions resulting from use of fire to clear the land of harvest residue 
+prior to replanting of the land 
+10. Emissions of non-CO2 GHGs resulting from use of fire to clear the land of harvest residue 
+prior to replanting of the land is estimated on the basis of the ratio of the biomass left at 
+site to the biomass harvested. In the case of fuelwood harvest this ratio is likely to be 
+smaller than in the case of timber harvest. It is, therefore, conservative to apply the ratio 
+in the case of timber harvest to the case of fuelwood and other harvests. 
+When the data on biomass of the harvest removed are available 
+=== p6
+11.  If the data on biomass of the harvest removed are available, the emission of non-CO2 
+GHGs resulting from use of fire to clear the land of harvest residue prior to replanting of 
+the land is estimated as follows: 
+ 
+             GHGFMF t  = 0.07*44/12  * B HARVEST t *   f BL * CF TREE                                                     (4) 
+            where: 
+ GHGFMF t     
+Emission of non-CO2 GHGs resulting from use of fire to clear the 
+land of harvest residue prior to replanting of the land, in year t; t CO2-
+e 
+B HARVEST t  
+Biomass harvested from area subjected to use of fire to clear the 
+land of harvest residue prior to replanting of the land in year t; t d.m. 
+f BL  
+The fraction of aboveground tree biomass out of total harvest left on-
+site; dimensionless 
+A value of 0.10 for temperate forests and 0.25 for tropical forests is 
+used. These 
+values of the parameter have been conservatively adapted from 
+Table 3A.1.11 of the IPCC GPG LULUCF 2003, or the latest 
+available version 
+CF TREE                                                     
+Carbon fraction of biomass of trees harvested; t C (t d.m)-1. 
+IPCC default value of 0.50 t C (t d.m)-1 is used 
+t  1, 2, 3, . years counted from the start of the A/R ICM project activity 
+          When the data on biomass of the harvest removed are not available 
+12. If the data on biomass of the harvest removed are not available, the biomass of harvest 
+removed is estimated as follows: 
+ 
+BHARVEST t = BFOREST / BEF2   * AFMF t.                                                                                                      (5) 
+ 
+            where 
+BHARVEST 
+t  
+Biomass harvested from area subjected to use of fire to clear the land of harvest 
+residue prior to replanting of the land in year t; t d.m. 
+BFOREST Default above-ground biomass content in forest in the region/country where the 
+A/R ICM project is located; t d.m. ha-   
+The value of this parameter is selected according to the guidance provided in the 
+relevant entry in the tables at the end of this tool 
+BEF2 The biomass expansion factor for trees harvested; dimensionless A value of 1.25 
+is used 
+AFMF t. 
+ 
+ 
+Area of land subjected to use of fire to clear the land of harvest residue prior to 
+replanting of the land in year t; ha 
+T 1, 2, 3, . years counted from the start of the A/R ICM project activity 
+ 
+=== p7
+3.4. Non-CO2 emissions resulting from forest fires 
+ 
+13. Emission of GHGs resulting from the burning of aboveground project tree biomass in fire 
+that is not site preparation or burning of harvest residue (defined from this point forward 
+as forest fire) is calculated using the aboveground biomass in trees and dead wood of 
+relevant strata in last verification. 
+           GHGFF t = GHG FF TREE t + GHG FF DOM t                                                                       (6) 
+            where: 
+GHGFF,t  Emission of non-CO2 GHGs resulting from forest fire, in year t; t CO2-e  
+ 
+GHGFF 
+_TREE,t  
+Emission of non-COtrees due to forest fire, in year 2 GHGs resulting from the loss 
+of aboveground biomass of t; t CO2-e  
+ 
+GHGFF _ 
+DOM,t  
+to forest fire, in year Emission of non-CO2t; t CO GHGs resulting from the loss of 
+dead organic matter due 2-e  
+ 
+ 
+14. Emission of non-CO 2 GHGs resulting from the loss of aboveground tree biomass due fire 
+is calculated using the above ground biomass in trees of relevant strata in last verification 
+and a combustion factor. For the first verification, emission of non-CO 2 GHGs resulting 
+from the loss of trees due to natural or anthropogenic forest fire is assumed to be zero.  
+ 
+ 
+                GHGFF _TREE,t = 0.001*∑ABURN,i,t *bTREE,i,tL *COMFi *(EFCH 4,i *GWPCH 4 +EFN 2O,i *GWPN 2O )      (7)                                                    
+ 
+              where:  
+GHGFF _TREE,t  trees due to fire, in year Emission of non-CO2 
+gases resulting from the loss of aboveground 
+biomass of t; t CO2-e  
+A
+BURN,i,t  Area burnt in stratum i in year t; ha  
+bTREE,i,tL  Mean aboveground tree biomass per hectare in 
+stratum i in year tL which is the year in which last 
+verification was carried out before occurrence of 
+the fire; t d.m. ha-1  
+Where aboveground biomass of living trees is not 
+burnt by fire, b
+TREE,i,tL may be set equal to zero  
+=== p8
+ 
+COMFi  Combustion factor for stratum i; dimensionless  
+EFCH 4,i   Emission factor for CH4 in stratum i; g CH4 (kg dry 
+matter burnt)-1  
+GWPCH 4  Global warming potential for CH 4; dimensionless. 
+Default value of 21 is used  
+EF
+N2O,i   Emission factor for N2O in stratum i; g N2O (kg 
+dry matter burnt)-1  
+GWPN 2O  Global warming potential for N 2O; dimensionless 
+Default value of 310 is used  
+I  1, 2, 3   M strata  
+T  1, 2, 3,   years elapsed since the start of the 
+project activity  
+ 
+15.  Emission of non-CO 2 GHGs resulting from the loss of dead organic matter due to fire is 
+calculated using the dead organic matter stock at the last verification. Where PPs elected 
+at validation not to account for dead organic matter pool, the dead organic matter stock is 
+considered zero and non-CO 2 GHG emissions from fire are not accounted. Where dead 
+organic matter is accounted, for the first verification period emission of non-CO 2 GHGs 
+resulting from the loss of dead organic matter due to fire is assumed to be zero, and for 
+subsequent verification periods emission of non-CO2 GHGs is estimated as follows:  
+ 
+                  M 
+              GHGFF _ DOM ,t = 0.07*∑ ABURN,i,t *(CDW ,i,tL +CLI,i,tL )  (8) 
+                   i=1 
+           where 
+GHGFF _ DOM,t  Emission of GHGs resulting from the loss of dead organic matter due to 
+fire, in year t; t CO2-e  
+ 
+A
+BURN,i,t  Area burnt in stratum i in year t; ha  
+ 
+CLI,i,tL  Carbon stock in litter in stratum i in year tL which is the year in which last 
+verification was carried out before occurrence of the fire, as estimated using 
+the Tool for estimation of carbon stocks and change in carbon stocks in 
+dead wood and litter in A/R ICM project activities ; t CO2-e  
+ 
+CDW ,i,tL  Carbon stock in dead wood in stratum i in year tL which is the year in which 
+last verification was carried out before occurrence of the fire, as estimated 
+using the Tool for estimation of carbon stocks and change in carbon stocks 
+in dead wood and litter in A/R ICM project activities ; t CO2-e  
+ 
+I 1, 2, 3   M strata  
+=== p9
+T  years elapsed since the start of the project activity  
+ 
+5.         DATA AND PARAMETERS USED IN THE TOOL  
+ 
+14.  The following tables describe the data and parameters used in this tool. The 
+guidelines contained in these tables regarding selection of data sources, and 
+procedures to be followed in measurement, where applicable, should be treated 
+as an integral part of this tool. 
+  
+            Data and parameters obtained from existing sources  
+ 
+Data / 
+Parameter:  
+BDRSF  
+Data unit:  Dimensionless  
+Used in 
+equations:  
+3  
+Description  Ratio of shrub biomass per unit area in land having a shrub crown cover of  
+1.0 and the default above-ground biomass content in forest in the region/country 
+where the A/R ICM project is located  
+Source of 
+data:  
+A default value of 0.10 should be used unless transparent and verifiable 
+information can be provided to justify a different value  
+  
+Data / 
+Parameter:  BFOREST   
+Data unit:  t d.m. ha -1  
+Used in 
+equations:  
+3, 5  
+Description:  Default above-ground biomass content in forest in the region/country where the 
+A/R ICM project is located  
+Source of 
+data:  
+The source of data shall be selected, in order of preference, from the following:  
+(a) Regional/national inventories e.g. national forest inventory, national GHG 
+inventory;  
+(b) Inventory from neighbouring countries with similar conditions;  
+(c) Globally available data applicable to the project site or to the  
+region/country where the site is located (e.g. latest data from FAO);  
+(d) Default values from the latest IPCC GPG-LULUCF  
+  
+Data / 
+Parameter:  
+COMFi  
+Data unit:  dimensionless  
+Used in 
+equations:  
+7  
+=== p10
+Description:  Combustion factor for stratum i (per vegetation type)  
+Source of 
+data:  
+The source of data shall be selected, in order of preference, from the following:  
+(a)  Project-specific calculation, regional/national inventories e.g. national 
+forest inventory, national GHG inventory;  
+ (b)  Inventory from neighbouring countries with similar conditions;  
+ (c)  Globally available data applicable to the project site or to the 
+region/country where the site is located;  
+ (d)  Default values as 
+follows 
+Forest type  
+ 
+Mean age (years)  Default value  
+  Tropical forest  
+  
+  
+  
+3-5  0.46 6-10  0.67 
+11-17  0.50  
+18 and above  0.32  
+  Boreal forest  All  0.40  
+  Temperate forest  
+  
+All  0.45  
+    
+  
+Data / 
+Parameter:  
+EFCH4  
+Data unit:  g kg -1 dry matter burnt   
+Used in 
+equations:  
+7  
+Description:  Emission factor for CH4 in stratum i   
+Source of 
+data:  
+The source of data shall be selected, in order of preference, from the following:  
+(a) Regional/national inventories e.g. national forest inventory, national 
+GHG inventory;  
+(b) Inventory from neighbouring countries with similar conditions;  
+(c) Globally available data applicable to the project site or to the 
+region/country where the site is located; (d)  Default values as 
+follows:  
+(i) Tropical forest: 6.8  
+(ii) Other forest: 4.7  
+  
+Data / 
+Parameter:  
+EFN2O  
+Data unit:  g kg-1 dry matter burnt   
+Used in 
+equations:  
+7  
+Description:  Emission factor for N2O in stratum i   
+=== p11
+Source of 
+data:  
+The source of data shall be selected, in order of preference, from the following:  
+(a) Regional/national inventories e.g. national forest inventory, national 
+GHG inventory;  
+(b) Inventory from neighbouring countries with similar conditions;  
+(c) Globally available data applicable to the project site or to the 
+region/country where the site is located; (d)  Default values as 
+follows:  
+(i) Tropical forest: 0.20  
+(ii) Other forest: 0.26  
+ 
+              Data and parameters obtained from measurements  
+Data / 
+Parameter:  
+ASPF,t  
+Data unit:  ha  
+Used in 
+equations:  
+3  
+Description:  Area of land in which fire is used for site preparation in year t  
+Measurement 
+procedures:  
+Standard operating procedures (SOPs) prescribed under national forest 
+inventory are applied.  In absence of these, SOPs from published handbooks, 
+or from the latest IPCC GPG LULUCF, may be applied  
+Monitoring 
+frequency:  
+This area is measured whenever fire is used in site preparation  
+QA/QC 
+procedures:  
+Quality control/quality assurance (QA/QC) procedures prescribed under 
+national forest inventory are applied. In absence of these, QA/QC procedures 
+from published handbooks, or from the latest IPCC GPG LULUCF, may be 
+applied  
+  
+Data / 
+Parameter:  
+AFMF,t  
+Data unit:  ha  
+Used in 
+equations:  
+5  
+Description:  Area of land subjected to use of fire to clear the land of harvest residue prior to 
+replanting of the land in year t  
+Measurement 
+procedures:  
+Standard operating procedures (SOPs) prescribed under national forest 
+inventory are applied.  In the absence of these, SOPs from published 
+handbooks, or from the latest IPCC GPG LULUCF, may be applied  
+Monitoring 
+frequency:  
+This area is measured whenever fire is used to clear the land of harvest residue 
+prior to replanting of the land   
+QA/QC 
+procedures:  
+Quality control/quality assurance (QA/QC) procedures prescribed under 
+national forest inventory are applied.  In the absence of these, QA/QC 
+procedures from published handbooks, or from the latest IPCC GPG LULUCF, 
+may be applied  
+  
+=== p12
+Data / 
+Parameter:  ABURN,i,t  
+Data unit:  ha  
+Used in 
+equations:  
+7  
+Description:  Area of land subjected to use of fire to clear the land of harvest residue prior to 
+replanting of the land in year t  
+Source of 
+data:  
+Field measurement or remote sensing measurement  
+Measurement 
+procedures:  
+The area shall be delineated either on the ground using GPS or from 
+georeferenced remote sensing data  
+Monitoring 
+frequency:  
+This area is measured whenever forest fire has occurred   
+QA/QC 
+procedures:  
+Quality control/quality assurance (QA/QC) procedures prescribed under 
+national forest inventory are applied.  In the absence of these, QA/QC 
+procedures from published handbooks, or from the latest IPCC GPG LULUCF, 
+may be applied  
+  
+Data / 
+Parameter:  
+CCSHRUB,t  
+Data unit:  Dimensionless  
+Used in 
+equations:  
+3  
+Description:  Crown cover of shrubs in land where fire is used for site preparation in year t; 
+dimensionless  
+Source of 
+data:  
+Field measurement  
+Measurement 
+procedures:  
+Ocular estimation of crown cover may be carried out or any other method such 
+as the line transect method  
+Monitoring 
+frequency:  
+This parameter is measured whenever fire is used in site preparation  
+QA/QC 
+procedures:  
+Quality control/quality assurance (QA/QC) procedures prescribed under 
+national forest inventory are applied.  In the absence of these, QA/QC 
+procedures from published handbooks, or from the latest IPCC GPG LULUCF, 
+may be applied  
+ 
+ 
+IV. References 
+ IPCC. Good Practice Guidance for Land Use, Land-Use Change and Forestry, Prepared 
+by the National Greenhouse Gas Inventories Programme, Jim Penman, Michael 
+Gytarsky, Taka Hiraishi, Thelma Krug, Dina Kruger, Riitta Pipatti, Leandro Buendia, 
+Kyoko Miwa, Todd Ngaram(eds). Published: IGES, Japan.  
+URL: http://www.ipcc-nggip.iges.or.jp/public/gpglulucf/gpglulucf.html 
+=== p13
+ 
+Revision/Changes in the Document 
+ 
+Version Date Description 
+ 
+1.0 March 2025 Initial Adoption 
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   

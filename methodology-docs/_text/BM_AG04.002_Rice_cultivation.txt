@@ -1,0 +1,1274 @@
+=== p1
+   
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ METHODOLOGY 
+ 
+BM AG04.002 
+Emission reduction through improved  
+management practices in rice cultivation 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Publication Date: 30 June 2026 
+Version 1.0 
+Sectoral scope(s): Agriculture 
+ 
+
+=== p2
+ 
+2 of 24 
+Table of Contents 
+1. INTRODUCTION ........................................................................................................ 3 
+2. DEFINITIONS ............................................................................................................. 3 
+3. SCOPE & APPLICABILITY ....................................................................................... 6 
+3.1. Scope ............................................................................................................. 6 
+3.2. Applicability .................................................................................................... 6 
+3.3. Methodology Approval Date ........................................................................... 7 
+3.4. Applicability of sectoral scopes ...................................................................... 7 
+3.5. Applicability of approved adopted tools ......................................................... 7 
+4. METHODOLOGY: BASELINE COMPONENT .......................................................... 7 
+4.1. Project boundary ............................................................................................ 7 
+4.2. Baseline .......................................................................................................... 7 
+4.3. Baseline emissions......................................................................................... 7 
+4.4. Determination of baseline emission factor on reference fields ...................... 8 
+4.5. Leakage .......................................................................................................... 8 
+4.6. Project emissions ........................................................................................... 8 
+4.7. Emission reductions ....................................................................................... 10 
+4.7.1. Ex ante estimation of emission reductions ................................... 10 
+4.7.2. Emission reductions using IPCC tier 1 approach or default 
+values ............................................................................................ 10 
+5. METHODOLOGY: MONITORING COMPONENT .................................................... 15 
+5.1. Monitoring of baseline and project emissions ................................................ 15 
+5.2. Monitoring of farmers’ compliance with project cultivation practice ............... 19 
+ANNEXURE 1: GUIDELINES FOR MEASURING METHANE EMISSIONS FROM     
+RICE FIELDS ............................................................................................. 21 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+=== p3
+ 
+BM AG04.002   3 
+ 
+1. Introduction 
+1. This methodology is adopted and refers to the latest approved version of the UNFCCC Clean 
+Development Mechanism Methodology AMS-III.AU (as valid from 28 November 2014). 
+2. It shall be the responsibility of the non -obligated entity and Accredited Carbon Verification 
+Agency (ACVA) to note of any subsequent changes or revisions in the above -mentioned 
+methodology while developing projects and performing validation and/or verific ation activity 
+respectively. 
+3. The following table describes the key elements of the methodology. 
+Table 1. Methodology key elements 
+Typical project(s) (a) Rice farms that change the water regime during the 
+cultivation period from continuously to intermittent flooded 
+conditions and/or a shortened period of flooded conditions; 
+(b) Alternate wetting and drying method and aerobic rice 
+cultivation methods; and 
+(c) Rice farms that change their rice cultivation practice from 
+transplanted to direct seeded rice (DSR) 
+(d) Optional Project Activities – ‘Projects may implement 
+additional activities to further reduce CH4 emissions and/or 
+reduce N2O and/or CO2 emissions. 
+Type of GHG emissions 
+mitigation action 
+Greenhouse gas (GHG) emission avoidance: 
+Reduced anaerobic decomposition of organic matter in rice 
+cropping soils 
+ 
+2. Definitions 
+4. For the purpose of this methodology the following definitions1 apply: 
+(a) Alternate wetting and drying (AWD): A water management practice where irrigation 
+is applied at intermittent intervals resulting in alternating wet and dry soil conditions. 
+Application of irrigation is based on water depletion measure via a field water tube (15 
+cm below the soil surface as threshold) or soil water potential (-10 kilopascal kPa at 15 
+cm below the soil surface), which can save irrigation water without yield penalty, hence, 
+also termed as “safe-AWD”. 
+(b) Continuous flooding: A system of cultivating irrigated lowland rice where fields have 
+standing water throughout the rice growing season and are drained only shortly before 
+the maturing growth stage and for harvesting the rice (i.e., end-of-season drainage). 
+(c) Direct seeded rice (DSR)  - a system of cultivating rice in which seeds, either pre -
+germinated or dry, are broadcast or sown directly in the field under dry - or wetland 
+condition; no transplanting process is involved; 
+(d) IPCC approach - the most recent version of the applicable IPCC guidance on methane 
+emission from rice cultivation. The applicable version at the time of approval of the 
+methodology is Chapter 5.5, Methane Emissions from Rice Cultivation, Volume 4 of 
+the 2019 refinement  to the 2006 IPCC Guidelines for National Greenhouse Gas 
+Inventories; 
+(e) Irrigated - a type of water regime in which fields are flooded for a significant period of 
+time and water regime is fully controlled; 
+ 
+1 IPCC approach provides for the definitions (e) to (h) (see volume 4 of the 2006 IPCC Guidelines for National 
+Greenhouse Gas Inventories for further details, or the latest available version of the same). 
+=== p4
+ 
+BM AG04.002   4 
+ 
+(f) Methanotrophs: Organisms that occur naturally or are introduced to an environment 
+and metabolize CH 4 to obtain their energy, thereby removing CH 4 from their 
+environment. 
+(g) Project cultivation practice  - a set of elements of a cultivation practice which is 
+adopted under the ICM project activity. This mainly consists of the adjusted irrigation 
+method. Field preparation, fertilization and weed and pest control may also be included; 
+(h) Rainfed and deep water  - a type of water regime in which fields are flooded for a 
+significant period of time and water regime depends solely on precipitation. 
+(i) Soil methanogenesis: Microbial process that produces methane (CH 4) gas in soils 
+when microorganisms break down organic matter under anoxic conditions, such as in 
+waterlogged soils. 
+(j) Transplanted rice - a system of planting rice where seeds are raised in a nursery bed 
+for some 20 to 30 days. The young seedlings are then directly transplanted into the 
+flooded rice field; 
+(k) Upland - a type of water regime in which fields are never flooded for a significant period 
+of time; 
+(l) Water regime - a combination of rice ecosystem type (e.g. irrigated, rainfed and deep 
+water) and flooding pattern (e.g. continuously flooded, intermittently flooded); 
+ 
+5. For the purpose of defining reference field conditions for baseline and project emission 
+measurements and their comparison with project fields, classify each project field with its 
+specific pattern of cultivation conditions, applying the following parameters under Table 2: 
+=== p5
+ 
+BM AG04.002   5 
+ 
+Table 2. Parameters for the definition of cultivation patterns  
+Nr. Parameter Typea Values/categories Element Source/methodb 
+1 Water regime – 
+on-seasonc 
+Dynam
+ic 
+Continuously flooded w1 Baseline: Farmer’s information 
+Project: Monitoring Single Drainage w2 
+Multiple Drainage w3 
+2 Water regime – 
+pre-season 
+Dynam
+ic 
+Flooded p1 Baseline: Farmer’s information 
+Project: Monitoring Short drainage (<180d) p2 
+Long drainage (>180d) p3 
+3 Organic 
+Amendment 
+Dynam
+ic 
+Straw on-seasond o1 Baseline: Farmer’s information 
+Project: Monitoring Straw off-seasond o2 
+Green manure o3 
+Farmyard manure o4 
+Compost o5 
+No organic amendment (low 
+stubbles are left after 
+harvesting or straw is burnt in 
+the field) 
+o6 
+4 Soil pH Static < 7 s1 ISRIC-WISE soil property 
+databasee or national data 7-8 s2 
+> 8 s3 
+5 Soil Organic 
+Carbon 
+Static < 1% c1 ISRIC-WISE soil property 
+databasee or national data 1 – 3 % c2 
+> 3% c3 
+6 Climate Static [AEZ]f  Rice Almanac, HarvestChoicef 
+7 Duration of the 
+crop with variety 
+Dynam
+ic 
+Long t1 Baseline: Farmer’s information 
+Project: Monitoring Medium t2 
+Short t3 
+ 
+ 
+Comments: 
+(a) Dynamic conditions are those that are connected to the management practice of a field, thus can change 
+over time (no matter whether intended by the project activity or due to other reasons) and shall be 
+monitored in the project fields. Static conditions are site-specific parameters that characterize a soil and 
+do not (relevantly) change over time and thus do in principle only have to be determined once for a 
+project and the corresponding fields; 
+(b) Source/method of data acquisition to determine the applicable value for each parameter;  
+(c) The values ‘upland’, ‘regular rainfed’, ‘drought prone’ and ‘deep water’, which are regularly used to 
+differentiate the on-season water regime (see IPCC guidelines), are not mentioned here, because these 
+categories are excluded from a project activity under this methodology (cf. applicability criteria); 
+(d) Straw on-season means straw applied just before rice season, and straw off-season means straw applied 
+in the previous season. Rice straw that was left on the surface and incorporated into soil just before the 
+rice season is classified as straw on-season; 
+(e) For these static parameters, refer to appropriate global or national data. The database from ISRIC 
+provides soil data which can be used for this purpose; 
+(f) Climate zone: use agroecological zones as shown in the Rice Almanac (Third Edition, 2002), or by 
+HarvestChoice.  
+=== p6
+ 
+BM AG04.002   6 
+ 
+6. With the help of this field characterization, project fields can be grouped according to their 
+cultivation pattern. All fields with the same cultivation pattern form one group. 
+ 
+3. Scope & applicability 
+3.1. Scope 
+7. The methodology comprises technology/measures that result in reduced anaerobic 
+decomposition of organic matter in rice cropping soils and thus reduced generation of 
+methane. The methodology includes projects such as:  
+(a) Rice farms that change the water regime during the cultivation period from continuously 
+to intermittent flooded conditions and/or a shortened period of flooded conditions; 
+(b) Alternate wetting and drying method and aerobic rice cultivation methods (see 
+<http://www.knowledgebank.irri.org/watermanagement>); 
+(c) Rice farms that change their rice cultivation practice from transplanted to direct seeded 
+rice.2 
+(d) Optional Project Activities – Projects may implement additional activities to further 
+reduce CH 4 emissions and/or reduce N 2O and/or CO 2 emissions, including use of 
+methanotrophs, introduction of low-emission rice cultivars where non-obligated entities 
+ensure no material changes in carbon inputs to the system through root biomass, 
+avoided biomass burning (of rice residues), reductions in fossil fuel use, improvements 
+in nitrogen management (i.e., reduction in total nitrogen applied and/or the use of 
+nitrification inhibitors or slow-release nitrogen fertilizers), and application of biochar to 
+soils. Any quantitative adjustment in optional practices must exceed 5% of the pre -
+existing value to qualify as a practice change. 
+(e) Emissions from organic matter are not under the purview of the methodology. 
+ 
+3.2. Applicability 
+8. This methodology is applicable under the following conditions: 
+(a) Rice cultivation in the project area is predominantly characterized by irrigated, flooded 
+fields for an extended period of time during the growing season, i.e. farms whose water 
+regimes can be classified as upland or rainfed and deep water are not eligible to apply 
+this methodology3. This shall be shown from a representative survey conducted in the 
+geographical region of the proposed project or by using national data. This project area 
+characterization shall also include information on pre-season water regime and applied 
+organic amendments, so that all dynamic parameters as shown in Table 2 are covered 
+by the baseline study;  
+(b) The project rice fields are equipped with controlled irrigation and drainage facilities 
+such that both during dry and wet season, appropriate dry/flooded conditions can be 
+established on the fields;4 
+(c) The project activity does not require the farm to switch to a cultivar that has not been 
+grown before, unless it is a low emissions cultivar and does not lead to yield reduction. 
+ 
+2 A switch from transplanted rice with continuously flooded fields to DSR leads to a reduced flooding period 
+since DSR requires non -flooded conditions after sowing until the seed has fully germinated and developed 
+into a viable, young plantlet (at the “2 to 4 leaf stage”). 
+3 Pilot flexibility for upland and rainfed plantations to be considered on case-to-case basis; non-obligated entity 
+may give representation to administrator for same . It is to be noted that the eligibility of said project types 
+depends on discretion of the administrator. 
+4 Project activities where controlled  irrigation is currently not feasible, may provide representation to 
+administrator for consideration documenting future roadmap of transition towards controlled irrigation 
+practices. It is to be noted that the eligibility of said project types depends on discretion of the administrator.  
+=== p7
+ 
+BM AG04.002   7 
+ 
+(d) Training and technical support during the cropping season that delivers appropriate 
+knowledge in field preparation, irrigation, drainage and use of fertilizer to the farmer is 
+part of the project activity and is to be documented in a verifiable manner (e.g. protocol 
+of trainings, documentation of on -site visits). In particular , the non-obligated entity is 
+able to ensure that the farmer by himself or through experienced assistance is able to 
+determine the crop’s supplemental N fertilization need. The applied  method shall 
+assess the fertiliser needs using for example a leaf colour chart or photo sensor or 
+testing stripes. Alternatively, a procedure to ensure efficient fertilization considering the 
+specific cultivation conditions in the project area backed by scientific literature or official 
+recommendations shall be used; 
+(e) Non-obligated entities shall assure that the introduced cultivation practice, including 
+the specific cultivation elements, technologies and use of crop protection products, is 
+not subject to any local regulatory restrictions; 
+(f) Except the case where the default value approach indicated in section 5.1.2 “Emission 
+reductions using IPCC tier 1 approach or default values” is chosen for emission 
+reductions calculations,  have access to infrastructure to measure CH4 emissions from 
+reference fields using closed chamber method and laboratory analysis; 
+ 
+3.3. Methodology Approval Date 
+9. The date of adoption of this document shall be effective from 30 June 2026. 
+3.4. Applicability of sectoral scopes 
+10. For validation and verification of ICM projects by a designated ACVA using this methodology, 
+the application of Sectoral Scope 04: Agriculture is mandatory. 
+3.5. Applicability of approved adopted tools 
+11. This methodology also refers to the latest approved versions of the following adopted ICM 
+tools: 
+a) “BM-T-001: Combined tool to identify the baseline scenario and demonstrate 
+additionality” (hereinafter referred as “BM-T-001”); 
+ 
+4. Methodology: Baseline Component 
+4.1. Project boundary 
+12. The geographic boundary encompasses the rice fields where the cultivation method and water 
+regime are changed. The spatial extent of the project boundary includes all fields that change 
+the cultivation method in the context of the project activity. 
+4.2. Baseline 
+13. The baseline scenario is the continuation of the current practice e.g. transplanted and 
+continuously flooded rice cultivation in the project fields. 
+4.3. Baseline emissions 
+14. The baseline emissions shall be calculated on a seasonal basis using the following formula: 
+=
+s
+sy BEBE
+ 
+Equation (1) 
+
+=
+− =
+G
+g
+CHgsgsBLs GWPAEFBE
+1
+4
+3
+,,, 10
+ 
+Equation (2) 
+=== p8
+ 
+BM AG04.002   8 
+ 
+Where: 
+yBE
+ 
+= Baseline emissions in year y (t CO2e) 
+sBE
+ = Baseline emissions from project fields in season s (t CO2e) 
+gsBLEF ,,
+ 
+= Baseline emission factor of group g in season  s (kgCH4/ha per 
+season) 
+gsA ,
+ 
+= Area of project fields of group g in season s (ha) 
+4CHGWP
+ = Global warming potential of CH4 (t CO2e/t CH4):29.85 
+g = Group g, covers all project fields with the same cultivation pattern 
+as determined with the help of Table 2 (G = total number of groups) 
+4.4. Determination of baseline emission factor on reference fields 
+15. Baseline reference fields shall be set up in a way that they are representative of baseline 
+emissions in the project rice fields. For each group of fields with the same cultivation pattern, 
+as defined with the help of Table 2, at least three reference fields with the same pattern shall 
+be determined in the project area. On these fields, measurements using the closed chamber 
+method shall be carried out, each resulting in an emission factor expressed as kgCH 4/ha per 
+season. Non obligated entity may include re mote sensing (SAR/NDVI ) and GIS as optional 
+process for water regime/crop growth monitoring. The seasonally integrated baseline emission 
+factor 
+gsBLEF ,,  shall be derived as average value from the three measurements for each group 
+(see the appendix for guidelines on methane measurement). 
+4.5. Leakage 
+16. Any effects of the project activity on GHG emissions outside the project boundary are deemed 
+to be negligible and do not have to be considered under this methodology. 
+4.6. Project emissions 
+17. Project emissions consist of the CH4 emissions, which will still be emitted under the changed 
+cultivation practice. Due to the optimized N fertilization practice (cf. applicability criteria in 
+paragraph 3(d) , N fertilizer control), N2O emissions should be accounted if it significantly 
+increases from the baseline. The project should not lead to an increased application of fertiliser 
+in the baseline, which shall be ascertained through interviews, purchase records, fertiliser 
+application log books, interviews with experts, etc. In the project scenario, fertiliser application 
+shall be recorded in the log books or farm records. If there is an increase in the application 
+rate of fertilisers, then emissions from N2O shall be accounted as project emissions. Emissions 
+from land preparation should also be ascertained if they are significant. 
+18. Project emissions from project fields are calculated on a seasonal basis as follows: 
+𝑃𝐸𝑦 = ∑ 𝑃𝐸𝑠 + 𝑃𝐸𝑛 + 𝑃𝐸𝑙
+𝑠
+ Equation (3) 
+Where: 
+yPE
+ 
+= Project emissions in year y (t CO2e) 
+ 
+5 IPCC Global Warming Potential Values 07082024 
+=== p9
+ 
+BM AG04.002   9 
+ 
+sPE
+ = Project emissions from project fields in season s (t CO2e) 
+PEn = Project emissions (N2O) from N-inputs in the project fields (tCO2e)  
+PEl = Project emissions (CO2) from fields preparations (tCO2e) 
+ 
+19. CH4 project emissions: CH4 emissions from project fields are calculated on a seasonal basis 
+as follows: 
+𝑃𝐸𝑠 = ∑ 𝐸𝐹𝑃,𝑠,𝑔 × 𝐴𝑠,𝑔 × 10−3 × 𝐺𝑊𝑃𝐶𝐻4
+𝐺
+𝑔=1
+ 
+Equation (4) 
+Where: 
+sPE
+ = Project emissions from project fields in season s (t CO2e) 
+gsPEF ,,
+ 
+= Project emission factor of group g in season  s (kgCH4/ha per 
+season) 
+gsA ,
+ 
+= Area of project fields of group g in season s (ha) 
+4CHGWP
+ = Global warming potential of CH4 (t CO2e/t CH4):29.8 
+g = Group g, covers all project fields with the same cultivation pattern 
+as determined with the help of Table 2 (G = total number of groups) 
+ 
+20. The seasonally integrated project emission factor shall be determined using measurements 
+on at least three project reference fields that fulfil the same conditions as the baseline 
+reference fields, with the difference that they are cultivated according to the defined project 
+cultivation practice. Project reference fields shall be established close to the baseline 
+reference fields and begin with the growing season at the same time. Project emissions is the 
+average of the measurement results from the three reference fields. 
+21. N2O emission: The increment in N2O emission associated with AWD is calculated by assuming 
+that there is no increase in N input and that there may be an expected increase in emissions 
+associated with AWD systems in comparison to continuously flooded rice systems. The 
+increment in N2O emission associated with AWD is calculated for the application of N fertiliser 
+in the project. The N2O emission is calculated as per the equation below. 
+𝑃𝐸𝑛 = ∑(𝑄𝑛,𝑃,𝑔 × 𝐴𝑠,𝑔) × (𝐸𝐹𝑁2𝑂,𝐵,𝑔 − 𝐸𝐹𝑁2𝑂,𝑃,𝑔) × 10−3 × 𝐺𝑊𝑃𝑁2𝑂
+𝐺
+𝑔=1
+ 
+ 
+Where: 
+ 
+𝑷𝑬𝒏 = Project emissions from project fields in season s (t CO2e) 
+          Qn,P,g = Application rate of N -input in the project scenario where the 
+application rate doesn’t exceed that of baseline (kg inputs per 
+Hectare) 
+=== p10
+ 
+BM AG04.002   10 
+ 
+𝑷𝑬𝒏 = Project emissions from project fields in season s (t CO2e) 
+𝑨𝒔,𝒈 = Area of project fields of group g in season s (ha) 
+EFN2O,P,g = Emission factor for single and multiple drainage: 0.005 kgN2O-
+n/kgN input 
+EFN2O,B,g = Emission factor for continuously flooded:0.003 kgN 2O-n/kgN 
+input 
+𝑮𝑾𝑷𝑵𝟐𝑶 = Global warming potential of N2O (t CO2e/t N2O):273.06 
+g = Group g, covers all project fields with the same cultivation 
+pattern as determined with the help of Table 2 (G = total number 
+of groups) 
+22. CO2 Emission: Project emissions arising from using mechanical devices (PEl), farm equipment 
+and specialised vehicles for land preparation shall be accounted. This can be in lieu of water 
+management mechanisms being put in place. If the total emissions resulting from land 
+preparation exceed 5% of the total emission reductions in year y, they shall be considered as 
+project emissions and accounted for accordingly. In case it exceeds more than 5%, ICM BM-
+T-002 shall be used for the calculation of CO2 emissions. 
+23. Reduction in N2O emissions arising from decrease in fertiliser usage rate cannot be claimed 
+under this methodology.  
+ 
+4.7. Emission reductions 
+24. The emission reductions achieved by the project activity shall be calculated as the difference 
+between the baseline and the project emissions. 
+𝐸𝑅𝑦  =   (𝐵𝐸𝑦   −  𝑃𝐸𝑦) × (1 − 𝑈𝑑) Equation (5) 
+Where: 
+𝐸𝑅𝑦  = Emission reductions in year (t CO2e) 
+𝐵𝐸𝑦  Baseline emissions in year y (t CO2e) 
+𝑃𝐸𝑦  Project emissions in year y (t CO2e) 
+𝑈𝑑 = Uncertainty Deduction (%) 
+4.7.1. Ex ante estimation of emission reductions 
+25. For the ex-ante estimation of emission reductions within the project design document (PDD), 
+non-obligated entitie s shall either refer to own field experiments or estimate baseline and 
+project emissions with the help of national data or IPCC tier 1 default values for emission and 
+scaling factors. The approach shall be explained and justified in the PDD. 
+ 
+4.7.2. Emission reductions using IPCC tier 1 approach or default values 
+26. As an alternative to the reference field approach indicated in above paragraphs 4.4, non-
+obligated entities may calculate emission reductions using the simplified approaches : 
+27. Using the IPCC tier 1 approach but undertaking measurements to determine  baseline 
+emission factors for continuously flooded fields, as per the following formula: 
+ 
+ 
+6 IPCC Global Warming Potential Values 07082024 
+=== p11
+ 
+BM AG04.002   11 
+ 
+𝐸𝑅𝑦 = 𝐸𝐹𝐸𝑅 × 𝐴𝑦 × 𝐿𝑦 × 10−3 × 𝐺𝑊𝑃𝐶𝐻4 × (1 − 𝑈𝑑) Equation (6) 
+𝐸𝐹𝐸𝑅 = 𝐸𝐹𝐵𝐿 − 𝐸𝐹𝑃 × (1 − 𝑈𝑑) Equation (7) 
+oBLpBLwBLcBLBL SFxSFxSFxEFEF ,,,,=
+ Equation (8) 
+oPpPwPcBLP SFxSFxSFxEFEF ,,,,=
+ Equation (9) 
+Where: 
+yER
+ 
+= Emission reductions in year y (t CO2e) 
+EREF
+ = Adjusted daily emission factor (kgCH 4/ha/day). Alternatively, 
+seasonal emission factor (kgCH4/ha/season) may be determined7 
+yA
+ 
+= Area of project fields in year y (ha) 
+yL
+ 
+= Cultivation period of rice in year y (days/year). This is not applicable 
+when seasonal emission factor is determined 
+4CHGWP
+ = Global warming potential of CH4 (t CO2e/t CH4): 29.8 
+BLEF
+ = Baseline emission factor (kgCH4/ha/day) or (kgCH4/ha/season) 
+PEF
+ = Project emission factor (kgCH4/ha/day) or (kgCH4/ha/season) 
+cBLEF ,
+ = Baseline emission factor for continuously flooded fields without 
+organic amendments (kgCH4/ha/day) or (kgCH4/ha/season) 
+wPwBL SForSF ,,
+ = Baseline or project scaling factors8 to account for the differences in 
+water regime during the cultivation period 
+pPpBL SForSF ,,
+ = Baseline or project scaling factors to account for the differences in 
+water regime in the pre-season before the cultivation period 
+oPoBL SForSF ,,
+ = Baseline or project s caling factors should vary for both type and 
+amount of organic amendment applied 
+Ud  
+ 
+= Uncertainty deductions: Apply default value of 15% for IPCC 
+default values (global, regional or country specific). 
+28. The baseline emission factor for continuously flooded fields without organic amendments (
+cBLEF ,
+) shall be either determined ex-ante prior to the start of the project activity (in this case 
+the ex-ante value should be used to calculate emission reduction during the crediting period) 
+or monitored annually (in this case, the ex-post values should be used to calculate emissions 
+reduction during the crediting period) . At least three reference fields shall be chosen in the 
+ 
+7 In this methodology, “season” means an entire cropping season (from land preparation until harvest or post 
+season drainage). If a seasonal emission factor is opted, it should be based on measurements over the entire 
+period of flooding and should account for fluxes of soil-entrapped methane that typically occur upon drainage. 
+8 For all scaling factors used in the methodology, the average values in 2006 IPCC Guidelines for National 
+Greenhouse Gas Inventories are chosen. Uncertainties related to scaling factors may be considered in the 
+future revision of the methodology. 
+=== p12
+ 
+BM AG04.002   12 
+ 
+project area. On these fields, measurements shall be carried out using the closed chamber 
+method in accordance with the guidance on methane measurement in the appendix. 
+29. Alternatively, the baseline emission factor for continuously flooded fields with organic 
+amendments may be determined. In this case, scaling factors to account for organic 
+amendments (
+oPoBL SForSF ,, ) shall not be applied in the equations (8) and (9) above. 
+30. IPCC default for 
+wPwBL SForSF ,,  is as follows: 
+Table 3. IPCC default values for 
+wPwBL SForSF ,,  
+Water regime during the cultivation period 
+wPwBL SForSF ,,  
+Irrigated Continuously flooded 1 
+Intermittently flooded - single aeration 0.71 
+Intermittently flooded - multiple 
+aeration 
+0.55 
+(a) Source: IPCC 2019, volume 4, chapter 5.5, Table 5.12 
+1. Continuously flooded: Fields have standing water throughout the rice growing season and may 
+only dry out for harvest (end-season drainage). 
+2. Intermittently flooded: fields have at least one aeration period of more than three days during the 
+cropping season; 
+(a) Single aeration: fields have a single aeration during the cropping season at any growth stage 
+(except for end-season drainage); 
+(b) Multiple aeration: fields have more than one aeration period during the cropping season 
+(except for end-season drainage). 
+31. IPCC default for 
+pPpBL SForSF ,,  is provided in the following table. For regions/countries where 
+it can be demonstrated by official government data  or peer-reviewed literature that double 
+cropping is practiced, a default value of 1.0 is used. Otherwise, 0.89 is used. 
+Table 4. IPCC default values for
+pPpBL SForSF ,,   
+Water regime prior to rice cultivation 
+pPpBL SForSF ,,  
+Non flooded pre-season < 180 days (indicating double 
+cropping) 
+1 
+Non flooded pre-season > 180 days (indicating single 
+cropping) 
+0.89 
+(a) Source: IPCC 2006, volume 4, chapter 5.5, Table 5.13. 
+32. IPCC default for 
+oPoBL SForSF ,,  is calculated as follows: 
+59.0
+1 
+
+
+
+ += 
+i
+iio CFOAxROASF
+ 
+Equation (10) 
+=== p13
+ 
+BM AG04.002   13 
+ 
+Where: 
+iROA
+ = Application rate of organic amendment type i, in dry weight for 
+straw and fresh weight for others, tonne ha-1. 
+5 tonne/ha of straw is assumed as the baseline quantity of organic 
+amendment, because the value of leftover straw after harvest is 
+in the range of 3 tonne/ha (when harvested manually to the 
+ground level, leaving very little stubble and the root residues) t o 
+7 tonne/ha (harvested mechanically leaving behind large amount 
+of crop residues on the field) 
+iCFOA
+ = Conversion factor for organic amendment type i (in terms of its 
+relative effect with respect to straw applied shortly before 
+cultivation. 
+0.19 is used for a single crop and 1.0 for a double crop9 
+33. Accordingly, default for 
+oPoBL SForSF ,,  is provided in the following table. 
+Table 5. IPCC default values for
+oPoBL SForSF ,,   
+Water regime prior to rice 
+cultivation 
+oPoBL SForSF ,,  
+Non flooded pre-season < 180 days 
+(indicating double cropping) 
+2.88 
+oPoBL SForSF ,,  = (1 + 5 × 1)0.59 = 2.88 
+Non flooded pre-season > 180 days 
+(indicating single cropping) 
+1.48 
+oPoBL SForSF ,,  = (1 + 5 × 0.19)0.59 = 1.48 
+(a) Source: calculated using equation (10) above with default values from IPCC 2019, volume 4, chapter 
+5.5, Table 5.14. 
+34. The above table is for rice straw only. To include other organic amendments following IPCC  
+2019, Chapter5.5, Table 5.14, the data will be: 
+(a) For compost, the 
+oPoBL SForSF ,,  will be (1 + C × 0.17)0.59; 
+(b) For farmyard manure, the 
+oPoBL SForSF ,,  will be (1 + YM × 0.21)0.59; 
+(c) For green manure, the 
+oPoBL SForSF ,,  will be (1 + GM × 0.45)0.59; 
+(d) C, YM, GM are application rate (tonne ha-1) of compost, farmyard manure, and green 
+manure, respectively. 
+35. The calculation of specific emission factor for the baseline (
+BLEF ) and for the project activity (
+PEF
+) (kgCH4/ha/day) is summarized in the table below.
+ 
+9 For a single crop, where the rice straw is usually ploughed back to the soil after the harvest of the crop and 
+left for long period of time (i.e. rice straw is incorporated for a duration of > 30 days before cultivation), the 
+straw is already mineralized being left in the dry field. Therefore, the readily fermentable C component of the 
+rice straw is less at flooding. This gives rise to lesser methane production when the soil is flooded for 
+cultivation, therefore, 0.29 is used. 
+    On the contrary, when rice straw is incorporated for a duration < 30 days before the cultivation (a double crop 
+situation), the rice straw is  not mineralized and the readily fermentable C contents of the rice straw results 
+in the formation of higher quantity of methane production, therefore, 1.0 is used. Moreover, the s oil 
+characteristics when a second crop follows an earlier one favour larger methane production.  
+=== p14
+ 
+BM AG04.002   14 
+ 
+Table 6. Specific emission factors for baseline, project and emission reductions (kgCH 4/ha/day) or(kgCH4/ha/season) 
+ 
+cBLEF ,  
+Baseline 
+Project scenarios 
+Project 
+Emission 
+reduction 
+factor  
+(
+EREF ) 
+wBLSF ,
+ 
+pBLSF ,  
+oBLSF ,  
+Emission 
+factor 
+(
+BLEF ) 
+wPSF ,
+ 
+pPSF ,  
+oPSF ,  
+Emission 
+factor 
+(
+PEF ) 
+ 
+For 
+regions/ 
+countries 
+where 
+double 
+cropping is 
+practiced 
+cBLEF ,
+ 1.00 1.00 2.88 
+cBLEF ,
+  
+x 2.88 
+Scenario 1: change 
+the water regime from 
+continuously to 
+intermittent flooded 
+conditions (single 
+aeration)  
+0.71 1.00 2.88 
+cBLEF ,
+ 
+x 2.04 
+cBLEF ,
+ 
+x 0.84 
+Scenario 2: change 
+the water regime from 
+continuously to 
+intermittent flooded 
+conditions (multiple 
+aeration) 
+0.55 1.00 2.88 
+cBLEF ,
+ 
+x 1.58 
+cBLEF ,
+ 
+x 1.30 
+For 
+regions/ 
+countries 
+where 
+single 
+cropping is 
+practiced 
+cBLEF ,
+ 1.00 0.89 1.48 
+cBLEF ,
+  
+x 1.32 
+Scenario 1: change 
+the water regime from 
+continuously to 
+intermittent flooded 
+conditions (single 
+aeration)  
+0.71 0.89 1.48 
+cBLEF ,
+ 
+x 0.94 
+cBLEF ,
+ 
+x 0.38 
+Scenario 2: change 
+the water regime from 
+continuously to 
+intermittent flooded 
+conditions (multiple 
+aeration) 
+0.55 0.89 1.48 
+cBLEF ,
+ 
+x 0.72 
+cBLEF ,
+ 
+x 0.60 
+=== p15
+ 
+BM AG04.002  
+ 15 
+ 
+Using India default values derived from IPCC tier 2 approach. 
+36. Emission reductions using IPCC tier 2 approach: In Tier 2 approach, country -specific 
+emission factors and/or scaling factors shall be used. The country -specific factors are 
+necessary to consider the local impact of the condition that influence CH4 emissions. Peer-
+reviewed scientific literature on methane emission in rice fields may be used that 
+represents similar agroclimatic conditions and cultural practices.  These conditions include 
+different ecosystems, water regimes, type and amount of organic amendments, and other 
+conditions that may cause CH 4 emissions to vary. Ideally, country-specific emission 
+factors shall be developed through collection of field data such as effects of soil type and 
+rice cultivar. It is encouraged to implement the method at the most disaggregated level 
+and to incorporate the multitude of conditions that influence CH 4 emissions. Project 
+emission would be calculated as per section 4.6 of this methodology. The emission 
+reduction will be calculated as per section 4.7.  
+ 
+(Optional) IPCC Tier 3 approach to measurement of emission reduction: Modelling  
+37. An acceptable model is used to estimate GHG flux. It must be demonstrated that the model 
+domain sufficiently covers any potential flux changes in CH 4 (soil methanogenesis) and 
+N2O (if modeled) associated with the implementation of project activities, including 
+changes in the water regime, cultivation period (duration), fertilization practices, and 
+changes in rice varieties. Neither initial nor periodic measurements of CH4 and N2O fluxes 
+are required as part of project monitoring. High-quality observed experimental data on soil 
+CH4 and N 2O emissions from controlled research trials or approved data sources. 
+Measured datasets must be drawn from peer -reviewed and published experimental 
+datasets with measurements of N2O and CH4 fluxes, ideally using control plots to test the 
+impact of practice change on GHG fluxes. Datasets may also be drawn from a benchmark 
+database maintained by a third party or from measurements made within the project 
+boundary. Other GHG fluxes not covered by the model domain (such as CO2 due to liming, 
+CO2 from fossil fuel usage, and avoided biomass burning) must be accounted for using 
+the default emission factor approach.  
+38. Data collected from deployment of gas chambers can be used to strengthen the modelling 
+approach as a verification method for the emission factors calibrated. 
+ 
+5. Methodology: Monitoring Component 
+5.1. Monitoring of baseline and project emissions 
+39. The following parameters shall be monitored as per the  below. The applicable 
+requirements specified in the “ Detailed Procedure for Offset Mechanism under CCTS ” 
+(e.g. calibration requirements, sampling requirements) shall be taken into account by the 
+non-obligated entities. 
+ 
+Data / Parameter table 1.  
+Data / Parameter: EFBL, s, g 
+Data unit: kgCH4/ha per season 
+Description: Baseline emission factor 
+Source of data: - 
+Measurement 
+procedures (if any): 
+As per the instructions in the appendix (Guidelines for measuring 
+methane emissions from rice fields) and IPCC 2019, volume 4, chapter 
+5.5. 
+=== p16
+ 
+BM AG04.002  
+ 16 
+ 
+Monitoring frequency: Regular measurements as per closed chamber method guidance, 
+seasonally integrated 
+QA/QC procedures: - 
+Any comment: - 
+ 
+Data / Parameter table 2.  
+Data / Parameter: EFBL, c 
+Data unit: kgCH4/ha/day or kgCH4/ha/season 
+Description: Baseline emission factor for continuously flooded fields without organic 
+amendments 
+Source of data: - 
+Measurement 
+procedures (if any): 
+As per the instructions in the appendix (Guidelines for measuring 
+methane emissions from rice fields) and IPCC 2019, volume 4, chapter 
+5.5. 
+Monitoring frequency: Determined ex ante prior to the start of the project activity (in this case, 
+the ex-ante value should be used to calculate emissions reduction 
+during the crediting period) or monitored annually 
+QA/QC procedures: - 
+Any comment: - 
+ 
+Data / Parameter table 3.  
+Data / Parameter: EFP, s, g 
+Data unit: kgCH4/ha per season 
+Description: Project emission factor 
+Source of data: - 
+Measurement 
+procedures (if any): 
+As per the instructions in the appendix (Guidelines for measuring 
+methane emissions from rice fields) and IPCC 2019, volume 4, chapter 
+5.5. 
+Monitoring frequency: Regular measurements as per closed chamber method guidance, 
+seasonally integrated 
+QA/QC procedures: - 
+Any comment: - 
+Data / Parameter table 4.  
+Data / Parameter: As. g 
+Data unit: ha 
+Description: Aggregated project area in a given season s 
+Source of data: - 
+=== p17
+ 
+BM AG04.002  
+ 17 
+ 
+Measurement 
+procedures (if any): 
+To be determined by collecting the project field sizes in a project 
+database. The size of project fields shall be determined by GPS or 
+satellite data. Should such technologies not be available, established 
+field size measurement approaches shall be used pr ovided that 
+uncertainties are taken into account in a conservative manner 
+Monitoring frequency: Every season 
+QA/QC procedures: - 
+Any comment: Only compliant farms are considered  
+ 
+Data / Parameter table 5.  
+Data / Parameter: Ay 
+Data unit: ha 
+Description: Aggregated project area in year y. 
+Source of data: - 
+Measurement 
+procedures (if any): 
+To be determined by collecting the project field sizes in a project 
+database. The size of project fields shall be determined by GPS or 
+satellite data. Should such technologies not be available, established 
+field size measurement approaches shall be used pr ovided that 
+uncertainties are taken into account in a conservative manner 
+Monitoring frequency: Every year 
+QA/QC procedures: - 
+Any comment: This parameter is only required to monitor if approach mentioned under 
+IPCC Tier 1 and Tier 2  is used.Only compliant farms are considered  
+ 
+Data / Parameter table 6.  
+Data / Parameter: Ly 
+Data unit: days/year 
+Description: Cultivation period of rice in year y 
+Source of data: - 
+Measurement 
+procedures (if any): 
+To be determined by using cultivation logbooks 
+Monitoring frequency: Every year 
+QA/QC procedures: - 
+Any comment: This parameter is only required to be monitored if approach 
+mentioned under IPCC Tier 1 and Tier 2 is used. Only compliant 
+farms are considered  
+  
+Data / Parameter table 7.  
+Data/Parameter: Organic amendment 
+Data unit: Kg 
+=== p18
+ 
+BM AG04.002  
+ 18 
+ 
+Description: Organic amendment can be categorized  - Straw on-season, Green 
+manure, Straw off-season, Farmyard manure, Compost, No organic 
+amendment 
+Source of data: For baseline: Can be based on studies that are relevant to the area, 
+information from official sources or reputed research bodies, 
+interviews with farmers, or other such records of applications in the 
+baseline. Sampling is allowed. 
+For project scenario: Information recorded by a farmer in logbooks 
+during the application or in a digital database, compiled into a 
+spreadsheet for the entire project. 
+Monitoring frequency: Annual 
+QA/QC procedures: Quantity of organic amendments to be recorded category wise for 
+items provided in ‘description’ above. 
+Any comment: - 
+ 
+Data / Parameter table 8.  
+Data/Parameter: Synthetic fertilizer 
+Data unit: kg 
+Description: Quantity of synthetic fertiliser applied in the project fields. 
+Source of data: For baseline: Can be based on studies that are relevant to the area, 
+information from official sources or reputed research bodies, interviews 
+with farmers, or other such records of applications in the baseline. 
+Sampling is allowed. 
+ The information recorded by farmers in logbooks during the application, 
+compiled into a spreadsheet for the entire project. 
+Monitoring frequency: Annual 
+QA/QC procedures: - 
+Any comment: - 
+  
+ 
+ 
+ 
+ 
+ 
+ 
+Data / Parameter table 9.  
+Data/Parameter: 𝑄𝐹,𝑖 
+Data unit: Liter 
+Description: Quantity of fossil fuel consumed by farming equipment  and specialised 
+vehicles (tractors, land movers,  etc.,) during land  preparation for 
+implementing the project. The same will be used to calculate  project 
+emissions from land preparation. 
+Source of data: Records of the type of equipment used, type of fuel and time operated 
+can be estimated using operational records. 
+Monitoring frequency: Only year 1 of field operation of respective project fields 
+=== p19
+ 
+BM AG04.002  
+ 19 
+ 
+QA/QC procedures: IPCC default values to be applied for emission calculation. Efficiency of 
+equipment (if required) shall follow  manufacturer’s manual or details of 
+comparable devices. 
+Any comment: To be monitored only for the first year of field operation. Emissions from 
+land preparation beyond the first year of field operation are  deemed to 
+be insignificant. 
+ 
+            Data / Parameter table 10.  
+Data / Parameter: 𝑄𝑁,P,𝑔 
+Data unit: kg N-input per hectare 
+Description: Application rate of N-inputs in the project scenario in area group g where 
+it exceeds the baseline application rate 
+Source of data: Fertiliser application logbooks from farmers, surveys among farmers. 
+Monitoring frequency Annual 
+QA/QC procedures Consolidated purchase receipts could be considered to check the N -
+inputs. 
+Any comment: - 
+ 
+5.2. Monitoring of farmers’ compliance with project cultivation practice 
+40. In order to determine whether the project fields are cultivated according to the project 
+cultivation practice as defined by the project activity and thus assure that measurements 
+on the reference fields are representative for the emissions from the project fields, a 
+cultivation logbook/digital records10 shall be maintained for all project fields. With the help 
+ 
+10 Under this methodology, non-obligated entities are encouraged to employ digital monitoring, reporting, 
+and verification (DMRV) tools, in particular remote sensing, to efficiently enable third -party validation and 
+verification of project data. The following best practices and DMRV tools can be employed –  
+  
+ Different types of DMRV which may be deployed in addition to logbooks –   
+1. Digital Record Keeping (for example, blockchain-based mobile applications can be 
+encouraged)   
+2. Remote sensing   
+3. Machine learning/AI (Multiple sources are encouraged for increased robustness)  
+ 
+Non-obligated entities  should: 1) create typical value ranges for key parameters (e.g., using literature, 
+government/public datasets) and flag any significant deviation from the range. 2) create a clear process to 
+be followed to detect and address deviations and record any/all changes to project data. 3) consider 
+disallowing use of data outside the given ranges unless  justification is given. 4) retain all information 
+regarding such QA/QC measures, including their Standard Operating Procedure (SOP) for such issues, 
+summary of ranges, summary of all data inputs outside of range, summary of any interactions between 
+relevant parties regarding flagged data, summaries of any changes to data, and should make all such data 
+available to the verifier.   
+An SOP should be created to handle data for each project. This should clearly identify how data are 
+captured and moved between various systems, and whether, when, by whom, and how such data has been 
+altered since being ingested into project digital systems. Such systems should be auditable and should be 
+made available to the verifier.   
+=== p20
+ 
+BM AG04.002  
+ 20 
+ 
+of the logbook/digital records, all parameters that are part of the project cultivation practice, 
+and at least the following, shall be documented by the farmers: 
+(a) Sowing (date); 
+(b) Land preparation operations, f ertilizer, organic amendments, and crop protection 
+application (date and amount); 
+(c) Water regime on the field (e.g. “dry/moist/flooded”) and dates where the water 
+regime is changed from one status to another; 
+(d) Yield. 
+41. In addition, farmers shall state whether they have followed fertilization recommendations 
+provided with the introduction of the adjusted water management practice. 
+42. Non-Obligated Entities shall assure that the project reference fields are cultivated in a way 
+that they represent the ranges of cultivation practice elements on the project fields in a 
+conservative manner with respect to methane emissions. Should farmers relevantly 
+deviate from the defined project cultivation practice, so that their fields cannot be deemed 
+to be represented by the reference fields anymore, those fields shall not be taken into 
+account for the determination of the aggregated project area  
+gsA ,  of that season. This 
+requirement shall assure that only those farms are considered for the calculation of 
+emission reductions which comply with the project cultivation practice. 
+43. Reporting and verification shall be done on the basis of samples of the logbooks from the 
+farmers, according to the latest version of the “ Detailed Procedure for Offset Mechanism 
+under CCTS”.  
+44. Non-obligated entities shall set up a database which holds data and information that allow 
+an unambiguous identification of participating rice farms, including name and address of 
+the rice farmer, size of the field and, if applicable, additional farm specific information as 
+defined above. 
+45. A default uncertainty deduction factor of 15% is to be applied on the emission reductions. 
+ 
+Non-obligated entities using DMRV should provide some analysis of the accuracy/error rates of th e digital 
+systems they are deploying. Non-obligated entities should consider developing an error threshold for their 
+systems, and a rule whereby they would replace any data that fails to meet such thresholds.  
+ 
+=== p21
+ 
+BM AG04.002  
+ 21 
+ 
+Annexure 1: Guidelines for measuring methane emissions 
+from rice fields 
+1. The implementation of methane measurement in rice fields requires the involvement of 
+experts in this field or at least experienced staff trained by experts (i.e. from research 
+institutions). These guidelines cannot replace expertise in setting up chamber 
+measurements. They rather set minimum requirements that serve for standardizing the 
+conditions under which methane emissions are measured for projects under this 
+methodology. 
+2. Non-obligated entities  shall prepare a detailed plan for the seasonal methane 
+measurements before the start of the season. The plan shall include the schedule for the 
+field and laboratory measurements, the logistics that are necessary to get the gas samples 
+to the laboratory an d a cropping calendar. The plan shall also include all reference field 
+specific information regarding location and climate, soil, water management, plant 
+characteristics, fertilizer treatment and organic amendments. 
+3. The following guidance is structured according to the steps from field measurement to 
+emission factor calculation. Non-obligated entities shall make sure that the measurements 
+on project and baseline reference fields are carried out in an equal manner and 
+simultaneously. 
+ 
+Table 1. On the field - technical options for the chamber design 
+Feature Conditions 
+Chamber material Option 1: Non-transparent 
+• Commercially available PVC 
+containers or manufactured chambers 
+(e.g. using galvanized iron); 
+• Painted white or covered with reflective 
+material (to prevent increasing inside 
+temperature); 
+• Only suitable for short-term exposure 
+(typically 30 min) followed by 
+immediate removal from the field 
+Option 2: Transparent 
+• Manufactured chambers 
+using acrylic glass; 
+• Advantage of transparent 
+chambers: could be placed 
+for longer time spans on the 
+field if equipped with a lid 
+that remains open between 
+measurements and is only 
+closed during measurements 
+Placement in soil Option 1: Fixed base 
+• Base made of non-corrosive material 
+and remains in the field for the whole 
+season; 
+• Base should allow tight sealing of the 
+chamber; 
+• Base should have bores in the 
+submerged section to allow water 
+exchange between inside and outside; 
+• Base should be installed at least 24 
+hours before the first sampling 
+Option 2: Without base 
+• Chamber have to be placed 
+on the soil with open lid to 
+allow escape of eventual 
+ebullition 
+Auxiliaries of 
+chamber 
+• Thermometer for measuring the temperature inside the chamber; 
+• Fan (battery operated) inside the chamber for mix the inside air during 
+sampling; 
+• Sampling port (rubber stopper placed in a bore of the chamber) 
+Basal area Rectangular or rounded, but has to cover minimum of four rice hills (ca. 0.1 m² 
+minimum) 
+Height Option 1: Fixed height Option 2: Flexible height 
+=== p22
+ 
+BM AG04.002  
+ 22 
+ 
+Feature Conditions 
+Total height (protruding base + chamber) 
+should exceed plant height 
+• Adjustable to plant height; 
+• Chambers with different 
+heights or modular design 
+ 
+Table 2. On the field – air sampling 
+Feature Conditions 
+Replicate chambers per plot Minimum requirement: Three replicate chambers per plot 
+Number of air samples per 
+exposure / data points per 
+measurement 
+Minimum requirement: Three samples per exposure 
+Exposure time 30 minutes 
+Daytime of measurement Morning 
+Measurement interval Minimum requirement: once per week . After fertilizer or irrigation event, 
+increase the frequency of gas sampling. For example, gas samples need 
+to be collected 2, 3, and 5 days after application of fertilizer. 
+Syringe Suitability test (leak proof) before measurement 
+Preferably equipped with a lock for ease of handling 
+Sample storage until 
+analysis 
+• Storage < 24 h: air samples can remain in the syringe; 
+• Storage > 24 h: transfer air samples into evacuated vial, store with 
+slight overpressure 
+ 
+Table 3. Laboratory analysis 
+Feature Conditions 
+Method Gas Chromatograph with flame ionization detector (FID) 
+Injection Direct injection or with multi-port valve and sample loop 
+Column Packed (e.g. molecular sieve) or capillary column 
+Calibration With certified standard gas each day of analysis before and after the 
+analyses are done 
+ 
+1. Calculation of the emission rate for a plot (reference field) 
+4. For each gas analysis, calculate the mass of CH4 emissions with the help of the following 
+formula: 
+1000
+1
+4,4,4
+=
+t
+CHChambertCHtCH
+TR
+atmMVcm
+ 
+Equation (1) 
+Where: 
+tCHm ,4
+ = Mass of CH4 in chamber at time t (mg) 
+T = Point of time of sample (e.g. 0, 15, 30 in case of three samples 
+within 30 minutes) 
+tCHc ,4
+ = CH4 concentration in chamber at time t, from gas analysis (ppm) 
+=== p23
+ 
+BM AG04.002  
+ 23 
+ 
+ChamberV
+ = Chamber volume (L) 
+4CHM
+ = Molar mass of CH4: 16 g/mol 
+atm1
+ = Assume constant pressure of 1atm, unless pressure measurement 
+is installed 
+R = Universal gas constant: 0,08206 L atm K-1 mol-1 
+Tt = Temperature at time t (K) 
+5. Determine the slope of the line of best fit for the values of  over time with the help of 
+software (e.g. Excel): 
+t
+ms CH
+
+= 4
+ 
+Equation (2) 
+Where: 
+S = Slope of line of best fit (mg/min) 
+6. Calculate the emission rate per hour for one chamber measurement: 
+Chamberch A60minsRE /=
+ Equation (3) 
+Where: 
+chRE
+ = Emission rate of chamber ch (mg/h 
+  m²) 
+Ch = Index for replicate chamber on a plot 
+ChamberA
+ = Chamber area (m²) 
+7. Calculate the average emission rate of a chamber measurement per plot: 
+Ch
+RE
+RE
+Ch
+ch
+ch
+plot
+
+== 1
+ 
+Equation (4) 
+Where: 
+plotRE
+ = Average emission rate of a plot (mg/h 
+  m²) 
+Ch = Number of replicate chambers per plot 
+8. Further procedure: from the average emission rates per plot of each chamber 
+measurement, derive the seasonally integrated emission factor by integration of the 
+measurement results over the season length. The simplest way of integration is multiplying 
+the emission rate with the number of hours of the measurement interval (e.g. one week) 
+and accumulating the results of every measurement interval over the season. Convert 
+from mg/m² to kg/ha by multiplying with 0.01. 
+ 
+ 
+ 
+ 
+ 
+=== p24
+ 
+BM AG04.002  
+ 24 
+ 
+ 
+Revision/Changes in the Document 
+ 
+Version Date Description 
+ 
+1.0 30 June 2026 Initial Adoption 
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+ 

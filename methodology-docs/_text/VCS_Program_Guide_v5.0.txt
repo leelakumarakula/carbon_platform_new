@@ -1,0 +1,821 @@
+VCS Program Guide
+
+Version 5.0
+
+                                                                       16 December 2025
+All intellectual property rights in this document and any related materials for its interpretation and application constitute
+"Website Materials" as defined in the Verra Website Terms and Conditions of Use. All applicable terms and conditions
+set out therein apply to this document.
+
+Website Materials are owned by Verra or by third parties who have licensed their materials to Verra and are protected by
+applicable intellectual property laws.
+
+Use of this Website Material in the establishment or operation of a project or development of a methodology under a
+Verra certification program is permitted ("Authorized Use"). Any other use, including copying, modifying, distributing, or
+creating derivative works, whether in whole or in part, is prohibited unless expressly authorized by Verra or the relevant
+rights holder.
+
+All proprietary notices must be retained in any copies made under the Authorized Use. Verra trademarks, logos, and
+brand names may not be used without Verra's prior written consent.
+
+All rights not expressly granted herein are reserved.
+CONTENTS
+
+1 INTRODUCTION ........................................................................................1
+
+    1.1 VCS Program Versions and Effective Dates.................................................................. 1
+    1.2 Language......................................................................................................................... 5
+    1.3 Definitions ......................................................................................................................... 5
+
+2 OVERVIEW OF THE VCS PROGRAM ........................................................6
+
+    2.1 Program Objectives ........................................................................................................ 6
+    2.2 Program History................................................................................................................ 6
+    2.3 VCS Program Scope........................................................................................................ 7
+    2.4 VCS Sectoral Scopes....................................................................................................... 7
+    2.5 Program Documents ....................................................................................................... 8
+    2.6 Roles and Responsibilities ............................................................................................. 11
+
+3 VCU ATTRIBUTES .....................................................................................14
+
+4 VERRA REGISTRY ....................................................................................15
+
+    4.1 VCS Program Fees ......................................................................................................... 17
+    4.2 VCU Liability and Statute of Limitations....................................................................... 17
+
+5 VCS PROGRAM APPROVAL ..................................................................18
+
+6 VALIDATION/VERIFICATION BODY SANCTIONS ..................................19
+
+7 GRIEVANCE REDRESS POLICY ...............................................................21
+
+DOCUMENT HISTORY.......................................................................................22
+                                                                                                                 1 Introduction
+
+1 INTRODUCTION
+
+The Verified Carbon Standard (VCS) Program provides a global program and standard for GHG emission
+reduction and carbon dioxide removal projects and programs. It uses as its core the requirements set
+out in ISO 14064-2, ISO 14064-3, and ISO 14065. The VCS Program Guide (this document) is the
+overarching program document and provides the rules and requirements governing the VCS Program
+and describes the constituent parts of the program such as the project and program registration
+process, the Verra Registry system, and the accreditation requirements for validation/verification
+bodies (VVBs).
+
+1.1 VCS Program Versions and Effective Dates
+
+VCS Program Editions
+
+VCS Program editions are labeled with a version number and program documents are correspondingly
+version controlled.
+
+VCS Version 5 was released in December 2025 and replaces VCS Version 4 as the applicable version
+of the VCS Program. Effective dates are set out for all VCS Version 5 requirements.
+
+New editions of the VCS Program are issued periodically when major program changes are required.
+Development of new editions of the program involves engagement with stakeholders through public
+consultation, and with Verra's expert advisory groups.
+Document Versions
+
+VCS Program documents are labeled with a version number. VCS Version 5 is comprised of all the
+program documents labeled v5.x, where x is a running number starting at zero. Individual program
+documents may be updated periodically between program editions. The VCS Program edition is referred
+to as VCS Version 5 regardless of the version numbers of individual program documents.
+
+Projects and Verified Carbon Units (VCUs) are not labeled in the Verra Registry with a specific version of
+the VCS Program. Instead, project documentation indicates the version number of the VCS Standard
+under which the project was validated (e.g., "validated to VCS Standard, v4.7") and the version under
+which the project was most recently verified (e.g., "verified to VCS Standard, v5.0"). This indicates that
+a project has maintained its conformance to the prevailing versions of the VCS Standard throughout its
+lifetime.
+
+The VCS Program documents for previous editions of the VCS Program are available on the Verra
+website and should be referred to for the VCS Program rules under such previous editions.
+
+Corrections and Clarifications
+
+Correction documents are issued periodically to correct errors in text, equations, or figures in VCS
+Program documents and methodologies. Clarification documents are issued to provide additional
+
+                                                                                                                                    1
+                                                                                                                 1 Introduction
+
+guidance or clarity on VCS Program rules, or to issue minor, urgent updates to requirements ahead of a
+new version of a VCS Program document being issued.
+Correction and clarification (C&C) documents are posted on the Verra website alongside the relevant
+program document or methodology. Project proponents and VVBs must apply and interpret the VCS
+Program rules and methodological requirements consistent with any corrections and clarifications.
+Corrections and clarifications are incorporated into the next issued version of the relevant program
+document or methodology.
+Effective Dates of Program Updates
+New or revised program requirements are referred to as program updates. An effective date for each
+update gives project proponents and VVBs time to adjust any project planning, implementation, and
+reporting to conform to the program update. Effective dates are established on a requirement-by-
+requirement basis, because some requirements only apply to new projects, while others apply to all
+projects.
+Where a program document is updated, the "Document History" section of the document describes the
+updates made and their effective dates. Major updates are also accompanied by an Overview of
+Program Updates and Effective Dates document. Project proponents and VVBs must review the VCS
+Program Rules and Requirements page on the Verra website to ensure that they are using the
+applicable version of all program documents.
+For program updates that are not effective immediately, project proponents may choose to conform to
+updated requirements before their effective date. Where a project proponent chooses to do this, the
+VVB validates or verifies the project in accordance with the updated requirements.
+
+  Guidance: How to prepare for effective dates of program updates
+
+  Project proponents and VVBs should:
+       · review the Verra website to confirm that they are using the most recent effective
+            versions of all templates, representations, and forms to facilitate reporting against
+            current program requirements.
+       · ensure that projects can demonstrate conformance to a program update in project
+            documentation by the effective date.
+       · be aware of all forthcoming and recently released program updates. All public
+            consultations and program updates are listed on the VCS Governance and
+            Development page of the Verra website.
+
+                                                                                                                                    2
+                                                                  1 Introduction
+
+Effective date timelines generally fit into one of three categories:
+
+     · Effective immediately: where project proponents and VVBs must conform to an update
+          immediately to maintain program integrity and project quality, or where Verra's internal
+          procedures change
+
+     · Effective in 3­6 months: where a short period of time is needed for project proponents and
+          VVBs to become aware of and conform to an update by making appropriate changes to project
+          design, implementation, and reporting, and for Verra to provide training to project proponents
+          and VVBs
+
+     · Effective in 12 months: where a longer period of time is needed for project proponents and
+          VVBs to become aware of and conform to an update by making appropriate changes to project
+          design, implementation, and reporting, and for Verra to provide training to project proponents
+          and VVBs
+
+An overview of guiding criteria that Verra uses to set effective dates is provided in Table 1. Verra may
+set other effective dates where program or project integrity or other concerns warrant doing so.
+
+Table 1. Setting effective dates for VCS Program updates
+
+Effective date type        Description                  Examples
+
+Effective immediately for  All project requests         New or revised requirements to ensure program
+all project requests1      submitted on or after the    integrity and project quality, to comply with
+                           update release date must     external initiatives (e.g., Carbon Offsetting and
+                           conform to the program       Reduction Scheme for International Aviation
+                           update.                      (CORSIA), the Integrity Council for the Voluntary
+                                                        Carbon Market (ICVCM)), or to prevent errors in
+                                                        interpreting VCS Program rules
+
+                                                        Updated template instructions and clarifications
+                                                        to a requirement where the original intent of the
+                                                        requirement is maintained
+
+                                                        Clarifications or changes to Verra's review
+                                                        processes or other internal procedures
+
+Effective for all project  All project requests         New or revised requirements where it is
+requests submitted on or   submitted on or after the    reasonable to allow time for the project
+after X date               effective date must conform  proponent or VVB to conform to the requirements
+                           to the program update.       (e.g., affecting program implementation,
+                                                        monitoring, quantification, safeguards,
+                                                        stakeholder communication)
+
+1 Project request refers to a project proponent submitting a new project request (i.e., changing a project status) in
+the Verra Registry or Verra Project Hub. For more information about submitting project requests, see the
+Registration and Issuance Process.
+
+                                                                                                                                    3
+                                                                         1 Introduction
+
+Effective date type             Description                    Examples
+
+Effective from the next         All crediting period renewal   New or revised requirements that apply to already
+crediting period renewal        requests or verification       registered projects and these projects need more
+requests or verification        approval requests that         time to conform to the program update
+approval requests that          include a baseline
+includes a baseline             reassessment submitted on
+reassessment submitted          or after the effective date
+on or after X date              must conform to the
+                                program update.
+
+Effective for all               All project registration       New or revised requirements related to project
+registration requests           requests submitted on or       design or validation-specific requirements (e.g.,
+(including joint validation     after the effective date must  project start date, project eligibility)
+and verification requests)      conform to the program
+submitted on or after X         update.
+date
+
+Effective for all verification  All verification approval      New or revised requirements that project
+approval requests               requests submitted on or       proponents must conform to during project
+submitted on or after X         after the effective date       implementation (e.g., ongoing monitoring, ex-post
+date                            (including joint validation    quantification of reductions and removals,
+                                and verification approval      ongoing free, prior, and informed consent (FPIC),
+                                requests) must conform to      demonstrating identification and mitigation of
+                                the program update.            safeguard risks)
+
+Effective for projects with     Projects with a project start  New or revised requirements that relate to
+a project start date after X    date after the effective date  actions that occur prior to the project start date
+date                            must conform to the            (e.g., pre-start date stakeholder engagement,)
+                                program update.
+
+Effective for projects          Projects which initiate        New or revised requirements where only projects
+which initiate validation or    validation or verification on  that have begun a validation or verification
+verification on or after X      or after the effective date    process after the specified date must conform to
+date                            must conform to the            the program update
+                                program update.
+
+Effective for all new           Applies to the VCS             Updates to the VCS Methodology Requirements
+methodologies under             Methodology Requirements.      that must be included in methodologies moving
+development and revisions       New approved                   forward (e.g., provisions for baseline setting,
+to existing methodologies       methodologies and              quantifying reductions and removals, new
+that are approved on or         methodology revisions must     sections)
+after X date                    conform to these
+                                requirements.
+
+                                                                                                                   4
+                                                                                                                 1 Introduction
+
+1.2 Language
+
+The operating language of the VCS Program is English. The VCS Program documents may be translated
+into other languages to facilitate local use. However, the English versions of VCS Program documents,
+and the interpretation of same, shall take precedence over any other language translations.
+
+1.3 Definitions
+
+Definitions as set out in the VCS Program Definitions, ISO 14064-2, ISO 14064-3, and ISO 14065 shall
+apply to all VCS Program documentation. Note that defined terms in the VCS Program documents, in
+common with ISO convention, are used without capital first letters.
+
+                                                                                                                                    5
+                                                                                       2 Overview of the VCS Program
+
+2 OVERVIEW OF THE VCS PROGRAM
+
+2.1 Program Objectives
+
+The VCS Program establishes the rules and requirements that operationalize the VCS Standard to
+enable the validation of GHG projects and programs and the verification of GHG emission reductions
+(reductions) and carbon dioxide removals (removals) that can be used both in voluntary and
+compliance markets. The VCS Program aims to:
+
+     1) establish clear rules and procedures to enable the successful development of GHG projects
+          and programs and the creation of high-quality GHG credits;
+
+     2) create a trusted and fungible GHG credit, the VCU;
+     3) stimulate innovation in GHG mitigation technologies and measures as well as procedures for
+
+          validation, verification, and registration, all within a context of quality, credibility, and
+          transparency;
+     4) provide a secure registry system for all VCUs that offers assurance against double counting and
+          provides transparency to the public;
+     5) demonstrate workable frameworks and offer lessons that can be incorporated into other GHG
+          programs and climate change regulation;
+     6) provide oversight to ensure that investors, buyers and the market recognize VCUs as being real,
+          additional, and permanent; and
+     7) link carbon markets worldwide through a coherent and robust framework.
+
+2.2 Program History
+
+The Climate Group, the International Emissions Trading Association, and the World Business Council for
+Sustainable Development are the partner organizations that founded the VCS Program. The World
+Economic Forum also partnered in the development of the VCS Program for part of the process. The
+following editions of the VCS Program documents have been released:
+
+     · VCS Version 1 was released on 28 March 2006 as both a consultation document and a
+          standard for use by the market.
+
+     · VCS Version 2 was released in October 2006 as a consultation document and did not replace
+          VCS Version 1 as the applicable version. After two years of work, two rounds of public
+          consultation, and the work of the 19-member steering committee2 and seven technical working
+
+2 The members of the steering committee were Jan-Willem Bode, Derik Broekhoff, Mike Burnett, Robert Dornau,
+Steve Drummond, Mitchell Feierstein, Yoshito Izumi, Mark Kenber, Adam Kirkman, Andrei Marcu, Erin Meezan,
+
+                                                                                                                                    6
+                                                                                       2 Overview of the VCS Program
+
+          groups, VCS 2007 was released on 19 November 2007. VCS 2007.1, which incorporated
+          requirements for agriculture, forestry, and other land use projects, was released on 18
+          November 2008.
+     · VCS Version 3 was issued on 8 March 2011
+     · VCS Version 4 was released on 19 September 2019
+     · VCS Version 5 was released on 16 December 2025
+
+2.3 VCS Program Scope
+
+The VCS Program provides principles and requirements for designing projects that reduce GHG
+emissions or remove carbon dioxide. It forms the basis of their independent validation and verification.
+
+The scope of the VCS Program covers all activities related to reductions in the seven Kyoto Protocol
+greenhouse gases and ozone-depleting substances (ODS) and removals of carbon dioxide which are
+established in conformance to:
+
+     · eligible methodologies approved for use in the VCS Program, and
+
+     · the VCS Program rules, including the Jurisdictional and Nested REDD+ (JNR) Requirements for
+          jurisdictional REDD+ programs and nested REDD+ projects.
+
+The scope of the VCS Program does not include carbon footprint assessments or corporate emissions
+claims.
+
+2.4 VCS Sectoral Scopes
+
+The VCS sectoral scopes provide a way to group methodologies together based on their underlying
+industrial sectors or greenhouse gas (GHG) emission sources. All VCS methodologies specify the
+applicable sectoral scope or scopes.3 New methodologies can be developed under any of the sectoral
+scopes. The VCS sectoral scopes are primarily aligned with the Article 6.4 Paris Agreement Crediting
+Mechanism (PACM) sectoral scopes.
+
+VVBs are approved to audit projects under specific sectoral scopes based on their technical expertise,
+qualifications, and other competencies. The Verra website provides a list of VVBs and their respective
+sectoral scope approvals.
+
+VCS Sectoral Scopes
+
+     1. Energy supply
+     2. Energy distribution
+     3. Energy demand
+
+Ken Newcombe, Mark Proegler, Robert Routliffe, Richard Samans, Marc Stuart, Einar Telnes, Bill Townsend and
+Diane Wittenberg.
+3 CDM and PACM also specify the sectoral scopes that apply to their methodologies. Verra provides a list of which
+VCS sectoral scopes are equivalent to the defined CDM and PACM sectoral scopes.
+
+                                                                                                                                    7
+                                                                      2 Overview of the VCS Program
+
+     4. Manufacturing industries
+     5. Chemical industries
+     6. Construction
+     7. Transport
+     8. Mining and mineral production
+     9. Metal production
+     10. Fugitive emissions from fuels (solid, liquid, and gas)
+     11. Fugitive emissions from industrial gases (halocarbons and sulfur hexafluoride)
+     12. Solvents use
+     13. Waste handling and disposal
+     14. Forestry and other land use (forests, wetlands, and grasslands)
+     15. Agriculture
+     16. Geological carbon storage
+     17. Other engineered removals
+     18. Oceans and marine resources
+
+Where the VCS Program documents and templates refer to requirements that only apply to certain
+sectors, the terms used align with the sectoral scopes as described in Table 2.
+
+Table 2. Commonly used sectoral groupings
+
+Term                                        Sectoral scopes included
+
+Energy and industry (E&I) projects          1­13 and 17
+
+Agriculture, forestry, and other land use (AFOLU) projects 14 and 15
+
+Geological carbon storage (GCS) projects    16
+
+Oceans and marine resources (OMR) projects  18
+
+2.5 Program Documents
+
+The rules and requirements for the VCS Program are set out in the program documents. Projects,
+programs, and methodologies shall meet all the applicable rules and requirements set out in these
+documents.
+
+The structure of the program documents is summarized in Diagram 1. The VCS Program Guide is the
+overarching program document, providing the rules and requirements governing the VCS Program and
+further describing the constituent parts of the program such as the project and program registration
+process, the Verra Registry system, and the accreditation requirements for VVBs. Complementing the
+VCS Program Guide are requirements documents, procedural documents, and templates and forms.
+Verra may issue new documents, as developments in the VCS Program require, and the complete and
+current list of the program documents is available on the Verra website.
+
+                                                                                                                                    8
+                              2 Overview of the VCS Program
+
+Diagram 1. Program documents
+
+In addition to the VCS Program Guide, the program documents currently include the following:
+     1) Requirements Documents
+          a) VCS Standard. Provides the requirements for developing projects and for the validation and
+               verification process.
+          b) Methodology Requirements. Provides the requirements for developing new, revised, and
+               consolidated methodologies, tools, and modules.
+
+                                                                                                                                    9
+                                                                                       2 Overview of the VCS Program
+
+          c) JNR Requirements. Provides further requirements for developing jurisdictional REDD+
+               programs and nested REDD+ projects.
+
+          d) Program Definitions. Provides the definitions for terms used in the VCS Program
+               documents.
+
+          e) Verra Program Fee Schedule. Provides the fees related to the various parts of the VCS
+               Program and all other Verra programs.
+
+          f) Geological Carbon Storage Requirements. Provides the requirements for developing
+               geological carbon storage projects.
+
+     2) Procedural Documents
+
+          a) Registration and Issuance Process. Provides the procedures and rules for registering
+               projects and issuing VCUs.
+
+          b) JNR Registration and Issuance Process. Provides the procedures and rules for registering
+               jurisdictional baselines and jurisdictional REDD+ programs, as well as projects nested in
+               jurisdictional programs and standalone projects operating under the JNR Scenario 1
+               Requirements.
+
+          c) JNR Validation and Verification Process. Provides the process and requirements for the
+               validation and verification of jurisdictional baselines and jurisdictional REDD+ programs.
+
+          d) Methodology Development and Review Process. Provides the procedures and rules for the
+               development and review of new or revised VCS methodologies, tools, and modules.
+
+          e) Procedure for Applying the AFOLU Non-Permanence Risk Tool. Provides the procedure for
+               conducting non-permanence risk analysis and buffer determination for AFOLU projects.
+
+          f) Procedure for Applying the GCS Non-Permanence Risk Tool. Provides the procedures for
+               assessing the non-permanence risk and buffer determination required for Geological
+               Carbon Storage (GCS) projects.
+
+     3) Templates and Forms
+          a) VCS Program Templates. Templates for project descriptions, validation reports, monitoring
+               reports, verification reports, and methodologies.
+          b) Representations Templates. Templates for deeds of representation made by project
+               proponents and VVBs.
+          c) Forms. Forms such as for VVBs to notify Verra that they are conducting
+               validation/verification services .
+
+The following are normative (referenced) documents for the VCS Program:
+     1) ISO 14064-2, Greenhouse gases ­ Part 2: Specification with guidance at the project level for
+          quantification, monitoring, and reporting of greenhouse gas emission reductions or removal
+          enhancements.
+
+                                                                                                                                  10
+                                                                                       2 Overview of the VCS Program
+
+     2) ISO 14064-3, Greenhouse gases ­ Part 3: Specification with guidance for the verification and
+          validation of greenhouse gas statements.
+
+     3) ISO 14065, Greenhouse gases ­ Requirements for greenhouse gas validation and verification
+          bodies for use in accreditation or other forms of recognition.
+
+     4) The GHG Protocol for Project Accounting (Chapter 7, guidance related to additionality and
+          common practice), WRI, 2005.
+
+The four standards above are part of the requirements of the VCS Program, and their requirements
+shall be met either by the project proponent (ISO 14064-2) or the VVB (ISO 14064-3 and ISO 14065).
+Where there is any conflict between VCS Program documentation and the above normative references,
+the VCS Program documentation takes precedence.
+
+The program documents are also complemented by guidance documents. These guidance documents
+do not set out VCS Program rules and requirements, but they provide additional information to assist
+with the interpretation of the rules and requirements. It is strongly encouraged that such guidance is
+followed.
+
+2.6 Roles and Responsibilities
+
+2.6.1 Project and Jurisdictional Proponents
+
+Project and jurisdictional proponents are the entities with overall control and responsibility for projects
+or programs. A project may have one project or jurisdictional proponent, or there may be multiple
+project or jurisdictional proponents who collectively have overall control and responsibility for a project
+or program. Project and jurisdictional proponents establish and operate projects and programs in
+accordance with the VCS Program rules. They are responsible for providing the project or program
+description, monitoring report, and supporting documentation (including evidence of right to operate) to
+facilitate validation and verification.
+
+Project and jurisdictional proponents sign unilateral representations with respect to their projects or
+programs and VCUs, and these are made available on the Verra Registry. Project proponents assume
+limited liability for the replacement of excess VCUs, as set out in Section 4.2.
+Note ­ To aid the readability of the VCS Program documentation, the documents use project and
+jurisdictional proponent in the singular. For projects and programs with multiple project or jurisdictional
+proponents, "project proponents" or "jurisdictional proponents" should be substituted in place of "project
+proponent" or "jurisdictional proponent", as appropriate.
+
+2.6.2 Validation/Verification Bodies (VVBs)
+
+VVBs are accredited to validate projects and verify GHG emission reductions and carbon dioxide
+removals. They are only eligible to carry out work for the sectoral scopes for validation and verification
+for which they hold accreditation and must sign the required agreement with Verra before they can
+perform validation or verification in connection with the VCS Program.
+
+                                                                                                                                  11
+                                                                                       2 Overview of the VCS Program
+
+The list of VVBs is available on the Verra website.
+
+2.6.3 Verra Registry
+
+The Verra Registry is responsible for ensuring that all required project and program documents have
+been submitted to Verra; issuing and maintaining accounts of VCUs for accountholders; ensuring the
+seamless flow of VCUs throughout the entire Verra Registry system; tracking and reporting the
+deposit/withdrawal of buffer credits to/from the centrally managed AFOLU pooled buffer account and
+jurisdictional pooled buffer account; and maintaining custody and records of VCU legal ownership.
+
+2.6.4 VCU Buyers, Sellers, and Brokers
+
+Buyers, sellers, and brokers are companies, organizations, or individuals who transact VCUs or
+facilitate the transaction of VCUs.
+
+2.6.5 Verra
+
+The VCS Program is managed by Verra, which is an independent, non-profit organization incorporated
+under the laws of the District of Columbia in the United States. Verra is responsible for managing,
+overseeing, and developing the program. It maintains an impartial position in the market and does not
+develop projects or JNR REDD+ programs, nor does it provide validation or verification services.
+One of Verra's roles is in respect of overseeing and ensuring the integrity of projects, programs, and
+VCUs in the Verra Registry system. Verra conducts reviews of project and program registration and
+verification requests. Verra is also responsible for overseeing the VVBs operating under the VCS
+Program.
+Verra's review of projects is conducted in accordance with the Registration and Issuance Process. The
+review ensures that the VVB has appropriately assessed, and fully described how it has assessed, the
+project's conformance to the VCS Program rules. Reviews do not replace validation or verification.
+
+Verra also conducts other types of VVB reviews. These include, but are not limited to, desk reviews of
+the VVB work, visits to the VVB offices, witnessing the VVB undertaking audits (in person and remotely),
+and reviewing work products developed by the VVB in performing the audits.
+Where Verra identifies shortcomings in a VVB's performance, Verra provides feedback and requires the
+VVB to address non-conformities. Verra also reports VVB performance to the respective accreditation
+body.
+
+Verra reserves the right to take action against VVBs and implement sanctions in accordance with the
+provisions set out in the agreements signed with Verra (see Section 6). The rights and obligations for
+VVBs are set out in such agreements.
+
+Verra reserves the right not to list projects, register projects and programs, or issue VCUs where it
+deems that they do not conform to the VCS Program rules or may otherwise impact the integrity of the
+VCS Program or the functioning of the broader carbon market. Verra reserves the right to cancel VCUs
+or to reject, put on hold, or inactivate projects where it deems that they have not been registered or
+
+                                                                                                                                  12
+                                                                                       2 Overview of the VCS Program
+issued in conformance to the VCS Program rules. At listing, Verra may deny the request and/or reject
+the project where the listing request is frivolous, vexatious, or an abuse of process. Verra makes the
+reasons for such decisions publicly available on the project page on the registry.
+Verra also leads the methodology development and review process. It may choose not to accept
+methodologies into the process and to put on hold or reject methodologies that are in the process.
+Verra may review, revise, or set as inactive previously active methodologies where they do not conform
+to the VCS Program rules, would sanction politically or ethically contentious project activities, or may
+otherwise impact the integrity of the VCS Program or the functioning of the broader carbon market.
+Verra may convene steering committees, advisory committees, or working groups to support its work in
+specific areas. These groups draw in expertise from outside the organization to develop and support
+specific elements of the VCS Program. A full list of steering committees and working groups is available
+on the Verra website.
+
+                                                                                                                                  13
+                                   3 VCU Attributes
+
+3 VCU ATTRIBUTES
+
+VCUs issued in the VCS Program embody the attributes set out in Table 3. The VCS Program rules are
+designed to ensure that all VCUs share these attributes. Project proponents and VVBs ensure the same
+by developing and auditing projects in conformance to the VCS Program rules.
+
+Table 3. VCU attributes
+
+Attribute               Description
+
+Additional              Reductions and removals exceed what would be achieved under a business-as-
+                        usual scenario and would not have occurred in the absence of the incentive
+                        provided by carbon markets.
+
+Durable                 Where reductions and removals carry a risk of reversal, safeguards are in place to
+                        minimize reversal risk and address underlying conditions that may lead to reversals
+                        over the longer of the project longevity and project crediting period. Any reversals of
+                        reductions or removals that have been credited are accounted, reported, and where
+                        possible, replaced.
+
+Independently verified  Reductions and removals are independently verified by an accredited VVB with
+                        appropriate expertise for the project location and sector.
+
+Traceable and not       VCUs are transparently recorded and tracked in the Verra Registry to ensure credits
+double counted          are identified securely, uniquely, and unambiguously. Traceability ensures that
+                        VCUs are not double issued, double claimed, or double used.
+
+Robustly quantified     Reductions and removals are robustly quantified in conformance to VCS Program
+                        rules and methodologies and guided by the VCS Program principles.
+
+Participatory-based     Stakeholders are actively engaged throughout project design and implementation,
+                        including through seeking free, prior, and informed consent. Accessible and
+                        effective mechanisms allow stakeholders to raise concerns and submit complaints.
+
+Safeguarded from        Projects are designed and implemented to assess and mitigate risks of negative
+unmitigated harm
+                        impacts on people and the environment, uphold human rights and Indigenous
+                        Peoples' rights including to just compensation, and promote equity.
+
+Aligned with sustainable Project activities are designed to deliver positive sustainable development
+
+development goals       outcomes.
+
+Aligned with net zero   Project activities avoid locking in GHG emissions and activities or technologies that
+transition              are incompatible with achieving net zero GHG emissions by mid-century.
+
+                                                                                                        14
+                                                                                                               4 Verra Registry
+
+4 VERRA REGISTRY
+
+The Verra Registry provides the public interface to all project, program, and VCU information. VCU serial
+numbers are generated by the registry, which ensures the uniqueness of projects, programs, and VCUs.
+In addition, the Verra Registry provides full transparency on project and program documentation,
+together with information on the project and jurisdictional proponents, VCU issuance and retirement,
+the AFOLU and GCS pooled buffer accounts, and the jurisdictional pooled buffer account.
+The AFOLU and GCS pooled buffer accounts hold non-tradable buffer credits to cover the non-
+permanence risk associated with AFOLU and GCS projects, respectively. The accounts are subject to
+periodic reconciliation, as set out in the VCS Standard. Likewise, the jurisdictional pooled buffer
+account holds the non-tradable buffer credits to cover the non-permanence risk associated with
+jurisdictional REDD+ programs and nested projects.
+The Verra Registry provides accountholder services and is the entry point into the registry system for
+project and jurisdictional proponents, and VCU buyers and sellers. Such market participants open an
+account with the Verra Registry and project and program registration and VCU issuance is initiated with
+the Verra Registry.
+The Verra Registry is responsible for: ensuring that projects and programs are registered and VCUs are
+issued in accordance with the VCS Program rules; providing services for holding, transferring, and
+retiring VCUs; managing AFOLU and jurisdictional buffer credits; and providing custodial services for
+VCUs and maintaining records of VCU legal ownership.
+Project and jurisdictional proponents (or other eligible entities, as set out in the Registration and
+Issuance Process and JNR Registration and Issuance Process) request listing and registration of
+projects and programs and VCU issuance, with the Verra Registry. Diagram 2 outlines the project life
+cycle and registration process, which is similar to the program life cycle and registration process. Once
+the project or program has been validated and the GHG emission reductions or carbon dioxide
+removals verified, the project or jurisdictional proponent submits the relevant documents to the Verra
+Registry. Verra conducts a completeness review of the documents and may conduct a further accuracy
+review to assess conformance to the VCS Program rules. Where it is determined that the project or
+program conforms to the VCS Program rules, Verra uploads the documents to the public Verra Registry
+and issues VCUs into the project or jurisdictional proponent's account. Note that validation and
+verification may be undertaken simultaneously, with registration and issuance of the VCUs occurring at
+the same time, or validation may occur before verification, with registration occurring before any
+subsequent issuance of VCUs.
+
+                                                                                                                                  15
+                                                        4 Verra Registry
+
+Diagram 2. Project life cycle and registration process
+
+                                                        16
+                                                                                                               4 Verra Registry
+The process and detailed rules and requirements for project pipeline listing, program listing, project,
+and program registration, and VCU issuance are set out in the Registration and Issuance Process and
+JNR Registration and Issuance Process.
+
+4.1 VCS Program Fees
+
+Verra charges fees to cover administration costs, at the rates set out in the Verra Program Fee
+Schedule.
+
+4.2 VCU Liability and Statute of Limitations
+
+Registered projects and issued VCUs are subject to review by Verra, as set out in the Registration and
+Issuance Process. Project proponents are responsible for compensating for excess VCU issuance where
+Verra deems, acting reasonably, that there has been a material erroneous issuance of VCUs in respect
+of a project, as a result of the fraudulent conduct, negligence, intentional act, recklessness,
+misrepresentation, or mistake of the project proponent. A statute of limitations applies, whereby Verra
+can only require such compensation up to the later of:
+
+     1) 6 years after the date of issuance of the relevant VCU; or
+     2) 12 months after the date upon which any subsequent verification report with respect to the
+
+          relevant VCU is accepted on the Verra Registry.4
+
+4 The relevant VCU will be issued following acceptance of a verification report for a project. For some types of
+AFOLU projects in particular, verification cycles may be longer than 6 years. In this regard, if the subsequent
+verification report shows a VCU has been erroneously issued, Verra will have an additional 12 months to deal with
+that issue. Note also that where a VCU is erroneously issued from the last verification report of a project, Section
+4.2(1) applies.
+
+                                                                                                                                  17
+                                                                                                 5 VCS Program Approval
+
+5 VCS PROGRAM APPROVAL
+
+VVBs are eligible to provide validation and verification services under the VCS Program where they:
+     1) are accredited by an accreditation body that is a member of the International Accreditation
+          Forum (IAF) and granted recognition for IAF Multilateral Recognition Arrangement (MLA) under
+          ISO 17029 and/or 14065.
+     2) are approved by Verra and listed as an active VVB on Verra's website.
+     3) have signed the required agreement with Verra.
+
+The VVB for a project shall hold such accreditation and Verra approval for validation or verification (as
+applicable) for the sectoral scope applicable to the methodology applied to the project. Where the
+methodology falls under more than one sectoral scope, the VVB shall hold accreditation or approval for
+validation or verification (as applicable) for all relevant sectoral scopes.
+Where the VVB holds such accreditation and Verra approval for the verification of the relevant sectoral
+scopes but does not hold accreditation or approval for validation, it may validate project description
+deviations and inclusion of new project activity instances in grouped projects at the time of verification
+where all of the following are true:
+
+      1) The VVB holds accreditation and Verra approval for validation in at least one other sectoral
+           scope.
+
+      2) The VVB has completed validation of at least five projects under the VCS Program that have
+           been registered with the VCS Program.
+
+      3) The validation activity does not entail validation of a project description deviation that impacts
+           the applicability of the methodology, additionality, or the appropriateness of the baseline
+           scenario (see the VCS Standard for further information on such deviations).
+
+To apply to become an approved VVB with the VCS Program, organizations must complete a Verra
+Validation/Verification Body Application Form and submit the signed application, along with any
+supporting evidence (as required by the application) to auditing@verra.org.
+A list of accredited VVBs that are Verra-approved to undertake validation and verification services
+under the VCS Program is available on the Verra website.
+
+                                                                                                                                  18
+                                                                          6 Validation/Verification Body Sanctions
+
+6 VALIDATION/VERIFICATION BODY
+  SANCTIONS
+
+Based on its oversight activities, Verra has sole discretion to apply sanctions that vary according to the
+severity of issues and/or non-conformance(s) where VVBs are:
+
+     1) Found by Verra to be conducting services not in conformance to the governing accreditation
+          body and/or VCS Program rules, or
+
+     2) Deemed by Verra to be performing poorly.
+Warning Issuance
+
+Where Verra deems sanctions are merited, it may issue a warning notice and non-conformity report to
+the VVB, requiring it to undertake a root cause analysis and identify corrective actions for addressing
+the identified issues. The root cause analysis and corrective action plan must be submitted to Verra
+within the time frame identified in the warning and non-conformity report.
+Verra reviews and assesses whether the VVB's root cause analysis and corrective action plan are
+satisfactory or if additional sanctions may be applied.
+
+Accreditation Body Referral
+
+Verra may share the results of its VVB non-conformity reports with relevant accreditation bodies.
+
+Suspension and Reinstatement
+
+Verra may issue a notice of VVB suspension at any time. Where a suspension notice is issued, Verra
+provides the VVB with a copy or detailed description of the evidence upon which its decision was based.
+Suspension may be for the entire VCS Program, or the VVB may be suspended for specific VCS sectoral
+scopes per the provisions set out in the Verra VVB Agreement.
+
+The suspension is announced on the VCS website.
+     1) Where the full VCS program scope is suspended, the VVB's approved status is changed to
+          inactive
+     2) Where specific scopes are suspended, the VVB status remains active, but the suspended scope
+          is changed from active to suspended.
+
+A VVB is automatically suspended where it is suspended by the accreditation body under which it holds
+accreditation.
+
+Inactive VVBs or active VVBs with specific suspended scopes are not permitted to conduct validation or
+verification audits or issue any documentation (e.g., validation/verification reports) concerning the
+suspended (inactive) program or specific scope(s) without Verra's prior and explicit approval.
+A sectoral scope may be reactivated and/or VCS Program approval status reinstated where:
+
+                                                                                                                                  19
+                                                                     6 Validation/Verification Body Sanctions
+1) the VVB demonstrates to Verra's reasonable satisfaction that:
+
+     a) the evidence upon which such suspension was based was inaccurate or misleading, or
+     b) the facts or circumstances leading to such suspension are no longer current or likely to
+
+          affect the VVB's performance, or
+     c) its suspension by the accreditation body under which it holds accreditation is lifted, and
+2) the VVB has paid all VVB program and reinstatement assessment fees.
+
+                                                                                                                             20
+                                                                                              7 Grievance Redress Policy
+
+7 GRIEVANCE REDRESS POLICY
+
+Project proponents, VVBs, and other stakeholders (including interested stakeholders) may submit
+inquiries to Verra at any time. In addition, Verra provides a grievance redress policy as set out in the
+Verra Grievance Redress Policy available on the Verra website.
+
+                                                                                                                                  21
+                                                               Document History
+
+DOCUMENT HISTORY
+
+Version  Date     Comment
+
+v5.0 16 Dec 2025 Updated version released under VCS Version 5
+
+                                                               22
+ABOUT VERRA
+
+Verra sets the world's leading standards for climate action and sustainable development. We build
+standards for activities as diverse as reducing deforestation, improving agricultural practices,
+addressing plastic waste, and achieving gender equality. We manage programs to certify that these
+activities achieve measurable high-integrity outcomes. We work with governments, businesses, and civil
+society to advance the use of these standards, including through the development of markets.
+Everything we do is in service of increasingly ambitious climate and sustainable development goals,
+and an accelerated transition to a sustainable future.
+Verra's certification programs include the Verified Carbon Standard (VCS) Program and its Jurisdictional
+and Nested REDD+ (JNR) framework, the Climate, Community & Biodiversity Standards (CCBS)
+Program, the Sustainable Development Verified Impact Standard (SD VISta) Program, and the Plastic
+Waste Reduction Program.
+
+                                                                                                                                  23
+

@@ -1,0 +1,749 @@
+METHODOLOGY
+
+METHODOLOGY FOR AFFORESTATION/REFORESTATION
+(A/R) GHGs EMISSION REDUCTION & SEQUESTRATION
+
+SDG 13
+
+Publication Date 16.05.2024
+Version 2.1
+Next Planned Update 24.10.2025
+
+Contact details
+The Gold Standard Foundation
+International Environment House 2
+Chemin de Balexert 7-9
+1219 Châtelaine
+International Environment House 2
+Geneva, Switzerland
+Tel: +41 22 788 70 80
+Email: standards@goldstandard.org
+
+SUMMARY
+
+This Methodology document, hereafter "A/R Methodology", is to enable A/R activities to
+quantify and certify emissions sequestration impacts. In turn this allows the Project to
+access Gold Standard VERs as per the Gold Standard Emissions Reduction and
+Sequestration Product Requirements.
+METHODOLOGY-Afforestation/reforestation GHG emissions reduction & sequestration methodology v.2.1
+
+TABLE OF CONTENTS
+
+  SUMMARY__________________________________________________________________ 1
+      DEFINITION ______________________________________________________________ 3
+      SCOPE, APPLICABILITY, AND ENTRY INTO FORCE ________________________________ 4
+             2.1 | Scope .................................................................................................. 4
+             2.2 | Entry into force ..................................................................................... 5
+      BASELINE METHODOLOGY __________________________________________________ 5
+             3.1 | Emission Pools & Sources ....................................................................... 5
+             3.2 | Demonstration of additionality................................................................. 6
+             3.3 | Calculation of CO2 removal ...................................................................... 7
+             3.4 | Selection and justification of the baseline scenario ..................................... 8
+             3.5 | Baseline Emissions ................................................................................ 8
+             3.6 | CO2 removal ......................................................................................... 9
+             3.7 | Leakage emissions................................................................................10
+             3.8 | Other emissions ...................................................................................12
+             3.9 | General requirements for methodology application ....................................12
+             3.10 | Default Values......................................................................................14
+             3.11 | Forest Inventory...................................................................................15
+      PROCESS _______________________________________________________________ 15
+
+DOCUMENT HISTORY........................................................................................ 17
+
+                                                                                                                                                                    2
+METHODOLOGY-Afforestation/reforestation GHG emissions reduction & sequestration methodology v.2.1
+
+1| Definition
+1.1.1 | The following definitions apply
+
+                 a. Tree l A tree is a perennial woody plant with one or several dominant
+                      sprouts that increase its circumference due to secondary growth.
+
+                      For a practical use of this document the definition of a tree in these `A/R
+                      Requirements' goes beyond the scientific definition of a tree and also
+                      includes shrubs, palms and bamboo plants. Differences in the context of
+                      specific requirements are noted on the individual pages.
+
+            In any project, trees shall reach a minimum height of 2 meters.
+
+1.1.2 | For forest inventories of these different types of trees, additional guidance is
+            provided by the forest inventory guidelines/ Sourcebook of the BioCarbon Fund.
+                 b. Forest l A forest is defined by the Designated National Authority (DNA)
+                      or equivalent entity of the project's host country. In case no forest
+                      definition is yet given by the DNA, the Project Developer can refer to the
+                      forest definition of the FAO or the national forest definition of the
+                      project's host country.
+                 c. Wetland1 l Wetlands are lands that are transitional between terrestrial
+                      and aquatic systems where the water table is usually at or near the
+                      surface or the land is covered by shallow water, and that have one or
+                      more of the following attributes:
+                         i. At least periodically, the land supports predominantly plants
+                             typically occurring in wetlands, AND
+                        ii. The substrate is predominantly undrained and water saturated soil,
+                             AND
+                       iii. The substrate is non-soil and is saturated with water or covered by
+                             shallow water at some time during the growing season of each
+                             year.
+                 d. Organic Soil l Organic soils fulfil one of the following requirements:
+                         i. If the soil is never saturated with water for more than a few days,
+                                and contains >20% (by weight) of organic carbon (35% organic
+                                matter)
+                        ii. If the soil is subject to water saturation episodes and has either:
+
+1 Source: Cowardin et al. 1979 - Classification of Wetlands and Deepwater Habitats of the
+United States
+
+                                                                                                                                                                    3
+METHODOLOGY-Afforestation/reforestation GHG emissions reduction & sequestration methodology v.2.1
+
+                                     a. >12% (by weight) organic carbon (20% organic matter) if
+                                         it has no clay
+
+                                     b. >18% (by weight) organic carbon (30% organic matter) if
+                                         it has >60% clay
+
+                                     c. a proportional lower limit of organic carbon content
+                                         between 12 and 18% if the clay content of the mineral
+                                         fraction is between 0 and 60%
+
+                 e. Selective harvesting l Selective harvesting is done through the
+                      continuous harvest of single trees or groups of trees by maintaining
+                      forest on the area.
+
+                 f. Planting l Planting refers to the activity of putting trees in the ground
+                      for growth; it also includes sowing or assisted natural regeneration.
+
+                 g. Modelling Unit (MU) l Modelling Units are distinct parts of the planting
+                      area where carbon stocks can be quantified based on applying a forest
+                      growth-model. To meet the precision level for the carbon stocks
+                      estimation (see section CO2 removal, below), MU areas normally have
+                      homogeneous characteristics in their growth patterns, silvicultural
+                      treatment and planting date.
+
+2| Scope, Applicability, and entry into force
+
+2.1 | Scope
+2.1.1 | Projects that include the planting of trees on land that does not meet the
+
+            definition of a forest are eligible to apply this methodology. Please refer to
+            Annex C of Land-use & Forests Activity Requirements ­ Gold Standard for the
+            Global Goals for carrying out spatial assessment of land to assess eligibility of
+            areas.
+2.1.2 | The project area shall meet all of the requirements below for this methodology
+            to be applicable for the calculation of CO2 removal units from the project.
+
+                 a. Projects can apply all silvicultural systems:
+                          i. Conservation forests (no use of timber)
+                          ii. Forests with selective harvesting
+                          iii. Rotation forestry
+
+                 b. All projects can include agriculture (agroforestry) or pasture
+                      (silvopasture) activities.
+
+                 c. Project Areas shall not be on wetlands.
+                 d. Project Areas with organic soils shall not be drained or irrigated (except
+
+                      for irrigation for planting).
+                 e. Soil disturbance (through ploughing, digging of pits, stump removals,
+
+                      infrastructure, etc.) on organic soils shall be in less than 10% of the
+
+                                                                                                                                                                    4
+METHODOLOGY-Afforestation/reforestation GHG emissions reduction & sequestration methodology v.2.1
+
+                      area that is submitted to certification (not 10% of the entire project
+                      area).
+                 f. The most likely scenario without the project (baseline scenario) shall be
+                      defined for the project area. This scenario shall not show any significant2
+                      increase of the Baseline biomass (`tree' and `non-tree').
+2.1.3 | Special Considerations for A/R Mangrove projects:
+                 a. 90% of the planting area shall be planted with mangrove species
+                 b. Due to the accumulation of soil organic carbon, an additional 1.8
+                      tCO2/ha/year can be accounted for in the first 20 years after a Modelling
+                      Unit (MU) is planted, unless transparent and verifiable information can
+                      be provided to justify a different value. This value is based on the
+                      recommendation of 0.5 tC/ha/year by the A/R CDM methodology AR-
+                      AM0014 v3.0. It has been converted to the unit tCO2/ha/year.
+                 c. In case there are targeted management / inputs leading to SOC
+                      improvement involved, applicable SOC Framework Methodology
+                      approaches may be allowed.
+                 d. SOC sequestration component shall be excluded from the issuance of
+                      Planned Emission Reductions.
+                 e. Paragraph 2.1.2 (c) of this methodology does not apply to mangrove
+                      projects.
+                 f. Paragraph 2.1.3 will stand not applicable if an approved earmarked
+                      mangrove methodology under Gs4GG is available to be applied.
+
+2.2 | Entry into force
+2.2.1 | This methodology comes into force on its publication date. The previous
+
+            version of the methodology is valid for 30 days from the date of publication of
+            this version. The projects already submitted for listing or achieved listed status
+            may continue with the previous version of methodology as long as the project
+            is in compliance with applicable requirements of Emissions Reduction and
+            Sequestration Product Requirements.
+
+3| Baseline Methodology
+
+3.1 | Emission Pools & Sources
+3.1.1 | For the calculation of the parameters CO2-removal, Baseline and Leakage, the
+
+            carbon pools shall be assessed as summarised in table 1.
+3.1.2 | Standing dead wood is part of the carbon pool `tree biomass'.
+
+2 Significant: Significant is defined to be more than 5% of the `long-term CO2 removal' - see
+section `CO2 removal'.
+
+                                                                                                                                                                    5
+METHODOLOGY-Afforestation/reforestation GHG emissions reduction & sequestration methodology v.2.1
+
+3.1.3 |
+Positive leakage as well as market leakage shall not be accounted for under this
+methodology.
+3.1.4 | Table 1. Emissions sources included in or excluded from the project boundary
+
+Carbon Pools              Includes                     CO2-     Baseline Leakage
+
+                                                       removal
+
+Tree          Aboveground Stem, branches, bark         Yes      Yes       Yes
+biomass       Belowground Tree roots
+                                                       Yes      Yes       Yes
+
+Non-tree      Aboveground Grass, herbs, etc.           No       Yes       No
+
+biomass       Belowground Roots of grass, herbs, etc.  No       Yes       No
+
+Soil                      Organic material             Optional Optional  No
+
+Harvested wood (timber &  Furniture, construction      No       No        No
+energy wood)              material, etc.
+
+Litter & Lying dead wood  Leaves, small fallen         No       No        No
+
+                          branches, lying dead wood
+
+3.1.5 | Projects complying with A/R Requirements may use the A/R Soil Carbon Tool
+            in order to account for soil carbon change. The A/R Soil Carbon Tool estimates
+            the change in soil organic carbon stocks due to the planting of forests and
+            applies to soils on planting areas only. Once a project has undergone a
+            successful design certification, GS-VERs calculated using this tool may be
+            issued following a successful performance certification. Projects shall not issue
+            PERs resulting from this calculation tool.
+
+3.2 | Demonstration of additionality
+
+3.2.1 | The project developer shall demonstrate additionality as per the requirements
+            defined in Land Use & Forests Activity Requirements.
+
+3.2.2 | The regulatory surplus shall be demonstrated by all the projects, irrespective of
+            scale. The project shall demonstrate that proposed activity is neither directly
+            mandated by law nor otherwise triggered by legal requirements (e.g., legally
+            binding agreements, covenants, consent decrees, or contracts (with
+            government agencies or private parties). If such legal requirements are
+            identified, then crediting for the activity shall only be allowed until the date the
+            legal requirements would take effect.
+
+3.2.3 | The project developer shall demonstrate that the project could not or would
+            not take place without carbon finance. The project developer shall demonstrate
+            additionality by conforming to additionality requirements of one of the options
+            below,
+
+              a. Applicable GS4GG Activity Requirements;
+
+              b. CDM Tool 01 - Tool for the Demonstration and Assessment of
+                   Additionality;
+
+                                                                                                                                                                    6
+METHODOLOGY-Afforestation/reforestation GHG emissions reduction & sequestration methodology v.2.1
+
+c. CDM Tool 19 - Demonstration of additionality of microscale project
+    activities; (not applicable to Gold Standard microscale projects)
+
+d. CDM Tool 21 ­ Demonstration of additionality of small-scale project
+    activities; (applicable to small-scale projects only)
+
+e. An approved Gold Standard VER additionality tool
+
+3.3 | Calculation of CO2 removal
+
+3.3.1 | The CO2 removal unit is determined for every year (t) of the crediting period
+            using the following formula.
+
+CO2 removal units MU,t                                                            Eq. 1
+
+= (CO2-removal MU,t ­ Baseline MU,t ­ Leakage MU,t ­ Other
+Emissions MU,t) × Eligible planting area MU
+
+                                                   -./ ()                         Eq. 2
+
+CO2!"#$%&'Project area, t = 0 0 CO2_removal MU, t
+
+                                                 -.+, *+,
+
+3.3.2 | Where,
+
+CO2!"#$%&'Project area, t = CO2-removal units of a project area in year t (tCO2)
+
+CO2 removal MU,t  = CO2-removal of a MU in year t (tCO2)
+
+MUs               = MUs of a project area (1, 2, 3, ...)
+
+t                 = Years of the crediting period (1, 2, 3, ...)
+
+CP                = Year the crediting period ends (1, 2, 3, ...)
+
+3.3.3 | The CO2-removal units are determined in a cumulative way, alongside the
+            growth of a forest. This implies that at the beginning of a project, emissions
+            from the parameters Other Emissions, Baseline, and Leakage can outweigh the
+            parameter CO2-removal units and the net amount of CO2 sequestered is
+            negative. In this case, no GS VERs are generated. Only when the accumulation
+            becomes positive can GS VERs be issued.
+
+3.3.4 | The different parameters of this formula are described on the following pages.
+            A Summary of the calculation approach is provided below -
+
+    a. The number of CO2 removal units is determined for each Modelling Unit
+        (MU). Therefore, the CO2 removal of every MU is determined, and its
+        portion of the total Baseline and total Leakage is deducted.
+
+    b. The sum of all MUs CO2 removal units make up the CO2 removal units of
+        the entire project.
+
+                                                                                                   7
+METHODOLOGY-Afforestation/reforestation GHG emissions reduction & sequestration methodology v.2.1
+
+                 c. With the applicability conditions this methodology assumes no
+                      significant3 increase in the Baseline, so the Baseline is only deducted in
+                      year 1 (t=1).
+
+                 d. All Leakage is deducted in year 1 (t=1).
+
+                 e. Other Emissions are either linked to the Baseline and therefore deducted
+                      in year 1 (t=1) or linked to the use of fertiliser and deducted over time.
+
+3.3.5 | All carbon emission and sequestration figures shall be submitted using the
+            templates available on the A/R methodology page.
+
+3.4 | Selection and justification of the baseline scenario
+
+3.4.1 | The Baseline is the estimated carbon stock that would occur in the baseline
+            scenario. The baseline scenario describes the activities that would occur in the
+            absence of the proposed project.
+
+3.5 | Baseline
+
+3.5.1 | The Baseline shall be determined by estimating the `tree' and `non-tree'
+            biomass that is present in the eligible planting area just prior to the planting
+            start.
+
+3.5.2 | To determine the Baseline of the eligible planting area the land shall be
+
+a. stratified according to its vegetation types (grassland, bushland, etc.),
+    AND
+
+b. for each of these strata scientifically based project-specific4, regional or
+    national default values shall be found which state `tree' and `non-tree'
+    biomass of these vegetation types.
+
+c. default values5 from the IPCC shall only be used if no other values are
+    available.
+
+3.5.3 | The Baseline shall be determined on a Modelling Unit (MU) level using the
+            following formula:
+
+Baseline MU,t [tCO2/ha]                                                 Eq. 3
+= Baseline Eligible planting area [tCO2] ÷ Eligible planting area [ha]
+
+3 Significant is defined to be more than 5% of the `long-term CO2-Fixtation' - see section CO2
+removal.
+
+4Project-specific default values are generated through a `tree' and `non-tree' inventory on the
+project area.
+
+5 Default values are found e.g. in the IPCC Guidelines for National GHG Inventories
+https://www.ipcc-
+nggip.iges.or.jp/public/2019rf/pdf/4_Volume4/19R_V4_Ch04_Forest%20Land.pdf
+
+                                                                                                                                                                    8
+METHODOLOGY-Afforestation/reforestation GHG emissions reduction & sequestration methodology v.2.1
+
+3.5.4 | The baseline modelling unit will include all trees identified as `baseline trees'
+            within the project area. Any losses in baseline trees will specifically be
+            mentioned and accounted. Where possible, the stock change in baseline trees
+            should be based on census, after identifying and numbering each tree in the
+            baseline. If sampling of baseline trees was conducted, the need for the same
+            shall be assessed at the time of design review.
+
+3.5.5 | Baseline stock change will be reported for the entire crediting period.
+3.5.6 | If it is established at the time of project design certification that baseline will
+
+            not increase, monitoring will be limited to confirming any loss of 'baseline
+            trees'.
+3.5.7 | The Baseline is not subject to reassessment at the time of renewal of the
+            crediting period.
+
+3.6 | CO2 removal
+3.6.1 | The yearly CO2-removal is determined at the level of Modelling Unit (MU)
+
+            during the crediting period.
+3.6.2 | For every MU a growth-model and conversion factors (see section 3.9 | below
+
+            for Conversion Procedure) shall be determined.
+3.6.3 | The conversion factors allow the conversion of the `Stem volume', which is
+
+            normally measured in cubic meters [m3] during the forest inventories, to `tree
+            biomass' with the unit tCO2. For the conversion, section 3.9 | below shall be
+            followed. The conversion factors are not subject to monitoring.
+3.6.4 | Existing `tree biomass' from the carbon stock of the Baseline that is not
+            removed shall be reflected in the growth-model.
+3.6.5 | A realistic survival rate shall be reflected in the growth model.
+3.6.6 | The long-term CO2 removal shall be determined depending on the silvicultural
+            method applied / envisioned.
+Option 1 - Selective harvesting or Conservation Forest
+3.6.7 | If the silvicultural method applied/envisioned is selective harvesting or
+            conservation forest6, the long-term CO2 removal is determined by the `tree
+            biomass' when a MU reaches its equilibrium.
+3.6.8 | If the `tree biomass' is still increasing at the end of the crediting period, the
+            long-term CO2 removal is determined by the `tree biomass' of a MU in the year
+            the crediting period ends.
+
+6 Conservation forest is forest managed without any intention of tree cutting.
+                                                                                                                                                                    9
+METHODOLOGY-Afforestation/reforestation GHG emissions reduction & sequestration methodology v.2.1
+
+Option 2 - Rotation forestry
+3.6.9 | If the silvicultural method applied/envisioned is `rotation forestry', the long-
+
+            term CO2 removal is the average `tree biomass' of a MU during the planting
+            start and the end of the crediting period.
+
+3.6.10 |The following formula is used to determine the long-term CO2 removal units.
+
+          CR-.,'$12_*"!#  =  =  4*+, CR-.,*                             Eq. 4
+                                      T
+
+3.6.11 |
+
+3.6.12 |Where,
+
+          CR-.,'$12_*"!# = Long-term CO2-removal of a MU [tCO2/ha]
+
+          CR-.,*             = CO2 removal of a MU in year t [tCO2/ha]
+
+          T                  = Number of years between the planting start and the
+
+                                end of the crediting period [ ]
+
+          t                  = Years [1, 2, 3, ...]
+
+3.7 | Leakage emissions
+3.7.1 | Leakage are emissions that occur due to a shift of activities from the inside of a
+
+            project area to the outside of a project area. These shifts of activities can
+            cause four different categories of Leakage by:
+
+                 a. collection of wood (for firewood, charcoal, etc.)
+                 b. timber harvesting
+
+                                                                                                                                                                    10
+METHODOLOGY-Afforestation/reforestation GHG emissions reduction & sequestration methodology v.2.1
+
+c. agriculture (crop cultivation, shrimp cultivation, etc.)
+
+d. livestock.
+
+3.7.2 | These four categories are used in the formulas below. Note that only the `tree
+            biomass' affected by these activity shifts shall be considered.
+
+3.7.3 | Leakage shall be determined on a Modelling Unit (MU) level using the following
+            formula:
+
+Leakage MU,t [tCO2/ha] = Leakage Project area [tCO2] ÷ Eligible  Eq. 5
+planting area [ha]
+
+Where Leakage is deducted in the first year (t=1).
+
+3.7.4 | With the application of formulas below all potential Leakage caused by a
+            project within its crediting period is accounted for in year 1. Thus, the
+            parameter is not subject to monitoring.
+
+3.7.5 | Category a, b & c leakage emissions shall be determined as per the formula
+            below.
+
+Leakage Project area [tCO2]                                      Eq. 6
+
+= Area [ha] × % of activity-shift [%] × CO2-stock [tCO2/ha]
+
+3.7.6 | Where,
+
+Area            = Land within the project area where the activity is taking
+                     place
+
+% of            = Percentage of the activity that
+activity-shift        - will be displaced during the crediting period, AND
+                      - will have impact on the `tree biomass' outside the
+CO2-stock                  project area
+                     The factor is determined by:
+                      - credible estimations, OR
+                      - a representative survey
+
+                = Average stock of `tree biomass' on the area where the
+                     activity will be displaced to
+
+                If it is not known where the activity will be displaced to,
+                the CO2-stock = the average stock of `tree biomass' of
+                a natural forest in the projects host-country
+
+3.7.7 | Category d leakage emission shall be determined as per the formula below.
+
+Leakage Project area [tCO2]                                      Eq. 7
+
+= Displaced heads [head] × Grazing capacity [ha/head] × CO2-
+stock [tCO2/ha]
+
+3.7.8 | Where,
+
+Displaced       = Amount of heads that
+heads                 - will be displaced during the crediting period, AND
+
+                                                                                                   11
+METHODOLOGY-Afforestation/reforestation GHG emissions reduction & sequestration methodology v.2.1
+
+Grazing          - will have impact on the `tree biomass' outside the
+capacity              project area
+
+CO2-stock       The factor is determined by:
+                 - credible estimations, OR
+                 - a representative survey
+           = Grazing capacity of the area where the livestock will be
+                displaced to
+
+           = Average stock of `tree biomass' on the area where the
+                 activity will be displaced to
+
+                 If it is not known where the activity will be displaced
+                 to, the CO2-stock = the average stock of `tree biomass'
+                 of a natural forest in the projects host-country
+
+3.8 | Other emissions
+
+3.8.1 | The emissions that result from certain land preparation techniques, from the
+            use of fertilisers and energy during project activities, and from nitrogen-fixing
+            trees are included in other emissions as summarised in the section below.
+
+3.8.2 | Site preparation - Where existing `tree' and `non-tree' biomass of the Baseline
+            is burned for the purpose of land preparation, an additional 10% of the
+            Baseline shall be deducted. This is to account for N2O and CH4 emissions that
+            are released during the burning process. Based on project specific data, a
+            lower percentage may be applied when justified based on relevant literature
+            and other sources.
+
+3.8.3 | Fertiliser - 0.005 tCO2 per kg of nitrogen (N) fertiliser shall be deducted. No
+            differentiation is made between synthetic and organic fertiliser. Based on
+            project specific data, a lower value may be applied when justified based on
+            relevant literature and other sources.
+
+3.8.4 | Combustion of fossil fuel - CO2 and Non-CO2 green-house-gas emissions
+            caused by the use of fossil fuel from project activities (flights, management
+            operations, etc.) are insignificant and may therefore be neglected.
+
+3.8.5 | N-fixing trees - CO2 and Non-CO2 green-house-gas emissions caused by the
+            use of N-fixing species may be conservatively assumed to be zero.
+
+3.9 | General requirements for methodology application
+
+3.9.1 | The Conversion Procedure describes how to convert from the unit of cubic
+            meters [m3] or tonnes of dry matter [tdm] to tonnes of carbon [tC] and then to
+            tonnes of carbon dioxide equivalent [tCO2].
+
+3.9.2 | Conversion factors shall be determined at the level of a Modelling Unit:
+
+                 a. Wood Density
+
+                 b. Biomass Expansion Factor
+
+                 c. Root-to-Shoot ratio
+
+                                                                                                   12
+METHODOLOGY-Afforestation/reforestation GHG emissions reduction & sequestration methodology v.2.1
+
+3.9.3 | All factors shall be based on the best available scientific sources.
+3.9.4 | For the conversion the following factors are the influencing parameters:
+
+3.9.5 | Wood density - The woody density is the ratio between the mass of dry wood
+            divided by its volume.
+            Example:
+            Wood density
+            = Mass / Volume
+            = 0.6 t / 1 m3
+            = 0.6 t / m3
+
+3.9.6 | Often the unit t (tonnes) is expressed as tdm (tonnes of dry matter).
+3.9.7 | Biomass Expansion Factor (BEF) and Root-to-Shoot ratio - The following
+
+            picture shows how the BEF and Root-to-Shoot ratio are determined based on
+            the ratio of different parts of the tree.
+             Examples:
+             BEF
+             = Aboveground tree biomass / Stem biomass
+             = 1.3 m3/ 1 m3
+             = 1.3
+             Root-to-Shoot ratio
+
+                                                                                                                                                                    13
+METHODOLOGY-Afforestation/reforestation GHG emissions reduction & sequestration methodology v.2.1
+
+             = Belowground tree biomass / Aboveground tree biomass
+             = 0.3 m3 / 1.3 m3
+             = 0.23
+3.9.8 | The different factors can be influenced by one or several of the following
+            attributes. The project owner should consider these in deciding which factors
+            are most appropriate for a particular Modelling Unit:
+
+                 a. Some BEFs already include the Root-to-Shoot ratio.
+                 b. The `Stem volume' is based on a specific diameter of stump (x cm). The
+
+                      BEF should relate to this.
+                 c. Most Root-to-Shoot ratios are calculated from the `Tree volume'
+
+                      (including branches and leaves/needles), but some are based on the
+                      `Stem volume'.
+                 d. In cases where a Biomass Conversion and Expansion Factor (BCEF) is
+                      used the factors BEF and Wood density are both integrated.
+                 e. The BEF can be age-dependent and thus change over time.
+                 f. Dead-wood differs in its Wood density, BEF and Root-to-Shoot ratio from
+                      the living tree.
+                 g. Scientific sources can relate to a relative figure (0.4) or calculative figure
+                      (1.4).
+3.9.9 | Conservative Approach - When aggregated together, the factors shall lead to a
+            conservative calculation approach. This means that in the consideration and
+            calculation of uncertainties:
+                 a. the CO2 removal shall not be overestimated, AND
+                 b. the Baseline and Leakage shall not be underestimated.
+
+3.10 |Default Values
+3.10.1 |The following default values shall be used for all conversions:
+
+                 a. 0.475 [tC/tdm] as the `Carbon fraction' for `tree biomass'
+                 b. 0.4 [tC/tdm] as the `Carbon fraction' for `non-tree biomass'
+                 c. 44=12 [tCO2/tC] is used to convert `C to CO2'
+3.10.2 |The following default factors shall be used when no rigorous scientific
+            information is available:
+                 a. For the parameters of CO2 removal:
+
+                           i. 0.3 [tdm/m3] Wood density
+                           ii. 1.1 [ ] BEF
+                           iii. 0.2 [ ] Root-to-Shoot ratio for `tree biomass'
+                 b. For the parameters of Baseline or Leakage:
+                           iv. 0.7 [tdm/m3] Wood density
+
+                                                                                                                                                                    14
+METHODOLOGY-Afforestation/reforestation GHG emissions reduction & sequestration methodology v.2.1
+
+          v. 3.5 [ ] BEF
+
+          vi. 0.8 [ ] Root-to-Shoot ratio for `tree biomass'
+
+          vii. 4.0[ ] Root-to-Shoot ratio for `non-tree biomass'
+
+3.10.3 |  More default values for `tree biomass' are in the IPCC Guidelines for National
+          GHG Inventories: https://www.ipcc-
+          nggip.iges.or.jp/public/2019rf/pdf/4_Volume4/19R_V4_Ch04_Forest%20Land.
+          pdf
+
+3.10.4 | More default values for `non-tree biomass' are in the IPCC Guidelines for
+           National GHG Inventories: https://www.ipcc-
+            nggip.iges.or.jp/public/2019rf/pdf/4_Volume4/19R_V4_Ch06_Grassland.pdf
+
+3.10.5 |If preferred, project developers may also select the more precise IPCC defaults
+            when available in place of the GS defaults for factors relating to tree and non-
+            tree biomass with no justification required.
+
+3.11 |Forest Inventory
+3.11.1 |The growth-models of the MUs shall be confirmed/adjusted by the results of
+
+            MU specific forest inventories.
+
+3.11.2 |For the forest inventories the guidelines of the BioCarbon Fund7 shall be
+            followed.
+
+3.11.3 |The process of a forest inventory shall be documented clearly and easy
+            replicated.
+
+3.11.4 |Forest inventories shall be repeated at minimum before every Performance
+            Certification.
+
+3.11.5 |The number of sample plots of a forest inventory shall be sufficient to meet a
+            MU precision with a maximum error of ±20% at a 90% confidence interval.
+            Where the error is above 20%, the additional difference shall be deducted. For
+            example ­
+
+            A forest inventory determined the mean `Stem volume' of a MU at 100 m3/ha
+            with an error of 23%.
+
+            The error is 3% higher than required: 3% * 100 m3/ha = 3 m3/ha
+
+            The mean `Stem volume' which can be accounted for is: 100 - 3 = 97 m3/ha
+
+4| Documentation requirements
+
+4.1.1 | The project developer shall undertake the following process based on the step
+            of certification that is being pursued:
+
+7 https://winrock.org/wp-content/uploads/2016/03/Winrock-
+BioCarbon_Fund_Sourcebook-compressed.pdf
+
+                                                                                                                                                                    15
+METHODOLOGY-Afforestation/reforestation GHG emissions reduction & sequestration methodology v.2.1
+
+                  a. Project certification
+                        i. Design Certification: For the Design Certification the project
+                             developer shall provide documentation using the respective sections
+                             of Consolidated A/R template viz. `Applicability', `Baseline',
+                             `Leakage', `Other Emissions', `Carbon Performance' and `CO2
+                             fixation'.
+                        ii. Performance Certification: For the Performance Certification the
+                             project developer is not required to update the information in
+                             `Applicability', `Baseline', `Leakage' and `Other Emission' sections of
+                             Consolidated A/R template.
+                        iii. New Area Certification: For the New Area Certification, the project
+                             developer shall update the existing filled-in Consolidated A/R
+                             template with the information from the new areas added, as
+                             applicable. The new information shall be clearly distinguishable.
+
+                  b. PoA certification
+                        i. Design Certification: Information on aforementioned sections of the
+                             Consolidated template, would be filled out for each real-case and
+                             regular VPA separately.
+                        ii. CME can opt to provide information for group of regular VPAs
+                             covering all areas of lands under the regular VPAs corresponding to
+                             a real-case VPA in one single document of Consolidated Template.
+                        iii. Consolidated Template will be updated for each performance
+                             certification for `CO2 fixation' and `Carbon Performance' sections of
+                             the Consolidated Template.
+
+                                                                                                                                                                    16
+METHODOLOGY-Afforestation/reforestation GHG emissions reduction & sequestration methodology v.2.1
+
+DOCUMENT HISTORY  Description
+
+Version Date      ¾ Minor Updates
+                  ¾ Further details on demonstration of
+2.1  16.05.2024
+                      additionality.
+2.0  25.10.2022   ¾ Further clarity on accounting of baseline
+
+1.0  03.07.2017       removals
+                  ¾ Editorial corrections
+
+                  ¾ New Methodology template.
+                  ¾ Clarity on mangroves, soil carbon pool.
+                  ¾ References updated.
+                  ¾ Rule update/ clarification included.
+                  ¾ Other editorial changes.
+
+                  First version
+
+                                                                                                   17
+

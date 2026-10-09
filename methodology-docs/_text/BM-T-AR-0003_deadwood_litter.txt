@@ -1,0 +1,877 @@
+=== p1
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+METHODOLOGICAL TOOL 
+ 
+BM-T-AR-0003 
+Estimation of carbon stocks and change in carbon 
+stocks in dead wood and litter in A/R ICM project 
+activities 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+  
+ 
+Publication Date: 27 March 2025  
+Version 1.0 
+ 
+ 
+ 
+ 
+ 
+  
+
+=== p2
+ 
+Table of Contents 
+1. Introduction ................................................................................................................................... 3 
+2. Definitions ...................................................................................................................................... 3 
+3. Scope & Applicability ................................................................................................................... 3 
+3.1. Scope .................................................................................................................................. 3 
+3.2. Applicability ......................................................................................................................... 3 
+3.3. Methodological Tool Approval Date .................................................................................... 3 
+4. Methodology: Procedure .............................................................................................................. 3 
+4.1.  Parameters ......................................................................................................................... 3 
+4.2.  Measurement-based methods for estimation of carbon stock in dead wood ..................... 4 
+5.1.  Measurement-based method for estimation of carbon stock in litter ............................... 11 
+5.2.      Conservative default-factor based method for estimation of carbon stock in litter........... 12 
+5.3.  Change in carbon stock in litter ........................................................................................ 13 
+6.0      Data and parameters used in the tool ..................................................................................... 14 
+6.1  Data and parameters not measured ................................................................................. 14 
+6.2.  Data and parameters measured ....................................................................................... 17 
+ 
+ 
+  
+=== p3
+1. Introduction 
+1. This tool provides a step-by-step method for estimating carbon stocks and change in 
+carbon stocks in dead wood and/or litter in the baseline and project scenarios of an 
+afforestation or reforestation (A/R) project activity under the ICM. The tool provides 
+methods based on field measurements. Simplified methods based on conservative default 
+factors are also available where certain conditions are met.   
+2. Definitions 
+2. The definitions contained in the Glossary of ICM terms shall apply. Where a term is not 
+defined in the Glossary of ICM terms, project participants should consult the definitions 
+provided in the latest version of  IPCC Good Practice Guidance for Land Use, Land-Use 
+Change and Forestry (IPCC GPG-LULUCF).  
+3. Scope & Applicability 
+3.1. Scope 
+This tool can be used for the estimation of carbon stocks and change in carbon stocks in dead 
+wood and/or litter in the baseline and project scenarios of an A/R ICM project activity.  
+3.2. Applicability 
+3. This tool has no internal applicability conditions.  
+4. This tool makes the following assumptions:  
+(a) Linearity of change of biomass in dead wood and litter over a period of time:  
+Change of biomass in dead wood and litter may be assumed to proceed, on 
+average, at an approximately constant rate between two points of time at which 
+the biomass is estimated;  
+(b) Appropriateness of root-shoot ratios:  
+Root-shoot ratios appropriate for the estimation of below-ground biomass from 
+above-ground biomass of living trees are also appropriate for dead trees.  
+3.3. Methodological Tool Approval Date 
+5. The date of adoption of this document shall be effective from 27 March 2025. 
+4. Methodology: Procedure 
+4.1.  Parameters  
+6. This tool provides procedures to determine the following parameters:  
+  
+=== p4
+            Table 1. Parameters determined by the tool  
+ 
+Parameter  SI Unit  Description  
+CDW,t t CO2e  Carbon stock in dead wood within the project 
+boundary at a given point of time in year ( t ) 
+ΔCDW,t t CO2e  Change in carbon stock in dead wood within the 
+project boundary in year ( t ) 
+CLI,t t CO2e  Carbon stock in litter within the project boundary at 
+a given point of time in year ( t ) 
+ΔCLI,t t CO2e  Change in carbon stock in litter within the project 
+boundary in year ( t ) 
+7. While applying this tool in a methodology, the following notation should be used:  
+(a) In the baseline scenario: 
+ CDW, BSL,,t   for CDW ,t and CLI, BSL,,t  for C LI,t  
+ ΔCDW BSL,t for ΔCDW,t} ) and ΔCLI BSL,t for C LI,t  
+(b) In the project scenario:  
+ CDW, PROJ,,t   for CDW ,t and CLI, PROJ,,t  for C LI,t  
+ ΔCDW PROJ,t for ΔCDW,t} ) and ΔCLI, PROJ,t for C LI,t  
+8. Carbon stock in dead wood is estimated on the basis of the same strata, and the same 
+sample plots, which are used for the purpose of estimation of living tree biomass. 
+However, project participants (PPs) applying this tool may use a different stratification for 
+the purpose of estimation of carbon stock in dead wood if transparent and verifiable 
+information can be given for justification of such a choice.  
+9. Two methods are offered for estimation of carbon stock in dead wood: a measurement 
+based method and a conservative default-factor based method.  
+4.2.  Measurement-based methods for estimation of carbon stock in dead wood  
+10. For the purpose of this tool, the term “species” also implies a group of species when a 
+biometric parameter (e.g. biomass expansion factor, root-shoot ratio, basic wood density) 
+or a model (e.g. allometric equation, volume equation or table) is applicable to more than 
+one species.  
+11. Biomass of dead wood of species j in sample plot p in stratum i at a given point of time in 
+year t is calculated separately for the following two types of dead wood:  
+(a) Standing dead wood;  
+(b) Lying dead wood.  
+ 
+Note: Uprooted trees lying on the ground, if not extracted, shall be treated as “standing 
+dead wood” for estimation of deadwood biomass.  
+ 
+=== p5
+ 
+4.2.1. Standing dead wood  
+12. For the following two categories of standing dead wood, the biomass of standing dead 
+wood is estimated by applying a biomass reduction factor to whole tree biomass:  
+(a) Dead trees which have lost only leaves and twigs.  
+(b) Dead wood biomass is equal to whole tree biomass multiplied by a biomass 
+reduction factor equal to 0.975;1   
+(c) Dead trees which have lost leaves, twigs and small branches (diameter < 10 cm).  
+(d) Dead wood biomass is equal to whole tree biomass multiplied by a biomass 
+reduction factor equal to 0.80.2  
+13. For dead trees and stumps which do not conform to the categories under paragraph 14, 
+biomass is estimated using the method described in paragraphs 23–27.  
+14. For all dead trees falling in the categories mentioned under paragraph 14, measurement 
+of tree dimensions (i.e. diameter and/or height) are carried out in sample plots laid down 
+in each stratum. In exceptional situations, measurements may be carried out on all such 
+dead trees in the stratum where trees are few and scattered out.  
+15. Tree dimensions (i.e. diameter and/or height as measured) are converted to dead wood 
+biomass in standing dead trees by applying one of the following two methods:  
+(a) The biomass expansion factor (BEF) method; or 
+(b) The allometric method. 
+4.2.2.    Estimation of standing dead tree biomass using BEF method  
+16.  Under this method volume tables (or volume functions/curves) are used to convert tree 
+dimensions to stem volume of trees. Stem volume of trees is converted to above-ground 
+tree biomass using basic wood density and biomass expansion factors and the 
+aboveground tree biomass is expanded to total tree biomass using root-shoot ratios. Thus, 
+dead wood biomass in standing dead trees of species j in sample plot p is calculated as: 
+BDWS_TREE,j,p,i,t  =  Dj×BEF2,j×(1+Dj) × k=1∑n  (VTREE,j×(DBHk, Hk) × αk)                 Equation (1) 
+where:             
+BDWS_TREE,j,p,i,t  
+   
+Biomass of dead wood in dead trees of species j in sample plot p of stratum i 
+at a point of time in year t; t d.m.  
+VTREE,j
+×(DBHk, Hk)  
+Stem volume of the kth dead tree of species j in plot p of stratum i as returned 
+by the volume function for species j using the tree dimension(s) as entry data; 
+m3  
+DBHk  Diameter of the kth dead tree of species j in plot p of stratum i at a point of time 
+in year t; metre or any other unit of length used by the volume function  
+ Hk  Height of the kth dead tree of species j in plot p of stratum i at a point of time in 
+year t; metre or any other unit of length used by the volume function  
+ 
+1 Adapted from the latest IPCC Good Practice Guidance for Land Use, Land-Use Change and Forestry 
+(IPCC GPG-LULUCF): DEAD ORGANIC MATTER.  
+2 Ibid.  
+=== p6
+αk Biomass reduction factor for the kth dead tree, depending upon its category 
+according to paragraph 14; dimensionless    
+Dj Basic wood density of species  j; t d.m. m-3  
+BEF2,j Biomass expansion factor for conversion of stem biomass to above-ground 
+tree biomass, for species j; dimensionless  
+Rj Root-shoot ratio for tree species j; dimensionless  
+j 1, 2, 3, … tree species in plot p  
+k 1, 2, 3, … dead trees of species j in plot p in stratum i  
+p 1, 2, 3, … sample plots in stratum i  
+i 1, 2, 3, … biomass estimation strata within the project boundary  
+t  1, 2, 3, … years elapsed since the start of the A/R ICM project activity  
+ 
+17.  The volume table or volume function used must be demonstrated to be appropriate for the 
+purpose of estimation of tree biomass by applying the tool “Demonstrating 
+appropriateness of volume equations for estimation of aboveground tree biomass in A/R 
+ICM project activities”.  
+4.2.3   Estimation of standing dead tree biomass using allometric method  
+18. Under this method allometric equations are used to convert tree dimensions to 
+aboveground biomass of trees and the above-ground tree biomass is expanded to total 
+tree biomass using root-shoot ratios. Thus, dead wood biomass in standing dead trees of 
+species j in sample plot p is calculated as:  
+ 
+                         BDW_TREE,j,p,i,t =(1+Rj) × k=1∑n(fj(DBHk,Hk)×αk)                       Equation (2)  
+Where:  
+BDW_TREE,j,p,i Biomass of dead wood in standing dead trees of species j in sample plot p 
+of stratum i at a point of time in year t; t d.m. 
+fj(DBHk,Hk)    Above-ground biomass of the kth dead tree of species j in sample plot p of 
+stratum i returned by the allometric function for species j using tree 
+dimensions; t d.m. 
+αk Biomass reduction factor for the kth dead tree, depending upon its condition 
+according to paragraph 14; dimensionless 
+Rj Root-shoot ratio for tree species j; dimensionless 
+j 1, 2, 3, … tree species in plot p 
+k 1, 2, 3, … dead trees of species j in plot p in stratum i 
+p 1, 2, 3, … sample plots in stratum i 
+i 1, 2, 3, … biomass estimation strata within the project boundary 
+t 1, 2, 3, … years elapsed since the start of the A/R ICM project activity 
+ 
+19. The allometric equation used must be demonstrated to be appropriate for the purpose of 
+estimation of tree biomass by applying the tool “Demonstrating appropriateness of 
+allometric equations for estimation of aboveground tree biomass in A/R ICM project 
+activities”.  
+4.2.4. Estimation of carbon stock in standing dead wood in dead trees  
+ 
+            CDWS_TREE ,j,p,i,t =  44/12×CFTREE ,×BDWS_TREE ,j,p,i,,t                                                                                                                                                       Equation (3) 
+ 
+=== p7
+           where 
+CDWS_TREE 
+,j,p,i,t  
+Carbon stock in dead wood in standing dead trees of species j in sample plot p 
+in stratum i at a given point of time in year t; t CO2e   
+CFTREE          Carbon fraction of tree biomass; dimensionless  
+BDWS_TREE 
+,j,p,i,t  
+Biomass of dead wood in standing dead trees of species j in sample plot p of 
+stratum i at a point of time in year t; t d.m.  
+j  1, 2, 3, … tree species in plot p  
+p  1, 2, 3, … sample plots in stratum i  
+ i 1, 2, 3, … biomass estimation strata within the project boundary  
+t 1, 2, 3, … years elapsed since the start of the A/R ICM project activity  
+ 
+4.2.5  Estimation of carbon stock in standing dead wood in tree stumps  
+20. Each dead tree stump in a sample plot is categorized into a decay class as: 
+(a) Sound; 
+(b) Intermediate; or  
+(c) Rotten, on the basis of a machete test. 3  
+21. A density reduction factor is assigned to each of the decay classes, which is to be 
+multiplied by the basic wood density of the species of the stump to obtain its estimated 
+wood density. The following default values4 of the density reduction factors for the three 
+decay classes are used, unless PPs have more specific data available with them: for the 
+decay class: (a) Sound, the density reduction factor = 1.00; for the decay class; (b) 
+Intermediate, the density reduction factor = 0.80; for the decay class; and (c) Rotten, the 
+density reduction factor = 0.45.  
+22. For each dead tree stump of height less than 4 m the mid-height diameter is measured. 
+For each dead tree stump of height 4 m and above, the diameter at breast height (DBH) 
+is measured.  
+23. For stumps of height more than 4 m, the mid-height diameter of the stump is estimated 5 
+as:   
+DMID_STUMP =0.57×DBHk × (HSTUMP /HSTUMP−HDBH)0.80 for HSTUMP≥4m     Equation (4) 
+Where:  
+                 DMID_STUMP   =  Mid- height diameter of the dead tree stump; m  
+     DBH  =  Diameter at breast height of the dead tree stump ; m  
+  HSTUMP  =  Height of the stump; m  
+   HDBH =  Height above ground level at which DBH is measured; m  
+24. Carbon stock in dead wood in dead tree stumps of species j in plot p is calculated as:   
+ 
+ 
+3 The stump wood is struck with a machete - if the blade bounces off it is sound; if it enters slightly into the 
+wood, is it intermediate; and if it causes the wood to fall apart, it is rotten.  Latest version of the IPCC GPG 
+LULUCF: DEAD ORGANIC MATTER.  
+4 Adapted from Harmon, M. E. and J. Sexton. (1996) Guidelines for Measurements of Woody Detritus in 
+Forest Ecosystems. US LTER Publication No. 20. US LTER Network Office, University of Washington, 
+Seattle, WA, USA.  
+5 Adapted from Ormerod, D W, 1973. A simple bole model. Forestry Chronicle. 49:136-138.  
+=== p8
+CDW_STUMP,j,p,i,t  = 44/12×CFTREE × Dj×(1+Rj)×π/4∑k(DMIDSTIUMP,k2×Hk×βk)   Equation (5) 
+ 
+            where 
+CDW_STUMP,j,p,i,t   = Carbon stock in dead wood in dead tree stumps of species j in sample plot 
+p in stratum i at a given point of time in year t; t CO2e  
+CFTREE  = Carbon fraction of tree biomass; dimensionless  
+Dj  = Basic wood density of species j; t d.m. m-3  
+Rj  = Root-shoot ratio for tree species j; dimensionless  
+DMIDSTIUMP,k = Mid-height diameter of the kth dead tree stump of species j in plot p in 
+stratum i at a given point of time in year t; m  
+Hk = Height of the kth dead tree stump of species j in plot p in stratum i at a 
+given point of time in year t; m  
+βk = Density reduction factor (per paragraph 24) applicable to the kth dead tree 
+stump of species j in plot p in stratum i at a given point of time in year t; 
+dimensionless  
+ j = 1, 2, 3, … tree species in plot p  
+k = 1, 2, 3, … dead trees of species j in plot p in stratum i  
+p = 1, 2, 3, … sample plots in stratum i  
+ i = 1, 2, 3, … biomass estimation strata within the project boundary  
+ t = 1, 2, 3, … years elapsed since the start of the A/R ICM project  
+activity  
+ 
+4.2.6    Lying dead wood  
+25. Lying dead wood is estimated by using line transect method (Harmon and Sexton, 1996) 6 
+Two transect lines, of total length of at least 100 m 7 approximately orthogonally bisecting 
+each other at the centre of the plot are established and the diameter of each piece of lying 
+dead wood (with diameter ≥10 cm) intersecting a transect line is measured.  
+26. Each piece of dead wood is assigned to one of three decay classes and each of the three 
+decay classes are assigned a density reduction factor as explained in paragraphs 23 and 
+24.  
+27. Based on these measurements and categorization into decay classes, carbon stock in 
+lying dead wood of species j in plot p is calculated as:  
+ 
+CDWL,j,p,i,t=  aplot × 44/12 ×CFTREE × Dj × π2/8L × n=1∑N(Dn2×βn)     Equation (6) 
+ 
+ 
+ 
+6  Harmon, M. E. and J. Sexton. (1996) Guidelines for Measurements of Woody Detritus in Forest 
+Ecosystems. US LTER Publication No. 20. US LTER Network Office, University of Washington, Seattle, 
+WA, USA.  
+7  If the parcel area does not allow for the required length in two lines, then more than two lines are 
+permissible. However, where lines are obliged to run in parallel they should be separated by at least 20 m.  
+=== p9
+            where:  
+CDWL,j,p,i,t Carbon stock in lying dead wood of species j in sample plot p in stratum 
+i at a given point of time in year t; t CO2e 
+aplot Area of the sample plot p; ha 
+CFTREE Carbon fraction of tree biomass; dimensionless 
+Dj Basic wood density of species j; t d.m. m<sup>-3</sup> 
+L Sum of the lengths of the transect lines approximately orthogonally 
+bisecting each other at the centre of the plot p; m  
+Dn Diameter of the nth piece of lying dead wood intersecting a transect 
+line; cm 
+βn Density reduction factor applicable to the nth piece of lying dead wood 
+intersecting a transect line; dimensionless 
+j 1, 2, 3, … tree species in plot p 
+p 1, 2, 3, … sample plots in stratum i 
+i 1, 2, 3, … biomass estimation strata within the project boundary 
+t 1, 2, 3, … years elapsed since the start of the A/R ICM project activity 
+ 
+28. The carbon stock in dead wood in a stratum is then calculated as:  
+           CDW,i,t      = Ai  / Aplot,i∑p∑j(CDWS,_TREEj,p,i,t+CDWSTUMP,j,p,i,t+CDWL,j,p,i,t)                    Equation (7) 
+ 
+            where:  
+CDW,I,t       Carbon stock in dead wood in stratum I at a given point of time in year 
+t; t CO2e  
+Ai Total area of stratum I; ha  
+Aplot,i Total area of sample plots in stratum I; ha  
+CDWS,_TREEj,p,I,t  Carbon stock in dead wood in standing dead trees of species j in  
+sample plot p in stratum I at a given point of time in year t; t CO2e  
+ 
+CDWSstump,j,p,I,t Carbon stock in dead wood in dead tree stumps of species j in  
+sample plot p in stratum I at a given point of time in year t; t CO2e  
+ 
+CDWL,j,p,I,t                            Carbon stock in lying dead wood of species j in sample plot p in stratum 
+I at a given point of time in year t; t CO2e  
+j 1, 2, 3, … tree species in plot p  
+p 1, 2, 3, … sample plots in stratum I  
+I 1, 2, 3, … biomass estimation strata within the project boundary  
+t 1, 2, 3, … years elapsed since the start of the A/R ICM project  
+activity  
+ 
+29. Finally, the carbon stock in dead tree biomass within the project boundary at a given point 
+of time in year t is calculated by summing up,CDW,I,t,  over all the strata, that is:  
+ 
+CDW,t=∑CDW,I,t,                                                                                                                                                                             Equation (8)                                                                                                           
+                        i 
+ 
+ 
+=== p10
+where:  ,  
+CDW,t Carbon stock in dead wood within the project boundary at a given point of 
+time in year t; t CO2e  
+CDW,i,t Carbon stock in dead wood in stratum i at a given point of time in year t; t 
+CO2e  
+i 1, 2, 3, … biomass estimation strata within the project boundary  
+t 1, 2, 3, … years elapsed since the start of the A/R ICM project  activity  
+ 
+4.2.7  Conservative default-factor based method for estimation of carbon stock in dead wood  
+30. If PPs do not wish to make sampling based measurements for estimation of C stock in 
+dead wood, they may use the default-factor based method described in this section. The 
+default-factor based method is applicable only if dead wood remains in situ and is not 
+removed from the project boundary through any type of anthropogenic activities.  
+31. For all strata to which the default-factor based method is applied, the carbon stock in dead 
+wood is estimated as:  
+ 
+             CDW,i,t   = CTREE,i,t×DFDW                                                                           Equation (9 
+ 
+where:  
+CDW,i,t    Carbon stock in dead wood in stratum i at a given point of time in year 
+t; t CO2e  
+CTREE,i,t Carbon stock in trees biomass in stratum i at a point of time in year t, 
+as calculated I the tool “Estimation of carbon stocks and change in 
+carbon stocks of trees and shrubs in A/R ICM project activities”; t CO2e 
+. 
+DFDW                     Conservative default factor expressing carbon stock in dead wood as 
+a percentage of carbon stock in tree biomass; per cent .  
+i 1, 2, 3, … biomass estimation strata within the project boundary . 
+t  1, 2, 3, … years elapsed since the start of the A/R ICM project activity 
+/ 
+ 
+32. Value of the conservative default factor expressing carbon stock in dead wood as a 
+percentage of carbon stock in tree biomass ( ) is selected according to the guidance 
+provided in the relevant table in Section 8 unless transparent and verifiable information 
+can be provided to justify a different value. 
+  
+4.2.8.  Change in carbon stock in dead wood  
+33. The rate of change of dead wood biomass over a period of time is calculated assuming a 
+linear change. Therefore, the rate of change in carbon stock in dead wood over a period 
+of time is calculated as:  
+ 
+            dcdw,(t1,t2) =CDW,t2−CDW,t1  / T                                                                     Equation (10) 
+   
+ 
+ 
+=== p11
+where:  
+  
+34. Change in carbon stock in dead wood within the project boundary in year t (t1≤t≤t2) is 
+given by:  
+ 
+            ΔCDW,t= dCDW,(t1,t2) x 1  year for t1≤t≤t2                                                 Equation (11) 
+       where:   
+ΔCDW,t Change in carbon stock in dead wood within the project 
+boundary in year t; t CO2e  
+dCDW,(t1,t2)  Rate of change in carbon stock in dead wood within the 
+project boundary during the period between a point of 
+time in year t1 and a point of time in year t2; t CO2e yr-1  
+ 
+5.        Estimation of carbon stock and change in carbon stock in litter  
+35. Carbon stock in litter is estimated on the basis of the same strata, and the same sample 
+plots, which are used for the purpose of estimation of living tree biomass. However, PPs 
+applying this tool may use a different stratification for the purpose of estimation of carbon 
+stock in litter if transparent and verifiable information can be given for justification of such 
+a choice.  
+36. Two methods are offered for estimation of carbon stock in litter: a measurement-based 
+method and a conservative default-based approach.  
+ 
+5.1.  Measurement-based method for estimation of carbon stock in litter  
+37. For estimating carbon stock in litter, four litter samples are collected from each sample 
+plot, using a sampling frame which is placed in four randomly selected positions within the 
+plot. The four samples are well mixed into one composite sample and its wet weight is 
+taken. A sub-sample taken from the composite sample is weighed, oven dried, and 
+weighed again to determine its dry weight. The dry-to-wet weight ratio of the sub-sample 
+is calculated and used for estimating the dry weight of the composite litter sample.  
+38. Carbon stock in litter biomass in plot p is then calculated as:  
+ 
+CL,p,i,t=  44/12 × CFLI    × 2.5× Ap,i/ap,i× BLI,wet,p,i× DWRLI,p,i                        Equation (12)  
+ 
+dcdw,(t1,t2)  Rate of change in carbon stock in dead wood within the 
+project boundary during the period between a point of time in 
+year t1 and a point of time in year t2; t CO2e yr-1  
+CDW,t2 Carbon stock in dead wood within the project boundary at a 
+point of time in year t2; t CO2e  
+CDW,t1   Carbon stock in dead wood within the project boundary at a 
+point of time in year t1; t CO2e  
+T Time elapsed between two successive estimations (T=t2 – t1); 
+yr  
+=== p12
+where  
+   CL,p,i,t Carbon stock in litter in plot p in stratum i; t CO(_2) e  
+CFLI     Carbon fraction of dry biomass in litter; dimensionless (IPCC default value of 
+0.37 is used) 
+BLI,wet,p,i Wet weight of the composite litter sample collected from plot p of stratum i; 
+kg 
+DWRLI,p,i                        Dry-to-wet weight ratio of the litter sub-sample collected from plot p in 
+stratum i; dimensionless 
+Ap,i Area of sample plot p of stratum i; ha 
+ap,i Area of sampling frame for plot p in stratum i; m(^2)  
+39. Carbon stock in litter in stratum i is then calculated as:  
+ 
+CL,i,t= Ai / Aplot,i ∑CLI,p,i,t                                        Equation (13) 
+                                       P 
+ 
+          Where:  
+40. Finally, the carbon stock in litter biomass within the project boundary at a given point of time 
+in year t is calculated by summing up ( , , over all the strata, that is:  
+ 
+            CLI,t          = ∑CLI,i,t                                                                             Equation (14)     
+                         i 
+         Where:  
+ 
+5.2. Conservative default-factor based method for estimation of carbon stock in 
+litter  
+44. If PPs do not wish to make sampling based measurements for estimation of C stock in 
+litter, they may use the default-factor based method described in this section. The default-
+CL,i,t Carbon stock in litter in stratum i at a given point of time in year t; t CO2e   
+Ai   Area of stratum i; ha  
+Aplot,i  Area of sample plots in stratum i; ha  
+CLI,p,i,t                                        Carbon stock in litter in plot p in stratum i; t CO2e   
+p 1, 2, 3, … sample plots in stratum i  
+i 1, 2, 3, … biomass estimation strata within the project boundary  
+t 1, 2, 3, … years elapsed since the start of the A/R ICM project activity  
+CLI,t Carbon stock in litter within the project boundary at a given 
+point of time in year t; t CO2e  
+CLI,i,t                                                                             Carbon stock in litter in stratum i at a given point of time in year t; t CO2e  
+i 1, 2, 3, … biomass estimation strata within the project boundary  
+t 1, 2, 3, … years elapsed since the start of the A/R ICM project activity  
+=== p13
+factor based method is applicable only if litter remains in situ and is not removed from the 
+project boundary through any type of anthropogenic activities.  
+45. For all strata to which this default method is applied, the carbon stock in litter is estimated 
+as:  
+            CLI,i,t=CTREE,i,t     ×DFLI                                                                                Equation (15) 
+ where:   
+CLI,i,t  Carbon stock in litter in stratum i at a given point of time in year t; t CO2e  
+CTREE,
+i,t      
+Carbon stock in trees biomass in stratum i at a point of time in year t, as calculated in 
+tool “Estimation of carbon stocks and change in carbon stocks of trees and shrubs in A/R 
+ICM project activities”; t CO2e  
+DFLI  Conservative default factor expressing carbon stock in litter as a percentage of carbon 
+stock in tree biomass; percent  
+i  1, 2, 3, … biomass estimation strata within the project boundary  
+t   
+1, 2, 3, … years elapsed since the start of the A/R ICM project activity  
+T Time elapsed between two successive estimations (T=t2 – t1); yr  
+ 
+46. Value of the conservative default factor expressing carbon stock in litter as a percentage 
+of carbon stock in tree biomass ( is selected according to the guidance provided in the 
+relevant table in Section 8 unless transparent and verifiable information can be provided 
+to justify a different value.  
+5.3.  Change in carbon stock in litter  
+47. The rate of change of litter biomass over a period of time is calculated assuming a linear 
+change. Therefore, the rate of change in carbon stock in litter over a period of time is 
+calculated as:  
+              dCLI,(t1,t2)= CLI,t2−CLI,t1  / T                                           Equation (16) 
+  
+ where:  
+dCLI,(t1,t2) Rate of change in carbon stock in litter within the project boundary 
+during the period between a point of time in year ( t_1 ) and a point of 
+time in year 
+CLI,t2 Carbon stock in litter within the project boundary at a point of time in 
+year ( t_2 ) 
+CLI,t1 Carbon stock in litter within the project boundary at a point of time in 
+year ( t_1 ) 
+T  Time elapsed between two successive estimations  
+    
+48. Change in carbon stock in litter within the project boundary in year t ( t1≤t≤t2) is given by:  
+            ΔCLI,t= dCLI,(t1,t2)×1 year for t1≤t≤t2                                                  Equation (17) 
+Where:  
+=== p14
+ 
+ 
+  
+6.0      Data and parameters used in the tool  
+ 
+49. The following tables describe the data and parameters used in this tool. The guidelines 
+contained in these tables regarding selection of data sources, and procedures to be 
+followed in measurement, where applicable, should be treated as an integral part of this 
+tool.  
+6.1  Data and parameters not measured  
+ Data / Parameter table 1.    
+Data / Parameter:  BEF 2,J  
+Data unit:  Dimensionless  
+Used in equations:  1  
+Description:  Biomass expansion factor for conversion of stem biomass to 
+aboveground biomass for tree species j  
+Source of data:  Values from  the latest version of the IPCC GPG-LULUCF are used 
+unless transparent and verifiable information can be provided to 
+justify different values  
+Measurement 
+procedures (if any):  
+-  
+Any comment:  BEFs in IPCC literature and national inventory are usually applicable 
+to closed canopy forest. If applied to individual trees growing in an 
+open field it is recommended that the selected BEF be increased by 
+30 per cent  
+ Data / Parameter table 2.    
+Data / Parameter:  CF TREE  
+Data unit:  t C t-1 d.m.  
+Used in equations:  3, 5, 6  
+Description:  Carbon fraction of tree biomass   
+Source of data:  A value of 0.5 shall be used unless transparent and verifiable 
+information can be provided to justify a different value  
+Measurement 
+procedures (if any):  
+-  
+Any comment:  -  
+ΔCLI,t Change in carbon stock in litter within the project boundary in year t; t 
+CO2e  
+dCLI,(t1,t2) Rate of change in carbon stock in litter within the project boundary 
+during the period between a point of time in year t1 and a point of time 
+in year t2; t CO2e yr-1  
+=== p15
+ Data / Parameter table 3.    
+Data / Parameter:  CF LI 
+Data unit:  t C t-1 d.m.  
+Used in equations:  12  
+Description:  Carbon fraction of litter biomass  
+Source of data:  IPCC default value of 0.37 t C t-1 d.m. may be used  
+Measurement 
+procedures (if any):  
+-  
+Any comment:  -  
+ Data / Parameter table 4.    
+Data / Parameter:  DJ  
+Data unit:  t d.m. m-3  
+Used in equations:  1, 5, 6  
+Description:  Basic wood density for species j  
+Source of data:  Values from the latest version of the IPCC GPG-LULUCF are used 
+unless transparent and verifiable information can be provided to 
+justify different values  
+Measurement 
+procedures (if any):  
+-  
+Any comment:  -  
+ Data / Parameter table 5.    
+Data / Parameter:  DFDW  
+Data unit:  Per cent  
+Used in equations:  9  
+Description:  Conservative default factor expressing carbon stock in dead wood 
+as a percentage of carbon stock in tree biomass  
+=== p16
+Source of data:  Defaults conservatively derived from Delaney et al. 1997, 8 Smith et 
+al. 2006,9 Glenday 2008,10 Keller et al. 2004,11 Eaton and Lawrence 
+2006,12 Krankina and Harmon 1995,13 and Clark et al 2002:14  
+  
+  
+Biome  Elevation  Precipitation     
+Tropical  <2000m  <1000 mm yr-1  2%  
+Tropical  <2000m  1000-1600 mm 
+yr-1  
+1%  
+Tropical  <2000m  >1600 mm yr-1  6%  
+Tropical  >2000m  All  7%  
+Temperate/ 
+boreal  
+All  All  8%  
+Measurement 
+procedures (if any):  
+-  
+Any comment:  -  
+ Data / Parameter table 6.    
+Data / Parameter:  DFLI  
+Data unit:  Per cent  
+Used in equations:  15  
+Description:  Default factor for the relationship between carbon stock in litter and 
+carbon stock in living trees  
+ 
+8 Delaney, M., Brown, S., Lugo, A.E., Torres-Lezama, A. and Bello Quintero, N. 1997. The distribution of 
+organic carbon in major components of forests located in five life zones of Venezuela. Journal of Tropical 
+Ecology 13: 697-708.  
+9 Smith, James E.; Heath, Linda S.; Skog, Kenneth E.; Birdsey, Richard A. 2006. Methods for Calculating 
+Forest Ecosystem and Harvested Carbon with Standard Estimates for Forest Types of the  
+United States. Forest Service, Northeastern Research Station, General Technical Report NE-343. 216 p.  
+10 Glenday, J. 2008. Carbon storage and emissions offset potential in an African dry forest, the 
+ArabukoSokoke Forest, Kenya. Envion. Monit. Assess 142: 85-95.  
+11 Keller, M., Palace, M., Asner, G., Pereira Jr, R. and Silva, JNM. 2004. Coarse woody debris in 
+undisturbed and logged forests in eastern Brazilian Amazon. Global Change Biology 10: 784-795.   
+12 Eaton, J.M. and Lawrence, D. 2006. Woody debris stocks and fluxes during succession in a dry tropical 
+forest. Forest Ecology and Management 232: 46-55.  
+13 Krankina, O.N., Harmon, M.E., 1995. Dynamics of the dead wood carbon pool in northwestern Russian 
+boreal forests. Water Air Soil Pollut. 82,227–238.  
+14 Clark, D.B., Clark, D.A., Brown, S., Oberbauer, S.F., Veldkamp, E., 2002. Stocks and flows of coarse 
+woody debris across a tropical rain forest nutrient and topography gradient. Forest Ecol. Manage. 5646, 1-
+112.  
+=== p17
+Source of data:  Defaults conservatively derived from sources cited above:  
+  
+Biome  Elevation  Precipitation    
+Tropical  <2000m  <1000 mm yr-1  4%  
+Tropical  <2000m  1000-1600 mm 
+yr-1  
+1%  
+Tropical  <2000m  >1600 mm yr-1  1%  
+Tropical  >2000m  All  1%  
+Temperate/ 
+boreal  
+All  All  4%  
+ 
+Measurement 
+procedures (if any):  
+-  
+Any comment:  -  
+ Data / Parameter table 7.    
+Data / Parameter:  Rj 
+Data unit:  Dimensionless  
+Used in equations:  1, 2, 5  
+Description:  Root-shoot ratio for species j  
+Source of data:  The value of Rj shall be calculated as: R = exp[- 
+1.085+0.9256xln(A)]/A, where A is above-ground biomass  (t d.m. 
+ha-1) [Source: IPCC GPG-LULUCF] unless transparent and 
+verifiable information can be provided to justify a different value  
+Measurement 
+procedures (if any):  
+-  
+Any comment:  -  
+6.2.  Data and parameters measured  
+ Data / Parameter table 8.    
+Data / Parameter:  A1  
+Data unit:  ha  
+Used in equations:  7, 13  
+Description:  Area of stratum i  
+Source of data:  Field measurement  
+Measurement 
+procedures (if any):  
+Standard operating procedures (SOPs) prescribed under national 
+forest inventory are applied. In the absence of these, SOPs from 
+published handbooks, or from the latest IPCC GPG LULUCF, may 
+be applied  
+Monitoring 
+frequency:  
+Every five years since the year of the initial verification  
+=== p18
+QA/QC procedures:  Quality control/quality assurance (QA/QC) procedures prescribed 
+under national forest inventory are applied. In the absence of these,  
+QA/QC procedures from published handbooks, or from the latest 
+IPCC GPG LULUCF, may be applied  
+Any comment:  -  
+ Data / Parameter table 9.    
+Data / Parameter:  A PLOT,1  
+Data unit:  ha  
+Used in equations:  7, 12, 13  
+Description:  Total area of sample plots in stratum i  
+Source of data:  Field measurement  
+Measurement 
+procedures (if any):  
+Standard operating procedures (SOPs) prescribed under national 
+forest inventory are applied. In the absence of these, SOPs from 
+published handbooks, or from the latest IPCC GPG LULUCF, may 
+be applied  
+Monitoring 
+frequency:  
+Every five years since the year of the initial verification  
+QA/QC procedures:  Quality control/quality assurance (QA/QC) procedures prescribed 
+under national forest inventory are applied. In the absence of these,  
+QA/QC procedures from published handbooks, or from the latest 
+IPCC GPG LULUCF, may be applied  
+Any comment:  -  
+Data / Parameter table 10.   
+Data / Parameter:  ap,1 
+Data unit:  m2  
+Used in equations:  12  
+Description:  Area of litter sampling frame used in plot p in stratum i  
+Source of data:  Measurement  
+Measurement 
+procedures (if any):  
+Standard operating procedures (SOPs) prescribed under national 
+forest inventory are applied. In the absence of these, SOPs from 
+published handbooks, or from the latest IPCC GPG LULUCF, may 
+be applied  
+Monitoring 
+frequency:  
+Every five years since the year of the initial verification  
+QA/QC procedures:  Quality control/quality assurance (QA/QC) procedures prescribed 
+under national forest inventory are applied. In the absence of these,  
+QA/QC procedures from published handbooks, or from the latest 
+IPCC GPG LULUCF, may be applied  
+Any comment:  Often a litter sampling frame of 0.50 m 2 is used  
+Data / Parameter table 11.   
+=== p19
+Data / Parameter:  B LI_WET, p,i  
+Data unit:  Kg   
+Used in equations:  12   
+Description:  Wet weight of the composite litter sample collected from plot p of 
+stratum i; kg  
+Source of data:  Field measurements in sample plots  
+Measurement 
+procedures (if any):  
+Standard operating procedures (SOPs) prescribed under national 
+forest inventory are applied. In the absence of these, SOPs from 
+published handbooks, or from the latest IPCC GPG LULUCF, may be 
+applied  
+Monitoring 
+frequency:  
+Every five years since the year of the initial verification  
+QA/QC procedures:  Quality control/quality assurance (QA/QC) procedures prescribed 
+under national forest inventory are applied. In the absence of these,  
+QA/QC procedures from published handbooks, or from the latest 
+IPCC GPG LULUCF, may be applied  
+Any comment:  -  
+Data / Parameter table 12.   
+Data / Parameter:  DBH  
+Data unit:  cm or any unit of length as specified  
+Used in equations:  1, 2, 4  
+Description:  Diameter at breast height of a tree. For the purpose of equations (1) 
+and (2), DBH could be any other diameter or dimensional 
+measurement (e.g. basal diameter, root-collar diameter, basal area, 
+etc.) applicable for the model or data source used  
+Source of data:  Field measurements in sample plots  
+Measurement 
+procedures (if any):  
+Standard operating procedures (SOPs) prescribed under national 
+forest inventory are applied. In the absence of these, SOPs from 
+published handbooks, or from the latest IPCC GPG LULUCF, may 
+be applied  
+Monitoring 
+frequency:  
+Every five years since the year of the initial verification  
+QA/QC procedures:  Quality control/quality assurance (QA/QC) procedures prescribed 
+under national forest inventory are applied. In the absence of these,  
+QA/QC procedures from published handbooks, or from the latest 
+IPCC GPG LULUCF, may be applied  
+Any comment:  -  
+Data / Parameter table 13.   
+Data / Parameter:  Dn  
+Data unit:  cm  
+Used in equations:  6  
+=== p20
+Description:  Diameter of the nth piece of lying dead wood intersecting a transect 
+line  
+Source of data:  Field measurements along transect lines in sample plots  
+Measurement 
+procedures (if any):  
+Standard operating procedures (SOPs) prescribed under national 
+forest inventory are applied. In absence of these, SOPs from 
+published handbooks, or from the latest IPCC GPG LULUCF, may 
+be applied  
+Monitoring 
+frequency:  
+Every five years since the year of the initial verification  
+QA/QC procedures:  Quality control/quality assurance (QA/QC) procedures prescribed 
+under national forest inventory are applied. In the absence of these,  
+QA/QC procedures from published handbooks, or from the latest 
+IPCC GPG LULUCF, may be applied  
+Any comment:  -  
+Data / Parameter table 14.   
+Data / Parameter:  H  
+Data unit:  m or any other unit of length as specified  
+Used in equations:  1, 2, 4, 5  
+Description:  Height of tree  
+Source of data:  Field measurements in sample plots  
+Measurement 
+procedures (if any):  
+Standard operating procedures (SOPs) prescribed under national 
+forest inventory are applied. In the absence of these, SOPs from 
+published handbooks, or from the latest IPCC GPG LULUCF, may 
+be applied  
+Monitoring 
+frequency:  
+Every five years since the year of the initial verification  
+QA/QC procedures:  Quality control/quality assurance (QA/QC) procedures prescribed 
+under national forest inventory are applied. In the absence of these,  
+QA/QC procedures from published handbooks, or from the latest 
+IPCC GPG LULUCF, may be applied  
+Any comment:  -  
+Data / Parameter table 15.   
+Data / Parameter:  T 
+Data unit:  Year  
+Used in equations:  10, 16  
+Description:  Time period elapsed between two successive estimations of carbon 
+stock  
+Source of data:  Recorded time  
+Measurement 
+procedures (if any):  
+N/A  
+=== p21
+Monitoring 
+frequency:  
+-  
+QA/QC procedures:  -  
+Any comment:  If the two successive estimations of carbon stock are carried out at 
+different points of time in year t2 and t1, (e.g. in the month of April in 
+year t1 and in the month of September in year t2), then a fractional 
+value shall be assigned to T  
+ 
+ 
+ 
+  
+=== p22
+Revision/Changes in the Document 
+ 
+ 
+Version Date Description 
+ 
+1.0 March 2025 Initial Adoption 
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   

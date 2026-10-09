@@ -1,0 +1,650 @@
+                 CORRECTIONS & CLARIFICATIONS
+
+CORRECTIONS AND CLARIFICATIONS TO
+VM0042 IMPROVED AGRICULTURAL LAND
+
+                MANAGEMENT, v2.2
+
+                            Publication date: 11 June 2026
+
+This document provides corrections and clarifications applicable to VCS methodology VM0042
+Improved Agricultural Land Management, v2.2. Such corrections and clarifications are effective on
+their issuance date. Project proponents and validation/verification bodies (VVBs) shall apply and
+interpret VM0042, v2.2 consistent with the corrections and clarifications set out in this document.
+
+These updates will be incorporated into the next issued version of the methodology.
+
+Correction/      Description                                                 Section Reference
+Clarification
+
+Clarification 1  The baseline scenario justification in Appendix 3 has been
+                 confirmed to apply for improved ALM in general and project
+                 proponents need not replicate the analysis for their        Section 6 Baseline Scenario
+                 projects
+
+Clarification 2 The qualitative specifications of crop planting and          Section 6 Baseline Scenario
+                      harvesting practices in Table 4 have been clarified.
+
+Clarification 3 Requirements for describing the baseline scenario in         Section 6 Baseline Scenario
+                      grouped projects have been clarified.
+
+Clarification 4 Acceptable transparent and verifiable evidence for Step 2
+                                                                                                        Section 7 Additionality
+
+                      Barrier Analysis under VT0008 has been specified.
+
+Clarification 5  Application of Step 4c of VT0008 to demonstrate that a
+                 proposed project activity is not common practice has been
+                 clarified.                                                  Section 7 Additionality
+
+Clarification 6 The interplay between quantification units and eligibility   Section 8.1 Summary
+                      areas under VCS Standard, v5.0 has been clarified.
+
+                                                                                                                                 1
+Clarification 7  A change in analytical laboratory is allowed when            Section 8.2.1.4 Measurements of
+                 transitioning to an eligible analytical method to determine  SOC Content
+                 SOC content per Appendix 4.
+
+Correction 1 The unit for parameter VSl,i,t,P has been corrected.             Section 8.2.7 Methane Emissions
+                                                                              from Manure Deposition
+
+Clarification 8 The five-year remeasurement requirement under                 Section 8.3 Project Emissions
+                      Quantification Approach 2 has been clarified.
+
+Correction 2     The parameter description in Equation (36) for parameter     Section 8.4.3 Accounting for
+                 LKdisp,t has been corrected.                                 Leakage from Production
+                                                                              Declines
+
+Correction 3     The missing parameter for leakage from production
+                 declines as displaced production (LKdisp,t) has been added
+                 to equations summing leakage emissions allocated to          Section 8.5 Net Reductions and
+                 reductions (Equation (39)) and removals (Equation (42)).     Removals
+
+Clarification 9  The interplay between timing requirements for adding         Section 8.6.1.3 Remeasurement,
+                 project activity instances over time, remeasurement          Model True-Up and Cumulative
+                 intervals, options for back-modeling, and updates to the     Modeling
+                 model validation report has been clarified.
+
+1 CLARIFICATION 1
+
+Clarification:
+The first paragraph of Section 6 must be read as follows:
+
+   6 BASELINE SCENARIO
+
+   Considering current market trends, existing government policies and legal requirements,
+   socioeconomic conditions, and technological developments in the agriculture sector, the
+   continuation of pre-project ALM practices is determined to be the most plausible baseline scenario
+   for all projects implementing improved ALM following VM0042, (see as further justification
+   justified in Appendix 3). The justification in Appendix 3 is generally applicable to all projects;
+   project proponents are not required to use the framework of Appendix 3 to justify that the
+   continuation of pre-project ALM practices is the baseline scenario for their project.
+
+                                                                              2
+Background:
+
+Appendix 3 provides a justification at the methodology level for the continuation of pre-project ALM
+practices as the most plausible baseline scenario for improved ALM under VM0042. The methodology
+does not require project proponents to replicate this analysis for each individual project or set of
+proposed project activities.
+
+2 CLARIFICATION 2
+
+Clarification:
+Table 4 must be read as follows:
+
+6 BASELINE SCENARIO
+
+[...]
+
+       Table 4: Minimum specifications for ALM practices in the baseline scenario
+
+       ALM Practice            Qualitative                       Quantitative
+
+       Crop Planting and       · Crop type(s) (e.g., crop        · Approximate date(s) planted (where
+       Harvesting                  functional group(s))              applicable)
+
+       Nitrogen Fertilizer     · Crop rotation (Y/N)             · Approximate date(s)
+       Application             · Cover crops (Y/N)                   harvested/terminated (where
+                               · Intercropping (Y/N)                 applicable)
+
+                               · Manure (Y/N)                    · Crop yield (where applicable)
+                               · Compost (Y/N)
+                               · Synthetic N fertilizer (Y/N)    · Manure type application rate (where
+                                                                     applicable)
+       Tillage and/or Residue  · Tillage (Y/N)
+       Management              · Crop residue removal (Y/N)      · Compost type application rate
+                                                                     (where applicable)
+       Water                   · Irrigation (Y/N)
+       Management/Irrigation   · Flooding (Y/N)                  · N application rate in synthetic
+                                                                     fertilizer (where applicable)
+
+                                                                 · Depth of tillage (where applicable)
+                                                                 · Frequency of tillage (where
+
+                                                                     applicable)
+                                                                 · Percent of soil area disturbed
+
+                                                                     (where applicable)
+                                                                 · Percent of crop residue removed
+
+                                                                     (where applicable)
+
+                                                                 · Irrigation rate (where applicable)
+
+       Grazing Practices       · Grazing (Y/N)                   · Animal stocking rate (i.e., number of
+                               · Animal type (where applicable)      animals and length of time grazing
+                               · Harvesting/mowing (Y/N)             in each area annually, where
+                                                                     applicable)
+
+                                                                 · Frequency of harvest
+
+                                                                                   3
+ALM Practice  Qualitative                       Quantitative
+Liming
+               · Application of calcitic         · Calcitic limestone or dolomite
+                   limestone or dolomite (Y/N)       application rate (where applicable)
+
+Background:
+Qualitative specifications of crop planting and harvesting practices featured in Table 4 for describing
+baseline scenario ALM practices have been further explained.
+
+3 CLARIFICATION 3
+
+Clarification:
+Section 6 must be read as:
+
+   6 BASELINE SCENARIO
+
+   [...]
+
+   For each quantification unit (e.g., for each field), baseline scenario practices are set to match the
+   practices implemented in the historical look-back period, creating an annual schedule of activities
+   to be repeated throughout the first baseline period.8 Baseline emissions/stock changes are then
+   modeled (Quantification Approach 1) or (for SOC stock change only) directly measured in baseline
+   control sites subject to the annual schedule of activities (Quantification Approach 2). Note that
+   under Quantification Approach 1, direct SOC stock estimates are also required at time t = 0 years
+   to serve as model input for model initialization.9 The crops and practices assumed in the baseline
+   scenario must be reassessed every ten years in accordance with the requirements of the most
+   recent version of the VCS Standard and revised, where necessary, to reflect current agricultural
+   production in the region.10 However, where regional production practices change and/or data
+   becomes available across shorter timeframes, it is recommended to reassess the baseline every
+   five years.
+
+   Project proponents must describe the baseline scenario for the project area by specifying whether
+   the land is either cropland or grassland at the project start date and providing a comprehensive
+
+8 For example, where the schedule of activities includes tillage events in years t = -3 and -1 but does not involve
+tillage in year t = -2, the schedule of activities for tillage in the baseline scenario would be tillage, no tillage, tillage.
+This pattern would be repeated as follows for the first baseline period: tillage, no tillage, tillage, tillage, no tillage,
+tillage, tillage, no tillage, tillage, tillage.
+9 Per Table 6, baseline SOC stocks may be (back-)modeled to t = 0 from measurements collected within ±5 years of
+t = 0.
+10 See Section 3.2.7 of the VCS Standard, v4.7.
+
+                                                                                                                               4
+   qualitative description of pre-project ALM practices, covering the categories listed in Table 4. The
+   range of variations observed in all initial project activity instances within the project area must be
+   described.
+   Project proponents must also identify the specific baseline practices that will be impacted by
+   implementation of the proposed project activity or activities.
+   For grouped projects, the baseline scenario must be described for each eligibility area.11a All
+   observed qualitative variations in the specifications of each ALM practice within each eligibility
+   area must be described. Different land classifications as cropland or grassland must be treated as
+   separate eligibility areas as these reflect distinct baseline conditions.
+   At future verifications, additional project activity instances may be enrolled. Such instances may
+   exhibit different pre-project ALM practices, provided that at least one of the pre-project ALM
+   practices impacted by project activities in the new instance matches the validated baseline
+   scenario.
+   Box 2 provides an example of how to describe the baseline scenario of a grouped project in the
+   project description, and how to determine eligibility of new project activity instances joining the
+   eligibility area after validation, based on a hypothetical project.
+
+11a Or geographic area per VCS Standard, v4.7 and previous versions
+
+                                                                                                                               5
+Box 2: Example of baseline scenario description and eligibility of new project activity instances for a grouped project
+
+A hypothetical grouped project is implemented on cropland among smallholder farmers in the Ethiopian highlands. The
+proposed project activities are:
+
+   1) introduction of legume intercropping (e.g., maize intercropped with common bean or pigeon pea),
+   2) implementation of no-tillage to improve soil organic carbon and productivity, and
+   3) implementation of integrated soil fertility management (ISFM) encompassing judicious use of mineral and synthetic
+
+      fertilizers, and liming every four years.
+
+The baseline scenario is described in the project description as shown in Table B2, covering the specifications listed in
+Table 4.
+
+Table B2. Baseline scenario description for eligibility area 1 (EA1) ­ cropland, to be included in project description
+
+Pre-project ALM      Qualitative description                                  Project activity impact
+practice
+                                                                              Yes. Project activity introduces
+Crop planting and    Annual food crops (e.g., maize, sorghum, millet).        intercropping leguminous cover crops
+harvesting           Cereal­cereal or cereal­legume rotation. Minimal         (project activity 1).
+                     soil cover following harvest; no systematic cover
+                                                                              Yes. Project activity introduces ISFM
+                     cropping.                                                (project activity 3).
+                                                                              Yes. Project activity implements no-
+Nitrogen fertilizer  Very low or no mineral and synthetic fertilizer;         tillage (project activity 2).
+application          occasional use of farmyard manure
+                                                                              No
+Tillage and residue  Manual or animal drawn conventional tillage or
+management           reduced tillage (e.g., disk tillage) prior to planting.  No
+                     Crop residues partially retained or removed for use
+                     as cooking fuel.                                         Yes. Project activity applies lime every
+                                                                              four years (project activity 3).
+Water management / None (rainfed systems)
+irrigation
+
+Grazing practices    Postharvest free grazing of household livestock
+                     (cattle, sheep, goats)
+
+Liming               None
+
+                                                                              6
+New project activity instances may be added to EA1 in this hypothetical project when at least one pre-project ALM
+practice impacted by project activities aligns with the validated baseline scenario, and the land is cropland.
+The following project activity instances would be eligible for inclusion in EA1 despite differences to the validated
+baseline scenario practices (marked in bold):
+
+     a) Annual food crops (e.g., maize, sorghum, millet). Cereal­cereal or cereal­legume rotation. Minimal soil cover
+          following harvest; no systematic cover cropping. No mineral and synthetic fertilizer; occasional use of
+          farmyard manure. Strip tillage. Crop residues removed. Rainfed. Post-harvest free grazing. No liming.
+          Eligible for inclusion in EA1 as all project activities are planned for implementation.
+
+     b) Annual food crops (e.g., maize, sorghum, millet). Cereal­cereal or cereal­legume rotation. Minimal soil cover
+          following harvest; no systematic cover cropping. Low NPK application rates; occasional use of farmyard
+          manure. Animal-drawn conventional tillage. Crop residues removed. Traditional furrow irrigation. Post-harvest
+          free grazing. No liming.
+          Eligible for inclusion in EA1 as all project activities are planned for implementation.
+
+     c) Annual food crops (e.g., maize, sorghum, millet). Cereal­cereal or cereal­legume rotation. Minimal soil cover
+          following harvest; no systematic cover cropping. No mineral and synthetic fertilizer; occasional use of
+          farmyard manure. Strip tillage. Crop residues removed. Rainfed. Post-harvest free grazing. Liming every six
+          years.
+          Eligible for inclusion in EA1 as project activities 1 (legume intercropping) and 2 (no-tillage) are planned for
+          implementation.
+
+The following project activity instances would not be eligible for inclusion in EA1, because of differences to the
+validated baseline scenario practices (marked in bold):
+
+     d) Rotation of maize intercropped with common bean, barley, and vetch for controlled grazing. ISFM. No tillage.
+          Crop residues retained. Rainfed. Liming every 3­5 years.
+          Not eligible for inclusion in EA1 as all project activities are already part of pre-project practices.
+
+     e) Communal grazing land. No mineral and synthetic fertilizer. No tillage. Rainfed. Post-harvest free grazing.
+          Continuous grazing dominated by cattle with limited mowing. No liming.
+          Not eligible for inclusion in EA1 as the land is grassland at the project start date.
+
+                                                                                                                             7
+   Development of Schedule of Activities in the Baseline Scenario
+   For each quantification unit, a schedule of activities in the baseline scenario is determined by
+   assessment of practices implemented during the period prior to the project start date. This forms
+   the basis for calculating baseline emissions following the guidance in Section 8. The interval over
+   which practices are assessed, x years, must be a minimum of three years and must include at
+   least one complete crop rotation, where applicable.
+
+Background:
+To streamline project reviews and VVB audits, the additional text aims to clarify expectations related
+to the content of the baseline scenario description that must be provided in project documents. The
+text also clarifies how the baseline scenario description determines the eligibility of new project
+activity instances.
+
+4 CLARIFICATION 4
+
+Clarification:
+Section 7 must be read as:
+
+   7 ADDITIONALITY
+
+   [...]
+   Step 2: Barrier analysis
+   Project proponents must apply the procedures and requirements in Step 2 of the most recent
+   version of VT0008 Additionality Assessment.
+   For the purposes of this methodology, Step 2 of VT0008 must only be applied with respect to the
+   project activity. Sub-steps that require assessment of the alternative scenarios described in
+   Appendix 3 in this methodology need not be applied.
+   When applying Requirement 1 in Appendix 1 of VT0008, project proponents must provide publicly
+   available, transparent, and verifiable evidence relevant to the project area and the proposed
+   project activities, such as:
+
+         1) agricultural census or other government (e.g., survey) data;
+         2) peer-reviewed scientific literature;
+         3) independent reports, assessments, or datasets issued by recognized international
+
+              institutions or multilateral organizations (e.g., the World Bank, FAO, WBCSD);
+
+                                                                                                                               8
+         4) independent research data (i.e., empirical data or analyses produced by universities,
+              public research institutes, or non-profit research organizations using documented and
+              reproducible methods), where the data provider has no direct financial, operational, or
+              governance relationship with the project entity; or
+
+         5) reports or assessments compiled by industry associations.
+Background:
+To resolve confusion among project proponents and VVBs, it is clarified that the barrier analysis per
+Step 2 of VT0008 must focus only on the proposed project activity. To streamline project reviews and
+VVB audits, the clarification lists acceptable sources of evidence for the barrier analysis.
+
+5 CLARIFICATION 5
+
+Clarification:
+Section 7 must be read as:
+
+   7 ADDITIONALITY
+
+   [...]
+   Step 3: Demonstrate that adoption of proposed individual or combined project activities is not
+   common practice
+   Project proponents must determine whether the proposed project is common practice in each
+   region (or `geographic area' as defined for grouped projects in the VCS Standard) included within
+   the project area. A project region for demonstrating common practice must be defined by
+   stratifying the project area to the state or provincial level (or equivalent second-order jurisdiction)
+   in the countries where the project is being developed. For grouped projects, the region to be
+   considered is the "geographic area" (VCS Standard, v4.7 and previous versions) or "eligibility area"
+   (VCS Standard, v5.0).
+   [...]
+   Step 3.2: Where the best available data from the above sources for an individual or combined
+   practice determines that the adoption rate is greater than 20% or the required data is not
+   available, project proponents must demonstrate that the activity is not common practice by
+   applying Step 4c of VT0008. This step involves identifying essential distinctions between the
+   proposed project activity (i.e., an individual or combined practice) and related similar activities that
+   may be captured under per Step 3.1 show an adoption rate higher than 20%. When applying Step
+   4c of VT0008, the information sources for Nall and Ndiff must cover the same geographic area (i.e.,
+   the project region as defined in the introductory paragraph to Step 3
+
+                                                                                                                               9
+                CORRECTIONS & CLARIFICATIONS
+
+     13
+
+   a.), and t The analysis must be based on a the land area basis (e.g., hectares) encompassing
+   implementation of the similar activity, rather than the number of projects. The requirement that
+   Nall - Ndiff must be greater than 3 is not applicable.
+   For example, a project intends to introduce cover crops as a project activity in the project region
+   where the adoption rate per the government agricultural census is 22% covering approximately
+   2 million hectares (Nall). Applying the common practice analysis per Step 4c of VT0008, the project
+   identifies the following essential distinction: government subsidies for cover crop seed are
+   accessed by farmers managing 1.7 million hectares (Ndiff) in the project region. The calculation of
+   factor F (F = 1 - Ndiff / Nall) per Step 4c of VT0008 would therefore yield 15% (F = 1 - 1.7 million
+   hectares / 2 million hectares = 0.15), demonstrating that the proposed project activity is not
+   considered common practice.
+
+Background:
+To resolve confusion among project proponents and VVBs, it is clarified that the project region must
+be stratified for the entire common practice analysis and that the analysis applying Step 4c of
+VT0008 must be based on land area and not on number of projects implementing similar activities.
+
+6 CLARIFICATION 6
+
+Clarification:
+Section 8.1 must be read as:
+
+   8.1 Summary
+
+   [...]
+   The entire project area is divided into multiple quantification units that must be demonstrated to
+   be more homogenous than the project area in its entirety, for the purposes of estimating emission
+   reductions and removals (ERRs) (i.e., similar management activities, soil type, climate). In some
+   cases, the entire project area may be considered as one quantification unit. When dividing the
+   project area into multiple quantification units, E estimates of ERRs for each quantification unit
+   within the project area are then aggregated to produce an estimate for the entire project area. In a
+   staged (i.e., hierarchical, nested) design, additional units nested within a primary quantification
+   unit may be implemented resulting in primary, secondary, tertiary, etc. quantification units (see
+
+13a The requirements of Section 5.1 of VT0008 to determine an `applicable geographic area' do not apply.
+
+                                                                                                                             10
+Appendix 6 for an example). Quantification units must be clearly defined in the description of the
+sampling design provided in the project description document.
+
+In grouped projects, the determination of different eligibility areas15a may be treated
+independently from potential division into quantification units. Thus, quantification units may span
+across multiple eligibility areas or represent subdivisions of one eligibility area.
+
+Background:
+
+To resolve confusion among project proponents and VVBs, it is clarified that the optional division of
+the project area into quantification units is independent from the determination of eligibility areas in
+grouped projects per the VCS Standard, v5.0 (or geographic areas in previous versions of the VCS
+Standard).
+
+7 CLARIFICATION 7
+
+Clarification:
+
+Section 8.2.1.4 must be read as:
+
+8.2.1.4  Measurements of SOC Content
+
+[...]
+
+The selection of an analytical laboratory should be based on its listing as an approved analytical
+service provider of SOC measurements according to national and/or international
+standards/accreditation. Where possible, the selected analytical laboratory should be ISO/IEC
+17025 accredited. All samples throughout the entire project lifetime should be analyzed in the
+same laboratory. A change of analytical laboratory requires justification. The project proponent
+must ensure that soil analysis methods and procedures remain consistent even if there is a
+change of laboratory. Where the project adopts a new eligible method when adopting a new
+version of the methodology (e.g., a proximal sensing method per Appendix 4), project proponents
+or their technical service providers must demonstrate the comparability of previous
+measurements with new remeasurements, and, where necessary, justify the use of conversion
+factors.
+
+Background:
+
+As part of the continuous improvement of VM0042, revisions have expanded the eligible methods to
+measure and estimate soil organic carbon (SOC). The added provisions clarify that projects are
+
+15a Geographic area per VCS Standard, v4.7 and previous versions
+
+                                                                                                                             11
+allowed to adopt new eligible methods where the project proponent demonstrates that results remain
+comparable over time.
+
+8 CORRECTION 1
+
+Correction:
+The following changes must be made to Section 8.2.7:
+
+8.2.7  Methane Emissions from Manure Deposition
+
+[...]
+
+       VSl,i,t,P  = Average volatile solids excretion per head for livestock type l in
+                           quantification unit i for productivity system P in year t (kg volatile
+                           solids/(head × day)
+
+Background:
+
+The unit of parameter VSl,i,t,P in Equation (12) incorrectly included "× day." This unit is not required as
+values are already multiplied across the whole year when calculated using Equation (13).
+
+9 CLARIFICATION 8
+
+Clarification:
+
+The following additions must be made to Section 8.3:
+
+   8.3 Project Emissions
+
+   [...]
+   Quantification Approach 2
+
+   Quantification Approach 2 is used to estimate emissions from SOC stocks only.
+   Remeasurements in both baseline control sites and the project area must be conducted at least
+   every five years, or prior to each verification event where verification occurs more frequently.
+   SOC stocks in the project scenario (SOCwp,i,t) are calculated on an equivalent soil mass (ESM)
+   basis by multiplication with the SOC content in each quantification unit or stratum at time t-1,
+   directly measured in each sample field. Where bulk density is measured in a fixed depth
+   approach, mass corrections may be applied to meet the ESM requirement.
+   [...]
+
+                                                                                                   12
+Background:
+
+A clarification was added elucidating that the remeasurement frequency of five years is applicable
+to both baseline and project scenarios under Quantification Approach 2.
+
+10 CORRECTION 2
+
+Correction:
+
+The following changes must be made to Section 8.4.3:
+
+8.4.3 Accounting for Leakage from Production Declines
+
+     [...]
+
+4) Use the outcome of Equation (10) from VMD0054, v1.0 to quantify annual leakage from
+     displaced production as follows:
+
+,         =  MAX(0,   - )                              (36)
+                     
+
+Where:       = Leakage emissions from livestock displacement displaced production
+LKdisp,t         in year t (t CO2e)
+
+LKt          = Cumulative leakage up to year t calculated using VMD0054 (t CO2e)
+LKprior      = Cumulative leakage between y = 0 and the previous verification event,
+
+years            calculated using VMD0054 (t CO2e)
+             = Duration of the verification period (years)
+
+Background:
+Parameter LKdisp,t was incorrectly defined as leakage emissions from livestock displacement in year t.
+
+11 CORRECTION 3
+
+Correction:
+The following additions must be made to Section 8.5:
+
+   8.5 Net Reductions and Removals
+
+          [...]
+          Leakage allocated to emission reductions (LKER,t) is calculated as:
+
+                                                       13
+, =       (,  + , + ,)   ×                                                                      (39)
+                             + 
+
+Where:
+
+LEBR,t        = Leakage emissions from the diversion of manure or crop residues
+                  from baseline energy applications in year t (t CO2e)
+LKdisp,t
+CRt           = Leakage emissions from displaced production in year t (t CO2e)
+[...]         = Estimated carbon dioxide removals in year t (t CO2e)
+
+Leakage allocated to carbon dioxide removals (LKCR,t) is calculated as:
+
+, =       (,  + ,  + ,)  ×                                                                      (42)
+                             + 
+
+Background:
+
+The parameter for leakage from production declines was inadvertently omitted from the leakage
+emissions equations. This correction serves to include the missing parameter in the sum of all
+leakage sources and ensure reductions and removals are quantified correctly.
+
+                                                                                                14
+12 CLARIFICATION 9
+
+Clarification:
+The following changes must be made to Section 8.6.1.3:
+
+8.6.1.3  Remeasurement, Model True-Up and Cumulative Modeling
+
+As outlined in Section 8.3, SOC stocks must be directly remeasured every five years in the project
+scenario. These data are used to re-estimate model prediction error and/or recalibrate the model
+in relation to measured SOC stocks. Since the purpose of remeasurement is improvement of the
+applied biogeochemical model over time, soil samples do not need to be taken from every project
+activity instance (i.e., field or management unit) at every remeasurement event. In consequence,
+the requirement to measure SOC stocks every five years or more frequently (see Section 8.1) does
+not apply at the project activity instance-level. The stratified random sampling strategy must be
+redefined as necessary to include changes in the project area (e.g., through the inclusion of new
+project activity instances). The sampling error associated with not sampling each project activity
+instance must be calculated accordingly.
+
+Prior to remeasurement, model structural error during simulation of SOC stocks for initial model
+validation will be based be based on data from peer-reviewed publications and available datasets
+meeting the requirements detailed in Section 5.2.3 of VMD0053. Specifically, the model is used to
+simulate changes in stocks from a set of selected external datasets (i.e., field trials for which data
+have been previously collected). Following remeasurement (i.e., true-up sampling), data from
+external datasets and remeasurement within the project area are combined to create a new
+calibration/validation. If the project proponent so chooses, this dataset may be used to recalibrate
+model parameters (or parameter distributions in the case of Bayesian models) in an effort to
+improve model accuracy, although model recalibration is not required. Following remeasurement,
+project proponents must repeat model validation procedures outlined in VMD0053, submit an
+updated MVR for IME review and validation, and 34 update the model prediction error term used
+in the to estimateion of the project uncertainty deduction.
+
+Once the MVR is approved, project proponents should rerun model simulations for both the
+baseline and project scenarios from t0 up to the present day and recalculate uncertainty
+deductions to be applied to future credit vintages. VCUs that have been issued in previous
+verifications will remain unchanged.
+
+Figure 4a illustrates the interaction between:
+
+· measurement (t0) and remeasurement (t1, t2, t3) campaigns,
+· the timing for assessment of an updated MVR, and
+
+                                                                                            15
+      · continuous onboarding of cohorts56a of project activity instances.
+
+   In Figure 4a, t0 denotes initial measurement, t1 and t2 denote subsequent remeasurements, and
+   "cohorts" refer to groups of activity instances added over time, which may be sampled individually
+   or through joint campaigns.
+
+   The following scenarios, which all conform to VM0042 requirements, are illustrated in Figure 4a:
+
+       A) Sequential cohorts with synchronized remeasurement:
+              · Cohorts 1­3 are measured at entry (t0), one per year.
+              · t1: conducted five years after Cohort 1's t0, for all cohorts (1­3).
+              · t2: conducted five years after t1, for all cohorts.
+
+       B) Sequential cohorts with staggered cohorts and joint sampling:
+              · Cohorts 1­9 are measured at entry (t0), one per year.
+              · t1 (Cohorts 1­5): conducted five years after Cohort 1's t0.
+              · Next campaign (joint): conducted five years after t1 for Cohorts 1­5, to measure:
+                    o t2 for Cohorts 1­5
+                    o t1 for Cohorts 6­9
+
+       C) Delayed remeasurement for later cohorts:
+              · Same approach as B with a difference for cohorts 4 and 5.
+              · Difference:
+                    o Cohorts 4 and 5 are measured at entry (t0) but remeasured later than the
+                         standard interval.
+                    o Their t1 occurs after seven and six years, respectively (instead of shorter intervals
+                         of one or two years, under joint sampling).
+
+       D) Deferred initial sampling with back-modeling:
+              · Cohorts 1­3 are not measured at entry; instead, back-modeling is used to estimate t0.
+              · When Cohort 4 joins, remeasurement campaign serves as:
+                    o t0 for Cohort 4
+                    o t1 for Cohorts 1­3
+              · Back-modeling is used to estimate t0 for Cohorts 5­8.
+              · Later campaign (when Cohort 9 joins):
+                    o t2 for Cohorts 1­3
+                    o t1 for Cohorts 4­8
+                    o t0 for Cohort 9
+
+56a It is assumed that multiple project activity instances may be onboarded at different times during a monitoring
+period. The term cohort is therefore used to refer to all instances added to a project within a given year. This differs
+from the concept of a batch under the VCS Standard, v5.0, which refers to groups of instances added at a verification
+event and may include one or more cohorts.
+
+                                                                                                                             16
+Figure 4a. Interplay between adding project activity instances over time, remeasurement
+intervals, options for back-modeling, and updates to the MVR
+
+Background:
+The added explanations clarify how the continuous onboarding of agricultural producers and addition
+of new project activity instances interact with the remeasurement and model true-up requirements as
+well as the timing for revalidating the model validation report (MVR).
+
+                                                                                                                             17
+

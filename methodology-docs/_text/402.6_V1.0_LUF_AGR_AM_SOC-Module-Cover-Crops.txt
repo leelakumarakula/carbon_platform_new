@@ -1,0 +1,1331 @@
+ ACTIVITY MODULE METHODOLOGY
+
+SOIL ORGANIC CARBON ACTIVITY MODULE FOR COVER
+CROPS
+
+SDG 13
+
+PUBLICATION DATE: 02.10.2024
+VERSION: 1.0
+NEXT PLANNED UPDATE: 1.10.2027
+RELATED DOCUMENTS:
+Soil Organic Carbon Framework Methodology, Version 1.0
+
+Acknowledgements:
+This activity module was developed by TREES Consulting on behalf of Agoro Carbon
+Alliance US, Inc.
+.
+
+TREES Consulting
+Sihleggstrasse 32
+8832 Wollerau
+Switzerland
+
+Agoro Carbon Alliance US, Inc.
+100 North Tampa Street, Suite 3200
+Tampa, Florida 33602
+USA
+
+                                        Climate Security and Sustainable Development
+Soil Organic Activity Module for Cover Crops, v.1.0
+
+Table of Contents
+
+             Summary..................................................................................................... 3
+             Definitions and References .............................................................................. 3
+             Applicability.................................................................................................. 5
+             Additionality ................................................................................................. 6
+             Project Boundaries ........................................................................................ 7
+             Emission Reduction Quantification Approach....................................................... 9
+             Baseline Scenario .........................................................................................13
+             Project Scenario ...........................................................................................14
+             Uncertainty .................................................................................................15
+
+                Other Emissions ........................................................................................16
+                Leakage ...................................................................................................21
+                Monitoring................................................................................................22
+
+Climate Security and Sustainable Development                                                                                    2
+Soil Organic Activity Module for Cover Crops, v.1.0
+
+       Summary
+
+This Soil Organic Carbon Activity Module (hereafter referred to as "this Activity
+Module") focuses on cover crops planted to cover the bare soil during fallow periods to
+increase soil organic carbon (SOC). It is applicable globally.
+
+In a typical baseline situation, crop fields are left bare (i.e., without plant growth)
+from the time of harvest until the next crop is planted (fallow period). The project
+introduces cover crops to be planted during the fallow period to cover the soil and
+keep roots in the soil, which improves soil condition and increases SOC.
+
+This Activity Module addresses different categories of cover crops (legumes, non-
+legumes, grasses, and brassicas) and options for cover crop application depending on
+and aligning with the associated practices (reduced till, no-till) that are implemented.
+Cover cropping can comprise a single species or a mixture of species and can use
+annual, biennial, or perennial vegetation. At the end of the fallow period, cover crops
+are usually terminated to prevent competition with the primary crop and to allow the
+timely planting of the next crop. In no-till approaches, cover crops are left on the soil
+surface to support weed control (Osipitan et al. 2018, Osipitan et al. 2019) and
+nitrogen inputs before a primary crop is planted (Abdalla et al. 2019). Grazing may
+also be used to terminate cover crops.
+
+In line with the Soil Organic Carbon Framework Methodology, this Activity Module
+provides three approaches for quantification of SOC increase. This accommodates that
+not all relevant measurements and parameters may be available to projects. Approach
+1 requires on-site measurements to directly document pre-project and project SOC
+stock levels; Approach 2 uses datasets, parameters, and/or models from peer-
+reviewed publications to quantify baseline and project SOC stock levels; and Approach
+3 applies default factors to quantify SOC changes relating to the general methodology
+described in the Intergovernmental Panel on Climate Change (IPCC) Guidelines for
+National Greenhouse Gas Inventories (hereafter referred to as "IPCC 2019"), using a
+Tier 2­level approach whenever possible. For Approaches 2 and 3, project developers
+shall document that the coefficients applied are conservative and applicable to the
+project site and management practice.
+
+       Definitions and References
+
+2.1 | Definitions
+
+2.1.1 | Terms and definitions are listed in the Soil Organic Carbon Framework
+            Methodology, Section 2.1. In addition, the following module-specific
+            definitions apply:
+
+Climate Security and Sustainable Development                                               3
+Soil Organic Activity Module for Cover Crops, v.1.0
+
+Term             Definition
+Farm
+                 A farm is an area of land that is devoted primarily to
+Cover crop       agricultural processes with the primary objective of rearing
+                 livestock or producing food and other crops. Under this
+Full tillage     Activity Module, `farm' encompasses all such lands legally
+(full-till)      registered as part of the farm's holdings as well as associated
+                 leased lands with a valid contract.
+Reduced tillage
+(reduced-till)   A cover crop is a close-growing, dense canopy crop that
+                 provides soil protection, seedling protection, and soil
+                 improvement between periods of normal crop production
+                 (Soil Science Society of America, 2008). A cover crop is not
+                 harvested, and biomass is not removed from a field (this is
+                 particularly relevant to SOC).
+
+                 Full tillage refers to field practices leading to substantial soil
+                 disturbance with full inversion and/or frequent, within-year
+                 tillage operations, while leaving <30% of the surface covered
+                 by residues at the time of planting (IPCC 2019, Volume 4,
+                 Chapter 5, Section 5.2.3.3).
+
+                 Reduced tillage refers to field practices with primary and/or
+                 secondary tillage but with reduced soil disturbance that is
+                 usually shallow and without full soil inversion; this normally
+                 leaves surface with >30% coverage by residues at planting
+                 (IPCC 2019, Volume 4, Chapter 4, Section 5.2.3.3).
+
+Zero tillage     Zero tillage is an agricultural technique for growing crops or
+(no-till)        pasture without mechanically disturbing the soil through
+                 tillage (including disturbance from non-turning tillage such as
+                 rippers and disc harrows). Crop is sown directly into soil that
+                 has not been tilled since the harvest of the previous crop.
+                 Zero tillage has more than 30% cover of the soil surface with
+                 residues.
+
+                 Climate Security and Sustainable Development                        4
+Soil Organic Activity Module for Cover Crops, v.1.0
+
+2.2 | References
+2.2.1 | In addition to the methodologies, methodological tools, guidelines, and key
+
+            sources listed in the Soil Organic Carbon Framework Methodology, this
+            Activity Module refers to the following key publications:
+
+              2.2.2 |
+              · IPCC 2006 Guidelines for National Greenhouse Gas Inventories, Volume 4
+
+                   Agriculture, Forestry and Other Land Use (http://www.ipcc-
+                   nggip.iges.or.jp/public/2006gl/vol4.html).
+              · IPCC 2019 Refinement to the 2006 IPCC Guidelines for National
+                   Greenhouse Gas Inventories, Volume 4 Agriculture, Forestry and Other
+                   Land Use (https://www.ipcc-nggip.iges.or.jp/public/2019rf/vol4.html).
+              · Osipitan, O. A., Dille, J. A., Assefa, Y., Knezevic, S. Z., 2018. Cover crop
+                   for early season weed suppression in crops: systematic review and meta-
+                   analysis. Agronomy Journal 110: 2211-2221.
+                   https://doi.org/10.2134/agronj2017.12.0752
+              · Osipitan, O. A., Dille, J. A., Assefa, Y., Radicetti, E., Ayeni, A., Knezevic,
+                   S. Z., 2019. Impact of cover crop management on level of weed
+                   suppression: a meta-analysis. Crop Science 59: 833-842.
+                   https://doi.org/10.2135/cropsci2018.09.0589
+              · Soil Science Society of America, 2008. Glossary of Soil Science Terms.
+                   Soil Science Society of America, Madison, Wisconsin. 88 pp.
+
+       Applicability
+3.1.1 | A project applying this Activity Module shall comply with the applicability
+
+            conditions specified below and with those in the Soil Organic Carbon
+            Framework Methodology. In addition, the project shall comply with applicable
+            Land Use & Forests Activity Requirements (hereafter referred to as "LUF
+            Activity Requirements" or Agriculture Activity Requirements when published
+            and in force) and the Gold Standard for the Global Goals Principles &
+            Requirements (hereafter referred to as "Principles & Requirements").
+
+3.1.2 | Applicability conditions:
+
+            · Projects are eligible in all countries.
+
+            · Generally, entire farms or selected fields/areas of a farm are eligible (see
+                 Section 5.1: Spatial Boundary).
+
+Climate Security and Sustainable Development                                                    5
+Soil Organic Activity Module for Cover Crops, v.1.0
+
+            · The Activity Module shall not be applicable to farms which have been using
+                 cover crops for more than one season within five years prior to project
+                 start, even if such application was on fields not included in the project.
+
+            · In line with the Soil Organic Carbon Framework Methodology, this Activity
+                 Module accounts for only those benefits in the SOC pool. No other pools or
+                 emission reductions (e.g., in nitrous oxide [N2O] due to reduced fertiliser
+                 need) can be accounted for as benefits.
+
+            · Cover cropping can comprise a single species or a mixture of species and
+                 can use annual, biennial, or perennial vegetation.
+
+3.1.3 | Other than cover crops, organic carbon inputs to the field shall not be
+            changed as part of the project by more than 5% from baseline period
+            average. If this Activity Module is stacked with an additional Gold Standard
+            methodology or activity module which uses the same quantification approach
+            in the project (measurement or compatible SOC model allowing distinction of
+            impacts between cover crops and organic inputs from other practice changes)
+            and considers respective leakage effects, this applicability condition may be
+            omitted.
+
+            · If the project includes change of tillage practices, the same quantification
+                 approach (measurements, models, or defaults) shall be used for both
+                 activities and shall be fully aligned to ensure that overall benefits are
+                 quantified correctly and not double-counted. Changes in tillage practices
+                 shall be documented and shall follow quantification approaches according
+                 to a respective Gold Standard­approved methodology or activity module.
+
+3.1.4 | Application of herbicides to terminate cover crops shall be minimised, and
+            negative environmental impacts shall be prevented in accordance with Gold
+            Standard Safeguarding Principle 9.6 (Pesticides & Fertilisers). Use of
+            herbicides related to the project, specifically for crop termination and weed
+            control, shall not be increased by more than 5% from baseline period
+            average.
+
+       Additionality
+
+4.1.1 | All Gold Standard projects shall demonstrate that they would not have been
+            implemented without the benefits of carbon revenue. Specific rules and
+            guidelines on how to assess additionality are in the Additionality section of the
+            LUF Activity Requirements and the Additionality Requirements for Agriculture
+            Projects Template.
+
+Climate Security and Sustainable Development                                                   6
+Soil Organic Activity Module for Cover Crops, v.1.0
+
+       Project Boundaries
+
+5.1 | Spatial Boundary
+5.1.1 | For spatial boundaries, the rules and requirements defined in Soil Organic
+
+            Carbon Framework Methodology apply.
+
+5.1.2 | Spatial boundary description specific to this Activity Module:
+
+            · Generally, entire farms or selected fields/areas of a farm are eligible. If the
+                 project is implemented only on selected fields, all applicability conditions
+                 and requirements in the Soil Organic Carbon Framework Methodology
+                 (including maintaining yield) and from this Activity Module shall be applied
+                 to these specific fields. These fields shall remain in the project during the
+                 entire crediting period (i.e., no change of participating fields within a farm
+                 during the crediting period is allowed).
+
+            · This Activity Module requires greenhouse gas (GHG) sources, sinks, and
+                 reservoirs (SSR) as identified in Figure 5-01 to be considered, with a focus
+                 on their impact on SOC and increase of emissions from the project. The
+                 boundary thus includes all impacted field activities (machine use, tillage,
+                 application of fertiliser and pesticides), including main crop practices. As
+                 SOC increase from cover crops is driven primarily through inputs of
+                 biomass (root and residue) as well as rhizodeposits, growth and residue
+                 management for cover crops is essential to assess SOC impact. For the
+                 same reason, other organic inputs (e.g., manure, compost) shall be
+                 monitored. As the project newly introduces cover crops to the field,
+                 emissions from the production and transport of seeds shall be considered.
+                 As no changes are expected to be made to farm infrastructure or handling
+                 of main crops, these activities are not included in the project boundary for
+                 quantification.
+
+Climate Security and Sustainable Development                                                     7
+Soil Organic Activity Module for Cover Crops, v.1.0
+
+                                   Farm facilities                         Farm facilities construction,
+                                                                      operations,* and decommissioning
+                                         Farm equipment manufacture
+                                                 and transportation*
+
+Off-field activity                 On-field activity                  Fertiliser application
+           Fertiliser production*            Crop biomass growth and  Pesticide application
+                                                          residues
+      Cover crop seed production                                                Tillage
+                Seed transport                         Machine use
+
+                                                     Organic inputs
+
+Project-controlled SSR             Post-harvest processing            Crop processing
+Project-related SSR                                  Crop transport
+Excluded SSR
+
+Materials / products flow
+
+* Fertiliser production, farm equipment, and facilities operations are excluded under the assumption that no
+      significant change to these emissions results from implementation of the project.
+
+                                                   Figure 5-01: Spatial Project Boundary
+
+5.2 | Temporal Boundary
+5.2.1 | This Activity Module requires a crediting period of 10 years to account for the
+
+            slow SOC buildup and to ensure long-term SOC impacts. The crediting period
+            can be renewed once.
+
+5.3 | Carbon Pools
+
+5.3.1 | Carbon pool description
+
+         · In line with the Soil Organic Carbon Framework Methodology, this Activity
+              Module accounts for only those benefits in the SOC pool. Additional pools
+              (e.g., biomass and litter) may be used for calculation of SOC change, but no
+              GHG sequestration in pools other than SOC shall be accounted for as
+              benefits.
+
+         · No emission reduction from other GHG sources (e.g., fossil fuel use or
+              fertiliser application) shall be reported for benefits under this Activity
+              Module.
+
+5.4 | Greenhouse Gases
+
+5.4.1 | Following the Soil Organic Carbon Framework Methodology, all GHG sinks and
+            sources affected by its activities shall be monitored.
+
+Climate Security and Sustainable Development                                                                  8
+Soil Organic Activity Module for Cover Crops, v.1.0
+
+5.4.2 | For this Activity Module, this specifically includes any significant increases in
+            carbon dioxide (CO), methane (CH4), and NO emissions from the project.
+
+       Emission Reduction Quantification Approach
+
+Calculations for overall benefits follow the equations in the Emissions Reduction
+Quantification Approaches section of the Soil Organic Carbon Framework Methodology.
+The following sections describe the approaches and calculations that are specific to
+this Activity Module.
+
+6.1 | Approaches for Baseline and Project Scenario Quantification
+6.1.1 | This Activity Module allows application of all three quantification approaches
+
+            as described in the Soil Organic Carbon Framework Methodology. Project
+            proponents shall select the most specific approach possible with the data
+            available, giving preference to local data sources and models as outlined in
+            the decision tree in Figure 2 of the Soil Organic Carbon Framework
+            Methodology.
+
+6.2 | Approach 1 (On-Site Measurements of Soil Organic Carbon)
+6.2.1 | Additional requirements:
+
+         · SOC measurements shall be taken at a suitable time of year, e.g., at the
+              beginning of the season for main crops, with repeated measurements
+              performed at the same time of the year to avoid bias due to short-term
+              variation in soil carbon pools (e.g., after harvest of main crops and tilling of
+              crop residue into the soil). The project documentation shall specify the
+              timing of soil sampling, i.e., the season and crop rotation phase, as
+              applicable, to be implemented by all sampled farms in the project or
+              program.
+
+         · To avoid overestimation of SOC stocks, measurements shall always be
+              performed before any significant carbon inputs such as organic or partially
+              organic fertilisers, including compost and manure, as well as other carbon
+              sources, e.g., in lime or other soil inputs and soil disturbance events
+              (tillage).
+
+         · Bulk density shall be considered in all quantification approaches.
+              Quantification shall be done on an "equivalent mass basis" to properly
+              quantify carbon impacts, i.e., if increased bulk density is measured in the
+              project scenario, respective layer depth shall be reduced proportionally
+              when calculating SOC change.
+
+Climate Security and Sustainable Development                                                    9
+Soil Organic Activity Module for Cover Crops, v.1.0
+
+6.2.2 | Special care shall be taken to ensure that litter on the soil surface (crop
+            residue) is not included in the SOC quantification.
+
+6.3 | Approach 2 (Application of Models, Research Data)
+
+6.3.1 | Additional requirements:
+
+         · Project developers shall provide evidence that calculation approaches,
+              datasets, parameters, and models from peer-reviewed publications to
+              estimate baseline and project SOC stocks in the project are conservative
+              and applicable to the project site conditions and management practices.1 In
+              accordance with the LUF Activity Requirements, "conservativeness" shall
+              mean that from a range of available data, the value resulting in lower GHG
+              benefits shall be applied.
+
+         · Models and datasets applied shall be calibrated locally, i.e., using project-
+              specific data. Global models without such local parametrisation and
+              validation shall not be applied. Application of global defaults for soil
+              respiration, e.g., "Q10" values to quantify temperature effects on respiration,
+              is not allowed.
+
+         · Project documentation shall include evidence that the sources used are
+              applicable to main crops and levels of yield (production intensity),
+              management practices (e.g., tillage2), and cover crop species and practices
+              (e.g., duration of cover crop growth) used in the project area for baseline
+              and project scenarios. Evidence shall also be provided that datasets and
+              models have sufficient temporal resolution (i.e., multiple data points per
+              year) to account for impacts of seasonal variations in practices and other
+              factors such as changing weather conditions. If the model used does not
+              allow seasonal crop and practice variations, data shall be aggregated to a
+              representative annual value with and without cover crops.
+
+         · Parameters for process-based models shall be calibrated and verified
+              following best practice, using at least five years of data for calibration and
+              three years of independent data for verification. Both calibration and
+              verification datasets shall match project conditions as outlined above. Any
+
+1 Refer to stratification criteria (Section 7.1.4) for factors determining applicability to project conditions. All factors
+  listed for stratification shall be assessed to confirm applicability.
+
+2 Changes in tillage due to cover crops shall be represented in the model parameters at the level required by the
+  specific model applied.
+
+Climate Security and Sustainable Development                                                                                 10
+Soil Organic Activity Module for Cover Crops, v.1.0
+
+              gaps in datasets and procedures and how they were addressed in the model
+              calibration and verification shall be reported at validation.
+
+         · SOC measurements for a representative sample in each stratum of the
+              project area shall be made at project start and at least once every five
+              years, applying proven methodology (see Section 6.2 above) and using
+              statistically assessed model results or research data for quantification. If
+              significant differences from modelled results or research data are found,
+              models shall be refined.
+
+6.4 | Approach 3 (Default Factors and IPCC Models)
+
+6.4.1 | Additional requirements: For Approach 3, this Activity Module provides two
+            alternative calculations in addition to the IPCC Tier 1/2 approach as listed in
+            the Soil Organic Carbon Framework Methodology:
+
+             · Approach 3.1 follows the method described in the Soil Organic Carbon
+                 Framework Methodology but requires Tier 2 data (instead of global
+                 defaults) to allow calculation for cover crops.
+
+             · Approach 3.2 applies the "Steady State Method" that was also introduced
+                 in IPCC 2019. This approach is somewhat more complex in calculation but
+                 uses a different set of data that is more readily available for cropping
+                 systems and is also applicable to cover crops.
+
+6.4.2 | Approach 3.1 applies default equations to estimate SOC changes as
+            described for Approach 3 in the Soil Organic Carbon Framework Methodology,
+            based on a Tier 2 approach according to IPCC 2019. Cover crop residue shall
+            be considered as "organic inputs" only. However, as no specific stock change
+            factors for cover crops are available in the IPCC guidelines, national or
+            regional Tier 2 parameters for organic input stock change factors specific to
+            cover crops must be used, in line with the Soil Organic Carbon Framework
+            Methodology. This Activity Module thus requires that national or regional Tier
+            2 SOC reference values (SOCREF) and stock change factors shall be applied in
+            Equations 4 and 6 of the Soil Organic Carbon Framework Methodology. If
+            tillage practices are changed due to the introduction of cover crops, stock
+            change factors for tillage practices (see Section 2.1.1 for definitions) shall also
+            be applied in accordance with the Tier 2 data source.
+
+6.4.3 | Approach 3.2 applies the IPCC Tier 2 "Steady State Approach" according to
+            IPCC 2019, Volume 4, Chapter 5 (see Table 6-01 for references). When
+            applying the Steady State Method at the project level, the following
+            interpretation and additional guidance shall be applied to the IPCC 2019
+            descriptions and procedures:
+
+Climate Security and Sustainable Development                                                     11
+Soil Organic Activity Module for Cover Crops, v.1.0
+
+                · The IPCC 2019 term "grid cell or region" shall be interpreted as field
+                   strata or individual fields, as appropriate to achieve conservative results
+                   at the field level within Gold Standard uncertainty requirements.
+
+                · Quantification shall consider all inputs to the fields for baseline and
+                   project scenarios at the field or field stratum level, including inputs from
+                   all crops separately (harvested crops for baseline; harvested crops plus
+                   cover crops for project scenario), as well as potential other organic inputs
+                   such as green manure, compost, or animal manure.
+
+                · Change in tillage practices (see Section 2.1.1 for definitions) due to cover
+                   crop management shall be considered per the guidance provided in IPCC
+                   2019 and in accordance with the Tier 2 data source.
+
+                · Project-specific data and parameters shall be applied if available.
+                   Evidence for applicability of such data shall be provided with the project
+                   documentation.
+
+                · If no project-specific data is available, Tier 2 parameters listed in IPCC
+                   2019 (see Table 6-01 below) may be applied, considering parameter
+                   uncertainties as listed. It is recommended to perform a sensitivity
+                   analysis with minimum and maximum input parameters to ensure
+                   conservative benefits estimations in case of high uncertainties. Note:
+                   Crop volumes, soil, and weather data used in the quantification shall
+                   always be based on local information.
+
+                · All input parameters used in this approach shall be monitored and
+                   reported, including source and rationale for selection (see Section 12).
+
+                · If the project includes tillage changes, Approach 3.2 shall be applied only
+                   if no separate calculation of tillage impacts on SOC is performed (e.g.,
+                   not applying any separate SOC modules under the Soil Organic Carbon
+                   Framework Methodology or other tillage-focused methodology to account
+                   for SOC benefits from tillage change).
+
+                · For reference, the calculation spreadsheet and example data provided in
+                   IPCC 2019 may be consulted (see reference in Table 6-01). Application
+                   shall require the use of appropriate datasets as described above.
+
+Climate Security and Sustainable Development                                                     12
+Soil Organic Activity Module for Cover Crops, v.1.0
+
+Table 6-01: Key References to IPCC 2019 Steady State Method
+
+TOPIC                                                          REFERENCE IPCC 2019,
+                                                               VOL. 4, CHAPTER 5
+Description of Steady State Method                             Pages 5.15 to 5.18
+Step-by-step procedure                                         Pages 5.23 to 5.26
+Equations for Steady State Method                              Pages 5.18 to 5.23
+Default value table for model parameters                       Table 5.5A, page 5.31
+Default value table for nitrogen and lignin contents in crops  Table 5.5B, page 5.32
+
+Default value table for carbon to nitrogen ratios and lignin   Table 5.5C, page 5.33
+contents in livestock manure                                   Separate tool3
+
+Tier 2 Steady State Method spreadsheet (MS Excel)
+
+       Baseline Scenario
+
+7.1 | Baseline Calculations
+
+7.1.1 | Quantification for SOC in the baseline (SOCBL,y) shall follow the rules,
+            approaches, calculations, and parameters in the Baseline Scenario section of
+            the Soil Organic Carbon Framework Methodology.
+
+7.1.2 | Baseline data is required for five years per the Soil Organic Carbon
+            Framework Methodology. If five-year baseline data is not fully available for a
+            field within a stratum (e.g., it was leased less than five years prior to project
+            start), evidence shall be provided that average baseline conditions for the
+            stratum apply to the field lacking data, referencing the stratification criteria
+            described below.
+
+7.1.3 | Baseline period may be extended to cover full rotation periods; avoid
+            including fragments of rotations in the baseline quantification, e.g., in a three-
+            year crop rotation system, a six-year baseline period will deliver more
+            consistent results, including all relevant practices, inputs, and crop yields for
+            two full rotations.
+
+3 https://www.ipcc-nggip.iges.or.jp/public/2019rf/pdf/4_Volume4/Vol4_Ch5_Tier2_Steady_State_Method-
+     Spreadsheet.xlsx
+
+Climate Security and Sustainable Development                                                         13
+Soil Organic Activity Module for Cover Crops, v.1.0
+
+7.1.4 | To determine the baseline of the eligible project area, the land shall be
+            stratified into modelling units (MUs) according to criteria in Section 6 of the
+            Soil Organic Carbon Framework Methodology. In addition, the following
+            criteria shall be considered in stratification:
+
+            · Mineral soil type4
+            · Tillage practices
+            · Specific crops (and crop rotations) and production period
+            · Productivity (e.g., net primary productivity or crop yield)
+            · Fallow (bare) period
+
+            For each stratum (MU), SOC measurements shall be performed (Approach 1)
+            and/or model parameters shall be identified and verified (Approach 2 or 3).
+
+7.1.5 | If a model is used to quantify baseline SOC (Approach 2), full transparency
+            shall be provided on input data and parametrisation. Application of "black
+            box" models is not allowed.
+
+       Project Scenario
+
+8.1 | Project Calculations
+8.1.1 | Quantification for SOC in the project scenario (SOCt,y) shall follow the rules,
+
+            approaches, calculations, and parameters in the Project Scenario section of
+            the Soil Organic Carbon Framework Methodology.
+
+8.1.2 | This Activity Module addresses different categories of cover crops (legumes,
+            non-legumes, grasses, and brassicas) and options for cover crop application
+            depending on and aligning with the associated practices (reduced till, no-till)
+            that are implemented. Cover cropping can comprise a single species or a
+            mixture of species and can use annual, biennial, or perennial vegetation.
+            Quantifications for all approaches shall consider specific cover crops and
+            practices (including cover crop termination and residue cover) applied. When
+            measuring (Approach 1), respective criteria shall be considered in the project
+            area stratification for sampling. For model application (Approach 2 or 3),
+            calculation and parameters shall be adapted to the specific project situation.
+
+4 e.g. World Reference Base for Soil Resources (WRB) Reference Soil Groups (RSG)
+
+Climate Security and Sustainable Development                                                 14
+Soil Organic Activity Module for Cover Crops, v.1.0
+
+8.1.3 | If other agricultural activities besides cover crops are introduced in a project
+            (e.g., tillage change), interactions shall be considered by applying the same
+            SOC quantification approaches (Approach 1, 2, or 3). If models are applied
+            (Approach 2 or 3), they shall specifically cover all activities in the project
+            scenario.
+
+8.1.4 | For the project scenario, the eligible project area shall be stratified into MUs
+            according to the criteria in Section 7 of the Soil Organic Carbon Framework
+            Methodology. In addition, the following criteria shall be considered in
+            stratification. Baseline strata with bare land shall be subdivided based on
+            cover crop type and practices.
+
+            · Mineral soil type
+            · Tillage practices
+            · Specific crops (or crop rotations) and production period
+            · Productivity (e.g., net primary productivity or crop yield)
+            · Fallow (bare) period (relevant only if part of the project area lands remain
+
+                 uncovered for all or part of the year, e.g., due to environmental conditions
+                 preventing cover crops at the time)
+            · Cover crop period
+            · Cover crop type
+
+            For each stratum (MU), SOC measurements shall be performed (Approach 1)
+            and/or model parameters shall be identified and verified (Approach 2 or 3).
+
+8.1.5 | If a model is used to quantify project SOC (Approach 2), full transparency
+            shall be provided on input data and parametrisation. Application of "black
+            box" models is not allowed.
+
+       Uncertainty
+
+9.1.1 | Calculation of uncertainty shall follow the rules and equations in the Soil
+            Organic Carbon Framework Methodology.
+
+9.1.2 | If no information on Standard Deviation (SD) or Standard Error (SE) is known
+            for a parameter, SE of 50% of the parameter value shall be assumed. For the
+            calculations of the upper and lower confidence intervals, a t-value of 3 shall
+            be applied. Exceptions to this rule are accepted default values that are
+            considered constant (e.g., physical conversion rates, global warming
+            potentials).
+
+Climate Security and Sustainable Development                                                   15
+Soil Organic Activity Module for Cover Crops, v.1.0
+
+Other Emissions
+
+10.1 | Project Emissions
+
+10.1.1 |Significant additional GHG emissions (>5% total) due to the project shall be
+            accounted for. For this Activity Module, that explicitly includes emissions from
+            cover crop seed production and transport, increased fertiliser input, fuel and
+            electricity use, and other agrochemical emissions.
+
+10.1.2 |As such emissions may differ between strata, calculation for this Activity
+            Module shall follow the rules and equations described in Equations 1 through
+            8, which replace the area-wide calculation in Equations 12 through 18 of the
+            Soil Organic Carbon Framework Methodology. They follow the same approach
+            but expand calculation to include cover crop seed production and transport,
+            and they allow application of different emission factors and quantities for
+            different strata.
+
+   -0 = -0 + -0 + -0 + -0                               (Eq. 1)
+
+Where:
+
+PEt-0 = emissions from project activities in the calculation period [tCO2e]
+FEt-0 = emissions from increased fertiliser use in the calculation period [tCO2e]
+FUt-0 = emissions from increased fuel and electricity use in the calculation
+
+            period [tCO2e]
+SPTt-0 = emissions from cover crop seed production and transport in the
+
+            calculation period [tCO2e]
+AEt-0 = other agrochemical emissions in the calculation period [tCO2e]
+
+10.2 |Increased Nitrogen Fertiliser Input
+
+10.2.1 |Emissions from increased nitrogen (N) fertiliser input in the project scenario
+            as compared to the baseline scenario are calculated as follows. No
+            differentiation is made between synthetic and organic N fertiliser. This
+            equation shall not be applied for decreases in N fertiliser input, in which case
+            FEt-0 is considered 0. To account for reductions in fertiliser input (and the
+            respective GHG emissions reductions), a separate Gold Standard methodology
+            shall be applied.
+
+-0 = [, × =1(,, - ,)]                                   (Eq. 2)
+
+Where:
+
+FEt-0     = emissions from increased fertiliser use in the calculation period [tCO2e].
+FEPR,y,a  Must be  0 in this Activity Module (i.e. no accounting of reductions).
+          = N fertiliser input in stratum y under the project scenario in year a of the
+          calculation period [kgN]
+
+          Climate Security and Sustainable Development                                        16
+Soil Organic Activity Module for Cover Crops, v.1.0
+
+FEBL,y  = mean annual N fertiliser input in stratum y under the baseline scenario
+        [kgN]
+T       = number of years in the calculation period [yr]
+EFFE,y  = Conversion factor for emissions from N fertiliser in stratum y [tCO2e
+        kgN-1]. IPCC 2019 aggregated default value5 for EFFE is 0.01.
+        Disaggregated default values in IPCC 2019 Table 11.1 may be used if
+        fertiliser inputs are known per fertiliser type.
+
+FEPR and FEBL shall be documented by the project developer. For FEBL, mean
+annual input is calculated based on respective management records for five
+years prior to project start. If no adequate documentation can be provided,
+FEBL shall be no more than 50% of FEPR.
+
+10.3 |Increased Combustion of Fossil Fuels and Electricity Use
+
+10.3.1 |Additional CO2 emissions from use of fossil fuel and electricity in the project
+            (e.g., fuel used by farm machines due to a need for stronger tractors or
+            additional passes to close/treat the surface; fuel/electricity for irrigation
+            pumps) shall be accounted for, unless project developer can demonstrate that
+            fossil fuel/electricity used in the project scenario is less than or does not differ
+            significantly from fossil fuel/electricity used in the baseline, in which case
+            FUt-0 is considered 0.
+
+-0 = [=1(,, - ,) + (,, - ,)]                                      (Eq. 3)
+
+Where:
+
+FUt-0 = emissions from increased fossil fuel and electricity use in the calculation
+
+        period [tCO2e]
+
+FUPR,y,a = emissions from use of fossil fuels in stratum y under the project
+
+        scenario in year a of the calculation period [tCO2e]
+
+FUBL,y = mean annual emissions from use of fossil fuels in stratum y under the
+
+        baseline scenario [tCO2e]
+
+EUPR,y,a = emissions from use of electricity in stratum y under the project scenario
+
+        in year a of the calculation period [tCO2e]
+
+EUBL,y = mean annual emissions from use of electricity in stratum y under the
+
+        baseline scenario [tCO2e]
+
+T       = number of years in the calculation period [yr]
+
+5 IPCC 2019, Vol. 4 AFOLU, Table 11.1 (aggregated default value)
+
+        Climate Security and Sustainable Development                                              17
+Soil Organic Activity Module for Cover Crops, v.1.0
+
+10.3.2 |FUPR and FUBL shall be documented by the project developer and generally
+            calculated with the equation below, based on fuel consumption by machine
+            type and fuel emission factor.
+
+,, =  ,,, × ,,                                                         (Eq. 4)
+
+Where:
+
+FUi,y,a = emissions from use of fossil fuels in stratum y in year a [tCO2e ha-1]
+
+FULi,y,MT,a = fuel consumption in stratum y by the machinery type MT used in year
+
+         a [litres]
+
+FEFi,y,MT = emissions factor for the fuel used in stratum y in machinery MT [tCO2e
+            litres-1]
+
+MT       = machinery type (gasoline two-stroke, gasoline four-stroke, diesel)
+
+i        = formula used for baseline (i=BL) as well as project scenario (i=PR)
+
+For FUBL, mean annual emissions are calculated based on respective
+management records for five years prior to project start. If this is not
+available, the amount of fuel combusted can be estimated using fuel efficiency
+of the vehicle (e.g., l/100 km, l/tonne-km, l/hour) and the appropriate unit of
+use for the selected fuel efficiency (e.g., kilometres [km] driven if efficiency is
+given in l/100 km). If no adequate documentation can be provided, FUBL shall
+be no more than 50% of FUPR.
+
+Non-CO2 GHG emissions caused by the use of fossil fuel from the project (such
+as management operations, machinery, etc.) are insignificant and may thus be
+neglected.
+
+10.3.3 |EUPR and EUBL shall be documented by the project developer and generally
+            calculated with the equation below, based on electricity consumption by
+            appliance and respective emission factor. If electricity is generated on-site
+            using fossil fuels (e.g., in diesel generators for irrigation pumps), emissions
+            from fuel combustion should be calculated instead, following the approach
+            described above.
+
+,, =  ,,, × ,,                                                         (Eq. 5)
+
+Where:
+
+EUi,y,a  = emissions from electricity consumption in stratum y in year a
+
+         [tCO2e ha-1]
+
+EUWi,y,SE,a = electricity consumption in stratum y from source SE in year a [kWh]
+
+EEFi,y,SE = emissions factor for the electricity used in stratum y in source SE
+
+         [tCO2e kWh-1]
+
+SE       = electricity source type (grid, fossil fuel generator, etc)
+
+         Climate Security and Sustainable Development                                        18
+Soil Organic Activity Module for Cover Crops, v.1.0
+
+i          = formula used for baseline (i=BL) as well as project scenario (i=PR)
+
+For EUBL, mean annual emissions are calculated based on respective
+management records for five years prior to project start. If no adequate
+documentation can be provided, EUBL shall be no more than 50% of EUPR.
+
+10.4 | Cover Crop Seed Production and Transport
+
+10.4.1 |As applicability conditions for this Activity Module do not allow cover crops in
+            the baseline scenario, emissions from seed production and transport (SPT) in
+            the baseline scenario are considered 0. Change in emissions SPTt-0 thus
+            equals emissions from seed production and transport in the project scenario
+            SBTPR, calculated as follows:
+
+- = [=1(,,)]                                                 (Eq. 6)
+
+10.4.2 |Annual project emissions from seed production and transport SPTPR,y,a are
+            calculated based on amount of seed per crop for each stratum:
+
+,, = [(,,, × ,) × (,, + ,, × ,,,)](Eq. 7)
+
+Where:
+
+SPTPR,y,a = Emissions from seed production and transport in stratum y in year a
+
+           of the project scenario [tCO2e]
+
+SPR,y,a,c  = Amount of seed for crop c applied in stratum y in year a of the
+           project scenario [kg ha-1]
+
+APR,y      = Area in stratum y in the project scenario [ha]
+
+EFSP,y,c   = Emission factor for production of seed for crop c applied in stratum y
+           in year a of the project scenario [tCO2e kg-1]
+
+EFST,y,c   = Emission factor for transport of seed for crop c applied in stratum y
+           in year a of the project scenario [tCO2e km-1 kg-1]
+
+DistSTPR,y,a,c = Transport distance for seed for crop c applied in stratum y in year a
+
+           of the project scenario [km]
+
+Amount of seed per crop SPR,y,a,c per stratum y shall be monitored and
+documented for the project. If no detailed information is available for seed
+crops, specifically for pre-mixed seeds, conservative and documented expert
+opinion may be used to estimate average amounts for each cover crop species
+applied in the mix.
+
+Emission factors for seed production per crop EFSP,y,c shall be
+documented for the project. If no specific emission factors are available for a
+crop type, conservative default emission factors may be applied (e.g., based
+
+           Climate Security and Sustainable Development                                   19
+Soil Organic Activity Module for Cover Crops, v.1.0
+
+on emission factors or life cycle assessment (LCA) quantifications for related
+crops. For details, see the monitoring requirements for EFSP,y,c in Section 12).
+
+Emission factors for seed transport per seed type EFST,y,c shall be
+documented for the project (if not already covered in LCA calculation for
+EFSP,y,c). National values specific to the transport means (vehicle type,
+capacity, etc.) shall be applied. If no national emission factors are available,
+default emission factors can be applied conservatively (e.g., using tools or
+emission factors published by the Greenhouse Gas Protocol6).
+
+Seed transport distance from production to field (DistSTPR,y,a,c) shall be
+documented based on field locations for each stratum y using verifiable
+distance calculation, e.g., geographic information system (GIS)/map
+distances. Average distance in each stratum weighted by field size shall be
+used for calculation. If emission factor for seed production (EFSP,y,c) already
+includes transportation (e.g., to distribution centers), the remaining transport
+distance to the fields shall be calculated for DistPR,y,a,c. If different transport
+types (air, sea, ground) are used, respective distances shall be calculated
+separately, and respective emission factors (EFST,t,0) shall be applied.
+
+10.5 |Other Agrochemical Emissions
+
+10.5.1 |Additional agrochemical emissions (AE) related to the project from increased
+            use of agrochemicals, especially pesticides or non-N fertilisers, shall be
+            accounted for unless the project developer can demonstrate that
+            agrochemicals used in the project scenario are less than or do not differ
+            significantly from agrochemicals used in the baseline, in which case AEt-0 is
+            considered 0.
+
+10.5.2 |If use of agrochemicals (herbicides, pesticides) or non-N fertiliser is
+            significantly higher in the project than in the baseline scenario, the project
+            developer shall calculate respective emissions by using specific amounts and
+            emission factors. Emission factors applied shall be based on manufacturer
+            information or scientific sources.
+
+-0 = [=1(,, - ,)]                                    (Eq. 8)
+
+Where:
+
+6 "Emission Factors from Cross-Sector Tools" (EF list) or "GHG Emissions from Transport or Mobile Sources"
+  (calculation tool, results provided correspond to EFFT,t*DistFT,t) published at https://ghgprotocol.org/calculation-
+  tools#cross_sector_tools_id (link accessed June 2021).
+
+        Climate Security and Sustainable Development                                                                    20
+Soil Organic Activity Module for Cover Crops, v.1.0
+
+AEt-0 = additional emissions from project activity in the calculation period
+
+        [tCO2e]
+
+AEPR,y,a = other emissions in stratum y under the project scenario in year a of the
+
+        calculation period [tCO2e]
+
+AEBL,y = other emissions (annual mean) in stratum y under the baseline scenario
+
+        [tCO2e]
+
+T       = number of years in the calculation period [yr]
+
+10.5.3 |AEPR and AEBL shall be documented for each emitter type (agrochemical) by
+            the project developer and calculated with the equation below, based on
+            emission type, underlying quantity, and respective emission factor.
+
+,, =  ,,, × ,,                                            (Eq. 9)
+
+Where:
+
+AEi,y,a = emissions from use of other agrochemicals in stratum y in year a
+            [tCO2e ha-1]
+
+AQi,y,ET,a = quantity of agrochemicals in stratum y for emitter type ET applied in
+
+        year a [kg]
+
+AEFi,y,ET = emissions factor of the agrochemical used in stratum y (for emitter type
+            ET) [tCO2e kg-1]
+
+ET      = emitter type (specific pesticide, fertiliser, or other agrochemical)
+
+i       = formula used for baseline (i=BL) as well as project scenario (i=PR)
+
+10.5.4 |For AEBL, mean annual emissions are calculated based on respective
+            management records for five years prior to project start. If no adequate
+            documentation can be provided, AEBL shall be no more than 50% of AEPR.
+
+       Leakage
+
+11.1.1 |Calculation of leakage shall follow the rules and equations in the Soil Organic
+            Carbon Framework Methodology. If a reduction in yield is detected in a
+            performance certification, it is assumed that the lost production capacity shall
+            be made up for on land outside the project area. Emissions caused by such a
+            shift shall be accounted for as leakage according to the equation in the Soil
+            Organic Carbon Framework Methodology.
+
+11.1.2 |Additional requirements: Under this Activity Module, leakage shall be
+            assessed at stratum level. Instead of Equation 19 of the Soil Organic Carbon
+            Framework Methodology, leakage shall thus be calculated for each stratum
+            separately, using equation 10:
+
+        Climate Security and Sustainable Development                                          21
+Soil Organic Activity Module for Cover Crops, v.1.0
+
+LK-0   =    [,-,      ×  , ]  ×  (BC +,-0            +  ,-0  +  ,-0)(Eq.   10)
+
+                   ,
+
+Where:
+
+LKt-0 = emissions due to shift of production to non-project lands (leakage area)
+
+CYt,y     [tCO2e]
+          = crop yield in stratum y at time t (5 year average*) [kg ha-1]
+
+CYmin,y = lowest crop yield in stratum y in any calculation period since project start
+            (5 year average*) [kg ha-1]
+
+CYBL,y = crop yield in stratum y under the baseline scenario (5 year average*)
+            [kg ha-1]
+
+y,t       = eligible project area in stratum y (5-year average*) [ha]
+
+BCLA = change in biomass carbon stocks in leakage area [tCO2e ha-1]
+
+SOCLA,t-0 = change in soil organic carbon stocks in leakage area [tCO2e ha-1]
+
+FELA,t-0 = change in emissions from use of fertiliser in leakage area [tCO2e ha-1]
+
+FULA,t-0 = change in emissions from fuel use in leakage area [tCO2e ha-1]
+
+     * If the baseline period is extended to cover full rotation cycles, crop yield
+            and stratum area shall be calculated as the average across an equal length
+            period.
+
+       Monitoring
+
+12.1.1 |Monitoring approach and parameters in the Soil Organic Carbon Framework
+            Methodology shall be followed. Also, the project developer shall collect and
+            document evidence that this Activity Module's applicability conditions are met
+            at all times.
+
+12.1.2 |Additional requirements: The following parameters shall be monitored in this
+            Activity Module, depending on the quantification approach selected. Where
+            parameters listed below overlap with the Soil Organic Carbon Framework
+            Methodology monitoring section, the following descriptions shall be applied
+            under this Activity Module to ensure stratum-level quantification and
+            appropriate data sources.
+
+            Climate Security and Sustainable Development                                    22
+Soil Organic Activity Module for Cover Crops, v.1.0
+
+Data/Parameter:       APR,y
+                      Ha
+Unit                  Area in stratum y in the project scenario
+Description           Farm records (GPS data, GIS files)
+Source of data
+Value(s) applied      Documentation allowing unambiguous identification and
+Measurement           documenting area size at field level
+procedures            At project start; reviewed annually
+Monitoring frequency
+QA/QC procedures      Used in Equation 7
+Additional comments
+
+Data/Parameter:       y,t
+
+Unit                  Ha
+Description           Area in stratum y at time t (five-year average*)
+
+Source of data        Farm records (GPS data, GIS files)
+
+Value(s) applied
+
+Measurement           Documentation allowing unambiguous identification and
+procedures            documenting area size at field level
+
+Monitoring frequency  Annually (for calculation of five-year average*)
+
+QA/QC procedures
+
+Additional comments   Used in Equation 10
+
+* If the baseline period is extended to cover full rotation cycles, area shall be
+
+calculated as the average across an equal length period.
+
+Data/Parameter:       AQi,y,ET,a
+Unit                  Km
+Description           Quantity of agrochemicals in stratum y for emitter type ET
+                      applied in year a
+Source of data        Farm records
+Value(s) applied
+Measurement           Documentation of quantity and type of non-N­fertiliser
+procedures            agrochemicals used for cover crops (e.g., for termination)
+Monitoring frequency  Annually
+QA/QC procedures
+Additional comments   Used in Equation 9
+
+                      Climate Security and Sustainable Development                 23
+Soil Organic Activity Module for Cover Crops, v.1.0
+
+Data/Parameter:       AEFi,y,ET
+Unit                  tCO2e kg-1
+Description           Emissions factor of the agrochemical used in stratum y (for
+                      emitter type ET)
+Source of data        Supplier information
+Value(s) applied
+Measurement           Supplier LCA information for production and transport
+procedures            If no supplier information is available, national or international
+                      default values or third-party emission factors (e.g., from
+Monitoring frequency  applicable studies on respective crop emissions) may be applied.
+QA/QC procedures      Annually
+Additional comments
+                      Used in Equation 9
+Data/Parameter:
+Unit                  CYBL,c,y
+Description           kg ha-1
+                      Average annual crop yield for crop type c per ha in stratum y in
+Source of data        the project area during the baseline period (five-year average)
+Value(s) applied      Farm records, e.g., field records, sales receipts
+Measurement
+procedures            Yield is recorded for each crop season and cumulated annually
+                      (as sum of each crop type). For the baseline, an average annual
+Monitoring frequency  yield calculated across the five-year baseline period.
+QA/QC procedures
+Additional comments   Project start
+
+                      This parameter replaces parameter CYBL in the Soil Organic
+                      Carbon Framework Methodology (Equation 19).
+
+                      Climate Security and Sustainable Development                        24
+Soil Organic Activity Module for Cover Crops, v.1.0
+
+Data/Parameter:       CYt,y
+Unit
+Description           kg ha-1
+
+Source of data        Average annual crop yield per ha in stratum y in the project area
+Value(s) applied      (five-year average*)
+Measurement
+procedures            Farm records, e.g., field records, sales receipts
+
+                      Yield is recorded for each crop season and cumulated annually
+                      (as sum of each crop type). Average annual yield is calculated for
+                      each stratum across the five-year reporting period.
+                      If cover crops are partially grazed or harvested (e.g., as feed or
+                      biomass crop), this yield may be included in CYt,y and, as relevant
+                      in quantification Approach 2 or 3, may be deducted from organic
+                      inputs to the soil (i.e., the respective model parameter).
+
+Monitoring frequency  * If the baseline period is extended to cover full rotation cycles,
+QA/QC procedures      crop yield shall be calculated as the average across an equal
+Additional comments   length period.
+                      Annually
+
+                      Used in equation 10. This parameter replaces parameter CYt in
+                      the Soil Organic Carbon Framework Methodology (Equation 19).
+
+Data/Parameter:       CYmin,y
+Unit                  kg ha-1
+Description           Minimum annual crop yield per ha in stratum y since project start
+Source of data        Farm records, e.g., field records, sales receipts
+Value(s) applied
+Measurement           Yield is recorded for each crop season and cumulated annually
+procedures            (as sum of each crop type). CYmin,y represents lowest average
+                      annual yield per stratum since project start and serves as
+Monitoring frequency  threshold to assess yield reduction.
+QA/QC procedures      Annually
+Additional comments
+                      Used in Equation 8. This parameter replaces parameter CYmin in
+                      the Soil Organic Carbon Framework Methodology (Equation 19).
+
+                      Climate Security and Sustainable Development                         25
+Soil Organic Activity Module for Cover Crops, v.1.0
+
+Data/Parameter:       DistSTPR,y,a,c
+Unit                  km
+Description           Transport distance for seed for crop c applied in stratum y in year
+Source of data        a of the project scenario
+Value(s) applied
+Measurement           Seed transport distance from production to field shall be
+procedures            documented based on field locations for each stratum y using
+                      verifiable distance calculation, e.g., GIS/map distances. Average
+Monitoring frequency  distance in each stratum weighted by field size shall be used for
+QA/QC procedures      calculation. If emission factor for seed production (EFSP,y,c)
+Additional comments   already includes transportation (e.g., to distribution centers), the
+                      remaining transport distance to the fields shall be calculated for
+Data/Parameter:       DistPR,y,a,c. If different transport types (air, sea, ground) are used,
+Unit                  respective distances shall be calculated separately, and
+Description           respective emission factors (EFST,t,0) shall be applied.
+Source of data        Annually
+Value(s) applied
+                      Used in Equation 7
+Measurement
+procedures            EFFE,y
+Monitoring frequency  tCO2e kgN-1
+QA/QC procedures      Conversion factor for emissions from N fertiliser in stratum y
+Additional comments   IPCC 2019
+                      IPCC 2019 aggregated default value for EFFE is 0.01.
+                      Disaggregated default values in IPCC 2019 Table 11.1 may be
+                      used if fertiliser inputs are known per fertiliser type.
+
+                      Project start
+
+                      Used in Equation 2
+
+                      Climate Security and Sustainable Development                             26
+Soil Organic Activity Module for Cover Crops, v.1.0
+
+Data/Parameter:       EFSP,y,c
+Unit
+Description           tCO2e kg-1
+Source of data        Emission factor for production of seed for crop c applied in
+Value(s) applied      stratum y in year a of the project scenario
+Measurement           Seed producer information/product information
+procedures
+                      If no specific emission factors are available for a crop,
+Monitoring frequency  conservative default emission factors may be applied, e.g.,
+QA/QC procedures      emission factors from national sources, peer-reviewed scientific
+Additional comments   publications or factors based on LCA quantifications for related
+Data/Parameter:       (commercial) crops with comparable management practices (i.e.,
+Unit                  fertiliser use and field management/tillage).
+Description           Project start; updated annually
+Source of data        The seed production emission factors shall be assessed by an
+Value(s) applied      expert who shall be part of the VVB team at project validation.
+Measurement           Used in Equation 7
+procedures
+                      EFST,y,c
+Monitoring frequency
+QA/QC procedures      tCO2e km-1 kg-1
+Additional comments   Emission factor for transport of seed for crop c applied in stratum
+Data/Parameter:       y in year a of the project scenario
+Unit                  National transport emission factors
+
+                      Documented for the project (if not already covered in LCA
+                      calculation for EFSP,y,c)
+                      National values specific to the transport means (vehicle type,
+                      capacity, etc.) shall be applied.
+                      If no national emission factors are available, default emission
+                      factors can be applied conservatively, e.g., by using tools or
+                      emission factors published by the Greenhouse Gas Protocol:
+                      Emission Factors from Cross-Sector Tools (EF list) or GHG
+                      Emissions from Transport or Mobile Sources (calculation tool;
+                      results provided correspond to EFFT,t*DistFT,t), published at
+                      https://ghgprotocol.org/calculation-tools#cross_sector_tools_id
+                      (link accessed June 2021).
+                      Uncertainty of factor applied shall be determined based on
+                      parameter source (e.g., scientific source for emission factor used
+                      in tools listed above) or, if not available, conservatively assumed
+                      to be 50%.
+                      Project start; reviewed annually
+
+                      Used in Equation 7
+
+                      EEFi,y,SE
+
+                      tCO2e kWh-1
+
+                      Climate Security and Sustainable Development                         27
+Soil Organic Activity Module for Cover Crops, v.1.0
+
+Description           Emissions factor for the electricity used in stratum y in source SE
+Source of data
+                      a) National GHG inventory sources such as:
+Value(s) applied           · U.S.: Emission Factors for Greenhouse Gas Inventories
+Measurement                     (epa.gov)
+procedures
+Monitoring frequency  EU: EMEP/EEA air pollutant emission inventory guidebook 2023 --
+QA/QC procedures      European Environment Agency (europa.eu) and EMEP/EEA air
+Additional comments   pollutant emission inventory (europa.eu)
+                      b) If no national data is available, default emission factors in
+Data/Parameter:
+Unit                       IPCC 2006, Volume 2, Chapter 3, Table 3.3.1 may be applied
+Description                (taking into account listed uncertainties).
+Source of data
+Value(s) applied      Project start; reviewed annually for national updates
+Measurement
+procedures            Used in Equation 5
+
+Monitoring frequency  EUWi,y,SE,a
+QA/QC procedures      kWh
+Additional comments   Electricity consumption in stratum y from source SE in year a
+                      Farm records
+
+                           1) Document electric equipment and power source used for
+                                cover cropping in each stratum.
+
+                           2) Quantify electricity used for cover crop activity based on:
+                                      a. Direct records (electricity documentation), or
+                                      b. Duration of equipment use (hours) and power
+                                           consumption per equipment type (kW).
+
+                      Use-based documentation, aggregated (sum) per year
+
+                      Used in Equation 5
+
+                      Climate Security and Sustainable Development                         28
+Soil Organic Activity Module for Cover Crops, v.1.0
+
+Data/Parameter:       FEBL,y
+Unit                  kgN
+Description           Mean annual N fertiliser input in stratum y under the baseline
+                      scenario
+Source of data        Farm records (field level)
+Value(s) applied      Average annual N input in stratum y, calculated across baseline
+                      period (five years)
+Measurement
+procedures            Project start
+Monitoring frequency
+QA/QC procedures      Used in Equation 2
+Additional comments
+                      FEPR,y,a
+Data/Parameter:       kgN
+Unit                  N fertiliser input in stratum y under the project scenario in year a
+Description           Farm records (field level)
+Source of data        Sum of N inputs in stratum y in year a
+Value(s) applied
+Measurement           Use-based; aggregated annually
+procedures
+Monitoring frequency  Used in Equation 2
+QA/QC procedures
+Additional comments
+
+                      Climate Security and Sustainable Development                          29
+Soil Organic Activity Module for Cover Crops, v.1.0
+
+Data/Parameter:       FEFi,y,MT
+Unit                  tCO2e liters-1
+Description           Emissions factor for the fuel used in stratum y in machinery MT
+Source of data        a) National GHG inventory sources such as:
+
+Value(s) applied           · U.S.: Emission Factors for Greenhouse Gas Inventories
+Measurement                     (epa.gov)
+procedures
+Monitoring frequency       · Canada: Emission_Factors.pdf (ec.gc.ca)
+QA/QC procedures           · EU: EMEP/EEA air pollutant emission inventory guidebook
+Additional comments
+                                2023 -- European Environment Agency (europa.eu) and
+Data/Parameter:                 EMEP/EEA air pollutant emission inventory (europa.eu)
+Unit
+Description           b) If no national data is available, default emission factors in
+Source of data             IPCC 2006, Volume 2, Chapter 3, Table 3.3.1 may be applied
+Value(s) applied           (taking into account listed uncertainties).
+Measurement
+procedures            Project start; reviewed annually for national updates
+
+Monitoring frequency  Used in Equation 4
+QA/QC procedures
+Additional comments   FULi,y,MT,a
+                      Liter
+                      Fuel consumption in stratum y by the machinery type MT used in
+                      year a
+                      Farm records
+
+                           1) Document machines and fuel type for equipment used for
+                                cover cropping in each stratum.
+
+                           2) Document amount of equipment use for cover crops from:
+                                      a. Direct records (fuel use), or
+                                      b. Equipment usage (hours or distance) and fuel
+                                           consumption (liters/hour or liters/km).
+
+                      Baseline: Project start
+                      Project: Use-based documentation, aggregated (sum) per year
+
+                      Used in Equation 4
+
+                      Climate Security and Sustainable Development                      30
+Soil Organic Activity Module for Cover Crops, v.1.0
+
+Data/Parameter:       SPR,y,a,c
+Unit                  kg ha-1
+Description           Amount of seed for crop c applied in stratum y in year a of the
+                      project scenario
+Source of data        Farm records
+Value(s) applied
+Measurement           Document for each cover crop type separately.
+procedures            If no detailed information is available for seed crops, specifically
+                      for pre-mixed seeds, conservative and documented expert
+Monitoring frequency  opinion may be used to estimate average amounts for each cover
+QA/QC procedures      crop species applied in the mix.
+Additional comments   Use-based documentation, aggregated (sum) per year
+
+                      Used in Equation 7
+
+                      Climate Security and Sustainable Development                          31
+

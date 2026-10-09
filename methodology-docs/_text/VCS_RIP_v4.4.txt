@@ -1,0 +1,1718 @@
+RPreogcisetsras tion and Issuance Thihsttipssn:/o/vtethrrea.courrgr/epnrtovgerarsmiosn/voefritfhieisd-VcCarSboPnr-osgtaranmdadrdo/cvucms-epnrot.gTrahme -cduertraeinlst/v. ersion is at:
+
+4 October 2023  v4.4
+ ABOUT VERRA
+
+  t: Verra sets the world's leading standards for climate action and sustainable development. We build
+  is a standards for activities as diverse as reducing deforestation, to improving agricultural practices, to
+  n addressing plastic waste, and to achieving gender equality. We manage programs to certify that these
+  rsio activities achieve measurable high-integrity outcomes. And we work with governments, businesses, and
+  ve civil society to advance the use of these standards, including through the development of markets.
+  nt Everything we do is in service of increasingly ambitious climate and sustainable development goals ­
+  urre /. and an accelerated transition to a sustainable future.
+  e c tails Verra's certification programs include the Verified Carbon Standard (VCS) Program and its Jurisdictional
+  Th de and Nested REDD+ (JNR) framework, the Climate, Community & Biodiversity Standards (CCBS)
+  nt. m- Program, the Sustainable Development Verified Impact Standard (SD VISta) Program, and the Plastic
+  e ra Waste Reduction Program.
+  docucms-prog Intellectual Property Rights, Copyright, and Disclaimer
+  gram rd/v The intellectual property rights of all materials in this document are owned by Verra or by entities that
+  ro da have consented to their inclusion in this document.
+  S P stan The use of these materials in the establishment or operation of a project in a Verra certification
+  VC on- program is permissible ("Authorized Use"). All other commercial use of these materials is prohibited.
+  is rb Without limiting the generality of the foregoing, viewing, downloading, modifying, copying, distributing,
+  f th -ca transmitting, storing, reproducing, or otherwise using, publishing, licensing, transferring, selling, or
+  ion o ified creating derivative works (in whatever format) from this document or any information obtained from this
+  s r document other than for the Authorized Use or for personal, academic, or other non-commercial
+  er /ve purposes is prohibited.
+  ent v ams All copyright and other proprietary notices contained in this document must be retained on any copies
+  urr ogr made under the Authorized Use. All other rights of the copyright owner not expressly addressed above
+  e c /pr are reserved.
+  t th .org No representation, warranty, or guarantee express or implied is made in this document. No
+  no rra representation, warranty, or guarantee express or implied is made that the information provided is
+  is is ://ve accurate, current, or complete. While care is taken in the collection and provision of this information,
+ h s Verra and its officers, employees, agents, advisers, and sponsors will not be liable for any errors,
+T http omissions, misstatements, or mistakes in any information or damages resulting from the use of this
+
+    information, or any decision made or action taken in reliance on this information.
+
+    Registration and Issuance Process, v4.4
+                                                                                                                      1 Introduction
+
+ CONTENTS
+
+   1 INTRODUCTION........................................................................................................ 2
+
+  is at: 2 OPENING A VERRA REGISTRY ACCOUNT............................................................... 3
+  ion 3 PIPELINE LISTING PROCESS...................................................................................... 4
+
+    vers 3.1 Process.................................................................................................................................6
+  rent 4 PROJECT REGISTRATION PROCESS ....................................................................... 10
+
+    cur ils/. 4.1 Step 1: Project Validation and Verification ..................................................................10
+    he eta 4.2 Step 2: Registration and Verification Approval ............................................................ 12
+    t. T -d 4.3 Step 3: Project Review .....................................................................................................19
+    en ram 4.4 Step 4: Project Registration and Initial VCU Issuance..................................................24
+    cum rog 4.5 Step 5: Periodic VCU Issuance .......................................................................................26
+    do cs-p 4.6 Step 6: VCU Retirements and Cancelations.................................................................28
+    ram d/v 4.7 Step 7: Project Maintenance..........................................................................................29
+  Prog ndar 5 AFOLU POOLED BUFFER ACCOUNT ...................................................................... 32
+    CS -sta 5.1 Assignment of Buffer Credits at First Request for Issuance..........................................32
+    V on 5.2 Assignment and Release of Buffer Credits at Subsequent Approved Verification
+
+           this arb Requests ............................................................................................................................ 32
+    of d-c 5.3 Cancelation and Holding of Buffer Credits ..................................................................33
+  rsion erifie 6 QUALITY CONTROL OF REGISTERED PROJECTS .................................................... 37
+    ve s/v 6.1 Process...............................................................................................................................37
+  rrent gram 7 FURTHER INFORMATION ........................................................................................ 41
+    e cu /pro 7.1 Communications Agreement.........................................................................................41
+    th rg 7.2 Release and Accession of Project Proponents ............................................................41
+    not ra.o 7.3 Comments Received Outside of a Public Comment Period .....................................42
+  is is ://ver APPENDIX 1 ELIGIBILITY CONDITIONS FOR CONVERSION OF GHG CREDITS INTO
+Th ttpsVCUS ...................................................................................................................... 43
+  h GHG Credits issued to standalone projects, seeking conversion into VCUs ........................43
+
+        GHG Credits issued to CDM CPAs, seeking conversion into VCUs ........................................ 44
+
+   APPENDIX 2 DOCUMENT HISTORY .............................................................................. 46
+
+Registration and Issuance Process, v4.4  1
+                                                                                                                      1 Introduction
+
+ 1 INTRODUCTION
+
+    This document outlines the procedures for listing pipeline projects, registering projects, and issuing
+    verified carbon units (VCUs) under the VCS Program. This document is intended for use by project
+
+  at: proponents, validation/verification bodies, VCU buyers, VCU sellers and any other entities participating
+  is in the VCU market. Note that the VCS Standard and its related documents provide the rules and
+  ion requirements for developing projects, and this document (the Registration and Issuance Process)
+  rs should not be used for such purpose.
+  t ve Projects may have one or many project proponents, though to aid readability, this document uses
+  ren project proponent in the singular. For projects with multiple project proponents, project proponents
+  cur ils/. should be substituted in place of project proponent, as appropriate.
+  he eta Project proponents interact with the Verra Registry to list pipeline projects, register projects, and issue
+  t. T -d VCUs (i.e., project pipeline listing, project registration and VCU issuance are handled by the Verra
+  en ram Registry). Verra staff are responsible for undertaking a completeness check on documentation and for
+  um og ensuring adherence to the VCS Program rules with respect to the pipeline listing process and the
+  oc -pr project registration process. Verra staff also upload information to the Verra Registry.
+  am d /vcs The Verra Registry provides the central repository for all information and documentation relating to
+  ogr ard pipeline and registered projects. The registry is also responsible for ensuring uniqueness of projects,
+  Pr nd issuing VCU serial numbers, and tracking VCU retirement. The registry makes project and VCU
+  S sta information and documentation publicly available and can be accessed via the Verra website. As set
+  VC n- out in the VCS Program Guide, Verra is responsible for reviewing project documentation and overseeing
+  is rbo validation/verification bodies to ensure the integrity of projects and VCUs in the Verra Registry.
+  of th d-ca Project documents must be submitted in electronic format.
+  sion rifie The operating language of the VCS Program is English. The project and program description, validation
+  er /ve report, monitoring report, verification report and all other documentation (including all and any
+  nt v ms appendices) required under the VCS Program must be in English.
+  urre gra This document will be updated from time-to-time, and readers shall ensure that they are using the most
+Thihsttipssn:/o/vt ethrrea.corg/pro current version of the document.
+
+Registration and Issuance Process, v4.4  2
+                                         2 Opening a Verra Registry Account
+
+2 OPENING A VERRA REGISTRY
+
+ACCOUNT is at: A Verra Registry account shall be opened by any market participant who wants to list a pipeline project,
+
+ion register a project and/or issue, trade or retire VCUs as set out in Diagram 1.
+vers Diagram 1: Opening a Verra Registry Account
+
+   curreinlst/. Market participant completes an account
+     he eta application with the Verra Registry
+am do/cvucms-epnrot.gTram-d Verra reviews account application
+this VCarSboPnr-osgtar ndard Verra notifies market participant of
+      f -c account approval
+versiosn/voerified 2.1.1 The Verra Registry is managed and operated by Verra staff. Further details about the Verra
+      ent am Registry are available in the VCS Program Guide.
+not thrrea.courrgr/progr 2.1.2
+A market participant can apply to open a Verra Registry account at any time. For example, a
+would-be project proponent does not need to have a validated or verified project and a would-
+be VCU buyer does not need to have entered into a legal agreement to purchase VCUs in order
+to open a Verra Registry account.
+  is is ://ve 2.1.3 Market participants can apply to open a Verra Registry account through the Verra website.
+Th ttps Market participants are also encouraged to contact the Verra Registry at any time at
+
+  h registry@verra.org.
+
+Registration and Issuance Process, v4.4                                                                              3
+                                                                                                      3 Pipeline Listing Process
+
+ 3 PIPELINE LISTING PROCESS
+
+    The Verra Registry includes a project pipeline which lists projects before they are registered. Projects
+
+  at: may list on the pipeline in the early stages of development as under development or as under
+  is validation when they are ready to begin the public consultation and validation process.
+  sion Note that where a methodology element is put on hold or withdrawn, only projects that have been listed
+  er on the project pipeline as either under development or under validation by the date on which the
+  nt v methodology element is put on hold or withdrawn shall be granted the grace period for using the
+  rre methodology element (i.e., any projects not listed on the project pipeline by such date shall not be
+  cu ils/. granted the grace period). Project proponents may therefore wish to list their projects at the early
+  he ta stages of project development to ensure that they can take advantage of any grace periods. See the
+  t. T -de VCS Standard for more information on grace periods.
+  en ram Diagram 2 below sets out the process for listing and the public comment period where a project initially
+  cum rog requests to list on the pipeline as under development. Diagram 3 below, sets out the process for listing
+  o -p on the pipeline and the public comment period where a project initially requests to list on the pipeline
+Thihsttipssn:/o/vt ethrrea.courrgr/epnrtovgerarsmiosn/voefritfhieisd-VcCarSboPnr-osgtaranmdadrd/vcs as under validation. Notes that follow the diagrams provide further details.
+
+Registration and Issuance Process, v4.4  4
+                                                         3 Pipeline Listing Process
+
+Diagram 2: Pipeline Listing Process ­ Under Development
+
+Thihsttipssn:/o/vt ethrrea.courrgr/epnrtovgerarsmiosn/voefritfhieisd-VcCarSboPnr-osgtaranmdadrdo/cvucms-epnrot.gTrahme -cduertraeinlst/v. ersion is at:
+
+Registration and Issuance Process, v4.4                  5
+                                                        3 Pipeline Listing Process
+
+Diagram 3: Pipeline Listing Process ­ Under Validation
+
+VCSoPnr-osgtaranmdadrdo/cvucms-epnrot.gTrahme -cduertraeinlst/v. ersion is at: 3.1 Process
+t versiosn/voefritfhieisd-carb 3.1.1
+The only entities that may initiate the pipeline listing process are the project proponent, an
+entity to which the project proponent has assigned sole right to the GHG emission reductions
+(reductions) and carbon dioxide removals (removals) for the entire project crediting period, an
+entity who has been authorized by the project proponent(s) to list the project on the project
+pipeline or the authorized representative of any of these entities.
+is is n:/o/vt ethrrea.courrgr/epnrogram 3.1.2
+To initiate the pipeline listing process, such entities shall submit the required documents for
+listing to the Verra Registry and change the status of the project to pipeline listing requested.
+Pipeline projects shall be listed as either under development or under validation. Projects
+under development are those which have not yet contracted a validation/verification body to
+perform validation. Projects under validation are those that have contracted a
+validation/verification body to perform validation and are ready to begin the validation process.
+Th ttps 3.1.3 To list a project as under development, such entities shall submit the following to the Verra
+  h Registry:
+
+A draft project description which shall include (at a minimum) the cover page and drafts of
+Sections 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.8, 1.9, 1.10, 1.11, 1.12, 1.14, 1.15, 1.16, 1.17,
+
+Registration and Issuance Process, v4.4                                                                      6
+                                                                                                      3 Pipeline Listing Process
+
+                   1.18, 3.1 and 3.2, of the VCS Project Description Template1, or the equivalent Sections in
+                   the VCS Joint Project Description & Monitoring Report Template.
+              Note - Indicative information is sufficient (e.g., the proposed approach for establishing project
+              ownership, rather than the full rationale and evidence that will be submitted for validation).
+
+           at: A listing representation.
+  ion is 3.1.4 To list a project as under validation, the following shall be submitted to Verra:
+
+        ers 1) A project description with all sections of the VCS Project Description Template or the VCS
+           t v Joint Project Description & Monitoring Report Template completed.
+
+        urren /. 2) Proof of contracting of the validation, provided in accordance with Section 4.2.11.
+           e c tails A listing representation.
+
+  t. Th -de 3.1.5 The project proponent shall pay the pipeline listing fee before Verra will process the listing
+        n m request submission. Where the project listed as under development first, the fee will not be
+        me gra required when the project subsequently requests to list the project as under validation.
+        docu -pro Note ­ Pipeline projects may either apply an approved methodology or a methodology that is
+        cs under development. Where a methodology under development is applied, the project
+        am /v description shall provide a reference for the draft version of the methodology.
+
+  Progr ndard 3.1.6 Projects participating in multiple Verra programs (e.g. the VCS Program and the CCB Program)
+        S ta may submit joint templates only if the project proponent is making concurrent requests under
+        VC n-s the VCS Program and the other program(s).
+
+  this arbo 3.1.7 The following applies with respect to the listing representation:
+        ion of ified-c 1) The Verra website provides the template for the listing representation. The template shall
+           r not be altered other than to fill in the project-specific details.
+        vers s/ve 2) The listing representation shall be properly executed as a deed in accordance with
+           nt m applicable local laws and the organization's own constitutional documents (e.g., signature
+           rre gra by directors and requirement of company seals).
+        e cu /pro 3) Where more than one individual or organization can claim rights in respect of the execution
+          th rg of the listing representation, and there exists no other (single) entity which may execute the
+       ot a.o listing representation, all such individuals and organizations shall execute the listing
+
+    is n errrepresentation, using the appropriate template available on the Verra website for pipeline
+  is ://v projects with multiple project proponents, as applicable. Note that such representations
+Thhttps may be executed in any necessary number of counterparts.
+
+    3.1.8 All project documents shall be submitted to the Verra Registry in electronic format.
+
+1 Section numbers are based on the VCS Project Description Template, v4.3
+
+Registration and Issuance Process, v4.4                                    7
+                                                                                                      3 Pipeline Listing Process
+
+    3.1.9 Where a project proponent requests to list a project as under development, Verra conducts a
+              completeness review of the submitted project documents to ensure that:
+
+              1) The relevant sections of the VCS Project Description Template have been completed in
+                   accordance with Sections 3.1.1.
+
+        at: 2) The listing representation has been signed by the relevant responsible parties.
+        n is Any issues raised as a result of the Verra completeness review shall be addressed before the
+        sio project listing request can proceed.
+  t ver 3.1.10 Where a project is requesting to list as, or update its status to under validation, Verra reviews
+        en the submitted project documents to ensure that sufficient information is present for the project
+        urr /. to undergo public comment. Any issues raised as a result of the Verra review shall be
+        e c tails addressed before the project can proceed to public comment.
+  t. Th -de 3.1.11 The project proponent uploads all relevant documents to the Verra Registry. The project
+        en am proponent shall use all the information from the project documents to create the project record
+        m gr in the Verra Registry. The status of the project is set to under development or under validation,
+        ocu pro as appropriate. All documents submitted are posted publicly, except for commercially sensitive
+        d cs- information and proof of contracting.
+  gram rd/v 3.1.12 For projects listed initially as under development, the project status shall be updated to under
+        ro da validation by submitting the required documentation set out in Section 3.1.4 (noting that a
+        S P tan second listing representation is not required) in order to undergo public comment, as set out in
+        C -s Sections 3.1.13 ­3.1.14, below. Verra undertakes the relevant checks set out in Section 3.1.9.
+  is V rbon 3.1.13 Projects shall undergo a 30-day public comment period. The public comment period starts on
+        f th -ca the date on which the project status is updated to under validation or the date on which the
+        ion o ified project is listed on the pipeline as under validation.
+  ers /ver 3.1.14 Any comments shall be submitted through the project's page on the Verra Registry.
+        v s Respondents shall provide their name, organization, country, and email address. At the end of
+        ent am the public comment period, Verra provides all comments received to the project proponent.
+        urr ogr Verra posts a public summary of all comments received during the public comment period. The
+        e c /pr project proponent shall address such comments as set out in the VCS Standard.
+  t th .org 3.1.15 Verra stores the electronic and signed original project documents in its record-keeping system
+      no rra for a minimum period of 12 years from the date the project is listed on the project pipeline.
+  is is ://ve 3.1.16 Where a pipeline project successfully completes validation, it may progress to project
+Thhttps registration on the Verra Registry, following the procedures set out in Section 4.
+
+    3.1.17 Where a pipeline project does not successfully complete validation within the timeframes
+              specified in the VCS Standard, Verra changes the project status to inactive. Inactive projects
+              that were most recently listed as under development shall request listing as under validation to
+              be reactivated. Inactive projects that were most recently listed as under validation shall request
+
+Registration and Issuance Process, v4.4  8
+                                                                                                      3 Pipeline Listing Process
+
+              registration in order to reactivate. Inactive projects shall apply the latest version of the
+              applicable methodology and VCS Program rules when reactivating.
+    3.1.18 Where Verra has reason to believe that false or misleading project information has been
+              submitted, Verra seeks clarification from the project proponent. Where the project proponent
+
+        at: cannot satisfactorily justify the information provided for the pipeline project, Verra reserves the
+        is right to delist the project.
+  sion 3.1.19 Where Verra deems the pipeline listing request is vexatious, frivolous, or an abuse of process,
+        er Verra may reject the project without providing findings to the project.
+  ent v 3.1.20 Where Verra deems, at any point during the pipeline listing request process, that the project
+        urr /. does not clearly demonstrate conformance with the VCS Program rules, Verra communicates
+        c ils the issue(s) to the project proponent and stops the review process. The project proponent may
+        he eta submit updated documentation addressing the issue(s) and request that Verra resumes the
+        t. T -d review. Where the project proponent fails to address the issue(s) within 12 months of such
+        en ram communication the project status is changed to inactive (see 3.1.17).
+  ocum prog 3.1.21 Where Verra determines, at any point during the pipeline listing request process, that the
+        d s- project does not conform with the VCS Program rules, Verra will:
+        gram rd/vc 1) Reject the project.
+        Pro nda 2) Change the status of the project to rejected by administrator.
+Thihsttipssn:/o/vt ethrrea.courrgr/epnrtovgerarsmiosn/voefritfhieisd-VcCarSbon-sta 3) Make the project page public and include information on the reason for rejection.
+
+Registration and Issuance Process, v4.4  9
+                                                                                               4 Project Registration Process
+
+ 4 PROJECT REGISTRATION PROCESS
+
+    The following steps are required under the VCS Program to register a project and issue VCUs, and these
+
+  at: are presented in detail in this Section 4:
+        n is 1) Project validation and verification
+        rsio 2) Registration and verification approval request
+        t ve 3) Project review
+        urren /. 4) Project registration and initial VCU issuance
+        e c tails 5) Periodic VCU issuance
+        t. Th -de 6) VCU retirements and cancelations
+        en ram 7) Project maintenance
+
+  cum rog For the purposes of this document, the project registration process refers to all or any of these six
+  do s-p steps, as the case may be. The entity that initiates the project registration process may terminate the
+  am /vc process at any one of these steps if it decides it does not want to register the project or have VCUs
+  gr rd issued.
+  CS Pr-ostanda 4.1 Step 1: Project Validation and Verification
+  is V rbon The project shall be validated, and the GHG emission reductions or carbon dioxide removals verified as
+Thihsttipssn:/o/vt ethrrea.courrgr/epnrtovgerarsmiosn/voefritfhied-ca set out in Diagram 4 below.
+
+Registration and Issuance Process, v4.4  10
+                                                                                           4 Project Registration Process
+Diagram 4: Validation of Project and Verification of Reductions or Removals
+
+                                                                      Documents include:
+
+Project proponent submits documentation
+
+    t: to validation/verification body
+  nt version is a Validation/verification body assesses
+
+        re project for validation
+                                                                      1) Project description
+                                                                      2) Evidence of project ownership
+                                                                      3) Other, as required by VVB
+
+ ent. Trahme -cduertails/. Validation/verification body provides
+cum rog project proponent with validation report
+
+   o -p and validation representation
+S Prosgtaranmdadrd/vcs Project proponent submits documentation
+    VC on- to validation/verification body
+ersion/voefritfhieisd-carb Validation/verification body assesses GHG  Documents include:
+  v s emission reductions or removals for                             1) Monitoring report
+            nt m verification                                         2) Other, as required by VVB
+
+       ot thea.courrgr/eprogra Validation/verification body provides
+    is n rr verification report and verification
+Thihsttps://ve representation
+
+4.1.1 The requirements for validation and verification, including the requirements for validation/
+
+verification bodies, are set out in the VCS Standard and the VCS Program Guide. Projects shall
+
+complete validation prior to requesting registration and complete verification prior to
+
+requesting verification approval. The process for requesting registration and verification
+
+Registration and Issuance Process, v4.4                                                                 11
+                                                                                               4 Project Registration Process
+
+              approval, including the documents required to be submitted for each type of request, are set
+              out in Section 4.2 below.
+    4.1.2 Where a verification period includes more than one calendar year, the Verra Registry will
+              display separate vintages for each calendar year within one verification period.
+
+  at: Note ­ For AFOLU ARR and IFM projects with harvesting, if any year within the verification period has a
+  is negative number of reductions or removals, zero VCUs will be issued for that year and a net total
+  ion amount of VCUs will be issued in the next year that sufficient reductions and removals are achieved to
+  rs compensate for the negative year(s).
+   nt ve Box 1. Example of VCU issuance in separate vintages
+   curreils/. For example, where the verification period is 1 January 2020 to 30 June 2021, the project proponent would
+   e ta have one VCU issuance record for the 2020 VCUs and a separate VCU issuance record for the 2021 VCUs.
+   Th e The VCUs assigned each vintage would be based on the breakdown of reductions and removals in the
+   t. -d monitoring report. The two vintages would be 1 January 2020 ­ 31 December 2020 and 1 January 2021 ­ 30
+   en ram June 2021.
+  docucms-prog 4.2 Step 2: Registration and Verification Approval
+  gram rd/v The project is presented to the Verra Registry for registration and verification approval as set out in
+  ro da Diagram 5 below.
+Thihsttipssn:/o/vt ethrrea.courrgr/epnrtovgerarsmiosn/voefritfhieisd-VcCarSboPn-stan Diagram 5: Project Registration Request
+
+    4.2.1 The only entities that may initiate the project registration process are the project proponent, an
+              entity to which the project proponent has assigned sole right to the reductions or removals for
+
+Registration and Issuance Process, v4.4  12
+                                         4 Project Registration Process
+
+              the entire project crediting period, or the authorized representative of either of these entities.
+              No other entity can initiate the project registration process.
+
+    4.2.2 Registration of a project may be requested when the project has completed project validation
+              but before the first verification of reductions or removals.
+
+  at: 4.2.3 Where the project is presented for registration without verification approval, the relevant
+        n is documents that shall be provided to the Verra Registry are:
+        rsio 1) The project description and registration representation.
+        t ve 2) The validation report and the validation representation.
+        urren /. 3) The non permanence risk report, if applicable
+        e c tails 4) Emission reduction and removal calculation spreadsheets.
+        t. Th -de 5) Proof of right or proof of contracting, where relevant.
+        en ram 6) Any annexes or supporting documents referenced in the project description.
+
+  cum rog 4.2.4 Where the project is presented for verification approval, the relevant documents that should be
+        do s-p provided to the Verra Registry are:
+        ram d/vc 1) The monitoring report and the issuance representation.
+        Prog ndar 2) The verification report and the verification representation.
+        CS -sta 3) The non permanence risk report, if applicable
+        is V bon 4) The emission reduction and removal calculation spreadsheets.
+        f th -car 5) Any annexes or supporting documents referenced in project documentation.
+        ion orified 6) Proof of right or proof of contracting, where relevant.
+        vers s/ve 7) Evidence and representation with respect to the cancelation of GHG credits under another
+           nt m GHG program.
+
+  urre ogra 4.2.5 Where the project proponent requests registration and verification approval together, the
+        e c /pr relevant documents that shall be provided to the Verra Registry are:
+        t th .org 1) The project description and registration representation.
+
+    is no erra 2) The validation report and the validation representation.
+ his s://v3) The non permanence risk report, if applicable
+T http 4) The monitoring report and the issuance representation.
+
+              5) The verification report and the verification representation.
+              6) The emission reduction and removal calculation spreadsheets.
+              7) Any annexes or supporting documents referenced in project documentation.
+
+Registration and Issuance Process, v4.4  13
+                                                                            4 Project Registration Process
+
+8) Proof of right or proof of contracting, where relevant.
+
+9) Evidence and representation with respect to the cancelation of GHG credits under another
+     GHG program.
+
+4.2.6 Where the project proponent reassesses the project baseline as part of a verification approval
+
+      at: request, in addition to the documents listed in Section 4.2.4, the relevant documents that shall
+      is be provided to the Verra Registry are:
+sion 1) An updated project description that includes updated Sections 1.14, 1.15, 1.16, 3.1, 3.2,
+   ver 3.4, 4.1 ­ 4.4, 5.12 to reflect any changes as required in accordance with baseline
+   nt reassessment requirements set out in the VCS Standard, and any updates to the baseline
+   urre /. emissions quantifications.
+e c tails 2) A verification report that includes an assessment of the baseline reassessment in Section
+   Th e 3.4.
+ogramadrdo/cvucms-epnrot.gram-d 4.2.7
+All documents submitted to Verra as part of the request, comments received, and documents
+Verra issues as part of project request will be public, except for commercially sensitive
+information and proof of contracting. Where a project document contains commercially
+sensitive information, the project proponent may submit a public and a private version of the
+document. The information in the private document shall meet the definition of "Commercially
+Sensitive Information" in the VCS Program Definitions.
+S Pr tand 4.2.8 Projects participating in multiple Verra programs (e.g., the VCS Program and the CCB Program)
+      C -s may submit joint templates only if the project proponent is making concurrent requests under
+      V on the VCS Program and the other program(s).
+ersion/voefritfhieisd-carb 4.2.9
+Where a project description deviation has been applied, and a revised project description is
+issued, such project description shall be provided to the Verra Registry. Likewise, where a
+project crediting period has been renewed, the revised project description and new validation
+report and validation representation shall be provided to the Verra Registry.
+ent v ams 4.2.10 The following shall apply with respect to the project proponent representations:
+curr rogr 1) The Verra website provides the templates for the registration representation, issuance
+ the g/p representation and all other project proponent representations. The templates shall not be
+t .or altered other than to fill in the project specific details.
+    is no rra 2) The project proponent representations shall be properly executed as deeds in accordance
+  is ://ve with applicable local laws and the organization's own constitutional documents (e.g.,
+Th ttps signature by directors, requirement of company seals).
+  h 3) Where more than one individual or organization can claim rights in respect of the execution
+
+of the project proponent representations, all such individuals and organizations shall
+
+2 Section numbers are based on the VCS Project Description Template, v4.3.
+
+Registration and Issuance Process, v4.4                                                            14
+                                                                                               4 Project Registration Process
+
+                   execute the project proponent representations, using the appropriate templates available
+                   on the Verra website for projects with multiple project proponents, as applicable. Note that
+                   such representations may be executed in any necessary number of counterparts.
+    4.2.11 Proof of contracting shall be provided to the Verra Registry where required, as set out in
+
+        t: Section 3.1.4. The project proponent or its authorized representative shall provide evidence of
+        is a the legal agreement between the project proponent (or other entity that has contracted the
+        n validation/verification body to undertake validation) and the validation/verification body, in
+        rsio relation to validation of the project. A final legal agreement, letter of intent, memorandum of
+        ve understanding or term sheet shall serve as proof of contracting. Such evidence of proof of
+        nt contracting shall be uploaded to the Verra Registry as a private document (for Verra internal
+        urre /. auditing purposes) and therefore will not be publicly available.
+  e c tails 4.2.12 There is no need to submit proof of right to the Verra Registry where the project proponent or
+        Th de its authorized representative is initiating the project registration process. Proof of right shall be
+        nt. m- submitted to the Verra Registry where an entity other than the project proponent or its
+        e ra authorized representative is initiating the project registration process. Evidencing proof of right
+        cum rog is as set out below.
+  do cs-p 4.2.13 The entity initiating the project registration process or its authorized representative shall
+        ram d/v submit to the Verra Registry the legal agreement(s) transferring the right to the reductions or
+        og ar removals for the entire project crediting period to it from the project proponent. Where there
+        S Pr tand are one or more intermediaries standing between the entity initiating the project registration
+        C -s process and the project proponent, Verra checks all the legal agreements documenting the
+        V on complete chain of transfer of right to the reductions or removals to the entity from the project
+        this arb proponent. Legal agreement(s) shall be in English or shall be an official translation of the legal
+        f -c agreement(s).
+  ion orified 4.2.14 In consideration of confidentiality, the entirety of the aforementioned legal agreement(s) need
+        ers /ve not be shown, but Verra undertakes the checks set out in Table 1 (if submitting an official
+        t v s translation of the legal agreement(s), only such information needs to be translated and shown
+Thihsttipssn:/o/vt ethrrea.courrgr/epnrogram to Verra).
+
+Registration and Issuance Process, v4.4  15
+                                                 4 Project Registration Process
+
+Table 1: Evidence for Proof of Right
+
+Information required  Verra Registry check
+
+Names of the parties to the
+
+rsion is at: agreement
+                      The parties are the entity initiating the project registration
+                      process (buyer or transferee) and the project proponent (seller
+                      or transferor), or where there is one or more intermediaries, the
+                      parties shall be the relevant parties in the chain of ownership
+                      between project proponent and the entity initiating the project
+                      registration process
+urrent/v. e Date of the agreement
+                      Appropriate to the project and transaction subject of the legal
+                      agreement
+he c etails Project name
+                      Same as the project that the entity is presenting for registration
+ment.gTram-d Project crediting period
+                      The project crediting period is defined, with a start date and
+                      duration (or end date) specified
+docu s-pro Clause that transfers the
+am /vc right to the GHG emission
+r d reductions or carbon
+og ar dioxide removals between
+Pr nd the parties to the
+S ta agreement
+                      The clause transfers the right to the GHG emission reductions or
+                      carbon dioxide removals generated by the project for the project
+                      crediting period
+
+is VC bon-s Signatures of parties to the The legal agreement is signed by both parties to the agreement
+th ar legal agreement
+  ersion/voefrified-c 4.2.15 The VCS Program allows projects registered under an approved GHG program (e.g., CDM) to
+        t v s also register with the VCS Program. In such cases, the documentation required for the project
+        ren ram registration process is the same as required for projects registering under the VCS Program
+        cur rog only, but noting the following:
+        the rg/p 1) The project description from the approved GHG program and a project description using the
+       ot a.o VCS Project Description Template with the relevant sections complete, as set out in the
+
+    is n errVCS Standard, shall be submitted.
+ his ://v2) Where project proponents have received or are seeking credit for reductions and removals
+T ttps from a project activity under the VCS Program, evidence requirements of no double
+  h issuance as outlined in the VCS Standard shall apply. If the credits have been cancelled,
+
+the project proponent or its authorized representative shall also sign and submit to the
+
+Verra Registry a VCU conversion representation.
+
+Registration and Issuance Process, v4.4                                                                  16
+                                                                                               4 Project Registration Process
+
+              3) AFOLU projects are subject to the rules and requirements for non-permanence risk analysis
+                   and buffer withholding set out in Section 4.7.1. The buffer withholding percentage
+                   determined by the AFOLU Non-Permanence Risk Tool shall be applied to the proportion of
+                   GHG credits to be issued under the VCS Program (only).
+
+        t: 4) Where a loss event or a reversal occurs, the project shall conform with the VCS Program
+           is a rules for reporting a loss event and holding and canceling credits set out in Section 5.3.
+           n Such reporting, holding, and canceling shall apply to the proportion of credits (GHG credits
+           rsio and buffer credits) granted to date under the VCS Program. For example, if 50 percent of
+           ve the total credits (GHG credits and, where applicable, buffer credits) granted to the project
+           nt to date have been granted under the VCS Program and a loss event results in a reversal of
+           urre /. reductions or removals achieved to date (in relation to which credits have been issued and
+           c ils buffered), buffer credits would be canceled to cover 50 percent of the reversal.
+
+  The deta 4.2.16 Where the project is registered with both the VCS Program and the CDM, and where temporary
+        nt. m- GHG credits have been issued to the project (i.e., temporary certified emission reductions
+        e ra (tCERs) and long-term certified emission reductions (lCERs)) which have expired without having
+        cum rog been sold or retired, such credits may be issued under the VCS Program in accordance with the
+        do -p requirements in Section 4.2.18. Where temporary credits have expired, evidence of their
+        am /vcs expiration shall be provided.
+
+  ogr ard 4.2.17 The VCS Program also allows projects registered under a non-approved GHG program to also
+        Pr nd register with the VCS Program. In such cases, the documentation required for the project
+        S sta registration process is the same as required for projects registering under the VCS Program
+        VC on- only. Where project proponents have received or are seeking credit for reductions and removals
+        is rb from a project activity under the VCS Program and another GHG program, evidence
+        f th -ca requirements of no double issuance as outlined in the VCS Standard shall apply.
+
+  ion o ified 4.2.18 The VCS Program allows projects registered under an approved GHG program (e.g. CDM) to
+        ers /ver cancel GHG credits issued under the approved GHG program and have them issued as VCUs in
+        t v s the Verra Registry. Project activities shall be eligible under the VCS Program (i.e., included
+        ren ram within the scope of the VCS Program, as set out in the VCS Standard) and meet the conditions
+        ur og set out in Appendix 1 in order to be eligible for such conversion. In such cases, the following
+        e c /pr applies:
+        t th .org 1) An official notification or other evidence of cancelation of the GHG credits under the
+
+      no rraapproved GHG program and a signed VCU conversion representation shall be provided to
+  is is ://ve the Verra Registry.
+Th ttps 2) Where the project is registered under the CDM, those documents required for project
+  h registration and Certified Emission Reduction (CER) issuance under the CDM shall be
+
+                   provided to the Verra Registry. Verra creates a project record on the Verra Registry, noting
+                   that such record shall have the status credits transferred from other GHG program. Such
+                   projects are not considered to be registered under the VCS Program and are not eligible for
+
+Registration and Issuance Process, v4.4  17
+                                                                                               4 Project Registration Process
+
+                   verification under the VCS Program without first conforming with the procedures for
+                   registration with the VCS Program and an approved GHG program set out in Section 4.2.15
+              3) Where the project is registered under the Joint Implementation (JI) program, the project
+                   shall also be registered with the VCS Program before Emission Reduction Units (ERUs) may
+
+           t: be converted into VCUs.3 Following registration with the VCS Program, such projects shall
+           is a provide those documents required for ERU issuance under the JI program to the Verra
+           n Registry.
+        rsio 4) Where the project is registered under the Climate Action Reserve (CAR), those documents
+           t ve required for registration and Climate Reserve Tonne (CRT) issuance shall be provided to the
+           en Verra Registry. Verra creates a project record on the Verra Registry, noting that such record
+           urr /. shall have the status credits transferred from other GHG program. Such projects are not
+           e c tails considered to be registered under the VCS Program and are not eligible for verification
+           Th de under the VCS Program without first conforming with the procedures for registration with
+           nt. m- the VCS Program and an approved GHG program set out in Section 4.2.15
+        me gra 5) Where the project is an AFOLU project, the project shall also be registered with the VCS
+           ocu pro Program before GHG credits issued under an approved GHG program may be converted
+           d s- into VCUs. The buffer withholding percentage for such projects shall be applied to the
+           am /vc number of GHG credits being converted.
+  rogr dard 4.2.19 Where a project or project activity is seeking or planning to receive other forms of GHG credit
+        S P tan and/or GHG-related environmental credit, evidence requirements of no double claiming as
+        C -s outlined in the VCS Standard shall apply.
+  is V rbon 4.2.20 For grouped projects and AFOLU projects with geographic areas characterized by one or more
+        f th ca geodetic polygons, the project proponent shall provide the geodetic information to the Verra
+        ion o ified- Registry in the format specified in the VCS Standard.
+  rs er 4.2.21 For grouped projects, AFOLU projects, and other projects with risk of reversal or loss, the
+        ve s/v project proponent shall submit monitoring and verification reports in chronological order.
+  rent ram 4.2.22 The Verra website maintains information on validation/verification bodies, and Verra checks
+        cur rog the following:
+        the rg/p 1) The validation/verification body that conducted validation of the project was accredited for
+       ot a.o the relevant sectoral scope for validation at the date(s) on which the validation report and
+Thihsttipssn://verrvalidation representation were issued.
+
+3 The flexibility inherent within the JI program (e.g., use of an approved methodology not required) means it is necessary for JI
+projects to register with the VCS Program in order to determine whether ERUs issued to such projects are eligible for
+conversion into VCUs.
+
+Registration and Issuance Process, v4.4  18
+                                                                                               4 Project Registration Process
+
+              2) The validation/verification body that conducted verification of the project was accredited
+                   for the relevant sectoral scope for verification at the date(s) on which the verification report
+                   and verification representation were issued.
+
+    4.2.23 The Project Registration Request Review Fee shall be paid before Verra will process the project
+
+        t: registration request.
+  ion is a 4.3 Step 3: Project Review
+  vers Verra reviews all project requests. Verra will not begin the project review until the request is submitted
+  nt to the Verra Registry and Verra confirms all the relevant documents are complete. If all the relevant
+  urre /. documents are not submitted or the documents are not complete, Verra contacts the project proponent
+  c ils (or authorized representative) to identify the outstanding issues.
+  The deta As part of the review, Verra may identify non-conformances within project documentation, called
+  nt. m- findings. Verra approves the request when no non-conformances are identified. Where non-
+  me gra conformances have been identified, the validation/verification body and the project proponent must
+  cu ro address the findings before the request can be approved, resulting in another round of review.
+  do cs-p The project review process does not replace the validation or verification; rather, it checks that the
+  ram d/v validation/verification body has appropriately assessed and has fully described how it has assessed
+  og ar the project's conformance with VCS Program rules. The project review process is set out in Diagram 6
+  S Pr tand below.
+  VC n-s When submitting a verification approval request, it is not necessary to immediately request issuance of
+  is rbo VCUs. VCUs may be issued upon request to the Verra Registry after verification is approved.
+Thihsttipssn:/o/vt ethrrea.courrgr/epnrtovgerarsmiosn/voefritfhied-ca Further details on the project review process are provided in this section.
+
+Registration and Issuance Process, v4.4  19
+                                                                                           4 Project Registration Process
+Diagram 6: Review of Project Registration and Verification Approval Request
+
+Thi4Phs.rt3otips.j1esnc:/ot/WrPv1VvteRaer)hevotlerihiergdreVvarrreaweeaaieut,rmi.cfnorwVoianunderrd/eunrPrgvirrrlonreat/eeotapgsrinnfkcsirifaoeteoieacntssvgiarsdfeatesitrehiaaorrrseapsenmiptvvishoblaiseieeoenld/widddvpayoareomosttffrihjeoiepttfahtnhcaihtee/triotstvdphpdeor-reoVrofocilpfptojCaiehocrgrcoeaSnybtjt.eepidoWonPcroonntthrcj(r-eobeuoescormgrgtetdaiirestrynasentn,romvtadacsifouetaiitnpwtodorhydnd:ooiainn/orcsvgigrzsucsetevmhsdesaes-rreripeefpcinrpcrorooatarn.ejigtefsisToocerernathdmnpmertdaaeruont-qciprdcuviuoneeeerng)stwreataetinhtininshltedst(atp/ohpv.rrepoeirjtVreossCcvitSeodn. is at:
+
+                   authorized representative) and provides a project review report detailing the findings as
+                   part of the first review round.
+
+              2) The validation/verification body shall address the findings in the project review report.
+
+Registration and Issuance Process, v4.4  20
+                                                                                               4 Project Registration Process
+
+    4.3.2 The validation/verification body shall respond to the findings in the project review report, as
+              follows:
+              1) Undertake, or ensure that the project proponent undertakes, and validate or verify (as
+                   appropriate) revisions to the project documents where necessary,
+
+        at: 2) Provide a written response to each finding, and
+        is 3) Submit all revised documents to Verra including track change and clean versions.
+  ion 4.3.3 Where the findings are addressed to the satisfaction of Verra, Verra approves the request and
+        ers notifies the project proponent (or authorized representative) and validation/verification body.
+  nt v 4.3.4 Where the findings are not addressed to the satisfaction of Verra, Verra may raise another
+        urre /. review round to the validation verification body with the unresolved findings, up to three review
+        c ils rounds.
+        t. The -deta Note ­ For the purpose of determining adherence to deadlines with respect to methodology
+        n m validity and completion of validation and verification, the dates of the project documents
+        e ra submitted under the initial registration or verification approval request will be used (rather
+Thihsttipssn:/o/vt ethrrea.courrgr/epnrtovgerarsmiosn/voefritfhieisd-VcCarSboPnr-osgtaranmdadrdo/cvucms-prog than the dates of the revised documents).
+
+Registration and Issuance Process, v4.4  21
+                                                                                               4 Project Registration Process
+    Diagram 7: Review of Project Registration and Verification Approval Request
+
+Thihsttipssn:/o/vt ethrrea.courrgr/epnrtovgerarsmiosn/voefritfhieisd-VcCarSboPnr-osgtaranmdadrdo/cvucms-epnrot.gTrahme -cduertraeinlst/v. ersion is at:
+
+Registration and Issuance Process, v4.4  22
+                                                                                               4 Project Registration Process
+
+    Project Request Denial Process
+    4.3.5 Verra may deny a project request at any point during the review process under the following:
+
+              1) Where documentation is deemed incomplete, of unsatisfactory quality, or where immediate
+                   non-conformances with the VCS Program rules are identified.
+
+        is at: 2) The project proponent or validation/verification body significantly alters the project
+           n documents outside the scope of the findings issued by Verra.
+
+        rsio 3) Where findings are not satisfactorily closed after three rounds of review.
+        t ve 4) No response is received from the validation/verification body within 60 days from the date
+
+           ren the project review report was issued.
+  cur ils/. 4.3.6 Where a request is denied:
+
+        The deta 1) Verra notifies the project proponent and uploads the project review report (if applicable)
+           nt. m- and a letter to the Verra Registry stating the reason that the request was denied.
+
+        me gra 2) Verra changes the registry status to the relevant denial status (e.g., registration request
+           ocu pro denied).
+
+        am d /vcs- 3) A new request may be submitted after 90 days from the date of denial.
+  ogr ard 4.3.7 To submit a new request the project proponent or its authorized representative must:
+
+        S Pr tand 1) Email registry@verra.org, stating the project is submitting a new request following a denial.
+        C -s 2) Submit all relevant project documents to the Verra Registry as set out in Sections 4.2.3,
+
+           is V on 4.2.5, and 4.2.5 and a letter to detailing the steps taken to address the reasons for denial.
+  f th -carb 4.3.8 Project proponents submitting a new registration request shall:
+
+        ion o ified 1) Pay the Project Registration Request Review Fee, which shall be paid before Verra
+           rs er processes the new request.
+
+        nt ve ms/v 2) Submit the new request no later than one year from the date the request was denied.
+           re ra Where the new request is not submitted within one year of denial, the project is rejected,
+           cur rog and the status is changed to rejected by administrator.
+
+  the rg/p 4.3.9 Where the findings are not addressed to the satisfaction of Verra after two denials at
+       ot a.o registration request, the project is rejected and the status is changed to rejected by
+
+    is n err administrator.
+ his s://v 4.3.10 Project proponents shall submit a new crediting period renewal request within one year of
+T http denial, or the status is changed to inactive. Where the findings are not addressed to the
+
+              satisfaction of Verra after two denials of a crediting period renewal request, the project status
+              is changed to inactive.
+
+Registration and Issuance Process, v4.4  23
+                                         4 Project Registration Process
+
+4.4 Step 4: Project Registration and Initial VCU Issuance
+
+The project is registered and the VCUs are issued on the Verra Registry as set out in Diagram 8.
+
+    Diagram 8: Project Registration and Initial VCU Issuance                                                                                                                                                                                                                                                                                                                                                   at:
+
+Thi44hs..t44tips..21sn:/o/pWWvtrhheotheeprrrroeeean.cettohhnueertrgsppr/ehrrpooanrjjleetol ccuvgttperiilssaorsappmdirroeesassn/leevlnnodettofreeciddtfuhieffmioosdrre-nrrVceetCasggiirfssSobttrrlolaaPonttwiiroo-oinsnnggtwaartnaihntdhmedovarueedrtrqdiovfui/eccivrraueicftmmiisco-aenepntianrtospotn.pignarTropSahvpeamerclo,t-vcitdoahunlee,rstrtpahe4reio.nl2sjpte./3rcv.otaejepnrcrsdotip4oo.n2n.e7ins.t
+
+shall upload all documents following the requirements in Sections 4.2.5 and 4.2.7.
+
+4.4.3 The project's geodetic co-ordinates shall be entered onto the project record on the Verra
+          Registry. The Verra Registry checks that there are no other projects within a five-kilometer
+
+Registration and Issuance Process, v4.4                                                                 24
+                                         4 Project Registration Process
+
+radius. Where there are projects within a five-kilometer radius. Verra confirms that the project
+
+being presented for registration is unique and not one of the overlapping projects, noting that it
+
+is possible to have two projects operated by the same project proponent at the same location
+
+(they must be different activities described in separate project descriptions, with separate
+
+t: validation and verification). Verra may do this on its own if sufficient information is available or
+a by contacting the validation/verification body of the project being presented for registration
+is who shall confirm that it is unique and not one of the overlapping projects. Where Verra is
+ion unable to confirm uniqueness of the project, the project cannot be registered.
+curreinlst/v. ers 4.4.4
+VCUs can be issued incrementally from a verification report (i.e., when the project proponent or
+its authorized representative requests VCU issuance, it can request issuance of part of the
+verification report volume and request issuance of the remaining volume at a later date). The
+following shall apply:
+The deta 1) The entity requesting VCU issuance shall instruct the Verra Registry that it is requesting
+   nt. m- VCU issuance for only part of the verification report volume and shall specify the volume for
+   me gra which it is requesting VCU issuance.
+ocu -pro 2) The VCU issuance levy and any fees charged by Verra are payable on the volume of VCUs
+   d cs which are issued, not the total verification report volume.
+gram rd/v 3) Verra does not specify thresholds or timeframes on incremental VCU issuance (e.g., the
+   ro da total number of incremental VCU issuances that can be made from a verification report and
+   S P tan the elapsed time between first and last VCU issuance from the verification report). Verra is
+   VC n-s entitled to apply such thresholds and timeframes as it deems necessary.
+is rbo 4) The Verra Registry displays the total verification report volume, the volume of VCUs issued
+   f th -ca to date and the history of VCU issuances with respect to the verification report.
+ion o ified 5) The entity requesting VCU issuance does not have to request VCU issuance of the total
+   rs er verification report volume (i.e., it can choose to only request VCU issuance for a part of the
+   ve s/v verification report volume and never request issuance of the remaining verification report
+   ent am volume).
+urr ogr 6) VCUs are not subject to any discounting with respect to their fungibility. VCU owners,
+   e c /pr programs or other climate change efforts that accept VCUs may apply a discount at their
+
+t th .org own discretion.
+ no rra 4.4.5 Where the project has canceled GHG credits issued under an approved GHG program and is
+ is is ://vehaving them issued as VCUs (as set out in Section 4.2.18), the project reference number under
+h s the approved GHG program shall be noted on the project record on the Verra Registry.
+T http 4.4.6 The VCU issuance levy shall be collected by Verra before VCUs are deposited into an account.
+
+4.4.7 The VCS Program allows VCUs to be labeled to designate that the VCS project has met the
+          requirements of another certification standard (certification labels), or that the VCUs are
+          eligible or approved for use in a national, sectoral, or investor-specific market (market labels).
+
+Registration and Issuance Process, v4.4                                                                    25
+                                                                                               4 Project Registration Process
+
+              The Verra website provides the list of current VCU labels and the procedure for attaining such
+              VCU labels.
+    4.4.8 To have VCUs labeled, project proponents shall submit documentation to the Verra Registry
+
+ThiDT4hshi.ta5teipgsrersan:mm/o/tvV1S2davyti9Ce))tynpetemStebhbraFoFa.peeorvegoonfalnieoinrrytss.c5hwtoaasptnaue:ru.eragamcraPgorteetriiniato/eeornhopctrdngnikerrefraieifrtovtocoolhte,cavgrfdaelrstaewVirtierfoiabtCirchaccinesfmUtiaicpolicl,sVtoharrasitoaobsnhtC/Vjnliuevee,oCblocoeUpn,UrstrfeetrsehhilriqItaftnqsieahauiobvseusndiireueresdedsesslnasq.a-amtVtocuLrtanetdiraCiasror-nc.ebsefrSittpembeeshreledoseePfcqonntmiiuhfrrnti-oesecaitsthsgyifrtrateoeaereblrqaqdlneiastuum.hdbasiiTreruepaeheladplmrmeainldonibeecec/ccenoedvnluulvttcosrsiedmens.freftce-VorelpaodCurnnardUtpoyhctese.teglirattTvihorlobeaahedeltbymhelre,m-eusld-clpafepedoeuysrpercorceaitjtrofnehaneinccdedinstligsneirtasueg/nstv.iqtdooeisuarnfeeirnrmtstecVhoimeuCoeulSeanttliannpinbitdlseselat:
+
+Registration and Issuance Process, v4.4  26
+                                         4 Project Registration Process
+
+Diagram 9: Periodic VCU Issuance
+
+Thihsttipssn:/o/vt ethrrea.courrgr/epnrtovgerarsmiosn/voefritfhieisd-VcCarSboPnr-osgtaranmdadrdo/cvucms-epnrot.gTrahme -cduertraeinlst/v. ersion is at:
+
+    4.5.1 All and any periodic VCU issuances shall be initiated by the project proponent stated on the
+              project record in the Verra Registry or its authorized representative. Where another entity wants
+              to become the project proponent (and therefore assume the roles and responsibilities of a
+              project proponent with respect to the Verra Registry), the process set out in Section 7 shall be
+
+Registration and Issuance Process, v4.4  27
+                                                                4 Project Registration Process
+
+followed. The new project proponent on the project record in the Verra Registry or its authorized
+representative can then initiate VCU issuance.
+
+4.6 Step 6: VCU Retirements and Cancelations
+
+at: The Verra Registry displays the status of every VCU issued under the VCS Program. VCUs may have a
+is status of active, retired or canceled. Note that VCU retirement and cancelation have specific meanings,
+ion as set out in the VCS Program Definitions.
+vers The process for retiring active VCUs is set out in Sections 4.6.1 - 4.6.4 below. The process for canceling
+nt active VCUs is set out in Sections 4.6.5 - 4.6.8 below.
+curreils/. 4.6.1 VCUs may be retired as set out in Diagram 10 below.
+he eta Diagram 10: VCU Retirement
+
+        umenot.gTram-d Account holder or authorized
+    oc pr representative executes retirement in
+
+             d s- Verra Registry
+VCSoPnr-osgtaranmdard/vc Verra Registry records VCU retirement
+ion ofritfhieisd-carb 4.6.2 All and any VCU retirements shall be initiated by the registry account holder or its authorized
+      ers /ve representative.
+nt v ms 4.6.3 The registry account holder or its authorized representative may execute a VCU retirement
+      rre gra through its Verra Registry account. The Verra Registry records the details of all VCU retirements.
+is not ethrrea.courg/pro 4.6.4
+VCUs can be retired incrementally from a registry accountholder's VCU holdings (i.e., when the
+VCU holder or its authorized representative requests VCU retirement, it can request retirement
+of part of the VCU holdings and request retirement of any or all of the remaining holdings at a
+later date). In such cases, the following shall apply:
+ his s://v1) The registry account holder or its authorized representative shall designate the specific set
+T http of VCUs for retirement through its Verra Registry account.
+
+2) Verra does not specify thresholds or timeframes on incremental VCU retirement (e.g., the
+     total number of incremental VCU retirements that can be made from a registry
+     accountholder's VCU holdings and the elapsed time between first and last VCU retirement
+
+Registration and Issuance Process, v4.4                                                                                      28
+                                                                4 Project Registration Process
+
+from those holdings). Verra is entitled to apply such thresholds and timeframes as it deems
+necessary.
+
+4.6.5 VCUs may be canceled as set out in Diagram 11 below.
+
+t: Diagram 11: VCU Cancelation
+e curr/epnrtovgerarsmiosn/voefritfhieisd-VcCarSboPnr-osgtaranmdadrdo/cvucms-epnrot.gTrahme -cduertraeinlst/v. ersion is a 4.6.6
+The registry account holder, its authorized representative, the other GHG program in which the
+registry account holder is participating or Verra may initiate a VCU cancelation. Note that the
+initiator and recipient of a VCU cancelation request depends on the specific circumstances of
+the cancelation (e.g., where VCUs are being converted into another form of GHG credit, the
+cancelation request may be submitted to Verra by the other GHG program in which the registry
+account holder is participating).
+t th .org 4.6.7 The registry account holder or its authorized representative may be asked to confirm the details
+    no rra of the VCU cancelation request.
+  is is ://ve 4.6.8 VCUs are canceled in the Verra Registry and the Verra Registry records the details of all VCU
+Thhttps cancelations.
+
+4.7 Step 7: Project Maintenance
+
+Project details may be updated as set out in Diagram 12 below.
+
+Registration and Issuance Process, v4.4                                                                            29
+                                         4 Project Registration Process
+
+Diagram 12: Project Maintenance
+
+         Project proponent notifies Verra of change
+
+               t: to project details
+        nt version is a Verra updates record on the Verra
+
+                   re Registry
+  t. The -cduertails/. 4.7.1 Where a project fails to submit a verification report to the Verra Registry within five years of its
+
+        en am last verification, the following applies:
+        cum rogr 1) Verra sends written communication to the project proponent to request evidence that the
+
+           do -p project is still active despite not having verified.
+        am /vcs 2) The project proponent shall submit such evidence within one year of receiving the written
+
+           ogr ard communication from Verra.
+           S Pr tand a) Evidence may take the form of a letter submitted by the project proponent to Verra and
+
+              C -s should explain in detail the status of the project, including an explanation as to why the
+              V on project has not verified and, where relevant, why it should still be considered active.
+           f this carb b) The letter may be accompanied by any relevant documentation of activity
+              o d- implementation (e.g., photographic evidence, monitoring reports, contract for
+              ion rifie verification in the near future).
+        vers /ve 3) Where a letter is received, it shall be posted publicly to the Verra Registry and the project
+           nt ms status in the registry shall be changed to late to verify.
+        urre gra 4) Where no letter is received, the project status shall still be changed to late to verify, but will
+           e c /pro not benefit from an explanation being available to potential buyers and other stakeholders.
+          th rg The project proponent is encouraged to submit an updated letter annually.
+      not rra.o Note ­ Where a project has not verified because it has transitioned to another GHG program
+  is is ://ve(e.g., integrated into a government program), its project status shall be changed to project
+
+              transferred to other GHG program instead of late to verify.
+
+Thhttps Note ­ Where an AFOLU project fails to submit a verification report to the Verra Registry within
+
+              five, ten and fifteen years of its last verification, buffer credits are put on hold or canceled (and
+              the project status changed to inactive), as appropriate, per the requirements set out in Section
+              5.3.6, below.
+
+    4.7.2 Where the project proponent wishes to withdraw the project from the VCS Program (e.g., in
+
+Registration and Issuance Process, v4.4  30
+                                                                                               4 Project Registration Process
+
+              order to transfer the project to another GHG program), the following applies:
+              1) The project proponent shall submit a letter (in English) on its organization letterhead, to the
+
+                   Verra Registry, requesting that the project be withdrawn. Such letter shall include the
+                   project name, project ID, the reason for the withdrawal request and the signatures and
+
+           at: contact information of all project proponents.
+        is 2) Verra reviews the withdrawal request and may request additional information prior to
+
+           ion approving the request.
+        vers 3) Upon approval, Verra updates the status of the project to withdrawn. The project
+
+           nt information shall remain publicly available on the Verra Registry, but the project will not be
+           urre /. able to issue VCUs.
+        e c tails 4) In the case of an AFOLU project where VCUs have been previously issued, the following
+           Th e applies:
+           nt. m-d a) The project shall not be eligible for any release of buffer credits.
+           ume ogra b) Where Verra confirms that the project has registered with another GHG program, all
+
+              oc -pr buffer credits associated with the project shall be canceled.
+           am d /vcs c) Where Verra is unable to confirm that the project has registered with another GHG
+
+              gr rd program, buffer credits shall be canceled over time in accordance with the rules set out
+              ro da in Section 5.3.6 below.
+        S P stan 5) Withdrawn projects may rejoin the VCS Program where the project proponent submits a
+           VC on- letter to the Verra Registry requesting same. Such letter shall include the information
+           is rb specified in Section 4.7.1(1) above. Verra reviews the project to determine whether it is
+           f th -ca eligible to rejoin the VCS Program and notifies the project proponent of the outcome of the
+           ion o ified review. Where the project is eligible to rejoin the VCS Program, Verra updates the status of
+           s r the project accordingly. Where the project is not eligible to rejoin the VCS Program, the
+Thihsttipssn:/o/vt ethrrea.courrgr/epnrtovgerarms/ve project shall remain withdrawn.
+
+Registration and Issuance Process, v4.4  31
+                                                4 AFOLU Pooled Buffer Account
+
+5 AFOLU POOLED BUFFER ACCOUNT
+
+The VCS Program addresses the non-permanence risk associated with AFOLU project activities by
+
+requiring projects to set aside non-tradable buffer credits to cover unforeseen losses in carbon stocks.
+
+at: The buffer credits from all projects are held in a single AFOLU pooled buffer account, which can be
+is drawn upon in the event of a reversal in carbon stocks in any individual project.
+ersion 5.1 Assignment of Buffer Credits at First Request for Issuance
+ent v At first VCU issuance, buffer credits shall be deposited into the AFOLU pooled buffer account, in
+urr /. accordance with the procedures below.
+docums-epnrot.gTrahme -cdetails 5.1.1
+The number of credits to be deposited in the AFOLU pooled buffer account is determined by the
+non-permanence risk report assessed by the validation/verification body(s), in accordance with
+the requirements set out in the VCS Standard. The report establishes the non-permanence risk
+rating, and this percentage is applied to the net change in the project's carbon stocks (stated in
+the verification report) to determine the number of credits to be deposited in the AFOLU pooled
+buffer account.
+gram rd/vc 5.1.2 Buffer credits are not issued a VCU serial number, nor are they considered to be VCUs. They are
+      ro da not subject to the VCU issuance levy.
+VCS Pn-stan 5.2 Assignment and Release of Buffer Credits at Subsequent Approved
+      this arbo Verification Requests
+ion of ified-c A portion of a project's buffer credits may be released to incentivize continued verification, risk
+r mitigation, and recognize that certain project risks decrease over time.
+is not thrrea.courrgr/epnrtovgerarsms/ve 5.2.1
+Projects are eligible for buffer credit releases when the non-permanence risk rating in the latest
+approved verification report remains the same or decreases from the previous verification
+report. Buffer credit releases occur after the subsequent verification request is approved by
+Verra. Project proponents may request a buffer release within 3 months after Verra approves a
+verification request. The request must be sent via an email to registry@verra.org. Buffer credits
+released from the AFOLU pooled buffer account will be issued as VCUs into the designated
+Verra Registry account upon payment of the VCU issuance levy.
+ his ://ve 5.2.2 The first buffer credit release shall be no sooner than five years after the first verification report
+T https was issued and approved by the registry for VCU issuance. Subsequent buffer credit releases
+shall not occur more than once every five years, even if verification reports are issued more
+
+frequently.
+
+5.2.3 Where the five year interval set out in Section 5.2.2 has passed, and where the project's non-
+          permanence risk rating of the latest approved verification period remains the same as the risk
+
+Registration and Issuance Process, v4.4                                                                             32
+                                                                                           4 AFOLU Pooled Buffer Account
+
+              rating of the previous approved verification report, a 15 percent "time release" of buffer credits
+              is applied. This 15 percent time release shall be applied to the total number of buffer credits
+              associated with the project to-date (i.e., the number of buffer credits previously held in the
+              AFOLU pooled buffer account plus the number of buffer credits newly deposited).
+
+  at: 5.2.4 Where the project's non-permanence risk rating of the latest approved verification report is
+        is lower than the non-permanence risk rating at the previous verification report, the new risk
+        ion rating retroactively applies to all reductions and removals formerly verified.
+        ers Previously deposited buffer credits that exceed the updated withholding percentage will be
+        t v released and issued as VCUs where the five-year interval set out in Section 5.2.2 has passed.
+        urren /. A 15 percent "time release" shall also be applied to the total number of buffer credits
+        c ils associated with the project to-date (i.e., the number of buffer credits previously held in the
+        he eta AFOLU pooled buffer account plus the number of buffer credits newly deposited).
+
+  nt. T m-d 5.2.5 Projects are not eligible for buffer credit releases when the non-permanence risk rating of the
+        me gra latest approved verification report is higher than the non-permanence risk rating of the
+        cu ro previous approved verification report.
+
+  ram ddo/vcs-p 5.3 Cancelation and Holding of Buffer Credits
+  Prog ndar Buffer credits are canceled from the AFOLU pooled buffer account where there are negative reductions
+  S sta or removals associated with the project (as compared to the baseline), and are put on hold in certain
+  VC n- situations, as outlined in this section.
+  this arbo 5.3.1 Where a loss event occurs (see the VCS Program Definitions for the definition of a loss event),
+
+        of d-c the project proponent
+        ion ifie shall:
+        ers /ver 1) Notify Verra via email within 30 days of discovering the loss event, and
+        nt v ms 2) Where VCUs have been previously issued, prepare and submit to registry@verra.org a loss
+
+           rre gra event report within two years of discovering the loss event. Projects that do not submit a
+           e cu /pro loss event report within two years of the loss event's discovery date are not eligible to issue
+          th rg further VCUs until the report is submitted. Verra puts AFOLU pooled buffer account credits
+       ot .o on hold, equivalent to the estimated loss in the loss event report.
+  is n erra 5.3.2 When a loss event is detected during verification, the project proponent shall submit a loss
+  is ://vevent report before verification approval is requested.
+Thhttps 5.3.3 The loss event report shall:
+
+              1) Be prepared using the VCS Loss Event Report Template.
+
+Registration and Issuance Process, v4.4  33
+                                                                                           4 AFOLU Pooled Buffer Account
+
+              2) Include a conservative estimate of the loss of previously verified reductions and removals
+                   due to losses in carbon stocks from the project. The estimate shall be based on monitoring
+                   of the full area affected by the loss event.
+
+              3) Be accompanied by a complete loss event representation signed by the project proponent.
+
+           t: The template for the loss event representation is available on the Verra website.
+        is a 4) Be verified by a validation/verification body. The verification may be completed as part of
+
+           ion the subsequent verification.
+  ers 5.3.4 The following applies with respect to the verification report submitted after a loss event:
+
+        ent v 1) Where the net GHG benefit of the project for the verification period is negative, a reversal
+           urr /. has occurred (see the VCS Program Definitions for definition of reversal) and the following
+           e c tails applies:
+           t. Th -de a) Where the total reversal is less than the number of credits put on hold after the
+              n m submission of the loss event report, Verra cancels buffer credits equivalent to the
+              me gra reversal. Any remaining buffer credits shall be released from their on-hold status
+              cu ro (though remain in the AFOLU pooled buffer account).
+           do cs-p b) Where the reversal is greater than the number of credits put on hold after the
+              ram d/v submission of the loss event report, the full amount of buffer credits put on hold with
+              og ar respect to the submission of the loss event report shall be canceled, and additional
+              S Pr tand buffer credits from the AFOLU pooled buffer account shall be canceled to fully account
+              C -s for the reversal.
+
+        is V bon 2) Where the net GHG benefit for the verification period is positive (i.e., all losses have been
+           f th car made up over the verification period taking into account project GHG emissions, removals
+           o d- and leakage), a reversal has not occurred and buffer credits put on hold after the
+           ion ifie submission of the loss event report shall be released from their on-hold status (but shall
+           ers /ver remain in the AFOLU pooled buffer account).
+
+  nt v ms 5.3.5 The following applies with respect to the VCU issuance after a reversal:
+        urre ogra 1) Where the reversal is an unavoidable reversal (see the VCS Program Definitions for the
+           e c /pr definition of unavoidable reversal) the following applies:
+         t th .org a) GHG credits shall be deposited in the AFOLU pooled buffer account in an amount
+
+      no rra equivalent to the additional number of buffer credits canceled after the reversal, above
+  is is ://ve what has been previously contributed by the project. For example, if the project
+ h s previously contributed 100 buffer credits and 150 credits were canceled from the
+T http AFOLU pooled buffer account after a reversal, the project would deposit 50 buffer
+
+                        credits (to replenish the pool at large). Buffer credits deposited to replenish the pool
+                        after a reversal (50 in the example above) shall never be eligible for release back to the
+                        project.
+
+Registration and Issuance Process, v4.4  34
+                                                              4 AFOLU Pooled Buffer Account
+
+b) Where further GHG credits are available for VCU issuance after replenishing the AFOLU
+
+pooled buffer account, additional buffer credits shall be deposited in the AFOLU pooled
+
+buffer account in accordance with Section 5.2 (applying the non-permanence risk
+
+rating only to those remaining GHG credits eligible for VCU issuance).
+
+t: 2) Where the reversal is an avoidable reversal (see the VCS Program Definitions for the
+   is a definition of avoidable reversal), the following applies:
+ion a) GHG credits shall be deposited in the AFOLU pooled buffer account in an amount
+   rs equivalent to the full reversal. No further VCUs will be issued to the project or any other
+   t ve VCS project solely with the same project proponent, or combination of project
+   en proponents, until the deficit is remedied.
+curr ils/. b) Where further GHG credits are available for VCU issuance after replenishing the AFOLU
+   he ta pooled buffer account, additional buffer credits shall be deposited in the AFOLU pooled
+   t. T -de buffer account in accordance with Section 5.2 (applying the non-permanence risk
+   n m rating only to those remaining GHG credits available for VCU issuance).
+ume ogra 5.3.6 Where a project fails to submit a verification report to the Verra Registry within five years of its
+      oc -pr last verification 50 percent of the buffer credits associated with the project shall be put on
+      d cs hold.
+ogramard/v 5.3.7 Where a project fails to submit a verification report within ten years, all its remaining buffer
+      Pr nd credits shall be put on hold.
+ion of itfhieisd-VcCarSbon-sta 5.3.8
+Where no subsequent verification report has been submitted within a period of 15 years, and
+the project crediting period has not yet expired, buffer credits are canceled from the AFOLU
+pooled buffer account in an amount equivalent to the total number of VCUs issued to the
+project (including buffer credits put on hold) and the project's status will be changed to
+inactive.
+ers /ver 5.3.9 Inactive projects shall apply the latest version of the applicable methodology and VCS Program
+      nt v ms rules and reassess the baseline when reactivating.
+rre gra 5.3.10 Where a project has not verified because it has transitioned to another GHG program (e.g.,
+      e cu /pro integrated into a government program), its status will be changed to project transferred to other
+      th rg GHG program instead of inactive, and the remaining balance of buffer credits is canceled.
+  not rra.o 5.3.11 Where buffer credits are put on hold because a project does not submit a verification report
+  is is ://vewithin five years of the previous verification, the project may re-claim buffer credits. A new
+ h s verification report shall be submitted prior to the expiration of the project crediting period.
+T http Verra reassigns buffer credits that have been put on hold in accordance with the procedure set
+out in Section 5.1.1 above. The remaining balance of buffer credits associated with a project
+
+will be canceled at the end of the project crediting period.
+
+5.3.12 Where a project has a crediting period of less than 40 years, and an avoidable reversal (see the
+          VCS Program Definitions for the definition of avoidable reversal) occurs within 40 years of the
+
+Registration and Issuance Process, v4.4                                                                            35
+                                                                                           4 AFOLU Pooled Buffer Account
+
+              project's start date, the following applies:
+               1) The project proponent shall submit a loss event report to the Verra Registry within two
+
+                     years of reversal detection. The loss event report shall meet the requirements of Section
+
+Thihsttipssn:/o/vt2et)hrretp5aTahhmr..3ecoeooj.ued3prurceg.rnrtof/etisjpceenoirtcqltoetiusvlgpiyvrerreawoarmlpisemtohneiontdstenhit/enovedtoets.hsfraheitmfahifeluelislddlpe-rrVecopvCajoeesrcSribstt aopGPlrn.HorN-Gopsoogctnafrrueeanrndmtdthit,aseodrrirndoVcC/tcovhUmuecsmbsAwi-FnepiOlalnrtLboitoU.egnTpirsooahsfomuepleer-cddodujbteeoructrtfaaefpneinlryrsotao/pv.ctohceneorerusnnVitotCs,inSnuiansntilat:
+
+Registration and Issuance Process, v4.4  36
+                                                                  6 Quality Control of Registered Projects
+
+6 QUALITY CONTROL OF REGISTERED
+
+PROJECTS ion is at: 6.1 Process
+
+ers 6.1.1 Verra may, at its discretion, review registered projects and issued VCUs where it has concerns
+      t v about adherence of the project to the VCS Program rules and the applied methodology. A
+      ren review may be triggered by any of the following:
+      cur ils/. 1) A validation/verification body performing a verification of a registered project identifies an
+         he eta error or quality issue in a previous validation or verification.
+
+      nt. T m-d 2) A project proponent identifies an error or quality issue after the registration or issuance of
+         me gra the project.
+
+      ocu -pro 3) A stakeholder has concerns about a registered project4.
+      am d /vcs 4) Verra itself identifies an error or quality issue, as part of routine operations.
+ogr ard 6.1.2 Where a review is triggered, Verra notifies the project proponent (or its authorized
+      Pr nd representative) and the relevant validation/verification body of the review and may suspend
+      S sta further VCU issuance while the review is performed.
+ion of itfhieisd-VcCarbon- 6.1.3
+Where non-conformances are identified during the review, the validation/verification body shall
+provide a written response to findings in a project review report (e.g., corrective action requests
+or clarification requests) issued by Verra. Verra also suspends further VCU issuance, where it
+has not already done so.
+ers /ver Note ­ Where the relevant validation/verification body is unable to respond due to reasons
+t v s such as a cease of operations or accreditation, Verra may solicit a response to the findings
+ren ram from alternative entities such as the project proponent or another validation/verification body.
+Thihsttipssn:/o/vt ethrrea.courrg/prog 6.1.4
+The follow-up actions of the validation/verification body and/or project proponent shall depend
+on whether the relevant validation or verification was completed before, on or after 8 April
+2014, and shall be as set out in Tables 3 and 4 below. In all cases, the relevant
+validation/verification body shall undertake a root cause analysis to identify why such quality
+issues occurred.
+
+4 Concerns may be raised, in confidence, with Verra at any time.
+
+Registration and Issuance Process, v4.4                           37
+                                         6 Quality Control of Registered Projects
+
+Table 3: Actions for Validations and Verifications Completed Before 8 April 2014
+
+Issues found, but no excess VCU          Issues found, with excess VCU
+
+issuance and no risk of future excess issuance and/or risk of future excess
+
+issuance                                 issuance
+is at: Project
+
+qualifies
+
+ion under
+t vers program
+1) Validation/verification body shall    1) Validation/verification body shall
+     conduct a root cause analysis            conduct a root cause analysis
+
+2) Verra lifts suspension on VCU issuance 2) Validation/verification body or project
+                                                                 proponent, as appropriate, shall revise
+                                                                 project documents
+                                         urren /. 3) Verra lifts suspension on VCU
+                                            c ils issuance, upon acceptance of project
+                                            e ta document revisions
+                                         t. Th -de 4) Verra uploads revised project
+                                            n m documents to the Verra Registry
+         cume rogra Project
+1) Validation/verification body shallo -p does not1) Validation/verification body shall
+     conduct a root cause analysisd cs qualifyconduct a root cause analysis
+         am /v under
+2) No further VCU issuance is permittedThihsttipssn:/o/vt ethrrea.courrgr/epnrtovgerarsmiosn/voefritfhieisd-VcCarSboPnr-osgtar ndard program2) No further VCU issuance is permitted
+
+Registration and Issuance Process, v4.4                                                                   38
+                                                         6 Quality Control of Registered Projects
+
+Table 4: Actions for Validations and Verifications Completed on or After 8 April 2014
+
+Issues found, but no excess VCU                          Issues found, with excess VCU
+
+issuance and no risk of future excess issuance and/or risk of future excess
+
+issuance                                                 issuance
+is at: Project
+1) Validation/verification body shall                    1) Validation/verification body shall
+qualifiesconduct a root cause analysis                        conduct a root cause analysis
+
+ion under
+cumenrot.gTrahme -cduertraeinlst/v. ers program
+2) Validation/verification body or project 2) Where significant performance issues
+
+proponent, as appropriate, shall revise                  are found, and as appropriate,
+
+project documents                                        disciplinary action shall be taken
+
+3) Verra lifts suspension on VCU                         against the validation/verification body
+
+issuance, upon acceptance of project 3) Validation/verification body or project
+
+document revisions                                       proponent, as appropriate, shall revise
+
+4) Verra uploads revised project                         project documents
+
+documents to the Verra Registry                          4) Project proponent may need to
+
+                                                         compensate for excess issuance (see
+
+                                                         Section 6.1.5)
+                                              do s-p 5) Verra lifts suspension on VCU
+                                          am /vcissuance, upon acceptance of project
+                                         gr rd document revisions by Verra
+                                           Pro nda 6) Verra uploads revised project
+                                         S ta documents to the Verra Registry
+VC on-s Project
+this rb does not
+f -ca qualify
+o d under
+ersion/verifie program
+1) Validation/verification body shall                    1) Validation/verification body shall
+     conduct a root cause analysis                            conduct a root cause analysis
+
+2) Where significant performance issues 2) Where significant performance issues
+
+are found, and as appropriate,                           are found, and as appropriate,
+
+disciplinary action shall be taken                       disciplinary action shall be taken
+
+currenrtovgrams 3) No further VCU issuance is permitted
+against the validation/verification body                 against the validation/verification body
+
+                                                         3) Project proponent may need to
+                                                              compensate for excess issuance (see
+                                                              Section 6.1.5)
+the rg/p 4) No further VCU issuance is permitted
+  is is n:/o/vt erra.o 6.1.5 Where Verra determines that VCUs have been issued in excess of the correct amount, the
+Thhttps following applies:
+
+1) The project proponent is responsible for compensating for excess VCU issuance where
+
+Verra deems, acting reasonably, that there has been a material erroneous issuance of
+
+VCUs in respect of the project, as a result of the fraudulent conduct, negligence, intentional
+
+Registration and Issuance Process, v4.4                                                                              39
+                                                                                6 Quality Control of Registered Projects
+
+                   act, recklessness, misrepresentation or mistake of the project proponent, as set out further
+                   in the issuance representation.
+              2) Any compensation for excess VCU issuance shall be through the following, with Verra using
+                   reasonable efforts to work with the project proponent to ensure that any adverse impacts
+
+           t: on the project proponent are minimized to the extent possible.
+           is a a) Where the excess VCUs remain in the project proponent's Verra Registry account and it
+
+              ion can be demonstrated that they have not been used for offsetting purposes, immediate
+              rs cancelation of the VCUs.
+           nt ve b) Replacement of VCUs through immediate cancelation from subsequent issuances of
+              urre /. VCUs to the project.
+           c ils c) Purchase by the project proponent of an equivalent number of replacement VCUs, and
+              he eta cancelation of same, within 60 business days of receiving formal Verra notification of
+              t. T -d such required action.
+        men gram 3) Where the project proponent fails to compensate for excess VCU issuance, Verra may take
+           cu ro action against the project proponent, including applying sanctions with respect to its
+Thihsttipssn:/o/vt ethrrea.courrgr/epnrtovgerarsmiosn/voefritfhieisd-VcCarSboPnr-osgtaranmdadrdo/vcs-p registry account activities until such time as the excess issuance has been compensated.
+
+Registration and Issuance Process, v4.4  40
+                                         7 Further Information
+
+7 FURTHER INFORMATION
+
+at: 7.1 Communications Agreement
+t version is 7.1.1
+The purpose of the communications agreement is to designate an authorized representative.
+An authorized representative is appointed by the project proponent(s) or registry user(s) to act
+as an agent on their behalf with respect to a project and/or the registry user's account(s).
+Templates for communications agreements are available on the Verra website.
+urren /. 7.1.2 Where there are multiple project proponents, all project proponents shall execute the
+      c ils communications agreement, which shall be provided to the Verra Registry. The authorized
+      he eta representative may be a third party or appointed from among the project proponents.
+nt. T m-d 7.1.3 Where there is a single project proponent, a communications agreement may also be provided
+      me gra to designate a third party as an authorized representative.
+CS Pr-osgtaranmdadrdo/cvucs-pro 7.1.4
+To terminate an authorized representative, the project proponent (where there is one project
+proponent) or all project proponents (where there are multiple project proponents) shall provide
+a signed written notification of the termination to Verra. Thereafter, the project proponent(s)
+shall follow the requirements in Section 7.1.2 and 7.1.3 to sign a new communications
+agreement, where relevant. Such agreement supersedes any prior (terminated)
+communications agreement.
+is V rbon 7.1.5 A project shall only have one authorized representative at any given time, as appointed via the
+      f th ca communications agreement.
+  rsion oerified- 7.2 Release and Accession of Project Proponents
+  t ve s/v 7.2.1 Project proponents may join or leave a project subsequent to project listing or registration.
+
+        ren ram Such accession and release is handled via representations made by acceding entities and
+        ur og project proponents as follows:
+        the c g/pr 1) Where an entity wants to join a project, it and the existing project proponent(s) shall sign an
+         t .or accession representation, which shall be prepared using the VCS Deed of Accession
+      no rraTemplate and properly executed as a deed in accordance with applicable local laws and the
+  is is ://ve organization's own constitutional documents. Where more than one entity wants to join the
+ h s project, one accession representation shall be signed for each acceding entity.
+T http 2) Where a project proponent wants to leave a project (i.e., give up its rights and obligations in
+
+respect of the project), it, the remaining project proponent(s) and Verra shall sign a partial
+
+release representation, which shall be prepared using the VCS Deed of Partial Release
+
+Template and properly executed as a deed in accordance with applicable local laws and the
+
+organization's own constitutional documents. Where more than one project proponent
+
+Registration and Issuance Process, v4.4                                                               41
+                                          7 Further Information
+
+wants to be released from the project, one partial release representation shall be signed
+
+for each project proponent that is leaving. Note that a project shall always have at least
+
+one project proponent, so there shall always be at least one remaining registration
+
+representor (project proponent) that signs the partial release representation.
+
+t: 3) The accession and/or partial release representations shall be submitted to the Verra
+   is a Registry, which uploads the accession and/or partial release representations to the Verra
+   n Registry and updates the project record to reflect the change in project proponent.
+
+rsio 4) Once this process is complete, only the new project proponent or its authorized
+   t ve representative are permitted to initiate subsequent VCU issuance.
+
+urren /. Note ­ Where a project has one project proponent only and the project proponent wants to
+c ils leave the project in favor of another entity, this is handled by having the new entity accede to
+e ta the project via an accession representation and the original project proponent released from
+Th e the project via a release representation.
+ent. ram-d 7.3 Comments Received Outside of a Public Comment Period
+ocum prog 7.3.1 Stakeholders may submit comments outside of the 30-day public comment period. Such
+      d cs- comments shall be submitted to secretariat@verra.org.
+is VCSboPnr-osgtaranmdard/v 7.3.2
+Comments received outside of the 30-day public comment period are sent to the project
+proponent and the validation/verification body performing the next validation or verification,
+where known. Where the validation/verification body is not known, Verra sends the comments
+to the project proponent and the project proponent shall provide the comments and any
+actions taken or comments responses to the validation/verification body.
+rrent verarsmiosn/voefritfhied-car 7.3.3
+Project proponents shall address any comments received while validation or verification is
+ongoing (e.g., a comment received outside of the 30-day public comment period but while the
+validation is ongoing must be addressed as part of validation). Any comments received when a
+validation or verification is not ongoing shall be addressed at the subsequent validation or
+verification unless Verra determines a review of project documents is required, as described in
+Section 6 above.
+Thihsttipssn:/o/vt ethrrea.courg/prog 7.3.4 The comments are made public with the rest of the public documents at each request.
+
+Registration and Issuance Process, v4.4                                                                                          42
+Appendix 1 Eligibility conditions for Conversion of GHG Credits into VCUs
+
+ APPENDIX 1 ELIGIBILITY CONDITIONS FOR
+
+ CVCOUNSVERSION OF GHG CREDITS INTOersion is at: This appendix provides the eligibility conditions (effective dates) for credit conversions for credits
+
+  t v issued to projects and CPAs registered under another GHG program, with activities included within the
+  ren scope of the VCS Program (see VCS Standard, Section 2.1). These conditions remain unchanged from
+  cur ils/. the 5 February 2021 Errata and Clarifications (for GHG credits issued to standalone projects) and from
+  e ta the 19 April 2022 update to the VCS Program rules and requirements (for GHG credits issued to CPAs).
+  Th de These conditions are copied to this appendix for greater ease of use.
+  umenot.gram- GHG Credits issued to standalone projects, seeking conversion into VCUs
+  doc -pr GHG credits issued to projects registered under another GHG program, with activities that are included
+  am /vcs within the scope of the VCS Program are only eligible for conversion into VCUs where one of the
+  gr rd following is demonstrated:5
+  Pro nda A1.1 For GHG credits issued to a project that does not include afforestation and/or reforestation
+
+        S sta activities:
+        is VC bon- 1) The project shall have an original project crediting period start date on or after 1 January
+
+           th ar 2016 with another GHG program; or
+        ion of ified-c 2) Where the project has an original project crediting period start date from 1 January 2013 to
+
+           r 31 December 2015, the project shall have issued credits during the period 1 January 2016
+           ers /ve to 5 March 2021, or shall have a status of "issuance requested" on the relevant GHG
+           nt v ms program registry by 5 March 2021.
+  rre gra A1.2 For GHG credits issued to a project with afforestation and/or reforestation activities, the project
+        e cu /pro shall have been registered under another GHG program on or after 1 January 2013.6 Further,
+Thisttipssn:/o/vt ethrra.org 5 GHG credits are deemed to have met these timelines where Verra confirmed (in writing, to the project proponent or an
+  hauthorized representative) the credits' eligibility on or before 4 February 2021.
+
+     6 Note that for a project seeking to convert GHG credits to VCUs, a project with activities within the Agriculture, Forestry,
+     and Other Land Use (AFOLU) sector shall register under the VCS Program, and the project shall be required to deposit
+     credits into the AFOLU pooled buffer account in accordance with the AFOLU Non-Permanence Risk Tool. Such a project
+     shall first register under the VCS Program before any GHG credits may be converted into VCUs, given the risk of non-
+     permanence (see VCS Registration and Issuance Process, v4.3 Section 4.2.16(5)).
+
+Registration and Issuance Process, v4.4  43
+Appendix 1 Eligibility conditions for Conversion of GHG Credits into VCUs
+
+the following applies with respect to vintages:7
+
+A3.1 For GHG credits issued to a project that does not include afforestation and/or reforestation
+
+activities, only GHG credits with vintages beginning on or after 1 January 2016 are eligible for
+
+conversion into VCUs.
+ion is at: A3.1
+For GHG credits issued to a project with afforestation and/or reforestation activities, only GHG
+credits with vintages beginning on or after 1 January 2013 are eligible for conversion into
+VCUs.
+nt vers GHG Credits issued to CDM CPAs, seeking conversion into VCUs
+urre /. GHG credits issued to CDM CPAs registered under another GHG program, with activities that are
+e c tails included within the scope of the VCS Program are only eligible for conversion into VCUs where one of
+Th de the following is demonstrated:8
+ent. am- A1.5 For GHG credits issued to a CDM CPA that does not include afforestation and/or reforestation
+
+      m gr activities:
+      docu s-pro 1) The CPA shall be part of a Program of Activities (PoA) with an original program crediting
+
+         am /vc period start date on or after 1 January 2016; or
+      ogr ard 2) Where the CPA is part of a Program of Activities (PoA) with an original program crediting
+
+         Pr nd period start date from 1 January 2013 to 31 December 2015 and where the CPA has an
+         CS -sta original crediting period start date from 1 January 2013 to 31 December 2015, the CPA
+         V on shall have issued credits during the period 1 January 2016 to 5 March 2021, or shall have
+         this rb a status of "issuance requested" by 5 March 2021; or
+      of d-ca 3) Where the CPA is part of a PoA with an original program crediting period start date from 1
+         ion ifie January 2013 to 31 December 2015 and where the CPA has an original crediting period
+         ers /ver start date on or after 1 January 2016, no prior credit issuance is required.
+nt v ms A1.6 For GHG credits issued to a CPA with afforestation and/or reforestation activities, the CPA shall
+      rre gra be part of a PoA that was registered on or after 1 January 2013.
+e cu /pro Further, the following applies with respect to vintages:9
+Thisttipssn:/o/vt ethrra.org 7 Similarly, GHG credits are deemed to have met these timelines where Verra confirmed (in writing, to the project
+  hproponent or an authorized representative) the credits' eligibility on or before 4 February 2021.
+
+8 GHG credits are deemed to have met these timelines where Verra confirmed (in writing, to the project proponent or an
+authorized representative) the credits' eligibility on or before 4 February 2021.
+
+9 Similarly, GHG credits are deemed to have met these timelines where Verra confirmed (in writing, to the project proponent
+or an authorized representative) the credits' eligibility on or before 4 February 2021.
+
+Registration and Issuance Process, v4.4                                                                                                         44
+      Appendix 1 Eligibility conditions for Conversion of GHG Credits into VCUs
+
+A1.7  For GHG credits issued to a CPA that does not include afforestation and/or reforestation
+      activities, only GHG credits with vintages beginning on or after 1 January 2016 are eligible for
+      conversion into VCUs.
+
+    A1.8 For GHG credits issued to a CPA with afforestation and/or reforestation activities, only GHG                                                 is  at:
+              credits with vintages beginning on or after 1 January 2013 are eligible for conversion into
+
+Thihsttipssn:/o/VvtCetUhrsre.a.courrgr/epnrtovgerarsmiosn/voefritfhieisd-VcCarSboPnr-osgtaranmdadrdo/cvucms-epnrot.gTrahme -cduertraeinlst/v. ersion
+
+Registration and Issuance Process, v4.4                                                                                                               45
+                                                          Appendix 2 Document History
+
+APPENDIX 2 DOCUMENT HISTORY
+
+Version Date  Comment
+
+   t: v4.019 Sep 2019 Initial version released under VCS Version 4
+   n is a v4.1
+   urrent/v. ersio v4.220 Jan 2022Updated the pipeline listing process and public comment procedures to require
+Thihsttipssn:/o/vt ethrrea.courrgr/epnrtovgerarsmiosn/voefritfhieisd-VcCarSboPnr-osgtaranmdadrdo/cvucms-epnrot.gTrahme -cdetails v4.3all projects to list as under validation or update the project status to under
+              validation before beginning the public comment period (Section 3) (effective
+              from 20 July 2022 for all new pipeline listing requests).
+
+22 Jun 2022 Main updates (all effective on issue date, unless otherwise stated):
+
+                     1) New rules set out how proponents may submit requests to have VCUs
+                          labeled (Section 4.2.18).
+
+                     2) Incorporated clarification to eligibility conditions for the conversion of GHG
+                          credits issued to standalone projects into VCUs from Errata & Clarification to
+                          VCS Program Rules and Requirements, v4.0, published on 5 February 2021.
+                          See Appendix 1. This clarification is effective from 5 February 2021.
+
+                     3) Introduced clarification to eligibility conditions for the conversion of GHG
+                          credits issued to CDM CPAs into VCUs into Appendix 1.
+
+21 Dec 2022 Main updates (all effective on issue date, unless otherwise stated):
+
+                     1) Updated language in Sections 3 and 4 to simplify descriptions of Verra
+                           review processes.
+
+                     2) Updated language in Sections 3.1.15 and 3.1.18 to provide further
+                           information on how projects request reactivation from inactive status on the
+                           Verra Registry.
+
+                     3) Language added to Sections 3.1.17 and 3.1.19 to clarify Verra's process to
+                           reject project pipeline listings.
+
+                     4) Updated language in Section 4.1.2 to require ERRs in monitoring and
+                           verification reports to be broken down by vintages by calendar year,
+                           effective 1 April 2023.
+
+                     5) Updated language in Section 4.2.3 to clarify the requirement that project
+                           proponents shall submit: any supporting annexes necessary to read the
+                           application; any emission reduction and removal calculation spreadsheets;
+                           any AFOLU-specific documentation.
+
+                     6) Added language to Section 4.2.18 to clarify the requirement for no gaps in
+                           monitoring periods for AFOLU projects, grouped projects, and other projects
+                           with risk of reversal or loss. Effective immediately for grouped projects,
+                           AFOLU projects, and other projects with a risk of reversal or loss that have
+                           gaps in monitoring periods. These projects shall submit monitoring and
+
+              verification reports for such gaps before requesting verification approval for
+
+              any subsequent verification period. Projects which have already begun
+
+              verification activities for a previous gap in monitoring periods may proceed
+
+              with submitting such monitoring and verification reports, where confirmed
+
+Registration and Issuance Process, v4.4                                                       46
+                                                      Appendix 2 Document History
+
+           by Verra, in writing, to the project proponent or an authorized representative
+           on or before 21 December 2022.
+
+           7) Updated language in Section 4.2.20 to clarify requirement that VVBs must
+
+           be accredited for the relevant sectoral scope and provide information on
+
+                           how Verra checks that requirement.
+                     8) Added language to Sections 5.3.1. and 5.3.3 to clarify that in the event of a
+
+                           non-catastrophic reversal no further VCUs will be issued to the project or
+                           any other project the project proponent has registered on the VCS registry
+                           until the buffer is replenished.
+
+17 Jan 2023 Minor cross-referencing and formatting errors were corrected.
+   ersion is at: v4.3
+29 AugustThihsttipssn:/o/vt ethrrea.courrgr/epnrtovgerarsmiosn/voefritfhieisd-VcCarSboPnr-osgtaranmdadrdo/cvucms-epnrot.gTrahme -cduertraeinlst/v. v4.4Updates are listed with a unique ID# as referenced in the August 2023 Overview
+2023       of VCS Program Updates and Effective Dates (PDF), available on the Verra
+           website.
+
+           ID# Update Description and Effective Date                     Section
+
+           40. Clarified processes related pipeline listing initiation.  3.1.1 ­ 3.1.6
+                   Effective immediately
+
+           41. Updates from the 30 March 2023 Errata & Clarification 3.1.3, 3.1.4,
+
+           regarding the VCS Fee Schedule update were                    4.2.22, 4.6.4
+
+           incorporated with an effective date of 1 May 2023.
+
+           Effective immediately
+
+           42. Clarified that projects cannot submit a joint program     3.1.6., 4.2.8
+
+           template for any request if the project is only requesting
+
+           listing, registration, verification approval, or crediting
+
+           period renewal under one program.
+
+           Effective immediately
+
+           43. Clarified which project documents are publicly posted     3.1.11, 3.1.14,
+                   for each project request.                             4.2.7
+
+                   Effective immediately
+
+           44. Minor update to clarify validation deadline process.      3.1.17
+                   Effective immediately
+
+           5. Clarified which documents are required for baseline        4.2.6
+                   reassessment and removed unnecessary language.
+
+           Effective for all project requests submitted on or after 1
+           March 2024
+
+           Clarified that baseline reassessment is required to           5.3.9
+           reactivate an already registered project. Effective
+           immediately.
+
+           21. Clarified evidence requirements for no double issuance 4.2.15, 4.2.17,
+
+           and no double claiming.                                       4.2.19
+
+           Effective for all project requests submitted on or after 1
+           March 2024
+
+           45. Updated request denial processes, and restructured the 4.3
+                   information related to review process.
+
+Registration and Issuance Process, v4.4                                                   47
+                                         Appendix 2 Document History
+
+           Verra Registry statuses to reflect these processes will
+           be available soon.
+
+           Effective immediately
+
+           35. Added clarity to processes related to VCU label           4.4.7 ­4.4.8
+
+Thihsttipssn:/o/vt ethrrea.courrgr/epnrtovgerarsmiosn/voefritfhieisd-VcCarSboPnr-osgtaranmdadrdo/cvucms-epnrot.gTrahme -cduertraeinlst/v. ersion is at: v4.4requirements.
+           Effective immediately
+
+           9. Clarified buffer release requirements, including           5.2.1 ­ 5.2.5
+                   requirements for when a project can request a buffer
+                   release.
+
+                   Effective immediately
+
+           37. Clarified loss event reporting requirements.              5.3.1 -5.3.7
+                   Effective immediately
+
+           10. Updated non-permanence monitoring and                     5.3.4, 5.3.12
+
+           compensation requirements to a minimum of 40 years.
+
+           Effective for all project requests submitted on or after 1
+           March 2024
+
+           11. References across program documents to `catastrophic' 5.3.5, 5.3.12
+                   and `non-catastrophic' reversals have been updated to
+                   the new terminology of `unavoidable' and `avoidable'
+                   reversals, respectively. Effective immediately
+
+           46. Revised the communication agreement requirements 7.1.1 ­ 7.1.5
+                   with clearer information about how project proponent(s)
+                   submit communication agreements to the Registry to
+                   designate one Authorized Representative for the
+                   project.
+
+                   Effective immediately
+
+           19. Added requirements for comments received outside of 7.3
+                   the public comment period for both project proponents
+                   and validation/verification bodies.
+
+                   Effective for all project requests submitted on or after 1
+                   March 2024
+
+4 October  Minor typographical and formatting errors corrected.
+2023
+
+Registration and Issuance Process, v4.4                                                 48
+ThihsttipsSsn:/o/tvteathrrena.coudrrgr/eapnrtorvgderarsmsiosn/vfoeofritfhireisd-VcaCarSbSoPnru-osgtasranmtdaadrdoi/cnvucmsa-epnbrot.glTreahme -cFduertruaeinltst/vu. errsieon is at:
+

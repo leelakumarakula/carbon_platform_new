@@ -1,0 +1,1666 @@
+CLEAN DEVELOPMENT MECHANISM
+
+AR-TOOL14
+
+Methodological tool
+Estimation of carbon stocks and change in
+carbon stocks of trees and shrubs in A/R
+CDM project activities
+
+Version 04.2
+AR-TOOL14
+Methodological tool: Estimation of carbon stocks and change in carbon stocks of trees and shrubs in A/R
+CDM project activities
+Version 04.2
+
+TABLE OF CONTENTS                                                                                                         Page
+
+1. INTRODUCTION ........................................................................................................  4
+
+2. SCOPE, APPLICABILITY, AND ENTRY INTO FORCE ...........................................                                 4
+
+2.1. Scope .............................................................................................................  4
+
+2.2. Applicability ....................................................................................................   4
+
+2.3. Entry into force ...............................................................................................     4
+
+3. DEFINITIONS AND NOTATION ................................................................................              4
+
+4. PARAMETERS DETERMINED BY THE TOOL ........................................................                             5
+
+5. CONDITIONS UNDER WHICH CARBON STOCK AND CHANGE IN
+
+CARBON STOCK MAY BE ESTIMATED AS ZERO................................................                                     6
+
+6. ESTIMATING CHANGE IN CARBON STOCK IN TREES BETWEEN TWO
+
+POINTS OF TIME.......................................................................................................     7
+
+6.1. Difference of two independent stock estimations ..........................................                           7
+
+6.2. Direct estimation of change by re-measurement of sample plots .................                                      8
+
+6.3. Estimation by proportionate crown cover.......................................................                       10
+
+6.4. Demonstration of "no-decrease" ....................................................................                  11
+
+7. ESTIMATING CHANGE IN CARBON STOCK IN TREES IN A YEAR ....................                                              12
+
+8. ESTIMATING CARBON STOCK IN TREES AT A POINT OF TIME .......................                                            13
+
+8.1. Estimation by measurement of sample plots .................................................                          13
+
+8.1.1. Stratified random sampling ...........................................................                             13
+
+8.1.2. Double sampling ...........................................................................                        15
+
+8.2. Estimation by modelling of tree growth and stand development ...................                                     17
+
+8.3. Estimation by proportionate crown cover.......................................................                       17
+
+8.4. Updating previous stock by direct estimation of change ...............................                               18
+
+9. ESTIMATING CHANGE IN CARBON STOCK IN SHRUBS BETWEEN TWO
+
+POINTS OF TIME.......................................................................................................     19
+
+10. ESTIMATING CHANGE IN CARBON STOCK IN SHRUBS IN A YEAR .................                                               19
+
+11. ESTIMATING CARBON STOCK IN SHRUBS AT A POINT OF TIME ....................                                             20
+
+12. DATA AND PARAMETERS USED IN THE TOOL ...................................................                              21
+
+12.1. Data and parameters not monitored ..............................................................                    21
+
+                   2 of 31
+AR-TOOL14
+Methodological tool: Estimation of carbon stocks and change in carbon stocks of trees and shrubs in A/R
+CDM project activities
+Version 04.2
+
+12.2. Data and parameters monitored. ...................................................................  21
+
+APPENDIX 1. METHODS OF PLOT BIOMASS MEASUREMENT................................                           23
+
+APPENDIX 2. APPLYING UNCERTAINTY DISCOUNT ................................................                28
+
+APPENDIX 3. CALCULATING CORRELATION COEFFICIENT AND SLOPE OF
+
+REGRESSION ..........................................................................................     29
+
+3 of 31
+AR-TOOL14
+Methodological tool: Estimation of carbon stocks and change in carbon stocks of trees and shrubs in A/R
+CDM project activities
+Version 04.2
+
+1. Introduction
+
+1. This tool provides step-by-step methods for estimation of carbon stock in living biomass
+         of trees and shrubs. For ex-ante (projected) estimation of tree biomass it applies tree
+         growth and stand development models. For ex-post (actual) estimation of tree biomass it
+         uses data from measurements conducted in sample plots. Remote sensing data may
+         also be used in conjunction with data from measurements conducted in sample plots.
+         Biomass of shrubs is estimated from shrub crown cover.
+
+2. Scope, applicability, and entry into force
+
+2.1. Scope
+
+2. This tool can be used for estimation of carbon stock and change in carbon stock in living
+         biomass of trees and shrubs in an afforestation and reforestation (A/R) clean
+         development mechanism (CDM) project activity. The tool is applicable for:
+
+         (a) Estimation of carbon stock and change in carbon stock in living biomass of trees
+                   and shrubs in baseline;
+
+         (b) Ex-ante estimation (projection) of carbon stock and change in carbon stock in
+                   living biomass of trees and shrubs in project;
+
+         (c) Ex-post estimation of carbon stock and change in carbon stock in trees and
+                   shrubs for monitoring of project activities.
+
+2.2. Applicability
+
+3. This tool has no internal applicability conditions.
+
+2.3. Entry into force
+
+4. The date of entry into force is the date of the publication of the EB 85 meeting report on
+         24 July 2015.
+
+3. Definitions and notation
+
+5. The definitions contained in the Glossary of CDM terms shall apply.
+
+6. For the purpose of this tool, the following definitions apply:
+
+         (a) Uncertainty - is in the mean value of an estimated parameter equal to the
+                   estimated standard error of the mean expanded at 90 per cent confidence level
+                   divided by the mean value, expressed as percentage;
+
+                   Example: The mean value of above-ground tree biomass per hectare is
+                   estimated as 45.328 t d.m. ha-1 from a sample of size 34. Sample standard
+                   deviation was 12.776 t d.m. ha-1. The estimated standard error of the mean
+                   (SEM) is 12.776/ = 2.191 t d.m. ha-1. The SEM expanded at 90 per cent
+                   confidence level is therefore = 2.191 x t(0.1,33) = 2.191 x 1.692 = 3.707 t d.m.
+                   ha-1. This implies that the estimated mean has an uncertainty of (3.707/45.328)
+
+                                                                  4 of 31
+AR-TOOL14
+Methodological tool: Estimation of carbon stocks and change in carbon stocks of trees and shrubs in A/R
+CDM project activities
+Version 04.2
+
+                   ×100 = 8.18 per cent.
+
+                   Note. In this tool only sampling uncertainty is assessed and controlled.
+                   Uncertainty in values obtained from direct measurement (e.g. measured diameter
+                   of a tree) or values derived from models (e.g. biomass of a tree derived from its
+                   diameter using an allometric equation) is not quantified. This type of uncertainty
+                   should be managed through application of appropriate quality assurance and
+                   quality control (QA/QC) methods, as explained in the parameter description
+                   tables in section 12.
+
+         (b) Species - can also refer to a species group when a species-specific biometric
+                   parameter (e.g. biomass expansion factor), or a model (e.g. allometric equation),
+                   is demonstrated to be applicable to more than one species;
+
+         (c) Tree biomass - refers to above-ground and below-ground living biomass of
+                   trees;
+
+         (d) Shrub biomass - refers to above-ground and below-ground living biomass of
+                   shrubs;
+
+         (e) Plot biomass - refers to tree biomass per hectare in a plot;
+
+         (f) Measurement of a sample plot - refers to the measurement of one or more
+                   dimensions (e.g. diameter) of the trees in a sample plot, or measurement of a plot
+                   parameter (e.g. basal area per hectare), and conversion of the measured tree
+                   dimensions, or the measured plot parameter into plot biomass by using one of
+                   the methods provided in Appendix 1;
+
+         (g) Conservative value of a parameter - refers to the value which, when used in
+                   calculations, is more likely to result in underestimation rather than overestimation
+                   of the net anthropogenic GHG removals by sinks;
+
+7. For reasons of consistency and readability, this tool uses the following conventions in
+         naming of variables and parameters:
+
+         (a) Symbols for unit quantities (e.g. per hectare quantities) use lower case letters
+                   (e.g. bFOREST), whereas symbols for total quantities use uppercase letters
+                   (e.g. BTREE);
+
+         (b) Subscripts used for qualifying a variable or a parameter appear in upper case
+                   letters (e.g. CSHRUB_PROJECT), whereas subscripts used for denoting indices appear
+                   in lower case letters (e.g. CSHRUB_PROJECT,i).
+
+8. This tool uses the following units in their abbreviated form:
+
+         (a) Tonne dry matter is abbreviated as t d.m., and tonne dry matter per hectare is
+                   abbreviated as t d.m. ha-1;
+
+         (b) Tonne carbon dioxide equivalent is abbreviated as t CO2e.
+
+4. Parameters determined by the tool
+
+9. This tool provides procedures to determine the parameters listed in Table 1.
+
+                                                                  5 of 31
+AR-TOOL14
+Methodological tool: Estimation of carbon stocks and change in carbon stocks of trees and shrubs in A/R
+CDM project activities
+Version 04.2
+
+Table 2. Parameters determined by the tool
+
+Parameter  Unit               Description
+           t CO2e
+                              Carbon stock in tree biomass within the project boundary at a
+                              given point of time in year t
+
+           t CO2e             Change in carbon stock in tree biomass within the project
+                              boundary in year t
+
+           t CO2e             Carbon stock in shrub biomass within the project boundary at
+                              a given point of time in year t
+
+           t CO2e             Change in carbon stock in shrub biomass within the project
+                              boundary in year t
+
+10. While applying this tool in an approved A/R CDM methodology, the following
+         corresponding notations should be used:
+
+(a) In the baseline scenario:
+
+           for     and                       for
+
+           for                and                 for
+
+(b) In the project scenario:
+
+           for     and                       for
+
+           for                 and                for
+
+5. Conditions under which carbon stock and change in
+      carbon stock may be estimated as zero
+
+11. Carbon stock in trees in the baseline can be accounted as zero if all of the following
+         conditions are met:
+
+         (a) The pre-project trees are neither harvested, nor cleared, nor removed throughout
+                   the crediting period of the project activity;
+
+         (b) The pre-project trees do not suffer mortality because of competition from trees
+                   planted in the project, or damage because of implementation of the project
+                   activity, at any time during the crediting period of the project activity;
+
+         (c) The pre-project trees are not inventoried along with the project trees in monitoring
+                   of carbon stocks but their continued existence, consistent with the baseline
+                   scenario, is monitored throughout the crediting period of the project activity.
+
+12. Changes in carbon stocks in trees and shrubs in the baseline may be accounted as zero
+         for those lands for which the project participants can demonstrate, through documentary
+         evidence or through participatory rural appraisal (PRA), that one or more of the following
+         indicators apply:
+
+         (a) Observed reduction in topsoil depth (e.g. as shown by root exposure, presence of
+                   pedestals, exposed sub-soil horizons);
+
+                                    6 of 31
+AR-TOOL14
+Methodological tool: Estimation of carbon stocks and change in carbon stocks of trees and shrubs in A/R
+CDM project activities
+Version 04.2
+
+         (b) Presence of gully, sheet or rill erosion; or landslides, or other forms of mass-
+                   movement erosion;
+
+         (c) Presence of plant species locally known to be indicators of infertile land;
+
+         (d) Land comprises of bare sand dunes, or other bare lands;
+
+         (e) Land contains contaminated soils, mine spoils, or highly alkaline or saline soils;
+
+         (f) Land is subjected to periodic cycles (e.g. slash-and-burn, or clearing-regrowing
+                   cycles) so that the biomass oscillates between a minimum and a maximum value
+                   in the baseline;
+
+         (g) Conditions (a), (b) and (c) under paragraph 11 apply.
+
+13. For the purpose of ex-ante estimation of carbon stock and change in carbon stock in the
+         project scenario, change in carbon stock of shrubs may be estimated as zero.
+
+6. Estimating change in carbon stock in trees between two
+      points of time
+
+14. Change in carbon stock in trees between two points of time is estimated by using one of
+         the following methods or a combination thereof:
+
+         (a) Difference of two independent stock estimations;
+
+         (b) Direct estimation of change by re-measurement of sample plots;
+
+         (c) Estimation by proportionate crown cover;
+
+         (d) Demonstration of "no-decrease".
+
+6.1. Difference of two independent stock estimations
+
+15. Under this method, change in carbon stock in trees is estimated as the difference
+         between two successive and independent carbon stock estimations.
+
+         Note. This is method is efficient when the correlation between the plot biomass values
+         on the two occasions is absent or weak (e.g. when there has been harvest or
+         disturbance in a stratum after the first estimation, resulting in spatial re-distribution of
+         tree biomass in the stratum).
+
+16. Under this method, the change in carbon stock in trees and the associated uncertainty
+         are estimated as follows:
+
+                                                                                                              Equation (1)
+
+(     )(     )        Equation (2)
+
+   |      |
+
+             7 of 31
+AR-TOOL14
+Methodological tool: Estimation of carbon stocks and change in carbon stocks of trees and shrubs in A/R
+CDM project activities
+Version 04.2
+
+Where:       = Change in carbon stock in trees during the period between two
+  ,              points of time t1 and t2; t CO2e
+
+             = Carbon stock in trees as estimated at time t1; t CO2e
+
+             Note 1. At the first verification  is set equal to the carbon
+
+             stock in the pre-project tree biomass (                            ).
+
+             However, this may be set equal to zero, if all of the conditions
+
+             specified under paragraph 10 are met.
+
+             Note 2. Even if              was made conservative at the time of
+
+             previous verification, it is the estimated (undiscounted) value of
+
+             that is used here.
+
+             = Carbon stock in trees as estimated at time t2; t CO2e
+
+             = Uncertainty in
+
+             = Uncertainties in           and   respectively
+
+17. Carbon stock in trees at a point of time is estimated by using one of the applicable
+         methods provided in section 8.
+
+18. If  estimated from Equation (2) is greater than 10 per cent,      is made
+
+conservative by applying uncertainty discount according to the procedure provided in
+
+Appendix 2.
+
+6.2. Direct estimation of change by re-measurement of sample plots
+
+19. This method is applicable only in ex-post estimation of change in carbon stock in trees
+         for monitoring of project activities. Under this method, the same sample plots are
+         measured on two successive occasions and the plot-level change in biomass is obtained
+         by subtracting the plot biomass on the first occasion from the plot biomass on the
+         second occasion.
+
+         Note. This is method is efficient when there is a significant correlation between the plot
+         biomass values on the two occasions (e.g. when there has been no harvest or
+         disturbance in a stratum and therefore no significant spatial re-distribution of biomass
+         has occurred in the stratum after the first estimation).
+
+20. Under this method, the change in carbon stock and the associated uncertainty are
+         estimated as follows:
+
+                                                                      Equation (3)
+
+                                                                      Equation (4)
+
+                                 8 of 31
+AR-TOOL14
+Methodological tool: Estimation of carbon stocks and change in carbon stocks of trees and shrubs in A/R
+CDM project activities
+Version 04.2
+
+                                                                                               Equation (5)
+        
+
+                                                                  Equation (6)
+
+          
+
+          |  |
+
+Where:
+
+             = Change in carbon stock in trees between two successive
+                 measurements; t CO2e
+
+             = Carbon fraction of tree biomass; t C (t d.m.)-1
+
+             A default value of 0.47 is used unless transparent and verifiable
+             information can be provided to justify a different value.
+
+             = Change in tree biomass within the biomass estimation strata;
+                 t d.m.
+
+             = Sum of areas of the biomass estimation strata; ha
+
+             = Mean change in tree biomass per hectare within the biomass
+                 estimation strata; t d.m. ha-1
+
+             = Ratio of the area of stratum i to the sum of areas of biomass
+
+             estimation strata (i.e.    / ); dimensionless
+
+             = Mean change in carbon stock per hectare in tree biomass in
+                 stratum i; t d.m. ha-1
+
+             = Uncertainty in
+
+             = Two-sided Student's t-value for a confidence level of 90 per cent
+                 and degrees of freedom equal to n ­ M, where n is total number of
+                 sample plots within the tree biomass estimation strata, and M is
+                 the total number of tree biomass estimation strata
+
+             = Variance of mean change in tree biomass per hectare in stratum i;
+                 (t d.m. ha-1)2
+
+             = Number of sample plots, in stratum i, in which tree biomass was
+                 re-measured
+
+21. Mean change in tree biomass per hectare in a stratum and the associated variance are
+         estimated as follows:
+
+                                                                  Equation (7)
+
+                               9 of 31
+AR-TOOL14
+Methodological tool: Estimation of carbon stocks and change in carbon stocks of trees and shrubs in A/R
+CDM project activities
+Version 04.2
+
+                (        )                                        Equation (8)
+
+             (     )
+
+Where:
+
+             = Mean change in tree biomass per hectare in stratum i; t d.m. ha-1
+
+             = Change in tree biomass per hectare in plot p in stratum i;
+                 t d.m. ha-1
+
+             = Variance of mean change in tree biomass per hectare in stratum i;
+                 (t d.m. ha-1)2
+
+             = Number of sample plots, in stratum i, in which tree biomass was
+                 re-measured
+
+22. If  estimated from Equation (6) is greater than 10 per cent,  is made
+
+conservative by applying uncertainty discount according to the procedure provided in
+
+Appendix 2.
+
+23. Tree biomass per hectare in a sample plot is estimated by applying one of the plot
+         measurement methods provided in Appendix 1.
+
+6.3. Estimation by proportionate crown cover
+
+24. This method is applicable only in ex-ante estimation of change in carbon stock in trees in
+         the baseline where the mean pre-project tree crown cover is less than 20 per cent of the
+         threshold tree crown cover reported by the host Party under paragraph 8 of the annex to
+         decision 5/CMP.1
+
+         Example. The host Party has reported a threshold tree crown cover of 30 per cent to
+         define `forest' for the purposes of the CDM. The method of estimation by proportionate
+         crown cover is applicable only if the mean pre-project tree crown cover is less than 20
+         per cent of 30 per cent (i.e. less than 6 per cent).
+
+25. Under this method, the change in carbon stock in trees in the baseline is estimated as
+         follows:
+
+                                                                                               Equation (9)
+             
+
+                      (     )                                     Equation (10)
+
+Where:
+
+             = Mean annual change in carbon stock in trees in the baseline;
+                 t CO2e yr-1
+
+             = Mean annual change in carbon stock in trees in the baseline, in
+                 baseline stratum i; t CO2e yr-1
+
+                                          10 of 31
+AR-TOOL14
+Methodological tool: Estimation of carbon stocks and change in carbon stocks of trees and shrubs in A/R
+CDM project activities
+Version 04.2
+
+= Carbon fraction of tree biomass; t C (t.d.m.)-1.
+
+    A default value of 0.47 t C (t.d.m.)-1 is used unless transparent and
+    verifiable information can be provided to justify a different value.
+
+= Default mean annual increment of above-ground biomass in forest
+
+    in the region or country where the A/R CDM project activity is
+    located; t d.m. ha-1 yr-1.
+
+Values of      are taken from Table 3A.1.5 of the IPCC Good
+
+Practice Guidance for Land Use, Land-Use Change and Forestry
+
+(IPCC GPG-LULUCF 2003) unless transparent and verifiable
+
+information can be provided to justify different values.
+
+Note. Tree biomass may reach a steady state in which biomass
+growth becomes zero or insignificant, either because of biological
+maturity of trees or because the rate of anthropogenic biomass
+extraction from the area is equal to the rate of biomass growth.
+Therefore, this parameter should be taken to be zero after the year
+in which tree biomass in the baseline reaches a steady state. The
+year in which tree biomass in the baseline reaches a steady-state
+is taken to be the 20th year from the start of the CDM project
+activity, unless transparent and verifiable information can be
+provided to justify a different year.
+
+= Root-shoot ratio for the trees in the baseline; dimensionless.
+
+A default value of 0.25 is used unless transparent and verifiable
+information can be provided to justify a different value.
+
+= Crown cover of trees in the baseline, in baseline stratum i, at the
+
+start of the A/R CDM project activity, expressed as a fraction (e.g.
+
+10 per cent crown cover implies  = 0.10);
+
+dimensionless
+
+= Area of baseline stratum i, delineated on the basis of tree crown
+    cover at the start of the A/R CDM project activity; ha
+
+6.4. Demonstration of "no-decrease"
+
+26. This method is applicable only in ex-post estimation of change in carbon stock in trees
+         for monitoring of project activities. Project participants may, at the time of a verification,
+         demonstrate that tree biomass in one or more strata has not decreased relative to the
+         tree biomass at the time of the previous verification, by proving that:
+
+         (a) No harvest has occurred in the stratum since the previous verification;
+
+         (b) The stratum was not affected by any disturbance (e.g. pest, fire) that would
+                   decrease the carbon stock in trees;
+
+         (c) Remote sensing data or inventory data, including participatory inventory or
+                   participatory photo-mapping data, demonstrate that tree crown cover in the
+                   stratum has not decreased since the previous verification.
+
+               11 of 31
+AR-TOOL14
+Methodological tool: Estimation of carbon stocks and change in carbon stocks of trees and shrubs in A/R
+CDM project activities
+Version 04.2
+
+27. Where all the three conditions above are demonstrated to have been met in a stratum,
+         the change in carbon stock in trees in that stratum since the previous verification may be
+         conservatively estimated as zero.
+
+         Note. This method is efficient when project participants are required to submit a
+         verification and certification report at a point of time when the biomass increase in the
+         project since the previous verification may not be large enough to justify the cost of
+         conducting an inventory (e.g. when periodic verification and certification is required to re-
+         validate lCERs already issued and significant number of new lCERs is not expected).
+
+7. Estimating change in carbon stock in trees in a year
+
+28. Change in carbon stock in trees in a year (annual change) between two successive
+         verifications is estimated on the assumption of linear change.
+
+29. Change in carbon stock in trees in a year is estimated as follows:
+
+                                                                                                            Equation (11)
+
+Where:  = Change in carbon stock in trees within the project boundary in
+T           year t; t CO2e
+
+        = Carbon stock in trees within the project boundary at time t2;
+            t CO2e.
+
+            Note. Where estimation of carbon stock in tree biomass at time t2
+            is carried out by applying different methods in different strata,
+
+                       is set equal to the sum of carbon stocks in all the strata in
+            which the project area is divided.
+
+        = Carbon stock in trees within the project boundary at time t1;
+            t CO2e.
+
+            Note. Where estimation of carbon stock in tree biomass at time t1
+            is carried out by applying different methods in different strata,
+
+                       is set equal to the sum of carbon stocks in all the strata in
+            which the project area is divided.
+
+        = Time elapsed between two successive estimations (T=t2 ­ t1); yr.
+
+            Note 1. Value of T does not have to be a whole number (e.g. an
+            interval of 4 years and 5 months implies T = 4.417 yr).
+
+            Note 2. Estimation of change in carbon stock in trees by
+            proportionate crown cover (see section 6.3) results in an annual
+            change estimate and hence Equation (11) does not apply under
+            this method.
+
+        12 of 31
+AR-TOOL14
+Methodological tool: Estimation of carbon stocks and change in carbon stocks of trees and shrubs in A/R
+CDM project activities
+Version 04.2
+
+8. Estimating carbon stock in trees at a point of time
+
+30. Carbon stock in trees at a point of time is estimated by using one of the following
+         methods or a combination thereof:
+
+(a) Estimation by measurement of sample plots;
+
+(b) Estimation by modelling of tree growth and stand development;
+
+(c) Estimation by proportionate crown cover;
+
+(d) Updating the previous stock by independent measurement of change.
+
+31. When estimation is carried out by methods (a), (c) or (d) above, the date of last
+         measurement of sample plot, or estimation of crown cover, is considered to be the date
+         of estimation of carbon stock, even if the full process of measurement extends over a
+         period of time.
+
+32. Where estimation of carbon stock in trees at a given point of time in year t is carried out
+
+by applying different methods in different strata, the value of  is set equal to the
+
+sum of carbon stocks in all the strata in which the project area was divided.
+
+8.1. Estimation by measurement of sample plots
+
+33. Under this method, carbon stock in trees is estimated on the basis of measurements of
+         sample plots. Sample plots are installed in one or more strata. Two sampling designs are
+         available:
+
+         (a) Stratified random sampling;
+
+         (b) Double sampling.
+
+8.1.1. Stratified random sampling
+
+34. Under this method, random sample plots are installed in the strata (e.g. systematic
+         sampling with a random start) and measured.
+
+         Note. This method is more efficient when the sample plots are optimally allocated to the
+         strata keeping in view the expected mean tree biomass per hectare and its variability in
+         the strata. Number of sample plots and their allocation to strata may be estimated by
+         using the A/R methodological tool "Calculation of the number of sample plots for
+         measurements within A/R CDM project activities".
+
+         Example 1. At the time of verification, it is known that out of eight parcels of plantation
+         land, three have been harvested in the last two years. Hence the mean tree biomass per
+         hectare in these parcels is low and is relatively homogeneous. Hence these three
+         parcels are treated as one stratum. Of the remaining five parcels, two parcels had poor
+         tree growth compared to the other three. Thus these five parcels are treated as two
+         separate strata.
+
+         Example 2. In a forest plantation raised through assisted natural regeneration, the tree
+         biomass is seen to be distributed unevenly throughout the project area. Using satellite
+         data it is seen that the distribution of the tree crown cover (which is expected to have a
+         positive correlation with tree biomass) has clearly discernible patterns. Strata boundaries
+
+13 of 31
+AR-TOOL14
+Methodological tool: Estimation of carbon stocks and change in carbon stocks of trees and shrubs in A/R
+CDM project activities
+Version 04.2
+
+         are therefore delineated on the basis tree crown cover estimated from the remote
+         sensing data.
+35. Mean carbon stock in trees within the tree biomass estimation strata and the associated
+         uncertainty are estimated as follows (all time-dependent quantities relate to the time of
+         measurement):
+
+                                                                                                            Equation (12)
+
+                                                                                                            Equation (13)
+
+                                                                                                            Equation (14)
+                    
+
+                                                                                                            Equation (15)
+                         
+
+Where:
+
+        = Carbon stock in trees in the tree biomass estimation strata;
+            t CO2e
+
+        = Carbon fraction of tree biomass; t C (t d.m.)-1.
+
+        A default value of 0.47 is used unless transparent and verifiable
+        information can be provided to justify a different value.
+
+        = Tree biomass in the tree biomass estimation strata; t d.m.
+
+        = Sum of areas of the tree biomass estimation strata; ha
+
+        = Mean tree biomass per hectare in the tree biomass estimation
+            strata; t d.m. ha-1
+
+        = Ratio of the area of stratum i to the sum of areas of tree biomass
+
+        estimation strata (i.e.     / ); dimensionless
+
+        = Mean tree biomass per hectare in stratum i; t d.m. ha-1
+
+        = Uncertainty in
+
+        = Two-sided Student's t-value for a confidence level of 90 per cent
+            and degrees of freedom equal to n ­ M, where n is total number of
+            sample plots within the tree biomass estimation strata and M is the
+            total number of tree biomass estimation strata
+
+        = Variance of tree biomass per hectare across all sample plots in
+            stratum i; (t d.m. ha-1)2
+
+        = Number of sample plots in stratum i.
+
+                          14 of 31
+AR-TOOL14
+Methodological tool: Estimation of carbon stocks and change in carbon stocks of trees and shrubs in A/R
+CDM project activities
+Version 04.2
+
+36. Mean tree biomass per hectare in a stratum and the associated variance are estimated
+         as follows:
+
+                                                                  Equation (16)
+
+                (     )                                           Equation (17)
+
+             (     )
+
+Where:
+
+             = Mean tree biomass per hectare in stratum i; t d.m. ha-1
+             = Tree biomass per hectare in plot p of stratum i; t d.m. ha-1
+
+             = Variance of mean tree biomass per hectare in stratum i;
+                 (t d.m. ha-1)2
+
+             = Number of sample plots in stratum i.
+
+37. If estimated from Equation (15) is greater than 10 per cent,             is made
+
+conservative by applying uncertainty discount according to the procedure provided in
+
+Appendix 2.
+
+38. Tree biomass per hectare in a plot is estimated by using one of the plot measurement
+         methods provided in Appendix 1.
+
+8.1.2. Double sampling
+
+39. Under this method, a secondary variable is measured in all the sample plots in a stratum
+         and tree biomass is measured in a sub-set of the same sample plots. The mean biomass
+         and its variance are estimated from the measured plot biomass values in the sub-sample
+         and are adjusted through regression of the plot biomass values against the observed
+         plot values of the secondary variable in the sub-sample.
+
+40. This method is applicable only if there is a linear relationship between the plot biomass
+         values and the plot values of the secondary variable (i.e. the best-fit curve is a straight
+         line) within the range of the values.
+
+         Note. This method is efficient when spatial distribution of tree biomass in the area is
+         highly heterogeneous and does not show `block patterns' at significant scale and thus
+         does not allow delineation of strata. The method is more efficient when the cost of
+         obtaining the values of the secondary variable is low compared to cost of measurement
+         of plot biomass, and the correlation between the secondary variable and the measured
+         plot biomass values is high.
+
+         Example 1. Spatial distribution of tree biomass in a stratum was highly heterogeneous
+         and it was not efficient to delineate tree biomass sub-strata. The project participants
+         measured basal area in 300 sample plots. In a sub-sample of 50 plots they also
+         measured plot biomass. This double sampling design reduced the variance of the
+         estimated mean by one half. To achieve the same precision without double sampling it
+
+                      15 of 31
+AR-TOOL14
+Methodological tool: Estimation of carbon stocks and change in carbon stocks of trees and shrubs in A/R
+CDM project activities
+Version 04.2
+
+         would have been necessary to conduct plot biomass measurement in 200 plots which
+         would have been costlier.
+
+         Example 2. In a large project area the spatial distribution of tree biomass was highly
+         heterogeneous and it was not efficient to delineate tree biomass strata. However,
+         remotely sensed satellite data covering the area was available at a very low cost. An
+         index, namely, Normalized Difference Vegetation Index (NDVI), was constructed from
+         this data which was found to have approximately linear relationship with the per-hectare
+         tree biomass. A double sampling design was adopted with construction of NDVI in 2000
+         sample plots and measurement of diameter of all trees in 150 sample plots selected from
+         the 2000 plots using systematic selection with a random start. This double sampling
+         design reduced the variance of the estimated mean by one third. To achieve the same
+         precision by measuring fixed-area plots alone would have required measurement of 300
+         fix-area sample plots which would have been costlier.
+
+41. Equations (12) to (15) also apply in this method for aggregating the mean and its
+         variance over the strata. However, for each stratum in which double sampling is applied,
+         the following equations apply instead of Equations (16) and (17):
+
+                (  )             Equation (18)
+
+             (        )          Equation (19)
+
+          (     )        (( ) )
+
+Where:    = Mean tree biomass per hectare in stratum i; t d.m. ha-1
+
+          = Tree biomass per hectare in plot p of stratum i; t d.m. ha-1
+ 
+          = Number of sample plots in the sub-sample
+
+          = Slope of the regression line of tree biomass per hectare in a
+              sample plot against the secondary variable value of the plot
+
+          = Mean value of the secondary variable across all the sample plots
+
+          = Mean value of the secondary variable across the sub-sample of
+              sample plots in which tree biomass is also measured
+
+          = Variance of mean tree biomass per hectare in stratum i;
+              (t d.m. ha-1)2
+
+          = Ratio of number of sample plots in the sub-sample to the number
+              of sample plots in the sample ( <1)
+
+          = Coefficient of correlation between the secondary variable and the
+              tree biomass per hectare in a sample plot, estimated across all the
+              sample plots in the sub-sample
+
+42. The slope of the regression and the coefficient of correlation are calculated as
+         explained in Appendix 3.
+
+                      16 of 31
+AR-TOOL14
+Methodological tool: Estimation of carbon stocks and change in carbon stocks of trees and shrubs in A/R
+CDM project activities
+Version 04.2
+
+43. Tree biomass per hectare in a sample plot is estimated by using one of the plot
+         measurement methods provided in Appendix 1.
+
+44. If estimated from Equation (15) is greater than 10 per cent,  is made
+
+conservative by applying uncertainty discount according to the procedure provided in
+
+Appendix 2.
+
+8.2. Estimation by modelling of tree growth and stand development
+
+45. This method is used for ex-ante estimation (projection) of carbon stock in tree biomass.
+         Under this method existing data are used in combination with tree growth models to
+         predict the growth of trees and the development of the tree stand over time.
+
+46. Stand parameters such as stocking (e.g. number of stems per hectare or basal area per
+         hectare), age-class structure, and species composition at different points of time are
+         simulated from assumed (planned) tree planting and management practices (e.g.
+         planting density, survival rate, thinning and pruning operations and their timing).
+
+47. Tree growth (e.g. diameter or height increment) is simulated by taking into account local
+         tree-growth data from past experience (e.g. age-diameter curves, yield tables, yield
+         curves) while also considering relevant site factors (e.g. soil, terrain, slope, aspect,
+         precipitation) and stand parameters.
+
+48. Ex-ante estimation (projection) of carbon stock in tree biomass is not subjected to
+         uncertainty control, although the project participants should use the best available data
+         and models that apply to the project site and the tree species.
+
+8.3. Estimation by proportionate crown cover
+
+49. This method is applicable only for estimation of the pre-project carbon stock in tree
+         biomass in the baseline where the mean pre-project tree crown cover is less than 20 per
+         cent of the threshold tree crown cover reported by the host Party under paragraph 8 of
+         the annex to decision 5/CMP.1.
+
+         Example. The host Party has reported a threshold tree crown cover of 30 per cent for
+         defining `forest' for the purposes of the CDM. This method is applicable only if the mean
+         pre-project tree crown cover is less than 20 per cent of 30 per cent (i.e. less than 6 per
+         cent).
+
+50. Carbon stock in trees is estimated on the basis of tree crown cover at the time of the
+         start of the project (the pre-project tree crown cover). The area within the project
+         boundary is stratified by pre-project tree crown cover.
+
+51. Under this method, carbon stock in tree biomass is estimated as follows:
+
+                                                                                  Equation (20)
+
+
+             (         )                                          Equation (21)
+
+             17 of 31
+AR-TOOL14
+Methodological tool: Estimation of carbon stocks and change in carbon stocks of trees and shrubs in A/R
+CDM project activities
+Version 04.2
+
+Where
+
+        = Carbon stock in pre-project tree biomass; t CO2e
+
+        = Carbon stock in pre-project tree biomass in stratum i; t CO2e
+        = Carbon fraction of tree biomass; t C (t.d.m.)-1.
+
+            A default value of 0.47 t C (t.d.m.)-1 is used.
+
+        = Mean above-ground biomass in forest in the region or country
+            where the A/R CDM project is located; t d.m. ha-1
+
+        Values from Table 3A.1.4 of IPCC GPG-LULUCF 2003 are used
+        unless transparent and verifiable information can be provided to
+        justify different values.
+
+        = Root-shoot ratio for trees in the baseline; dimensionless.
+
+        A default value of 0.25 is used unless transparent and verifiable
+        information can be provided to justify a different value.
+
+        = Crown cover of trees in baseline stratum i, at the start of the
+
+        A/R CDM project activity, expressed as a fraction (e.g. 10 per cent
+
+        crown cover implies  = 0.10); dimensionless
+
+        = Area of baseline stratum i, delineated on the basis of tree crown
+            cover at the start of the A/R CDM project activity; ha
+
+8.4. Updating previous stock by direct estimation of change
+
+52. Under this method, the new carbon stock in trees is obtained by adding the change in
+         carbon stock in trees estimated by re-measurement of plots (see section 6.2) to the
+         carbon stock estimated at the previous verification.
+
+         Note. This method is efficient when the number of tCERs is to be estimated and the
+         method of direct estimation of change in carbon stock by re-measurement of sample
+         plots is efficient. Since tCERs are based on total carbon stock, the carbon stock
+         estimated at the previous verification must be updated by adding the change in carbon
+         stock to arrive at the carbon stock at the second verification.
+
+53. Under this method, carbon stock in trees in a stratum and the associated uncertainty are
+         estimated as follows:
+
+                                                            Equation (22)
+
+(       )(  )                                               Equation (23)
+
+Where:
+
+        = Carbon stock in trees at time t2; t CO2e
+
+            18 of 31
+AR-TOOL14
+Methodological tool: Estimation of carbon stocks and change in carbon stocks of trees and shrubs in A/R
+CDM project activities
+Version 04.2
+
+        = Carbon stock in trees as estimated at time t1; t CO2e
+
+        Note. Even if                   was made conservative at the time of the
+
+        previous verification, it is the estimated (undiscounted) value of
+
+        that is used here.
+
+        = Change in carbon stock in trees during the period between times t1
+            and t2; t CO2e
+
+uC      = Uncertainty in
+
+,       = Uncertainties in              and  respectively
+
+54. If estimated from Equation (23) is greater than 10 per cent,            is made
+
+conservative by applying uncertainty discount according to the procedure provided in
+Appendix 2.
+
+9. Estimating change in carbon stock in shrubs between
+      two points of time
+
+55. Change in carbon stock in shrubs between two points of time is estimated as follows:
+
+                                                                  Equation (24)
+
+Where:
+
+        = Change in carbon stock in shrub biomass during the period
+            between times t1 and t2; t CO2-e
+
+        = Carbon stock in shrub biomass at time t2; t CO2-e
+
+        = Carbon stock in shrub biomass at time t1; t CO2-e
+
+56. Carbon stock in shrub biomass at a point of time is estimated by using the method
+         provided in section 10.
+
+57. Where, by applying mutatis mutandis the "no decrease" method provided under section
+
+6.4 to shrubs, it can be shown that there has been no decrease in carbon stock in
+
+shrubs in one or more strata since the previous verification, the value of        for
+
+those strata can be estimated as zero.
+
+10. Estimating change in carbon stock in shrubs in a year
+
+58. Change in carbon stock in shrubs in a year (annual change) between two successive
+         verifications is estimated on the assumption of linear change.
+
+59. Change in carbon stock in shrubs in a year is estimated as follows:
+
+                                                                  Equation (25)
+
+                            19 of 31
+AR-TOOL14
+Methodological tool: Estimation of carbon stocks and change in carbon stocks of trees and shrubs in A/R
+CDM project activities
+Version 04.2
+
+Where:  = Change in carbon stock in shrubs within the project boundary in
+T           year t between times t1 and t2; t CO2-e
+
+        = Carbon stock in shrubs within the project boundary at time t2;
+            t CO2e
+
+        = Carbon stock in shrubs within the project boundary at time t1;
+            t CO2e
+
+        = Time elapsed between two successive estimations (T=t2 ­ t1); yr
+
+            Note. Value of T does not have to be a whole number (e.g. an
+            interval of 4 years and 5 months implies T = 4.417 yr).
+
+11. Estimating carbon stock in shrubs at a point of time
+
+60. Carbon stock in shrubs at a point of time is estimated on the basis of shrub crown cover.
+         The area within the project boundary is stratified by shrub crown cover. Those areas
+         where the shrub crown cover is less than 5 per cent are treated as a single stratum and
+         the shrub biomass in this stratum is estimated as zero.
+
+61. For the strata with a shrub crown cover of greater than 5 per cent, carbon stock in
+         shrubs is estimated as follows:
+
+                        Equation (26)
+
+        (  )
+
+Where:                                                                             Equation (27)
+
+        = Carbon stock in shrubs within the project boundary at a given point
+            of time in year t; t CO2-e
+
+        = Carbon fraction of shrub biomass; t C (t.d.m.)-1.
+            A default value of 0.47 is used unless transparent and verifiable
+            information can be provided to justify a different value.
+
+        = Root-shoot ratio for shrubs; dimensionless.
+            The default value of 0.40 is used unless transparent and verifiable
+            information can be provided to justify a different value.
+
+        = Area of shrub biomass estimation stratum i; ha
+        = Shrub biomass per hectare in shrub biomass estimation stratum i;
+
+            t d.m. ha-1
+
+              20 of 31
+AR-TOOL14
+Methodological tool: Estimation of carbon stocks and change in carbon stocks of trees and shrubs in A/R
+CDM project activities
+Version 04.2
+
+= Ratio of shrub biomass per hectare in land having a shrub crown
+    cover of 1.0 (i.e. 100 per cent) and the default above-ground
+    biomass content per hectare in forest in the region/country where
+    the A/R CDM project activity is located; dimensionless.
+
+A default value of 0.10 should be used unless transparent and
+verifiable information can be provided to justify a different value.
+
+= Default above-ground biomass content in forest in the
+
+    region/country where the A/R CDM project activity is located;
+    t d.m. ha-1.
+
+Values from Table 3A.1.4 of IPCC GPG-LULUCF 2003 are used
+unless transparent and verifiable information can be provided to
+justify different values.
+
+= Crown cover of shrubs in shrub biomass estimation stratum i at
+
+the time of estimation, expressed as a fraction (e.g. 10 per cent
+
+crown cover implies                           = 0.10); dimensionless
+
+12. Data and parameters used in the tool
+
+62. This section describes the requirements for the data and parameters used in this tool.
+         The requirements contained in the following data description tables should be treated as
+         an integral part of the tool.
+
+12.1. Data and parameters not monitored
+
+63. The values, sources, and requirements for data and parameters which are not subject to
+         monitoring are provided in the text of the tool along with the equations in which these are
+         used.
+
+12.2. Data and parameters monitored.
+
+64. The requirements for data and parameters subject to monitoring are provided in the
+         tables below.
+
+Data / Parameter table 1. Area of land
+
+Data / Parameter:          ,            ,
+Data unit:
+Description:           Ha
+Source of data:
+Measurement            Area of a sample plot; area of a stratum
+procedures (if any):
+                       Field measurement
+Monitoring frequency:
+QA/QC procedures:      Standard operating procedures (SOPs) prescribed under national
+                       forest inventory are applied. In the absence of these, SOPs from
+                       published handbooks, or from the IPCC GPG LULUCF 2003, are
+                       applied
+
+                       At every verification
+
+                       Quality control/quality assurance (QA/QC) procedures prescribed
+                       under national forest inventory are applied. In the absence of these,
+                       QA/QC procedures from published handbooks, or from the IPCC
+                       GPG LULUCF 2003, are applied
+
+                              21 of 31
+AR-TOOL14
+Methodological tool: Estimation of carbon stocks and change in carbon stocks of trees and shrubs in A/R
+CDM project activities
+Version 04.2
+
+Data / Parameter table 2. Shrub crown cover
+
+Data / Parameter:      Dimensionless
+Data unit:
+Description:           Crown cover of shrubs in shrub biomass stratum i
+Source of data:
+Measurement            Field measurement
+procedures (if any):
+                       Considering that the biomass in shrubs is smaller than the biomass in
+Monitoring frequency:  trees, a simplified method of measurement may be used for
+QA/QC procedures:      estimating shrub crown cover. Ocular estimation of crown cover may
+                       be carried out or any other method such as the line transect method
+Comment:               or the relascope method may be applied
+
+                       At every verification
+
+                       Quality control/quality assurance (QA/QC) procedures prescribed
+                       under national forest inventory are applied. In the absence of these,
+                       QA/QC procedures from published handbooks, or from the IPCC
+                       GPG LULUCF 2003, are applied
+
+                       When land is subjected to periodic cycles (e.g. slash-and-burn, or
+                       clearing-regrowing cycles) so that the shrub crown cover oscillates
+                       between a minimum and maximum values in the baseline, an
+                       average shrub crown cover equal to 0.5 is used unless transparent
+                       and verifiable information can be provided to justify a different value
+
+Data / Parameter table 3. Tree crown cover
+
+Data / Parameter:      Dimensionless
+Data unit:
+Description:           Crown cover of trees in the baseline stratum i
+Source of data:
+Measurement            Field measurement
+procedures (if any):
+                       Considering that the biomass in trees in the baseline is smaller
+Monitoring frequency:  compared to the biomass in trees in the project, a simplified method
+QA/QC procedures:      of measurement may be used for estimating tree crown cover. Ocular
+                       estimation of tree crown cover may be carried out or any other
+Comment:               method such as the line transect method or the relascope method
+                       may be applied
+
+                       Measured only once (at the beginning of the project)
+
+                       Quality control/quality assurance (QA/QC) procedures prescribed
+                       under national forest inventory are applied. In the absence of these,
+                       QA/QC procedures from published handbooks, or from the IPCC
+                       GPG LULUCF 2003, are applied
+
+                       When land is subjected to periodic cycles (e.g. slash-and-burn, or
+                       clearing-regrowing cycles) so that the tree crown cover oscillates
+                       between a minimum and maximum values in the baseline, the value
+                       of this parameter should be set equal to half the maximum tree crown
+                       cover that would be achieved under the cycle
+
+                       22 of 31
+AR-TOOL14
+Methodological tool: Estimation of carbon stocks and change in carbon stocks of trees and shrubs in A/R
+CDM project activities
+Version 04.2
+
+Appendix 1. Methods of plot biomass measurement
+
+1. This appendix provides methods for measurement of tree biomass per hectare in a
+         sample plot (the plot biomass value). Plot biomass values are estimated from direct or
+         indirect measurements conducted on trees in the sample plot. Table 1 presents the type
+         of measurements and the methods for converting these measurements into tree
+         biomass.
+
+Table 1. Plot measurements and their conversion to tree biomass
+
+            Step                    Fixed area plots                 Variable area plots
+Step 1. Measurement                                          Basal area per hectare
+(what is measured)       Individual tree dimension (e.g.
+                         diameter at breast height,          1. Using allometric equations
+Step 2. Conversion       diameter at root collar, tree             based on basal area; or
+(how measurements        height)
+are converted into tree                                      2. Using biomass expansion
+biomass)                 1. Using allometric equations             factors; or
+                               based on tree dimensions; or
+                                                             3. Combination of 1 and 2
+                         2. Using biomass expansion
+                               factors; or
+
+                         3. Combination of 1 and 2
+
+Note. Sampling by variable area plot method is also termed as `angle count sampling' in forest
+inventory literature.
+
+1. Measurement of fixed area plots
+
+2. In this method, sample plots of the same size (e.g. or of a hectare) are installed in a
+
+         stratum. All trees in a sample plot above a minimum dimension are measured and the
+         biomass of each tree is estimated. The minimum dimension selected can be low (e.g. a
+         diameter of 2 cm) or high (e.g. a diameter of 10 cm) depending upon the applicability of
+         models (e.g. allometric equations or volume equations) to be used for conversion of the
+         tree dimension into tree volume or tree biomass, and upon cost-effectiveness of
+         measurement.
+
+3. The biomass of the individual trees is added and the sum is divided by the area of the
+         sample plot to obtain the plot biomass value.
+
+         Note. Where the number of saplings with diameter below the range of diameter
+         applicable to the allometric equation is high, the mean biomass of the saplings in a
+         sample plot can be estimated as follows: (1) Determine the diameter mid-way between
+         the diameter of the smallest sapling existing and the smallest diameter allowed by the
+         allometric equation. (2) Harvest from outside the plot area a few saplings having
+         diameter close to the mid-way diameter and obtain the mean biomass per sapling; (3)
+         Count all the saplings in the sample plot and multiply this number by the mean sapling
+         biomass to obtain their contribution to the plot biomass.
+
+                         23 of 31
+AR-TOOL14
+Methodological tool: Estimation of carbon stocks and change in carbon stocks of trees and shrubs in A/R
+CDM project activities
+Version 04.2
+
+4. The plot biomass value (i.e. per-hectare tree biomass at the centre of the plot) is
+         estimated as follows (all time-dependent variables relate to the time of measurement):
+
+                                                                                                              Equation (1)
+
+                                                                                              Equation (2)
+        
+
+                                                                                            Equation (3)
+        
+
+Where:
+
+           = Tree biomass per hectare in sample plot p of stratum i; t d.m. ha-1
+           = Tree biomass in sample plot p of stratum i; t d.m.
+           = Size of sample plot in stratum i; ha
+           = Biomass of trees of species j in sample plot p of stratum i; t d.m.
+           = Biomass of tree l of species j in sample plot p of stratum i; t d.m.
+
+5. Biomass of a tree in a sample plot is estimated by using one of the following equations:
+
+        (     )(     )               Equation (4)
+
+           (      )            (  )  Equation (5)
+
+Where:
+
+              = Biomass of tree l of species j in sample plot p of stratum i; t
+                  d.m.
+
+                     24 of 31
+AR-TOOL14
+Methodological tool: Estimation of carbon stocks and change in carbon stocks of trees and shrubs in A/R
+CDM project activities
+Version 04.2
+
+(        )  = Above-ground biomass of the tree returned by the
+      (
+            allometric equation for species j relating the measurements
+
+            of tree l to the above-ground biomass of the tree; t d.m.
+
+            Note. The allometric equation used may be based on
+            different units of inputs and outputs. For example, input
+            values of diameter at breast height (dbh) may be in inches
+            and output of biomass may be in pounds, rather than dbh
+            in cm and biomass in kg or t d.m. In such a case, the
+            function should be applied consistently (e.g. convert the
+            dbh values from centimetre to inch units, obtain the tree
+            biomass in pound, and then convert the biomass into
+            metric tonne).
+
+            = Root-shoot ratio for tree species j; dimensionless
+
+                                          (                       )
+
+            The value of is estimated as
+
+            where is the above-ground tree biomass per hectare (in
+            t d.m. ha-1), unless transparent and verifiable information
+
+            can be provided to justify a different value.
+
+            Note. If trees have grown as coppice regeneration after a
+            harvest, then the value of should be multiplied by a
+
+            factor equal to  /  or 1, whichever is greater,
+
+            where            is the volume per hectare of trees
+
+            harvested and    is the volume per hectare of trees
+
+            standing in the plot at the time of measurement.
+
+            ) = Stem volume of tree l of species j in sample plot p of
+
+                     stratum i, estimated from the tree dimension(s) as entry
+                     data into a volume table or volume equation; m3
+
+                Note. Where the volume table or volume equation predicts
+                under-bark volume (i.e. wood volume, rather than gross
+                stem volume), suitable correction should be applied to
+                estimate the over-bark volume.
+
+            = Density (over-bark) of tree species j; t d.m. m-3
+
+            Values are taken from Table 3A.1.9 of IPCC GPG-
+            LULUCF 2003 unless transparent and verifiable
+            information can be provided to justify different values.
+
+            Note. Where density (specific gravity) of the bark of a tree
+            species is different from the density of the wood, suitable
+            correction should be applied to estimate a conservative
+            value of the overall (over-bark) density of tree stem.
+
+                   25 of 31
+AR-TOOL14
+Methodological tool: Estimation of carbon stocks and change in carbon stocks of trees and shrubs in A/R
+CDM project activities
+Version 04.2
+
+        = Biomass expansion factor for conversion of tree stem
+            biomass to above-ground tree biomass, for tree species j;
+            dimensionless
+
+        For ex-ante estimation, the value of        is selected by
+
+        applying, mutatis mutandis, the procedure described in
+
+        paragraph 7 below.
+
+        For ex-post estimation the conservative default value of
+        1.15 is used, unless transparent and verifiable information
+        can be provided to justify a different value.
+
+6. For ex-ante estimation the allometric equation, or volume table or volume equation
+         applied to a tree species is selected from the following sources (the most preferred
+         source being listed first):
+
+         (a) Existing data applicable to local situation (e.g. represented by similar ecological
+                   conditions);
+
+(b) National data (e.g. from national forest inventory or national greenhouse gas
+         (GHG) inventory);
+
+         (c) Data from neighbouring countries with similar conditions;
+
+         (d) Globally applicable data.
+
+7. For ex-post estimation, the allometric equation used must be demonstrated to be
+         appropriate for the purpose of estimation of tree biomass by applying the tool
+         "Demonstrating appropriateness of allometric equations for estimation of aboveground
+         tree biomass in A/R CDM project activities", and the volume table or volume equation
+         used must be demonstrated to be appropriate for the purpose of estimation of tree
+         biomass by applying the tool "Demonstrating appropriateness of volume equations for
+         estimation of aboveground tree biomass in A/R CDM project activities".
+
+2. Measurement of variable plots
+
+8. This method estimates tree biomass per hectare from the basal area per hectare and
+         therefore does not require individual tree measurements. Tree basal area is obtained at
+         the centre of a sample plot using an angle-count instrument (e.g. a wedge prism or a
+         relascope).
+
+9. Tree biomass in a plot is estimated as follows:
+
+                                                                                              Equation (6)
+        
+
+Where:
+
+        = Tree biomass per hectare in sample plot p of stratum i;
+            t d.m. ha-1
+
+                                  26 of 31
+AR-TOOL14
+Methodological tool: Estimation of carbon stocks and change in carbon stocks of trees and shrubs in A/R
+CDM project activities
+Version 04.2
+
+                                   = Tree biomass per hectare of species j in sample plot p of
+                                        stratum i; t d.m. ha-1
+
+10. Tree biomass per hectare of a species in a sample plot is estimated by using one of the
+         following equations:
+
+        ( )(  )               Equation (7)
+
+        ()       (         )  Equation (8)
+
+Where:
+
+        = Tree biomass per hectare of species j in sample plot p of stratum i;
+            t d.m. ha-1
+
+()      = Above-ground tree biomass per hectare in plot p returned by the
+
+            allometric equation for species j relating the basal area of the plot
+            to the above-ground tree biomass per hectare; t d.m. ha-1
+
+( ) = Stem volume per hectare of trees of species j in sample plot p of
+
+                   stratum i estimated by using the basal area of the plot as entry
+                   data into a volume table or volume equation; m3 ha-1
+
+11. All other symbols have the same meanings and requirements as in Equations (4) and
+         (5).
+
+12. Requirements under paragraphs 7 and 8 above also apply, mutatis mutandis, in respect
+         of allometric equations and volume functions used under this method.
+
+                 27 of 31
+AR-TOOL14
+Methodological tool: Estimation of carbon stocks and change in carbon stocks of trees and shrubs in A/R
+CDM project activities
+Version 04.2
+
+Appendix 2. Applying uncertainty discount
+
+1. Estimates with high uncertainty can be used in methodologies only if such estimates are
+         conservative. This appendix provides a procedure for applying discount factors in order
+         to make the mean estimated values of parameters conservative.
+
+2. When the uncertainty in the estimated mean value of a parameter is more than 10 per
+         cent, the estimated mean value is either increased or decreased by a percentage of the
+         uncertainty. Table 1 provides the uncertainty discount factors to be applied for different
+         ranges of uncertainty.
+
+Table 1. Uncertainty discount factors
+
+Uncertainty  Discount (% of U)                              How applied
+U  10%       0%
+10 < U  15   25%                       Example:
+15 < U  20   50%                       Estimated mean = 60±9 t d.m ha-1
+20 < U  30   75%                       i.e. U=9/60x100 = 15%
+U > 30       100%                      Discount = 25% x 9 = 2.25 t d.m ha-1
+                                       Discounted conservative mean:
+                                       In baseline = 60+2.25 = 62.25 t d.m ha-1
+                                       In project = 60-2.25 = 57.75 t d.m ha-1
+
+             28 of 31
+AR-TOOL14
+Methodological tool: Estimation of carbon stocks and change in carbon stocks of trees and shrubs in A/R
+CDM project activities
+Version 04.2
+
+Appendix 3. Calculating correlation coefficient and slope of
+                    regression
+
+1. This appendix provides the formulae for calculation of the coefficient of correlation and
+         the slope of regression line between two data sets. The formulae provided here can also
+         be found in any textbook or reference book of statistics. It is only for convenience of the
+         users and for avoiding any ambiguity in definition of these parameters that these
+         formulae are provided here. These coefficients may also be calculated using commercial
+         or open source computer software (e.g. statistical packages).
+
+2. For two linearly related data sets of equal size, the correlation coefficient and the slope
+         of regression line are calculated as follows:
+
+                                                                                                              Equation (1)
+
+       {( )( )}            Equation (2)
+ ( )  ( )
+
+Where:  = Slope of regression line of the dependent variable ( ) against the
+            independent variable ( )
+  ,
+        = Sample correlation coefficient between the dependent variable ( )
+            and the independent variable ( )
+
+        = Sample standard deviation of the dependent variable ( ) values
+            and the independent variable ( ) values respectively
+
+        = Independent variable ( ) values
+        = Mean of the independent variable ( ) values
+        = Dependent variable ( ) values
+        = Mean of the dependent variable ( ) values
+        = Number of data values in each data set
+
+                                   -----
+
+                 29 of 31
+AR-TOOL14
+Methodological tool: Estimation of carbon stocks and change in carbon stocks of trees and shrubs in A/R
+CDM project activities
+Version 04.2
+
+Version  Date               Document information
+
+04.2     24 July 2015      Description
+04.1     16 October 2013
+04.0     4 October 2013    EB 85, Annex 22
+                           Minor revision to correct paragraph 12, read "one or more of the
+03.0.0   23 November 2012  following indicators apply" instead of "the following indicators
+                           apply.
+
+                           Editorial revision to correct paragraph and sub-heading numbers.
+
+                           EB 75, Annex 26
+                           This revision:
+                            Options of using double sampling and simplified method of `no-
+
+                                 decrease' were added;
+                            Combining different methods in different strata was allowed;
+                            A more comprehensive approach to uncertainty management
+
+                                 was provided;
+                            The structure was improved and some sections were moved to
+
+                                 the appendices to improve readability;
+                           Due to the overall modification of the document, no highlights of
+                           the changes are provided.
+
+                           EB 70, Annex 35
+                           In this revision:
+                            Step-wise guidance was provided which explains when to use
+
+                                 which method of estimation;
+                            Effect of the tree bark density was taken into account to
+
+                                 estimate tree biomass;
+                            A method for adjustment of the estimated mean values was
+
+                                 provided when the uncertainty of estimation exceeds the
+                                 allowable maximum uncertainty.
+                           Due to the overall modification of the document, no highlights of the
+                           changes are provided.
+
+                           30 of 31
+AR-TOOL14
+Methodological tool: Estimation of carbon stocks and change in carbon stocks of trees and shrubs in A/R
+CDM project activities
+Version 04.2
+
+Version  Date               Description
+
+02.1.0   15 April 2011      EB 60, Annex 13
+
+                            In this amendment:
+
+                             Equations for estimation of the means and variances of tree
+                                  biomass at stratum level and at project level have been
+                                  included;
+
+                             Estimation of tree biomass is made on a per hectare basis, so
+                                  that plotless sampling (point sampling) methods can be
+                                  seamlessly applied;
+
+                             An approach for estimation of change in biomass based on
+                                  successive measurements of the same plots has been added;
+                                  (iv) some entries in data and parameter tables have been
+                                  updated to include more clear guidance in commonly
+                                  encountered field situations;
+
+                             Bark correction has been proposed in cases where a volume
+                                  table based on under-bark volume is used in conjunction with
+                                  biomass expansion factors based on over-bark volume (or vice
+                                  versa).
+
+02.0.0   17 September 2010  EB 56, Annex 13
+
+                            In this revision:
+
+                             The scope of the tool has been expanded so that it can be
+                                 applied in both baseline scenario and project scenario;
+
+                             The procedure for estimation of shrub biomass has been
+                                 simplified by adopting a default estimation approach based on
+                                 a fraction of forest biomass;
+
+                             The mathematical notation and equations have been changed
+                                 so to streamline these;
+
+                             General layout and style of the document has been changed
+                                 so as to make it in conformity with other documents such as
+                                 the recently approved A/R methodologies; and
+
+                             The title was changed to "Estimation of carbon stocks and
+                                 change in carbon stocks of trees and shrubs in A/R CDM
+                                 project activities" from the previous title "Estimation of changes
+                                 in the carbon stocks of existing trees and shrubs within the
+                                 boundary of an A/R CDM project activity".
+
+                            Due to the overall modification of the document, no highlights of
+                            the changes are provided.
+
+01       25 March 2009      EB 46, Annex 18
+
+                            Initial adoption.
+
+Decision Class: Regulatory
+Document Type: Tool
+Business Function: Methodology
+Keywords: afforestation reforestation, AR project activity, biomass, carbon pools
+
+                                         31 of 31
+

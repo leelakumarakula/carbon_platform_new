@@ -1,0 +1,546 @@
+=== p1
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+METHODOLOGICAL 
+TOOL 
+ 
+BM-T-001  
+Combined tool to identify the baseline scenario and 
+demonstrate additionality 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Publication Date: 27 March 2025  
+Version 1.0 
+ 
+ 
+ 
+Ministry of Power 
+Ministry of Environment,  
+Forest and Climate Change 
+
+=== p2
+ 
+Table of Contents 
+1. INTRODUCTION ........................................................................................................ 3 
+2. DEFINITIONS ............................................................................................................. 3 
+3. SCOPE & APPLICABILITY ....................................................................................... 3 
+3.1. Scope ............................................................................................................. 3 
+3.2. Applicability .................................................................................................... 3 
+4. METHODOLOGY: PROCEDURE ............................................................................. 4 
+4.2. Step 1: Identification of alternative scenarios ................................................ 7 
+4.3. Step 2: Barrier analysis .................................................................................. 9 
+4.4. Step 3: Investment analysis ........................................................................... 12 
+4.5. Step 4: Common practice analysis ................................................................ 14 
+ 
+ 
+  
+=== p3
+1. Introduction 
+1. This tool provides a step-wise approach to identify the baseline scenario and 
+simultaneously demonstrate additionality.   
+2. Definitions 
+2. For the purpose of this methodology, the following definitions apply: 
+(a) Applicable geographical area is India. If the non-obligated entity opts to limit the 
+applicable geographical area to a specific geographical area (such as state, district, 
+etc.) within India, then they shall provide justification on the essential distinction 
+between the identified specific geographical area and the rest of India;  
+(b) Measure (for emission reduction activities) is a broad class of greenhouse gas 
+emission reduction activities possessing common features.  
+(c) Output is good/services produced by the project activity including, among other 
+things, heat steam, electricity, methane, and biogas unless otherwise specified in 
+the applied methodology. 
+3. Scope & Applicability 
+3.1. Scope 
+3. Non-obligated entity shall apply the following four Steps:  
+(a) Mandatory steps: 
+(i) Regulatory Analysis;  
+(ii) Analysis of Lock-in Risk; 
+(b) STEP 1. Identification of alternative scenarios;  
+(c) STEP 2. Barrier analysis;  
+(d) STEP 3. Investment analysis (if applicable);  
+(e) STEP 4. Common practice analysis. 
+4. The procedure is summarized in Figure 1. For more specific detail regarding the flowcharts 
+please refer to the text. 
+3.2. Applicability 
+5. The tool is applicable to all types of proposed project activities. However, in some cases, 
+methodologies referring to this tool may require adjustments or additional explanations as 
+per the guidance in the respective methodologies. This could include, inter alia, a listing 
+of relevant alternative scenarios that should be considered in Step 1, any relevant types 
+of barriers other than those presented in this tool and guidance on how common practice 
+should be established. 
+=== p4
+4. Methodology: Procedure 
+6. This Step shall be addressed in all ICM PDDs.  
+4.1.1. Regulatory Analysis 
+Requirement of specific approach 
+7. PDDs shall include provisions to demonstrate that the emission reductions or net removals 
+resulting from an ICM project activity would not occur as a result of any law or regulation, 
+unless the law or regulation refers to or formally integrates the offset mechanism as an 
+instrument for implementation. A law or regulation applicable to the proposed project 
+activity that may require a certain technological, performance or management action shall 
+be considered, noting that regulatory environments vary.  
+8. The analysis supporting this demonstration shall confirm that legal requirements, except 
+for those that refer to or formally integrate the offset mechanism as an instrument for 
+implementation, do not:  
+(a) Directly require the implementation of a project activity (e.g. a regulation requires 
+capture of landfill gas);  
+(b) Indirectly require the implementation of a project activity, by requiring a certain 
+technological, performance or management action or by preventing potential 
+alternative scenarios to the implementation of the project activity (e.g. a regulation 
+establishing air pollution requirements for landfill sites that cannot be met without 
+capturing the landfill gas;  
+(c) Establish a support scheme that:  
+(i) Is designed to achieve a quantitative target or outcome for the relevant 
+technologies or practices;  
+(ii) Is applicable to the project activity; and  
+(iii) Would likely result in the same amount of emission reductions or net 
+removals if the project activity would not be implemented.  
+9. The analysis shall be based on credible and current evidence and be justified.  
+10. The methodology shall specify the appropriate frequency for updating the analysis, taking 
+into account the context of the type of project activity, as follows:  
+(a) Where the analysis is applied by non-obligated entities, the analysis shall be 
+conducted at the latest at each renewal of the crediting period;  
+(b) Where the analysis is applied through a standardized baseline, the methodology 
+shall specify for how long the standardized baseline may be valid (i.e. by when the 
+standardized baseline would need to be updated to confirm that the conclusion of 
+the analysis is still valid). 
+=== p5
+4.1.2. Analysis of Lock-in Risk 
+11. Lock-in risks shall be analysed in all methodologies or project activities. Analysis of lock-
+in risk should preferably be applied by the methodology developer but may also be applied 
+by non-obligated entities;  
+Requirement of specific approach 
+12. Methodologies or non-obligated entities shall ensure that the analysis of lock-in risk follows 
+a neutral approach with regards to technology and source.  
+13. The ICM project activity:  
+(a) Does not lead to the adoption or the prolongation of the lifetime of technologies or 
+practices that are incompatible with long term goals of the Paris Agreement, taking 
+into account different national circumstances, approaches and pathways;  
+(b) For technologies or practices with a long lifetime, relies on a technology or practice 
+that is among those within the lowest greenhouse gas intensity in the relevant 
+region taking into account the lifetime of the technology or practice in line with 
+national circumstances, approaches and pathways; and  
+(c) Does not involve a technology or practice that constitutes an inefficient use of a 
+resource that is important for mitigating climate change or achieving other policy 
+objectives.  
+14. The non-obligated entity shall either provide appropriate justification that the project 
+activity eligible under the methodology meets the above requirements, as per paragraph 
+14(a) above, or include a methodological procedure to demonstrate the above 
+requirements, as referred to in paragraphs 14(b) and 14(c) above.  
+15. The analysis shall consider socio-economic contexts, existing infrastructure and any path 
+dependencies. The analysis shall also consider:  
+(a) The technical or operational lifetime of the technologies or practices established 
+as part of an ICM project activity.  
+(b) The emissions intensity of these technologies and practices;  
+(c) The scale of the ICM project activity and 
+(d) Availability and feasibility of alternative options given national circumstances.  
+16. Where the technologies or practices applicable under the methodologies have a technical 
+or operational lifetime of no more than 10 years, a methodology may assume that no lock-
+in risk exists. Appropriate evidence and justification shall be provided for the estimation of 
+the technical or operational lifetime of the technology or practice.  
+17. The analysis shall be implemented in a conservative manner and be appropriately justified.  
+=== p6
+Figure 1: Flowchart of the stepwise approach  
+ 
+ 
+* In case of only one alternative remaining, the baseline scenario is the remaining alternative; 
+** If not required otherwise in the respective methodology 
+ 
+ 
+
+=== p7
+4.2. Step 1: Identification of alternative scenarios  
+18. This Step serves to identify all alternative scenarios to the proposed ICM project activity(s) 
+which can be the baseline scenario: 
+4.2.1.  Step 1a: Define alternative scenarios to the proposed ICM project activity 
+19. Identify all alternative scenarios that provide the same output (service or product) as the 
+proposed ICM project activity1. These alternative scenarios shall include: 
+(a) S1: The proposed project activity undertaken without being registered as a ICM 
+project activity; 
+(b) S2: Where applicable, no investment is undertaken by the non-obligated entity, i.e., 
+the same output as that produced by the proposed ICM project activity can also be 
+provided by others than the non-obligated entity.  For example:  
+(i) In the case of a Greenfield power project, an alternative scenario may be that 
+the non-obligated entity would not invest in the Greenfield power plant but 
+that power would be generated in existing and/or new power plants in the 
+electricity grid;  
+(ii) In the case of a transportation project, an alternative scenario may be that 
+the non-obligated entities would not invest in alternative modes (e.g. rail or 
+pipelines), but these alternatives would be implemented by third parties. 
+(c) S3: Where applicable, the continuation of the current situation, not requiring any 
+investment or expenses to maintain the current situation, such as, inter alia:  
+(i) The continued venting of methane from a landfill;  
+(ii) The continued release of N 2O from adipic or nitric acid production. 
+(d) S4: Where applicable, the continuation of the current situation, requiring an 
+investment or expenses to maintain the current situation, such as, inter alia:  
+(i) The continued use of an existing boiler involving expenses for operation and 
+maintenance; 
+ 
+1 For example: 
+ In the case of a project reducing emissions in the aluminium or cement production, the output 
+provided by the alternative scenarios should be the production of the same quality of aluminium or 
+the production of a cement type that can be used in the same applications as the cement type 
+produced by the project activity; 
+ In the case of a project improving the energy efficiency of motors in a facility, the service provided 
+is mechanical energy. Different scenarios to produce the same quantity of mechanical energy 
+should be considered; 
+ In the case of a landfill gas capture project, the service provided by the project includes operation 
+of a landfill. Alternatives scenarios to the project could include different ways to operate the landfill, 
+such as no capture of methane, capture and flaring of the methane or capture and combustion of 
+the methane for energy generation. 
+=== p8
+(ii) The continued use of a specific fuel mix for power generation in an existing 
+power plant;  
+(iii) The continued use of existing transportation infrastructure for transporting a 
+product.  
+(e) S5: Other plausible and credible alternative scenarios to the project activity 
+scenario, including the common practices in the relevant sector, which deliver the 
+same output considering examples of scenarios identified in the underlying 
+methodology where relevant; 
+(f) S6: Where applicable, the “proposed project activity undertaken without being 
+registered as a ICM project activity” to be implemented at a later point in time (e.g.  
+due to existing regulations, end-of-life of existing equipment, financing aspects). 
+20. If the proposed ICM project activity includes several different facilities, technologies or 
+outputs, alternative scenarios for each of them should be identified separately. Feasible 
+combinations of these should be considered as possible alternative scenarios to the 
+proposed project activity.2   
+21. For identifying relevant alternative scenarios, provide an overview of technologies or 
+practices (including registered ICM project activities or ICM project activities submitted for 
+registration, or ICM project activities undergoing validation) that provide the same output 
+as the proposed ICM project activity and that have been implemented previously or are 
+currently underway in the applicable geographical area. The applicable geographical area 
+should include preferably ten facilities (or projects), reflecting the variety of the available 
+technologies, that provide the same output as the proposed ICM project activity. If less 
+than ten facilities (or projects) that provide the same output as the proposed ICM project 
+activity are found in the applicable geographical area, the applicable geographical area 
+may be expanded to an area that covers if possible, ten such facilities (or projects) or the 
+whole India. Other registered ICM project activities are not to be included in the count to 
+reach 10 facilities in defining the applicable geographical area. Provide relevant 
+documentation to support the results of the analysis, including clear justification on the 
+consideration of S2 if excluded from further consideration. 
+- Outcome of Step 1a: List of plausible alternative scenarios to the project activity  
+4.2.2. Step 1b: Consistency with mandatory applicable laws and regulations 
+22. The alternative scenario(s) shall be followed with all mandatory applicable legal and 
+regulatory requirements, even if these laws and regulations have objectives other than 
+ 
+2 For example: 
+ In case of a cogeneration project activity, alternative scenarios for heat and electricity generation 
+should be established separately; 
+ In case of a project that improves energy efficiency in several boilers with specific different 
+characteristics (e.g. size, technology, age, etc.), alternative scenarios should be established for 
+each boiler or for types of boilers with broadly similar characteristics. 
+=== p9
+GHG reductions, e.g. to mitigate local air pollution3 (This Step does not consider national 
+and local policies that do not have legally-binding status).  
+23. If an alternative scenario does not comply with all mandatory applicable legislation and 
+regulations, then show that, based on an examination of current practice in the country or 
+region in which the mandatory law or regulation applies, those applicable mandatory legal 
+or regulatory requirements are systematically not enforced and that non-compliance with 
+those requirements is widespread in the country. If this cannot be shown, then eliminate 
+the alternative scenario from further consideration.  
+24. If the proposed project activity is the only alternative scenario amongst the ones 
+considered by the non-obligated entities that follows all mandatory regulations with which 
+there is general compliance, then the proposed ICM project activity is not additional. 
+- Outcome of Step 1b: List of alternative scenarios to the project activity that follow 
+mandatory legislation and regulations considering the enforcement in the region or country 
+and Board decisions on national and/or sectoral policies and regulations.  
+- If the above-mentioned list contains only one scenario, namely: S1 - the proposed project 
+activity undertaken without being registered as a ICM project activity, then the proposed 
+project activity is not additional and any remaining procedures of this tool are not 
+applicable.  
+Otherwise, proceed to Step 2 (Barrier analysis). 
+4.3. Step 2: Barrier analysis 
+25. This step serves to identify barriers and to assess which alternative scenarios are 
+prevented by these barriers.  
+4.3.2. Step 2a: Identify barriers that would prevent the implementation of alternative 
+scenarios 
+26. Establish a complete list of realistic and credible barriers that may prevent alternative 
+scenarios to occur. Such realistic and credible barriers may include:  
+(a) Investment barriers, other than insufficient financial returns as analyzed in Step 3, 
+inter alia:  
+(i) For alternatives undertaken and operated by entities: Similar activities have 
+only been implemented with grants or other non-commercial financing terms. 
+Similar activities are defined as activities that rely on a broadly similar 
+technology or practices, are of a similar scale, take place in a comparable 
+environment with respect to regulatory framework and are undertaken in the 
+applicable geographical area, as defined in Step 1a above;  
+(ii) No capital is available from domestic or international capital markets due to 
+real or perceived risks associated with investments in the country where the 
+project activity is to be implemented, as demonstrated for example, by the 
+ 
+3 For example, an alternative consisting of an open, uncapped landfill would be non-complying in a country 
+where this scenario would imply violations of safety or environmental regulations pertaining to landfills. 
+=== p10
+credit rating of the country or other country investment reports of reputed 
+origin (e.g. country investment grade or country risk reports).  
+(b) Technological barriers, inter alia:  
+(i) Skilled and/or properly trained labor to operate and maintain the technology 
+is not available in the applicable geographical area, which leads to an 
+unacceptably high risk of equipment disrepair, malfunctioning or another 
+underperformance;  
+(ii) Lack of infrastructure for implementation and logistics for maintenance of the 
+technology (e.g. natural gas cannot be used because of the lack of a gas 
+transmission and distribution network;  
+(iii) Risk of technological failure: the process/technology failure risk in the local 
+circumstances is significantly greater than for other technologies that provide 
+services or outputs comparable to those of the proposed ICM project activity, 
+as demonstrated by relevant scientific literature or technology manufacturer 
+information;  
+(iv) The particular technology used in the proposed project activity is not 
+available in the applicable geographical area.  
+(c) Other barriers, preferably specified in the underlying methodology as examples.  
+- Outcome of Step 2a: List of barriers that may prevent one or more alternative scenarios 
+to occur.  
+4.3.3. Step2b: Eliminate alternative scenarios which are prevented by the identified 
+barriers 
+27. Identify which alternative scenarios are prevented by at least one of the barriers listed in 
+Step 2a, and eliminate those alternative scenarios from further consideration. All 
+alternative scenarios shall be compared to the same set of barriers. The assessment of 
+the significance of barriers should consider the level of access to and availability of 
+information, technologies and skilled labour in the specific context of the industry where 
+the project type is located. For example, projects located in sectors with small and medium 
+sized enterprises may not have the same means to overcome technological barriers as 
+projects in a sector where typically large or international companies operate.  
+- Outcome of Step 2b: List of alternative scenarios to the project activity that are not 
+prevented by any barrier. 
+28. In applying Steps 2a and 2b, provide transparent and documented evidence, and offer 
+conservative interpretations of this evidence, as to how it demonstrates the existence and 
+significance of the identified barriers and whether alternative scenarios are prevented by 
+these barriers. The type of evidence to be provided should include at least one of the 
+following:  
+(a) Relevant legislation, regulatory information or industry norms;  
+(b) Relevant (sectoral) studies or surveys (e.g. market surveys, technology studies, 
+etc.) undertaken by universities, research institutions, industry associations, 
+companies, bilateral/multilateral institutions, etc.;  
+=== p11
+(c) Relevant data from national or international statistics;  
+(d) Documentation of relevant market data (e.g. market prices, tariffs, rules);  
+(e) Written documentation from the company or institution developing or implementing 
+the ICM project activity or the ICM project developer, such as minutes from Board 
+meetings, correspondence, feasibility studies, financial or budgetary information, 
+etc.;  
+(f) Documents prepared by the project developer, contractors or project partners in 
+the context of the proposed project activity or similar previous project 
+implementations;  
+(g) Written documentation of independent expert judgements from industry, 
+educational institutions (e.g. universities, technical schools, training centres), 
+industry associations and others. 
+- Outcome of Step 2:  
+o If the proposed project activity undertaken without being registered as a ICM 
+project activity is the only alternative scenario that is not prevented by any barrier 
+(i.e., answer of “Yes” to the question “Is project without ICM the only alternative 
+remaining?” in Figure 1), the project activity is not additional. In such a case, the 
+remaining procedures of this tool are not applicable.  
+o If there is only one alternative scenario that is not prevented by any barrier and it 
+is not the proposed project activity undertaken without being registered as a ICM 
+project activity (i.e., answer of “No” to question “Are there multiple alternatives 
+remaining?” in Figure 1 or Figure 2), then the following applies:  
+ If the output can only be provided by the non-obligated entity, then this 
+alternative is identified as the baseline scenario.  
+ If the output can also be provided by others than the non-obligated entity 
+(e.g. the market, a third party), an emission benchmark approach is 
+required, if not specified differently in the respective methodology 4. The 
+baseline scenario corresponds to the scenario representing the emission 
+benchmark. For example, the emission benchmark could be the grid 
+emission factor, and the corresponding baseline scenario is the operation 
+of the power grid.  
+o If more than one alternative scenario is not prevented by any barrier (i.e., answer 
+of “Yes” to the question “Are there multiple alternatives remaining?” in Figure 1 or 
+Figure 2), then the following applies:  
+ Check whether the remaining alternative scenarios include the proposed 
+project activity undertaken without being registered as a ICM project activity 
+(i.e., the question “Do the alternatives include the project without ICM?” in 
+Figure 1):  
+ If Yes, then proceed to Step 3. (Investment Analysis);  
+ 
+4 The guidance on how the emission benchmark is developed can be found in the respective methodology. 
+=== p12
+ If No, the non-obligated entity may choose either of the two options 
+below: Option 1: Go to Step 3 (investment analysis); or  
+Option 2: Go to the other route “No Investment Analysis” parallel to 
+Step 3 in Figure 1 to justify whether the service or product can only 
+be provided by the non-obligated entity:  
+ If Yes, baseline scenario is the alternative with the lowest 
+emissions among the remaining alternatives, after excluding the 
+proposed project activity undertaken without being registered as 
+a ICM project activity from the list of remaining scenarios;  
+29. If No, an emission benchmark approach (e.g., grid emission 
+factor) is required if not specified differently in the respective 
+methodology5. The baseline scenario corresponds to the 
+scenario representing the emission benchmark (e.g., the 
+operation of the power grid).  
+o If the emission level of the alternative considered as baseline scenario is lower 
+than or equal to that of the “proposed project activity undertaken without being 
+registered as a ICM project activity”, then the project activity is not additional.  
+4.4. Step 3: Investment analysis 
+30. The objective of Step 3 is to compare the economic or financial attractiveness of the 
+alternative scenarios remaining after Step 2 by conducting an investment analysis. The 
+analysis should include all alternative scenarios remaining after Step 2, including 
+scenarios of S2 or S3.  
+31. The choice between the Benchmark Analysis versus the Investment Comparison Analysis 
+and Simple cost analysis is determined by whether the output can only be provided by the 
+non-obligated entity. The substantiation of the choice with supported evidence shall be 
+clearly presented in the project design document. Furthermore, for the purpose of 
+simplification, the benchmark analysis is mandatory for the following two situations:  
+(a) The proposed project activity is developed as part of a portfolio of technologies 
+delivering electricity to the power grid6;  
+(b) The non-obligated entity is the only power supplier to supply power to the grid in 
+the applicable geographical area (i.e., monopoly).  
+32. Identify the financial indicator, such as IRR, NPV, cost benefit ratio, or unit cost of service 
+(e.g. levelized cost of electricity production in $/kWh or levelized cost of delivered heat in 
+$/GJ) most suitable for the project type and decision-making context.  
+ 
+5 The guidance on how the emission benchmark is developed can be found in the respective methodology. 
+If applicable, the methodology may also specify other scenario(s) for the determination of baseline 
+emissions, e.g., it may provide specific guidance on whether emission benchmark alone is sufficient, or 
+it shall still be compared against the emission levels of the most attractive alternative scenario. 
+6 For example, the proposed biomass power plant is a part of a programme involving a portfolio of power 
+generation options (e.g., coal, natural gas, biomass power plant etc.) to be implemented by the non-
+obligated entitiy 
+=== p13
+33. Calculate the suitable financial indicator for all alternative scenarios remaining after Step 
+2. Include all relevant costs (including, for example, investment operations and 
+maintenance costs), and revenues (including subsidies/fiscal incentives7,ODA, etc. where 
+applicable), and, as appropriate, non-market costs and benefits in the case of public 
+investors if this is standard practice for the selection of public investments in the India.  
+34. For alternative scenarios that correspond to the situation described in S2 or S3, use the 
+following values for the financial indicator to reflect such a situation:  
+(a) If the financial indicator is the NPV: Assume a value of NPV equal to zero;  
+(b) If the financial indicator is the IRR: Use as the IRR the financial benchmark, as 
+determined through the options (a) to (e) below.  
+35. The financial/economic analysis shall be based on parameters that are standard in the 
+market, considering the specific characteristics of the project type, but not linked to the 
+subjective profitability expectation or risk profile of a particular project developer. In the 
+particular case where the project activity can only be implemented by the non-obligated 
+entity, the specific financial/economic situation of the company undertaking the project 
+activity can be considered.   
+36. The discount rate (in the case of the NPV) or the financial benchmark (in the case of the 
+IRR) shall be determined as per the procedure mentioned in the “Methodological tool: 
+Investment Analysis”.  
+37. Present the investment analysis in a transparent manner and provide all the relevant 
+assumptions, preferably in the ICM-PDD, or in separate annexes to the PDD, so that a 
+reader can reproduce the analysis and obtain the same results. Refer to critical 
+technoeconomic parameters and assumptions (such as capital costs, fuel prices, lifetimes, 
+and discount rate or cost of capital). Justify and/or cite assumptions in a manner that can 
+be validated by the ACVA. In calculating the financial indicator, the risks of the alternative 
+scenarios can be included through the cash flow pattern, subject to project-specific 
+expectations and assumptions (e.g. insurance premiums can be used in the calculation to 
+reflect specific risk equivalents). Assumptions and input data for the investment analysis 
+shall not differ across alternative scenarios, unless differences can be well substantiated.  
+38. Present in the ICM-PDD submitted for validation a clear comparison of the financial 
+indicator for all alternative scenarios and rank the alternative scenarios according to the 
+financial indicator.  
+39. Include a sensitivity analysis to assess whether the conclusion regarding the financial 
+attractiveness is robust to reasonable variations in the critical assumptions. The 
+investment comparison analysis provides a valid argument in identifying the baseline 
+scenario only if it consistently supports (for a realistic range of assumptions) the conclusion 
+that one alternative scenario is the most economically and/or financially attractive. 
+- Outcome of Step 3:  
+40. For the case when benchmark analysis has been chosen:  
+ 
+7 Note that subsidies and incentives may be excluded from consideration in certain cases. 
+=== p14
+ The baseline scenario corresponds to the scenario representing the 
+emission benchmark (e.g., the operation of the power grid).  
+ If the sensitivity analysis is conclusive to confirm the result of the 
+benchmark analysis, an emission benchmark approach (e.g., grid emission 
+factor) is required if not specified differently in the respective methodology8. 
+The baseline scenario corresponds to the scenario representing the 
+emission benchmark (e.g., the power grid).  
+o For the case when investment comparison or simple cost analysis has been 
+chosen, rank list of alternative scenarios according to the most suitable financial 
+indicator, taking into account  the results of the sensitivity analysis.  
+ If the sensitivity analysis is not conclusive, then the alternative scenario to 
+the project activity with least emissions among the alternative scenarios is 
+considered as the baseline scenario;  
+ If the sensitivity analysis is conclusive to confirm the result of the 
+investment comparison analysis or simple cost analysis, then the most 
+economically or financially attractive alternative scenario is considered as 
+the baseline scenario;  
+ If the alternative considered as baseline scenario is the “proposed project 
+activity undertaken without being registered as a ICM project activity”, then 
+the project activity is not additional.  
+o If the emission level of the alternative considered as baseline scenario is lower 
+than or equal to that of the “proposed project activity undertaken without being 
+registered as a ICM project activity”, then the project activity is not additional. 
+4.5. Step 4: Common practice analysis 
+41. The previous Steps shall be complemented with an analysis of the extent to which the 
+proposed project type (e.g. technology or practice) has already diffused in the relevant 
+sector and applicable geographical area. This test is a credibility check to demonstrate 
+additionality and complements the barrier analysis (Step 2) and, where applicable, the 
+investment analysis (Step 3).  
+42. If the proposed ICM project activity(s) applies measure(s) that are listed in the definitions 
+section above proceed to Step 4 a, otherwise, proceed to Step 4 b: 
+4.5.2. Step 4a: The proposed ICM project activity(s) applies measure(s) that are listed in 
+the definitions section above  
+43. Proceed directly to the Outcome of Step 4. 
+ 
+8 The guidance on how the emission benchmark is developed can be found in the respective methodology. 
+If applicable, the methodology shall also provide specific guidance on whether emission benchmark 
+alone is sufficient, or it shall still be compared against the emission levels of the most attractive alternative 
+scenario. 
+=== p15
+4.5.3. Step 4b: The proposed ICM project activity(s) does not apply any of the measures 
+that are listed in the definitions section above  
+44. Provide an analysis to which extent similar activities to the proposed ICM project activity 
+have been implemented previously or are currently underway. Similar activities are defined 
+as activities (i.e. technologies or practices) that are of similar scale, take place in a 
+comparable environment, inter alia, with respect to the regulatory framework and are 
+undertaken in the applicable geographical area, as defined in Step 1a above. Other ICM 
+project activities (registered project activities and project activities which have been 
+published portal for global stakeholder consultation as part of the validation process) are 
+not to be included in this analysis. Provide documented evidence and, where relevant, 
+quantitative information. Based on that analysis, describe whether and to which extent 
+similar activities have already diffused in the applicable geographical area.  
+45. If similar activities to the proposed project activity are identified, then compare the 
+proposed project activity to the other similar activities and assess whether there are 
+essential distinctions between the proposed project activity and the similar activities. If this 
+is the case, point out and explain the essential distinctions between the proposed project 
+activity and the similar activities and explain why the similar activities enjoyed certain 
+benefits that rendered them financially attractive (e.g., subsidies or other financial flows) 
+and which the proposed project activity cannot use or why the similar activities did not face 
+barriers to which the proposed project activity is subject.  
+46. Essential distinctions may include a serious change in circumstances under which the 
+proposed ICM project activity will be implemented when compared to circumstances under 
+which similar projects were carried out. For example, new barriers may have arisen, or 
+promotional policies may have ended, leading to a situation in which the proposed ICM 
+project activity would not be implemented without the incentive provided by the ICM. The 
+change must be fundamental and verifiable.  
+47. The proposed project activity is regarded as “common practice” if similar activities can be 
+observed and essential distinctions between the proposed ICM project activity and similar 
+activities cannot be identified. 
+- Outcome of Step 4:  
+If outcome of Step 4 is that the proposed project activity is not regarded as “common 
+practice”, then the proposed project activity is additional.  
+If outcome of Step 4 is that the proposed project activity is regarded as “common practice” 
+then the proposed ICM project activity is not additional. 
+  
+=== p16
+Revision/Changes in the Document 
+ 
+Version Date Description 
+ 
+1.0 27 March 2025 Initial Adoption 
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
