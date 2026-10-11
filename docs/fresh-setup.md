@@ -18,8 +18,11 @@ Your Windows account (or the SQL login you use) must be able to `ALTER DATABASE`
 
 ## 2. Get the code
 
+Two repositories, cloned **next to each other** (the frontend's tooling expects the backend at `../carbon_platform_new`):
+
 ```powershell
-git clone <repo-url> carbon_platform_new      # or: git pull, on the branch you test
+git clone <backend-repo-url> carbon_platform_new       # or: git pull, on the branch you test
+git clone <frontend-repo-url> carbon_project_frontend  # Angular app
 cd carbon_platform_new
 ```
 
@@ -109,9 +112,9 @@ This is the only account made from the command line. The admin creates every oth
 .venv\Scripts\uvicorn app.main:app --reload --port 8000
 ```
 
-**Terminal 2, frontend** (in `frontend`):
+**Terminal 2, frontend** (in the `carbon_project_frontend` repository):
 ```powershell
-npm install
+npm ci
 npx ng serve
 ```
 

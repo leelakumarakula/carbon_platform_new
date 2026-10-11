@@ -7,7 +7,7 @@ the **screen**, **every field** on the form with its rule, the **value to enter*
   factors). It needs no soil sampling and no laboratory work. Field sampling and the laboratory are tested in [Appendix A](#appendix-a--field-sampling-and-laboratory-separate-project).
 - Values are **test values** shaped like IPCC factors, not a real project's. With a ~100 ha farm they give about **170 credits**, enough
   to test issuance, the ledger, the marketplace and the payout.
-- Verified through the UI up to the calculation run; Stages 10–14 follow the code (`backend/app/services/*`, `frontend/src/app/*`).
+- Verified through the UI up to the calculation run; Stages 10–14 follow the code (`backend/app/services/*` here, `src/app/*` in the `carbon_project_frontend` repository).
   Report mismatches to the team lead with the error code.
 - 🔎 marks a **negative test**: the action must be refused. The refusal proves the separation-of-duties rule.
 
@@ -24,7 +24,7 @@ Contents: [0 Setup](#0--setup) · [Role matrix](#role-matrix--who-fills-what) ·
 ## 0 — Setup
 
 ### 0.1 Servers
-- Backend on port 8000, `npx ng serve` in `frontend`, open http://localhost:4200.
+- Backend on port 8000, `npx ng serve` in the `carbon_project_frontend` repository, open http://localhost:4200.
 - Start the backend with `LOGIN_RATE_LIMIT_PER_MINUTE=100` in `backend/.env` — the test signs in many times.
 
 ### 0.2 House rules (apply to every stage)

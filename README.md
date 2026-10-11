@@ -10,6 +10,20 @@ adapters. It is not itself a laboratory, verifier, registry or certification bod
 
 > **Status:** Phases 1 (Foundation), 2 (Farmer & Farm), 3 (Project) and 4 (Standard / Activity / Methodology) are complete. See [docs/implementation-status.md](docs/implementation-status.md).
 
+## Repositories
+
+The platform is developed in two repositories checked out **side by side** (the backend's `docker-compose.yml` and the
+frontend's E2E smoke test rely on this layout):
+
+```
+<workspace>/
+├── carbon_platform_new/       this repository: backend, database, docker, docs, ops
+└── carbon_project_frontend/   Angular app — https://github.com/charan14111411/carbon_project_frontend
+```
+
+The frontend was split out of `frontend/` on 2026-10-09 with its full history; the last combined snapshot is on the
+branch `carbon_frontend_backend_bkp`.
+
 ## Architecture
 
 Modular monolith (spec §5): Angular SPA → FastAPI (`/api/v1`) → SQL Server, with Redis/Celery workers,
@@ -33,12 +47,14 @@ Details: [docs/architecture.md](docs/architecture.md).
 
 ```
 backend/    FastAPI app (api, core, models, schemas, services, repositories, security, audit, seed), alembic, tests
-frontend/   Angular app (core, shared, layout, auth, dashboard, admin, farmer, farms, projects, methodologies)
 storage/    local-dev document storage (git-ignored contents)
 database/   seed / reference-data / scripts / documentation
 docs/       architecture, schema, API, roles, security, deployment, status
-docker/     Dockerfiles + nginx config used by docker-compose.yml
+docker/     backend Dockerfile + MinIO init script used by docker-compose.yml
+ops/        SQL Server backup jobs, MinIO backup / replication script
 ```
+
+The Angular app is in the sibling repository `../carbon_project_frontend` (see **Repositories**).
 
 ## Environment variables
 
@@ -63,7 +79,7 @@ python -m venv .venv
 .venv/Scripts/python manage.py seed-demo               # optional DEMO data (DEMO_USER_PASSWORD in .env)
 .venv/Scripts/python -m uvicorn app.main:app --port 8000
 
-cd ../frontend
+cd ../../carbon_project_frontend                       # the frontend repository, checked out next to this one
 npm ci
 npx ng serve                                           # http://localhost:4200, proxies /api to :8000
 ```
@@ -180,12 +196,15 @@ cd backend
 .venv/Scripts/ruff check .
 .venv/Scripts/mypy app manage.py
 .venv/Scripts/alembic check
-cd ../frontend
+cd ../../carbon_project_frontend        # frontend repository
 npx ng test --watch=false               # Vitest
 npx ng build
 npm run e2e:smoke                       # E2E smoke (API + ng serve running, DEMO data seeded; start the API with
                                         # LOGIN_RATE_LIMIT_PER_MINUTE=100 — the run signs in ~15 times; see e2e/smoke.cjs)
 ```
+
+The smoke test reads `DEMO_USER_PASSWORD` from this repository's `backend/.env` through the side-by-side layout
+(override with `DEMO_USER_PASSWORD` or `BACKEND_ENV_FILE`).
 
 ## Roles
 
@@ -217,5 +236,3 @@ are added in their phases, configured by `*_PROVIDER` variables. A mock confirma
 See [docs/deployment.md](docs/deployment.md). In short: `APP_ENV=production`, HTTPS with
 `REFRESH_COOKIE_SECURE=true`, secrets in a secret store, Redis-backed rate limiting before running more than
 one API worker, and a least-privilege SQL login.
-#   c a r b o n _ p l a t f o r m _ n e w  
- 

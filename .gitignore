@@ -13,10 +13,8 @@ __pycache__/
 .coverage
 htmlcov/
 
-# node / angular
+# node (the Angular app lives in the sibling repository carbon_project_frontend)
 node_modules/
-frontend/dist/
-frontend/.angular/
 coverage/
 
 # celery beat local schedule state
@@ -31,4 +29,3 @@ storage/local-dev/*
 *.swp
 .DS_Store
 Thumbs.db
-e2e/screenshots/

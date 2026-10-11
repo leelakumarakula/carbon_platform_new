@@ -100,8 +100,10 @@ services:
     depends_on:
       redis: { condition: service_started }
 
+  # The Angular app lives in the sibling repository carbon_project_frontend (checked out next to this one);
+  # its docker/Dockerfile builds the app and serves it with nginx, proxying /api to the backend service above.
   frontend:
-    build: { context: ., dockerfile: docker/frontend.Dockerfile }
+    build: { context: ../carbon_project_frontend, dockerfile: docker/Dockerfile }
     depends_on: [backend]
     ports: ["4200:80"]
 
