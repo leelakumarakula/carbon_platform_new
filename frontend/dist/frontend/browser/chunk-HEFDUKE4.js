@@ -1,0 +1,1 @@
+var n="ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789";function a(o=16){let e=new Uint32Array(o);for(;;){crypto.getRandomValues(e);let r=Array.from(e,s=>n[s%n.length]).join(""),t=`${r.slice(0,8)}-${r.slice(8)}`;if(/[A-Za-z]/.test(t)&&/\d/.test(t))return t}}export{a};
