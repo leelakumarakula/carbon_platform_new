@@ -56,7 +56,7 @@ ROUNDING = {"HALF_UP": ROUND_HALF_UP, "HALF_EVEN": ROUND_HALF_EVEN, "DOWN": ROUN
 EXECUTED = ("PAYMENT_PENDING", "UNCONFIRMED", "PAID", "RECONCILED")      # money has (possibly) left: no netting, a recovery case instead
 
 
-# ---------------------------------------------------------------- pure calculation (deterministic, Decimal only)
+# ------------------------------------------------------ pure calculation (deterministic, Decimal only)
 def _d(v: Any) -> Decimal:
     return Decimal(str(v))
 

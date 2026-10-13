@@ -13,7 +13,8 @@ __pycache__/
 .coverage
 htmlcov/
 
-# node (the Angular app lives in the sibling repository carbon_project_frontend)
+# node (the Angular app lives in the sibling repository carbon_project_frontend; never commit a stale copy of it here)
+frontend/
 node_modules/
 coverage/
 
@@ -29,3 +30,4 @@ storage/local-dev/*
 *.swp
 .DS_Store
 Thumbs.db
+~$*
