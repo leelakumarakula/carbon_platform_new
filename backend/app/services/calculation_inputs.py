@@ -82,6 +82,7 @@ class Evaluation:
     snapshot_sha256: str | None = None
     previous_period: MonitoringPeriod | None = None
     previous_dataset: MrvDataset | None = None
+    monitoring_rule_codes: list[str] = field(default_factory=list)   # the locked version's monitoring rules (frozen in the snapshot)
 
     @property
     def ready(self) -> bool:
@@ -281,7 +282,8 @@ def _snapshot(ev: Evaluation, module: fw.CalculationModule, ds: MrvDataset, cred
                         "calculation_readiness": v.calculation_readiness, "calculation_module_code": v.calculation_module_code,
                         "calculation_rules_version": pm.calculation_rules_version, "monitoring_rules_version": pm.monitoring_rules_version,
                         "calculation_rules": [{"id": str(r.id), "rule_code": r.rule_code, "step": r.step, "title": r.title,
-                                               "equation_reference": r.equation_reference} for r in ev.calc_rules]},
+                                               "equation_reference": r.equation_reference} for r in ev.calc_rules],
+                        "monitoring_rules": ev.monitoring_rule_codes},
         "previous_period": ({"id": str(ev.previous_period.id), "number": ev.previous_period.period_number, "name": ev.previous_period.name,
                              "start": ev.previous_period.start_date.isoformat(), "end": ev.previous_period.end_date.isoformat(),
                              "dataset_id": str(ev.previous_dataset.id) if ev.previous_dataset else None,
@@ -297,6 +299,7 @@ def _resolve_inputs(db: Session, ev: Evaluation, module: fw.CalculationModule, d
     assert v is not None
     rules = {r.rule_code: r for r in db.scalars(select(MethodologyMonitoringRule).where(
         MethodologyMonitoringRule.methodology_version_id == v.id)).all()}
+    ev.monitoring_rule_codes = sorted(rules)
     periods: dict[str, _PeriodData] = {"CURRENT": _period_data(db, "CURRENT", ev.period, ds)}
     rows: list[dict[str, Any]] = []
     problems: list[Blocker] = []
@@ -437,6 +440,8 @@ def _record_inputs(db: Session, var: fw.Variable, rules: dict[str, MethodologyMo
                    problems: list[Blocker]) -> list[dict[str, Any]]:
     measurements, snap = pd.measurements, pd.snap
     rule = rules.get(var.rule_code or "")
+    if rule is None and var.optional_rule:
+        return []   # a version set up before the module added this rule; the module sees it is absent from the snapshot
     if rule is None or rule.measurement_source not in ("FIELD", "FIELD_ACTIVITY"):
         problems.append(Blocker("CALCULATION_RULE_NOT_CONFIGURED", f"{var.code}: monitoring rule {var.rule_code} is not a FIELD / FIELD_ACTIVITY "
                                 "rule of the locked version.", "VARIABLE_RULE_MISMATCH", {"variable": var.code}))

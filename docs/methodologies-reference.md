@@ -104,7 +104,7 @@ One project uses **one** methodology version for its whole life. Different activ
 | Standard | Verra (VCS) |
 | Methodology | Improved Agricultural Land Management |
 | Methodology code / version label to create | `VM0042` / `2.2` (or `2.2-<suffix>`) |
-| Calculation module | `VM0042-V2.2-QA2-QA3` · module version 1.0.0 |
+| Calculation module | `VM0042-V2.2-QA2-QA3` · module version 1.1.0 |
 | Option text on the Calculation tab | VM0042 v2.2 - SOC measure & remeasure (QA2) + default-factor emissions (QA3) |
 | Suitable for | Cropland practice change — reduced / zero tillage, stopping residue burning, cover crops, nutrient management — with soil carbon measured twice and compared with control sites. |
 | Field / laboratory work | Yes — two sampling rounds, two depth layers, laboratory OC and soil mass; at least 3 control sites |
@@ -118,7 +118,11 @@ One project uses **one** methodology version for its whole life. Different activ
 | `core_details_required` | `True` | Probe diameter and number of cores are mandatory on every field record |
 | `statistical_design` | `STRATIFIED_RANDOM` | The sampling design must use this design |
 
-### 4.2 Monitoring rules — the data the project collects (13)
+### 4.2 Monitoring rules — the data the project collects (16)
+The last three rules (`V42_OA_IMPORTED`, `V42_OA_CARBON`, `V42_WOODY`) were added in module 1.1.0. A version gets them when the module is
+chosen on its Calculation tab; a version approved earlier (for example the first VM0042 2.2 set-up) keeps 13 rules and calculates as
+before (zero leakage, no woody-biomass check). To use them, create a new draft version (e.g. `2.2-02`), choose the module, and approve it.
+
 | Code | What to record | Unit | Level | Source | Frequency | Methodology reference |
 |---|---|---|---|---|---|---|
 | `V42_OC` | Soil organic carbon content (per depth increment) | g/kg | Sampling point | Laboratory | Each sampling campaign | VM0042 v2.2 §8.2.1.4, Eq. 3 OC |
@@ -134,6 +138,12 @@ One project uses **one** methodology version for its whole life. Different activ
 | `V42_BURN_OTHER` | Other crop residues burned (dry matter) | kg d.m. | Farm | Field activity | Per year (baseline t=-1..-3 and each project year) | VM0042 v2.2 Eqs. 14/32 MB (maize, sugarcane, other) |
 | `V42_IRRIGATION` | Irrigation type (NONE / DRIP / OTHER) | — | Farm | Field activity | Per year | VM0042 v2.2 Eq. 23 FracLEACH; IPCC 2019 Vol. 4 Ch. 11 Tier 1 note |
 | `V42_NPR` | AFOLU non-permanence risk rating | % | Project | Field activity | Per year (baseline t=-1..-3 and each project year) | VM0042 v2.2 §8.7 NPR%; VCS AFOLU Non-Permanence Risk Tool |
+| `V42_OA_IMPORTED` | Manure, compost or biosolids brought in from outside the project area and applied (not exempt; 0 when none) | t | Farm | Field activity | Per project year | VM0042 v2.2 §8.4.1, Eq. 33 M_OA |
+| `V42_OA_CARBON` | Carbon content of the imported amendment (one mass-weighted value per farm and period, e.g. 0.15) | t C/t | Farm | Field activity | Per project year, when an amendment is brought in | VM0042 v2.2 §8.4.1, Eq. 33 CC_OA |
+| `V42_WOODY` | Woody biomass removed in the period: NO (no shade tree cut, no coffee uprooted) · NONE (no woody plants) · YES | — | Farm | Field activity | Each reporting period | VM0042 v2.2 Eqs. 48-51, Q1 condition |
+
+Exempt from `V42_OA_IMPORTED` (§8.4.1 cases 1–3): amendments made on farms in the project area (e.g. compost an estate makes from its own
+coffee pulp), manure diverted from an uncontrolled anaerobic lagoon, pond, tank or pit, and amendments not previously used as a soil amendment.
 
 ### 4.3 Calculation rules — the steps (8)
 | # | Code | Step | What it calculates | Equation reference |
@@ -142,12 +152,12 @@ One project uses **one** methodology version for its whole life. Different activ
 | 2 | `V42-PRJ` | PROJECT | Project: project-strata SOC stocks (ESM) and project emissions | VM0042 v2.2 Eq. 3, §8.2.1.6, Eq. 47; §8.3 |
 | 3 | `V42-ER` | EMISSIONS | Emission reductions per source (fuel, liming, N2O, biomass burning) | VM0042 v2.2 Eqs. 52, 53, 57, 58, 59 |
 | 4 | `V42-CR` | REMOVALS | SOC stock change, project and baseline (t CO2e) | VM0042 v2.2 Eqs. 46, 47 (x 44/12) |
-| 5 | `V42-LK` | LEAKAGE | Leakage (sources 8.4.1-8.4.4 not applicable) | VM0042 v2.2 §8.4, Eqs. 39, 42 |
+| 5 | `V42-LK` | LEAKAGE | Leakage: imported organic amendments (8.4.1); 8.4.2-8.4.4 not applicable | VM0042 v2.2 §8.4, Eqs. 33, 39, 42 |
 | 6 | `V42-UNC` | UNCERTAINTY | Approach 2 sampling uncertainty deduction | VM0042 v2.2 Eqs. 70, 71, 74 |
 | 7 | `V42-ADJ` | ADJUSTMENT | Uncertainty applied to stock changes; non-permanence buffer | VM0042 v2.2 Eqs. 44, 45, 75, 76 |
 | 8 | `V42-NET` | NET | Net reductions and removals; VCUs (whole tonnes, rounded down) | VM0042 v2.2 Eqs. 37-43, 77-79 |
 
-### 4.4 Calculation inputs (17)
+### 4.4 Calculation inputs (20)
 | Input | Comes from | Rule / parameter | Unit | Level | Round | Required |
 |---|---|---|---|---|---|---|
 | `OC_T` | Laboratory result | V42_OC | g/kg | Sampling point | period calculated | **Yes** |
@@ -155,7 +165,7 @@ One project uses **one** methodology version for its whole life. Different activ
 | `OC_T0` | Laboratory result | V42_OC | g/kg | Sampling point | previous round | **Yes** |
 | `MASS_T0` | Laboratory result | V42_SOIL_MASS | g | Sampling point | previous round | **Yes** |
 | `AREA` | Stratum area (SQL Server) | — | ha | Stratum | period calculated | **Yes** |
-| `PRECIP` | Stratum characteristic | PRECIPITATION_MM | mm | Stratum | period calculated | No (0 if missing) |
+| `PRECIP` | Stratum characteristic | PRECIPITATION_MM | mm | Stratum | period calculated | **Yes** — every project stratum and every farm with activity records |
 | `FSN` | Monitoring data | V42_FSN | kg N | Farm | period calculated | No (0 if missing) |
 | `FON` | Monitoring data | V42_FON | kg N | Farm | period calculated | No (0 if missing) |
 | `DIESEL` | Monitoring data | V42_DIESEL | L | Farm | period calculated | No (0 if missing) |
@@ -166,9 +176,15 @@ One project uses **one** methodology version for its whole life. Different activ
 | `BURN_WHEAT` | Monitoring data | V42_BURN_WHEAT | kg d.m. | Farm | period calculated | No (0 if missing) |
 | `BURN_OTHER` | Monitoring data | V42_BURN_OTHER | kg d.m. | Farm | period calculated | No (0 if missing) |
 | `IRRIGATION` | Monitoring data | V42_IRRIGATION | — | Farm | period calculated | No (0 if missing) |
-| `NPR` | Monitoring data | V42_NPR | % | Project | period calculated | **Yes** |
+| `NPR` | Monitoring data | V42_NPR | % | Project | period calculated | **Yes** — 0 to 100; buffer uses at least 12; above 60 blocks |
+| `OA_MASS` | Monitoring data | V42_OA_IMPORTED | t | Farm | period calculated | No — only on versions with the rule |
+| `OA_CC` | Monitoring data | V42_OA_CARBON | t C/t | Farm | period calculated | **Yes** for a farm with imported mass above 0 (exactly one, above 0 and at most 1) |
+| `WOODY` | Monitoring data | V42_WOODY | — | Farm | period calculated | **Yes** for every project farm, on versions with the rule (NO / NONE; YES blocks) |
 
-### 4.5 Constants built into the module (23)
+The farm activity inputs (`FSN` … `BURN_OTHER`) are optional per source, but a farm with **baseline** records for a source must also have a
+record in the reporting period (enter `0` when the source was not used); otherwise the run is blocked (`PERIOD_RECORD_MISSING`).
+
+### 4.5 Constants built into the module (26)
 | Constant | Value | Unit | Source |
 |---|---|---|---|
 | `C_TO_CO2` | 3.66667 | t CO2/t C | 44/12 (VM0042 v2.2 §8.5.1) |
@@ -194,6 +210,9 @@ One project uses **one** methodology version for its whole life. Different activ
 | `CF_RICE` | 0.80 | fraction | IPCC 2019 Refinement Vol. 4 Ch. 2 Table 2.6 (rice residues) |
 | `CF_WHEAT` | 0.90 | fraction | IPCC 2019 Refinement Vol. 4 Ch. 2 Table 2.6 (wheat residues) |
 | `CF_OTHER` | 0.80 | fraction | IPCC 2019 Refinement Vol. 4 Ch. 2 Table 2.6 (maize/sugarcane 0.80; conservative for other crops) |
+| `NPR_MIN` | 12 | % | VCS AFOLU Non-Permanence Risk Procedure v5.0 §2.5.2 (minimum risk rating) |
+| `NPR_MAX` | 60 | % | VCS AFOLU Non-Permanence Risk Procedure v5.0 §2.5.3 (above 60 the project fails the risk analysis) |
+| `OA_C_RETENTION` | 0.12 | fraction | VM0042 v2.2 Eq. 33 (manure carbon retained in soil; Maillard and Angers 2014) |
 
 ### 4.6 Outputs
 Outputs written by this module's code (some appear only for the approach or activity module in use; `<stratum>` = one output per stratum).
@@ -203,6 +222,7 @@ Outputs written by this module's code (some appear only for the approach or acti
 | `REF_MASS_<stratum>` | BASELINE |
 | `ER_<stratum>` | EMISSIONS |
 | `ER_SOURCES` | EMISSIONS |
+| `LK_OA` | LEAKAGE (Eq. 33; only on versions with the V42_OA_* rules) |
 | `LK_TOTAL` | LEAKAGE |
 | `UNC_VARIANCE` | UNCERTAINTY |
 | `UNC_DF` | UNCERTAINTY |
@@ -210,7 +230,8 @@ Outputs written by this module's code (some appear only for the approach or acti
 | `UNC_PCT` | UNCERTAINTY |
 | `DCO2_WP_ADJ` | ADJUSTMENT |
 | `DCO2_BSL_ADJ` | ADJUSTMENT |
-| `NPR_PCT` | ADJUSTMENT |
+| `NPR_RATED` | ADJUSTMENT (rating as recorded) |
+| `NPR_PCT` | ADJUSTMENT (rating applied to the buffer, at least 12) |
 | `BUFFER_ER` | ADJUSTMENT |
 | `BUFFER_CR` | ADJUSTMENT |
 | `ER_T` | NET |
@@ -228,16 +249,19 @@ Outputs written by this module's code (some appear only for the approach or acti
 - Q5: t = one-sided Student-t at 66.67 % with Welch-Satterthwaite degrees of freedom (Verra SSA Handbook draft v1.0).
 - Q6: UNC uses the absolute mean change and is capped at 100 %.
 - Q7/Q8: stratified estimator; independent sampling - variance of a change = sum of the two snapshot variances; control sites use the same estimator.
-- Q11/Q13: IPCC 2019 Tier 1 factors by climate (tropical wet if precipitation > 1000 mm); FracLEACH 0 in dry climates unless irrigation other than drip.
+- Q11/Q13: IPCC 2019 Tier 1 factors by climate (tropical wet if precipitation > 1000 mm); FracLEACH 0 in dry climates unless irrigation other than drip. Precipitation is required for every project stratum and for every farm with activity records; a missing value blocks the run (dry factors are not assumed).
 - Q12: equivalent mineral soil mass (SOM = SOC/0.58); linear interpolation with 2 depth increments, cubic spline with 3 or more; reference mass = mean cumulative mineral mass to 30 cm at the linked control sites in the earlier campaign of the comparison.
 - Q14: AR5 GWPs (CH4 28, N2O 265).
 - Q16: VCUs are whole tonnes rounded down.
 - Cumulative project stock change for the I(dCO2_wp) switch is taken as the change since the earlier campaign of this comparison (equal to the change since the project start at the first verification).
-- Baseline emissions per farm = mean annual activity of the BASELINE-phase records (t=-1..-3) x years in the reporting period; project emissions = PROJECT/MONITORING-phase records observed in the reporting period.
-- Out of scope and treated as not applicable / zero (Q1 condition): enteric, manure, N-fixing species, woody biomass, leakage 8.4.1-8.4.4.
+- Baseline emissions per farm = mean annual activity of the BASELINE-phase records (t=-1..-3) x years in the reporting period; project emissions = PROJECT/MONITORING-phase records observed in the reporting period. A farm and source with baseline records but no record in the reporting period blocks the run (a missing record is never read as zero, which would credit a cut that was not monitored); record 0 when the source was not used.
+- Buffer: the AFOLU non-permanence risk rating is applied as max(rating, 12) (NPR Procedure v5.0 §2.5.2); a rating above 60 blocks the run (§2.5.3), as does a rating below 0 or above 100.
+- Leakage 8.4.1 (Eq. 33): LE_OA = sum over farms of imported mass (t) x carbon content (t C/t) x 0.12 x 44/12, from the V42_OA_IMPORTED records of the reporting period. The whole imported mass is counted, also when only part of it is additional to the look-back (conservative). Exempt amendments (8.4.1 cases 1-3) are not recorded under V42_OA_IMPORTED. A farm with imported mass needs exactly one carbon content for the period. Versions set up before these rules existed report zero leakage.
+- Woody biomass (Eqs. 48-51) is not quantified, so it may be left out only while it does not decrease: when the version carries V42_WOODY, every project farm needs a NO or NONE declaration for the period, and YES (shade trees cut or perennial crops uprooted) blocks the run.
+- Out of scope and treated as not applicable / zero (Q1 condition): enteric, manure, N-fixing species, woody biomass, leakage 8.4.2-8.4.4.
 
 ### 4.8 Reasons the calculation can be blocked
-`CONTROL_SITES_REQUIRED`, `CONTROL_SITE_REQUIRED`, `DEPTH_INCREMENTS_REQUIRED`, `INSUFFICIENT_SAMPLES`, `INVALID_SOIL_PROFILE`, `MISSING_REQUIRED_INPUT`.
+`CONTROL_SITES_REQUIRED`, `CONTROL_SITE_REQUIRED`, `DEPTH_INCREMENTS_REQUIRED`, `INSUFFICIENT_SAMPLES`, `INVALID_INPUT` (risk rating outside 0–100; carbon content not one value between 0 and 1; woody answer not NO / NONE / YES), `INVALID_SOIL_PROFILE`, `MISSING_REQUIRED_INPUT` (including `PERIOD_RECORD_MISSING`, `PRECIPITATION_MISSING`, `OA_CARBON_MISSING` and `WOODY_DECLARATION_MISSING`), `NPR_UNACCEPTABLE` (risk rating above 60), `WOODY_BIOMASS_REMOVED` (shade trees cut or perennial crops uprooted).
 
 ---
 

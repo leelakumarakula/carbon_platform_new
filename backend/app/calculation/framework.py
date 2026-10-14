@@ -56,6 +56,9 @@ class Variable:
     kind: str = "NUMBER"             # NUMBER or TEXT
     required: bool = True
     period: str = "CURRENT"          # CURRENT or PREVIOUS (LAB_RESULT / MONITORING_RECORD / STRATUM_AREA)
+    # MONITORING_RECORD only: the rule may be absent from a locked version set up before the module added it; the variable is then
+    # left empty instead of blocking, and the module reads snapshot["methodology"]["monitoring_rules"] to tell the two cases apart.
+    optional_rule: bool = False
 
     def __post_init__(self) -> None:
         if self.source not in VARIABLE_SOURCES or self.level not in LEVELS or self.kind not in ("NUMBER", "TEXT") or self.period not in PERIODS:
@@ -68,6 +71,8 @@ class Variable:
             raise ValueError(f"Variable {self.code} must name a sampling design parameter")
         if self.kind == "NUMBER" and not self.unit.strip():
             raise ValueError(f"Variable {self.code} must declare its unit")
+        if self.optional_rule and (self.required or self.source != "MONITORING_RECORD"):
+            raise ValueError(f"Variable {self.code}: optional_rule needs an optional MONITORING_RECORD variable")
 
 
 @dataclass(frozen=True)
@@ -173,7 +178,8 @@ class CalculationModule:
             "rules": dict(sorted(self.rules.items())),
             "steps": [{"step": s.step, "status": s.status, "rule_code": s.rule_code} for s in self.steps],
             "variables": [{"code": v.code, "source": v.source, "unit": v.unit, "level": v.level, "rule_code": v.rule_code,
-                           "parameter": v.parameter, "kind": v.kind, "required": v.required, "period": v.period} for v in self.variables],
+                           "parameter": v.parameter, "kind": v.kind, "required": v.required, "period": v.period,
+                           **({"optional_rule": True} if v.optional_rule else {})} for v in self.variables],
             "constants": [{"code": c.code, "value": c.value, "unit": c.unit, "source_reference": c.source_reference} for c in self.constants],
             "assumptions": list(self.assumptions),
         }

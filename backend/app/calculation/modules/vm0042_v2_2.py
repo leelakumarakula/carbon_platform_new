@@ -7,14 +7,18 @@ Scope (calculation specification `methodology-docs/VM0042-IALM/VM0042_v2.2_calcu
   synthetic and organic fertiliser N2O, direct and indirect (Eqs. 16–23, 58), biomass burning CH4 and N2O (Eqs. 14, 32, 57, 59);
 - uncertainty — Approach 2 sampling uncertainty (Eqs. 70, 71, 74) applied through Eqs. 44/45;
 - net reductions/removals, buffer and VCUs (Eqs. 37–43, 75–79).
+- leakage from imported organic amendments (§8.4.1, Eq. 33), on versions that carry the V42_OA_* rules.
 Not included (they must be not applicable or de minimis for the project — Q1): Approach 1 (models), enteric fermentation and manure
-(Eqs. 11–13, 26–31), N-fixing species (Eqs. 24/25), woody biomass (Eqs. 48–51), leakage 8.4.1–8.4.4 (reported as zero).
+(Eqs. 11–13, 26–31), N-fixing species (Eqs. 24/25), woody biomass (Eqs. 48–51), leakage 8.4.2–8.4.4 (reported as zero). Woody
+biomass may only be left out while it does not decrease: on versions that carry V42_WOODY every project farm declares each period
+that no shade tree was cut and no perennial crop (e.g. coffee) uprooted, and a removal blocks the run.
 
 Inputs per sampling point and depth increment (laboratory): organic carbon (g/kg) and dry fine-earth soil mass (g, coarse
 fraction > 2 mm excluded), for the reporting period (t) and the previous approved period (t − x). Field record: depth increment,
 probe inside diameter (mm), number of cores. Per farm and year (monitoring records, phase BASELINE = historical schedule t = −1…−3,
-PROJECT/MONITORING = reporting period): fertiliser N, fuel, lime, residues burned, irrigation type. Per project: the AFOLU
-non-permanence risk rating (%). Per stratum: area (SQL Server) and mean annual precipitation (mm) for the IPCC climate class.
+PROJECT/MONITORING = reporting period): fertiliser N, fuel, lime, residues burned, irrigation type. A source with baseline records
+needs a record for the reporting period too (0 when none was used). Per project: the AFOLU non-permanence risk rating (%; buffer at
+least 12, more than 60 fails). Per stratum: area (SQL Server) and mean annual precipitation (mm, required) for the IPCC climate class.
 
 NOT_PRODUCTION_READY until the production-readiness approval (methodology expert + QA sign-off) is recorded.
 """
@@ -44,8 +48,8 @@ CALC_RULES: tuple[dict[str, Any], ...] = (
      "equation_reference": "VM0042 v2.2 Eqs. 52, 53, 57, 58, 59"},
     {"rule_code": R_CR, "step": "REMOVALS", "title": "SOC stock change, project and baseline (t CO2e)",
      "equation_reference": "VM0042 v2.2 Eqs. 46, 47 (x 44/12)"},
-    {"rule_code": R_LK, "step": "LEAKAGE", "title": "Leakage (sources 8.4.1-8.4.4 not applicable)",
-     "equation_reference": "VM0042 v2.2 §8.4, Eqs. 39, 42"},
+    {"rule_code": R_LK, "step": "LEAKAGE", "title": "Leakage: imported organic amendments (8.4.1); 8.4.2-8.4.4 not applicable",
+     "equation_reference": "VM0042 v2.2 §8.4, Eqs. 33, 39, 42"},
     {"rule_code": R_UNC, "step": "UNCERTAINTY", "title": "Approach 2 sampling uncertainty deduction",
      "equation_reference": "VM0042 v2.2 Eqs. 70, 71, 74"},
     {"rule_code": R_ADJ, "step": "ADJUSTMENT", "title": "Uncertainty applied to stock changes; non-permanence buffer",
@@ -82,6 +86,21 @@ MONITORING_RULES: tuple[dict[str, Any], ...] = (
      "source_reference": "VM0042 v2.2 Eq. 23 FracLEACH; IPCC 2019 Vol. 4 Ch. 11 Tier 1 note"},
     _activity("V42_NPR", "AFOLU non-permanence risk rating", "non_permanence_risk_rating", "%",
               "VM0042 v2.2 §8.7 NPR%; VCS AFOLU Non-Permanence Risk Tool", level="PROJECT"),
+    {**_activity("V42_OA_IMPORTED", "Manure, compost or biosolids brought in from outside the project area and applied (not exempt)",
+                 "organic_amendment_imported", "t", "VM0042 v2.2 §8.4.1, Eq. 33 M_OA"),
+     "frequency": "Per project year",
+     "method": "Record only amendments that are subject to §8.4.1: not made on farms in the project area (compost an estate makes "
+               "from its own coffee pulp is exempt), not diverted from an uncontrolled anaerobic lagoon, pond, tank or pit, and "
+               "previously used as a soil amendment elsewhere. Enter 0 when none was brought in."},
+    {**_activity("V42_OA_CARBON", "Carbon content of the imported organic amendment (mass-weighted, as received)",
+                 "organic_amendment_carbon_content", "t C/t", "VM0042 v2.2 §8.4.1, Eq. 33 CC_OA"),
+     "frequency": "Per project year, when an amendment is brought in",
+     "method": "One value per farm and period: laboratory analysis or supplier certificate (e.g. 0.15 for 15 % carbon)."},
+    {"rule_code": "V42_WOODY", "title": "Woody biomass removed in the period (NO / NONE / YES)", "parameter": "woody_biomass_removed",
+     "unit": None, "measurement_source": "FIELD_ACTIVITY", "data_level": "FARM", "frequency": "Each reporting period",
+     "method": "NO = no shade tree cut and no perennial crop (e.g. coffee) uprooted; NONE = no woody plants on the farm (annual crops); "
+               "YES = woody biomass was removed (the calculation is then blocked: Eqs. 48-51 are not implemented).",
+     "source_reference": "VM0042 v2.2 §8.2 woody biomass (Eqs. 48-51), Q1 condition"},
 )
 
 _IPCC = "IPCC 2019 Refinement Vol. 4"
@@ -109,6 +128,9 @@ CONSTANTS = (
     Constant("CF_RICE", "0.80", "fraction", f"{_IPCC} Ch. 2 Table 2.6 (rice residues)"),
     Constant("CF_WHEAT", "0.90", "fraction", f"{_IPCC} Ch. 2 Table 2.6 (wheat residues)"),
     Constant("CF_OTHER", "0.80", "fraction", f"{_IPCC} Ch. 2 Table 2.6 (maize/sugarcane 0.80; conservative for other crops)"),
+    Constant("NPR_MIN", "12", "%", "VCS AFOLU Non-Permanence Risk Procedure v5.0 §2.5.2 (minimum risk rating)"),
+    Constant("NPR_MAX", "60", "%", "VCS AFOLU Non-Permanence Risk Procedure v5.0 §2.5.3 (above 60 the project fails the risk analysis)"),
+    Constant("OA_C_RETENTION", "0.12", "fraction", "VM0042 v2.2 Eq. 33 (manure carbon retained in soil; Maillard and Angers 2014)"),
 )
 
 ASSUMPTIONS = (
@@ -120,7 +142,8 @@ ASSUMPTIONS = (
     "Q7/Q8: stratified estimator; independent sampling - variance of a change = sum of the two snapshot variances; control sites use "
     "the same estimator.",
     "Q11/Q13: IPCC 2019 Tier 1 factors by climate (tropical wet if precipitation > 1000 mm); FracLEACH 0 in dry climates unless "
-    "irrigation other than drip.",
+    "irrigation other than drip. Precipitation is required for every project stratum and for every farm with activity records; "
+    "a missing value blocks the run (dry factors are not assumed).",
     "Q12: equivalent mineral soil mass (SOM = SOC/0.58); linear interpolation with 2 depth increments, cubic spline with 3 or more; "
     "reference mass = mean cumulative mineral mass to 30 cm at the linked control sites in the earlier campaign of the comparison.",
     "Q14: AR5 GWPs (CH4 28, N2O 265).",
@@ -128,9 +151,20 @@ ASSUMPTIONS = (
     "Cumulative project stock change for the I(dCO2_wp) switch is taken as the change since the earlier campaign of this "
     "comparison (equal to the change since the project start at the first verification).",
     "Baseline emissions per farm = mean annual activity of the BASELINE-phase records (t=-1..-3) x years in the reporting period; "
-    "project emissions = PROJECT/MONITORING-phase records observed in the reporting period.",
+    "project emissions = PROJECT/MONITORING-phase records observed in the reporting period. A farm and source with baseline records "
+    "but no record in the reporting period blocks the run (a missing record is never read as zero, which would credit a cut that "
+    "was not monitored); record 0 when the source was not used.",
+    "Buffer: the AFOLU non-permanence risk rating is applied as max(rating, 12) (NPR Procedure v5.0 §2.5.2); a rating above 60 "
+    "blocks the run (§2.5.3), as does a rating below 0 or above 100.",
+    "Leakage 8.4.1 (Eq. 33): LE_OA = sum over farms of imported mass (t) x carbon content (t C/t) x 0.12 x 44/12, from the "
+    "V42_OA_IMPORTED records of the reporting period. The whole imported mass is counted, also when only part of it is additional "
+    "to the look-back (conservative). Exempt amendments (8.4.1 cases 1-3) are not recorded under V42_OA_IMPORTED. A farm with "
+    "imported mass needs exactly one carbon content for the period. Versions set up before these rules existed report zero leakage.",
+    "Woody biomass (Eqs. 48-51) is not quantified, so it may be left out only while it does not decrease: when the version carries "
+    "V42_WOODY, every project farm needs a NO or NONE declaration for the period, and YES (shade trees cut or perennial crops "
+    "uprooted) blocks the run.",
     "Out of scope and treated as not applicable / zero (Q1 condition): enteric, manure, N-fixing species, woody biomass, leakage "
-    "8.4.1-8.4.4.",
+    "8.4.2-8.4.4.",
 )
 
 
@@ -167,11 +201,13 @@ class _State:
     years: Decimal = D1
     emissions: dict[str, dict[str, Decimal]] = field(default_factory=dict)    # scenario -> source -> t CO2e
     emission_seqs: list[int] = field(default_factory=list)
+    leakage_oa: Decimal | None = None                                # Eq. 33 (t CO2e); None = the version has no V42_OA_* rules
+    leakage_seqs: list[int] = field(default_factory=list)
 
 
 class Vm0042V22(CalculationModule):
     code = "VM0042-V2.2-QA2-QA3"
-    version = "1.0.0"
+    version = "1.1.0"                       # 1.1.0: data safeguards (period records, rainfall, risk rating), Eq. 33 leakage, woody biomass
     methodology_code = "VM0042"
     version_label = "2.2"
     calculation_rules_version = 0           # bound to the selecting methodology version (registry.bind)
@@ -189,7 +225,7 @@ class Vm0042V22(CalculationModule):
         Variable("OC_T0", "LAB_RESULT", "g/kg", "SAMPLING_POINT", rule_code="V42_OC", period="PREVIOUS"),
         Variable("MASS_T0", "LAB_RESULT", "g", "SAMPLING_POINT", rule_code="V42_SOIL_MASS", period="PREVIOUS"),
         Variable("AREA", "STRATUM_AREA", "ha", "STRATUM"),
-        Variable("PRECIP", "STRATUM_CHARACTERISTIC", "mm", "STRATUM", parameter="PRECIPITATION_MM", required=False),
+        Variable("PRECIP", "STRATUM_CHARACTERISTIC", "mm", "STRATUM", parameter="PRECIPITATION_MM"),
         _activity_var("FSN", "V42_FSN", "kg N"),
         _activity_var("FON", "V42_FON", "kg N"),
         _activity_var("DIESEL", "V42_DIESEL", "L"),
@@ -201,6 +237,9 @@ class Vm0042V22(CalculationModule):
         _activity_var("BURN_OTHER", "V42_BURN_OTHER", "kg d.m."),
         Variable("IRRIGATION", "MONITORING_RECORD", "", "FARM", rule_code="V42_IRRIGATION", kind="TEXT", required=False),
         Variable("NPR", "MONITORING_RECORD", "%", "PROJECT", rule_code="V42_NPR"),
+        Variable("OA_MASS", "MONITORING_RECORD", "t", "FARM", rule_code="V42_OA_IMPORTED", required=False, optional_rule=True),
+        Variable("OA_CC", "MONITORING_RECORD", "t C/t", "FARM", rule_code="V42_OA_CARBON", required=False, optional_rule=True),
+        Variable("WOODY", "MONITORING_RECORD", "", "FARM", rule_code="V42_WOODY", kind="TEXT", required=False, optional_rule=True),
     )
     constants = CONSTANTS
     steps = tuple(Step(r["step"], fw.IMPLEMENTED, r["rule_code"]) for r in CALC_RULES)
@@ -257,10 +296,97 @@ class Vm0042V22(CalculationModule):
                     if grp is None or len(grp.values) < 2:
                         raise CalculationBlocked("INSUFFICIENT_SAMPLES", f"Stratum {rec}: {scenario.lower()} samples in the {period.lower()} "
                                                  "campaign are fewer than 2 (a variance needs at least two).", {"reason": "TOO_FEW_SAMPLES"})
+        self._npr(ctx)                       # refuse an unusable risk rating before any result is produced
         rp = ctx.snapshot["reporting_period"]
         start, end = date.fromisoformat(rp["start"]), date.fromisoformat(rp["end"])
         st.years = Decimal((end - start).days + 1) / Decimal(365)
         st.emissions = self._emissions(ctx, st)
+        project_farms = sorted({f for a in ctx.values("AREA") if a.context.get("stratum_role") == "PROJECT"
+                                for f in a.context.get("farm_ids", [])})
+        if self._configured(ctx, "V42_WOODY"):
+            self._woody(ctx, project_farms)
+        if self._configured(ctx, "V42_OA_IMPORTED"):
+            self._leakage_oa(ctx, st, start, end)
+
+    @staticmethod
+    def _configured(ctx: CalculationContext, rule_code: str) -> bool:
+        """Whether the locked version carries a monitoring rule (older snapshots do not list them: not configured)."""
+        return rule_code in (ctx.snapshot.get("methodology") or {}).get("monitoring_rules", [])
+
+    @staticmethod
+    def _woody(ctx: CalculationContext, project_farms: list[str]) -> None:
+        """Woody biomass may be left out only while it does not decrease (Eqs. 48-51 are not implemented)."""
+        answers: dict[str, set[str]] = defaultdict(set)
+        for v in ctx.values("WOODY"):
+            if v.farm_id:
+                answers[v.farm_id].add(str(v.value).strip().upper())
+        bad = sorted(f for f, a in answers.items() if not a <= {"NO", "NONE", "YES"})
+        if bad:
+            raise CalculationBlocked("INVALID_INPUT", f"V42_WOODY must be NO, NONE or YES (farm {', '.join(bad[:5])}).",
+                                     {"variable": "WOODY", "reason": "WOODY_VALUE_INVALID", "farms": bad})
+        removed = sorted(f for f, a in answers.items() if "YES" in a)
+        if removed:
+            raise CalculationBlocked("WOODY_BIOMASS_REMOVED", f"Woody biomass was removed on farm {', '.join(removed[:5])} (shade trees cut or "
+                                     "perennial crops uprooted). This module does not quantify woody biomass (VM0042 Eqs. 48-51), so the "
+                                     "loss cannot be left out and the period cannot be credited here.", {"variable": "WOODY", "farms": removed})
+        missing = [f for f in project_farms if f not in answers]
+        if missing:
+            raise CalculationBlocked("MISSING_REQUIRED_INPUT", f"No woody biomass declaration (V42_WOODY) for the reporting period on farm "
+                                     f"{', '.join(missing[:5])}. Record NO (no shade tree cut, no coffee uprooted) or NONE (no woody plants).",
+                                     {"variable": "WOODY", "reason": "WOODY_DECLARATION_MISSING", "farms": missing})
+
+    def _leakage_oa(self, ctx: CalculationContext, st: _State, start: date, end: date) -> None:
+        """VM0042 Eq. 33: LE_OA = sum of M_OA x CC_OA x 0.12 x 44/12 over the farms' imported amendments in the reporting period."""
+        mass: dict[str, Decimal] = defaultdict(Decimal)
+        for v in ctx.values("OA_MASS"):
+            observed = v.context.get("observed_on")
+            if not v.farm_id or v.context.get("phase") == "BASELINE" or (observed and not start <= date.fromisoformat(observed) <= end):
+                continue
+            if Decimal(v.value) < 0:
+                raise CalculationBlocked("INVALID_INPUT", "V42_OA_IMPORTED cannot be negative.", {"variable": "OA_MASS"})
+            mass[v.farm_id] += Decimal(v.value)
+            st.leakage_seqs.append(v.seq)
+        carbon: dict[str, list[InputValue]] = defaultdict(list)
+        for v in ctx.values("OA_CC"):
+            if v.farm_id:
+                carbon[v.farm_id].append(v)
+        total = D0
+        for f, m in sorted(mass.items()):
+            if m == 0:
+                continue
+            cc = carbon.get(f, [])
+            if not cc:
+                raise CalculationBlocked("MISSING_REQUIRED_INPUT", f"Farm {f} brought in {fw.decimal_text(m)} t of organic amendment but has no "
+                                         "carbon content (V42_OA_CARBON) for the period (VM0042 Eq. 33).",
+                                         {"variable": "OA_CC", "reason": "OA_CARBON_MISSING", "farm_id": f})
+            if len(cc) > 1:
+                raise CalculationBlocked("INVALID_INPUT", f"Farm {f} has {len(cc)} carbon contents (V42_OA_CARBON) for the period; record one "
+                                         "mass-weighted value.", {"variable": "OA_CC", "reason": "OA_CARBON_DUPLICATE", "farm_id": f})
+            content = Decimal(cc[0].value)
+            if not D0 < content <= D1:
+                raise CalculationBlocked("INVALID_INPUT", f"Farm {f}: the carbon content must be a fraction above 0 and at most 1 t C/t "
+                                         f"(got {fw.decimal_text(content)}).", {"variable": "OA_CC", "reason": "OA_CARBON_OUT_OF_RANGE"})
+            total += m * content * self._k(ctx, "OA_C_RETENTION") * self._k(ctx, "C_TO_CO2")              # Eq. 33
+            st.leakage_seqs.append(cc[0].seq)
+        st.leakage_oa = total
+        st.leakage_seqs += [ctx.constant("OA_C_RETENTION").seq, ctx.constant("C_TO_CO2").seq]
+
+    def _npr(self, ctx: CalculationContext) -> tuple[Decimal, Decimal]:
+        """(recorded risk rating, rating applied to the buffer) — NPR Procedure v5.0 §2.5.2 / §2.5.3."""
+        values = ctx.values("NPR")
+        if not values:
+            raise CalculationBlocked("MISSING_REQUIRED_INPUT", "No AFOLU non-permanence risk rating (V42_NPR) for the reporting period.",
+                                     {"variable": "NPR"})
+        ratings = [Decimal(v.value) for v in values]
+        if any(r < 0 or r > 100 for r in ratings):
+            raise CalculationBlocked("INVALID_INPUT", "The non-permanence risk rating (V42_NPR) must be between 0 and 100 %.",
+                                     {"variable": "NPR", "reason": "NPR_OUT_OF_RANGE"})
+        rated = sum(ratings, D0) / Decimal(len(ratings))
+        if rated > self._k(ctx, "NPR_MAX"):
+            raise CalculationBlocked("NPR_UNACCEPTABLE", f"The non-permanence risk rating is {fw.decimal_text(rated)} %: above 60 the project "
+                                     "fails the risk analysis and cannot be credited until its risk is lowered (NPR Procedure v5.0 §2.5.3).",
+                                     {"variable": "NPR", "rating": fw.decimal_text(rated)})
+        return rated, max(rated, self._k(ctx, "NPR_MIN"))
 
     def _profiles(self, ctx: CalculationContext) -> list[_Profile]:
         """One soil profile per field collection and campaign: depth increments paired by sample (OC + soil mass)."""
@@ -303,10 +429,18 @@ class Vm0042V22(CalculationModule):
     def _emissions(self, ctx: CalculationContext, st: _State) -> dict[str, dict[str, Decimal]]:
         k = self._k
         farm_wet: dict[str, bool] = {}
+        rain_strata: set[str] = set()
         for p in ctx.values("PRECIP"):
             for f in p.context.get("farm_ids", []):
                 farm_wet[f] = Decimal(p.value) > k(ctx, "WET_PRECIP_MM")
+            rain_strata.add(p.context.get("stratum_record_id") or "")
             st.emission_seqs.append(p.seq)
+        no_rain = sorted({a.context.get("stratum_code") or a.context["stratum_record_id"] for a in ctx.values("AREA")
+                          if a.context.get("stratum_role") == "PROJECT" and a.context.get("stratum_record_id") not in rain_strata})
+        if no_rain:
+            raise CalculationBlocked("MISSING_REQUIRED_INPUT", f"No mean annual precipitation (PRECIPITATION_MM) on project stratum "
+                                     f"{', '.join(no_rain)}: it decides the IPCC wet or dry factors, so it is required.",
+                                     {"variable": "PRECIP", "reason": "PRECIPITATION_MISSING", "strata": no_rain})
         irrigation = {v.farm_id: str(v.value).strip().upper() for v in ctx.values("IRRIGATION") if v.farm_id}
         rp = ctx.snapshot["reporting_period"]
         p_start, p_end = date.fromisoformat(rp["start"]), date.fromisoformat(rp["end"])
@@ -331,14 +465,25 @@ class Vm0042V22(CalculationModule):
         out: dict[str, dict[str, Decimal]] = {"BASELINE": defaultdict(Decimal), "PROJECT": defaultdict(Decimal)}  # type: ignore[dict-item]
         gwp_n2o, gwp_ch4, n2o = k(ctx, "GWP_N2O"), k(ctx, "GWP_CH4"), k(ctx, "N2ON_TO_N2O")
         series = {v: totals(v) for v in ("FSN", "FON", "DIESEL", "GASOLINE", "LIMESTONE", "DOLOMITE", "BURN_RICE", "BURN_WHEAT", "BURN_OTHER")}
+        missing = sorted((f, var) for var, (bsl, prj) in series.items() for f in bsl if f not in prj)
+        if missing:
+            listed = "; ".join(f"V42_{var} on farm {f}" for f, var in missing[:5]) + (" …" if len(missing) > 5 else "")
+            raise CalculationBlocked("MISSING_REQUIRED_INPUT", f"Baseline records exist but the reporting period {rp['start']} to {rp['end']} "
+                                     f"has none: {listed}. Record the period's value (0 if the source was not used).",
+                                     {"reason": "PERIOD_RECORD_MISSING", "missing": [{"farm_id": f, "variable": var} for f, var in missing]})
         farms = sorted({f for b, p in series.values() for f in (*b, *p)})
+        no_rain_farms = [f for f in farms if f not in farm_wet]
+        if no_rain_farms:
+            raise CalculationBlocked("MISSING_REQUIRED_INPUT", f"Farm {', '.join(no_rain_farms[:5])} has activity records but lies in no "
+                                     "stratum with a mean annual precipitation (PRECIPITATION_MM), so its climate is unknown.",
+                                     {"variable": "PRECIP", "reason": "PRECIPITATION_MISSING", "farms": no_rain_farms})
         for scenario in ("BASELINE", "PROJECT"):
             idx, scale = (0, st.years) if scenario == "BASELINE" else (1, D1)
 
             def amount(var: str, farm: str, idx: int = idx, scale: Decimal = scale) -> Decimal:
                 return series[var][idx].get(farm, D0) * scale
             for f in farms:
-                wet = farm_wet.get(f, False)          # no precipitation recorded -> dry factors (lower; conservative)
+                wet = farm_wet[f]                     # every farm has a climate class (checked above)
                 fsn, fon = amount("FSN", f), amount("FON", f)
                 ef1_syn = k(ctx, "EF1_WET_SYN") if wet else k(ctx, "EF1_DRY")
                 ef1_org = k(ctx, "EF1_WET_OTHER") if wet else k(ctx, "EF1_DRY")
@@ -410,7 +555,11 @@ class Vm0042V22(CalculationModule):
         return outs
 
     def calculate_leakage(self, ctx: CalculationContext) -> list[Output]:
-        return [Output("LK_TOTAL", "LEAKAGE", R_LK, D0, T, outputs=("ER_SOURCES", "DCO2_SOIL_WP"))]
+        st = self._state(ctx)
+        if st.leakage_oa is None:            # the version has no V42_OA_* rules: 8.4.1 not applicable, as before
+            return [Output("LK_TOTAL", "LEAKAGE", R_LK, D0, T, outputs=("ER_SOURCES", "DCO2_SOIL_WP"))]
+        return [Output("LK_OA", "LEAKAGE", R_LK, st.leakage_oa, T, inputs=tuple(sorted(set(st.leakage_seqs)))),
+                Output("LK_TOTAL", "LEAKAGE", R_LK, st.leakage_oa, T, outputs=("LK_OA",))]
 
     def calculate_uncertainty(self, ctx: CalculationContext) -> list[Output]:
         st = self._state(ctx)
@@ -442,8 +591,8 @@ class Vm0042V22(CalculationModule):
         wp, bsl = ctx.output("DCO2_SOIL_WP").value, ctx.output("DCO2_SOIL_BSL").value
         sign = D1 if wp - bsl >= 0 else -D1                                                       # I(dCO2_soil), Eqs. 44/45
         adj_wp, adj_bsl = wp * (D1 - unc * sign), bsl * (D1 - unc * sign)
-        npr = sum((Decimal(v.value) for v in ctx.values("NPR")), D0) / Decimal(max(1, len(ctx.values("NPR"))))
-        npr_seqs = tuple(v.seq for v in ctx.values("NPR"))
+        rated, npr = self._npr(ctx)                                                               # applied = max(rating, 12)
+        npr_seqs = (*(v.seq for v in ctx.values("NPR")), ctx.constant("NPR_MIN").seq)
         i_wp = D1 if adj_wp > 0 else D0
         frac = npr / 100
         mn = min(D0, adj_wp) - min(D0, adj_bsl)
@@ -453,6 +602,7 @@ class Vm0042V22(CalculationModule):
         lin = ("UNC_PCT", "DCO2_SOIL_WP", "DCO2_SOIL_BSL")
         return [Output("DCO2_WP_ADJ", "ADJUSTMENT", R_ADJ, adj_wp, T, outputs=lin),
                 Output("DCO2_BSL_ADJ", "ADJUSTMENT", R_ADJ, adj_bsl, T, outputs=lin),
+                Output("NPR_RATED", "ADJUSTMENT", R_ADJ, rated, "%", inputs=npr_seqs[:-1]),
                 Output("NPR_PCT", "ADJUSTMENT", R_ADJ, npr, "%", inputs=npr_seqs),
                 Output("BUFFER_ER", "ADJUSTMENT", R_ADJ, bu_er, T, inputs=npr_seqs, outputs=("DCO2_WP_ADJ", "DCO2_BSL_ADJ")),
                 Output("BUFFER_CR", "ADJUSTMENT", R_ADJ, bu_cr, T, inputs=npr_seqs, outputs=("DCO2_WP_ADJ", "DCO2_BSL_ADJ"))]

@@ -13,7 +13,7 @@ from app.calculation.modules.vm0042_v2_2 import Vm0042V22
 
 D_MM, CORES = 21.5, 4
 AREA_HA = 100.0
-NPR = 10.0
+NPR = 12.0                                   # the minimum rating (NPR Procedure v5.0 §2.5.2)
 # (stratum record, role) -> campaign -> list of profiles; a profile = [(top, bottom, fine mass g, OC g/kg), ...]
 DATA = {
     ("P1", "PROJECT"): {"PREVIOUS": [[(0, 30, 280.0, 12.0), (30, 50, 200.0, 7.0)], [(0, 30, 290.0, 11.0), (30, 50, 210.0, 6.5)]],
@@ -165,6 +165,123 @@ def test_reversal_and_guards() -> None:
     with pytest.raises(fw.CalculationBlocked) as e:
         fw.execute(Vm0042V22(), snap)
     assert e.value.code == "MISSING_REQUIRED_INPUT"
+
+
+def _blocked(snap: dict) -> fw.CalculationBlocked:
+    with pytest.raises(fw.CalculationBlocked) as e:
+        fw.execute(Vm0042V22(), snap)
+    return e.value
+
+
+def test_missing_period_record_blocks_instead_of_counting_zero() -> None:
+    # baseline fertiliser records exist but this period's record is missing: read as 0 it would credit an unmonitored cut
+    snap = _snapshot()
+    snap["inputs"] = [r for r in snap["inputs"] if not (r["variable"] == "FSN" and r["context"].get("phase") == "PROJECT")]
+    e = _blocked(snap)
+    assert e.code == "MISSING_REQUIRED_INPUT" and e.details["reason"] == "PERIOD_RECORD_MISSING"
+    assert e.details["missing"] == [{"farm_id": "f1", "variable": "FSN"}] and "V42_FSN" in e.message
+    # a record dated outside the reporting period does not count for it
+    snap = _snapshot()
+    for r in snap["inputs"]:
+        if r["variable"] == "DIESEL" and r["context"].get("phase") == "PROJECT":
+            r["context"]["observed_on"] = "2025-09-01"
+    assert _blocked(snap).details["reason"] == "PERIOD_RECORD_MISSING"
+    # an explicit 0 for the period is accepted (the fixture already records rice burning as 0)
+    assert _out(fw.execute(Vm0042V22(), _snapshot()), "VCU_TOTAL") == _expected()["vcus"]
+
+
+def test_precipitation_is_required_and_drives_the_climate_factors() -> None:
+    snap = _snapshot()
+    snap["inputs"] = [r for r in snap["inputs"] if r["variable"] != "PRECIP"]
+    e = _blocked(snap)
+    assert e.code == "MISSING_REQUIRED_INPUT" and e.details["reason"] == "PRECIPITATION_MISSING" and e.details["strata"] == ["P1"]
+    # a farm with activity records outside any stratum that has rainfall is refused too
+    snap = _snapshot()
+    for r in snap["inputs"]:
+        if r["variable"] == "PRECIP":
+            r["context"]["farm_ids"] = ["other-farm"]
+    e = _blocked(snap)
+    assert e.details["reason"] == "PRECIPITATION_MISSING" and e.details["farms"] == ["f1"]
+    # Western Ghats rainfall (> 1000 mm): wet factors, including leaching (IPCC 2019 Tables 11.1 / 11.3)
+    snap = _snapshot()
+    for r in snap["inputs"]:
+        if r["variable"] == "PRECIP":
+            r["value"] = "2500"
+    n2o = 44 / 28 * 265 / 1000
+    wet = lambda n: n * (0.016 + 0.11 * 0.014 + 0.24 * 0.011) * n2o     # noqa: E731 - direct + volatilisation + leaching
+    assert _out(fw.execute(Vm0042V22(), snap), "ER_N2O_FERT") == pytest.approx(wet(1100) - wet(800), rel=1e-9)
+
+
+def test_risk_rating_minimum_12_and_failure_above_60() -> None:
+    def with_npr(value: str) -> dict:
+        snap = _snapshot()
+        for r in snap["inputs"]:
+            if r["variable"] == "NPR":
+                r["value"] = value
+        return snap
+    low = fw.execute(Vm0042V22(), with_npr("8"))                 # a lower rating is raised to 12 (§2.5.2)
+    assert _out(low, "NPR_RATED") == 8 and _out(low, "NPR_PCT") == 12
+    assert _out(low, "VCU_TOTAL") == _expected()["vcus"]          # same buffer as the fixture's 12
+    assert _out(fw.execute(Vm0042V22(), with_npr("60")), "NPR_PCT") == 60   # 60 is still acceptable
+    e = _blocked(with_npr("61"))                                   # above 60 the project fails (§2.5.3)
+    assert e.code == "NPR_UNACCEPTABLE"
+    assert _blocked(with_npr("-1")).code == "INVALID_INPUT"
+    snap = _snapshot()
+    snap["inputs"] = [r for r in snap["inputs"] if r["variable"] != "NPR"]
+    assert _blocked(snap).code == "MISSING_REQUIRED_INPUT"
+
+
+def _with_new_rules(*records: tuple[str, str, str, str]) -> dict:
+    """A snapshot of a version that carries the V42_OA_* and V42_WOODY rules, plus (variable, value, unit, kind) farm records for f1."""
+    from app.calculation.modules.vm0042_v2_2 import MONITORING_RULES
+    snap = _snapshot()
+    snap["methodology"] = {"monitoring_rules": sorted(r["rule_code"] for r in MONITORING_RULES)}
+    for var, value, unit, kind in records:
+        snap["inputs"].append({"seq": len(snap["inputs"]) + 1, "variable": var, "value": value, "value_kind": kind, "unit": unit,
+                               "level": "FARM", "stratum_id": None, "farm_id": "f1", "sampling_point_id": None,
+                               "context": {"phase": "PROJECT", "observed_on": "2026-09-01"}})
+    return snap
+
+
+WOODY_NO = ("WOODY", "NO", "", "TEXT")
+
+
+def test_older_versions_without_the_new_rules_behave_as_before() -> None:
+    res = fw.execute(Vm0042V22(), _snapshot())               # no "monitoring_rules" in the snapshot, as for Nashik's approved version
+    assert _out(res, "LK_TOTAL") == 0 and not any(r["output_code"] == "LK_OA" for r in res.outputs)
+    assert _out(res, "VCU_TOTAL") == _expected()["vcus"]
+    with pytest.raises(ValueError):                            # optional_rule is only for optional monitoring-record variables
+        fw.Variable("X", "MONITORING_RECORD", "t", "FARM", rule_code="R", optional_rule=True)
+
+
+def test_imported_compost_leakage_eq_33() -> None:
+    # 50 t of bought compost at 15 % carbon: 50 x 0.15 x 0.12 x 44/12 = 3.3 t CO2e, deducted from the credits
+    res = fw.execute(Vm0042V22(), _with_new_rules(WOODY_NO, ("OA_MASS", "50", "t", "NUMBER"), ("OA_CC", "0.15", "t C/t", "NUMBER")))
+    assert _out(res, "LK_OA") == pytest.approx(3.3, rel=1e-12) and _out(res, "LK_TOTAL") == pytest.approx(3.3, rel=1e-12)
+    assert _out(res, "VCU_TOTAL") == math.floor(_expected()["total"] - 3.3)
+    # estate-made compost (exempt) is not recorded as imported: 0 t gives no leakage and needs no carbon content
+    res = fw.execute(Vm0042V22(), _with_new_rules(WOODY_NO, ("OA_MASS", "0", "t", "NUMBER")))
+    assert _out(res, "LK_OA") == 0 and _out(res, "VCU_TOTAL") == _expected()["vcus"]
+    # baseline-phase (look-back) amendments are not project imports
+    snap = _with_new_rules(WOODY_NO, ("OA_MASS", "50", "t", "NUMBER"))
+    snap["inputs"][-1]["context"]["phase"] = "BASELINE"
+    assert _out(fw.execute(Vm0042V22(), snap), "LK_OA") == 0
+    e = _blocked(_with_new_rules(WOODY_NO, ("OA_MASS", "50", "t", "NUMBER")))
+    assert e.code == "MISSING_REQUIRED_INPUT" and e.details["reason"] == "OA_CARBON_MISSING"
+    e = _blocked(_with_new_rules(WOODY_NO, ("OA_MASS", "50", "t", "NUMBER"), ("OA_CC", "0.15", "t C/t", "NUMBER"),
+                                 ("OA_CC", "0.2", "t C/t", "NUMBER")))
+    assert e.details["reason"] == "OA_CARBON_DUPLICATE"
+    e = _blocked(_with_new_rules(WOODY_NO, ("OA_MASS", "50", "t", "NUMBER"), ("OA_CC", "15", "t C/t", "NUMBER")))   # 15 % typed as 15
+    assert e.code == "INVALID_INPUT" and e.details["reason"] == "OA_CARBON_OUT_OF_RANGE"
+
+
+def test_woody_biomass_declaration_protects_shade_trees() -> None:
+    assert _out(fw.execute(Vm0042V22(), _with_new_rules(("WOODY", "NONE", "", "TEXT"))), "VCU_TOTAL") == _expected()["vcus"]
+    e = _blocked(_with_new_rules())                                            # no declaration for the project farm
+    assert e.code == "MISSING_REQUIRED_INPUT" and e.details["reason"] == "WOODY_DECLARATION_MISSING" and e.details["farms"] == ["f1"]
+    e = _blocked(_with_new_rules(("WOODY", "yes", "", "TEXT")))               # shade trees cut / coffee uprooted
+    assert e.code == "WOODY_BIOMASS_REMOVED" and e.details["farms"] == ["f1"]
+    assert _blocked(_with_new_rules(("WOODY", "maybe", "", "TEXT"))).code == "INVALID_INPUT"
 
 
 def test_three_increments_use_cubic_spline() -> None:
