@@ -1,7 +1,7 @@
 """Authentication: login with lockout, rotating refresh tokens with reuse detection, logout, password change."""
 import uuid
 from dataclasses import dataclass
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 from sqlalchemy import select, update
 from sqlalchemy.orm import Session
@@ -16,6 +16,7 @@ from app.models.base import utcnow
 from app.repositories import identity as repo
 from app.security.passwords import DUMMY_HASH, hash_password, validate_password_policy, verify_password
 from app.security.tokens import create_access_token, hash_refresh_token, new_refresh_token, refresh_expiry
+from app.services.ledger_service import LOCK_HINT
 
 INVALID_CREDENTIALS = "Invalid email or password, or the account is temporarily locked."
 
@@ -48,6 +49,20 @@ def _login_audit(db: Session, ctx: RequestContext, email: str, user: User | None
                       request_id=ctx.request_id))
 
 
+def _count_failed_password(db: Session, ctx: RequestContext, user: User, now: datetime, reason: str) -> None:
+    """Count a wrong password with one atomic UPDATE (parallel attempts never overwrite each other's count; the row lock is held
+    until commit, so the value read back is this attempt's) and lock the account when the threshold is reached."""
+    s = get_settings()
+    no_sync = {"synchronize_session": False}
+    db.execute(update(User).where(User.id == user.id).values(failed_login_count=User.failed_login_count + 1), execution_options=no_sync)
+    count = db.scalar(select(User.failed_login_count).where(User.id == user.id))
+    if count is not None and count >= s.MAX_FAILED_LOGINS:
+        db.execute(update(User).where(User.id == user.id)
+                   .values(locked_until=now + timedelta(minutes=s.LOCKOUT_MINUTES), failed_login_count=0), execution_options=no_sync)
+        security_event(db, ctx, "ACCOUNT_LOCKED", "WARNING", user.id, {"reason": reason, "locked_minutes": s.LOCKOUT_MINUTES})
+    db.expire(user, ["failed_login_count", "locked_until"])
+
+
 def login(db: Session, ctx: RequestContext, email: str, password: str) -> IssuedTokens:
     s = get_settings()
     email = email.lower()
@@ -76,12 +91,7 @@ def login(db: Session, ctx: RequestContext, email: str, password: str) -> Issued
     if user.status != UserStatus.ACTIVE.value:
         raise fail(f"ACCOUNT_{user.status}")
     if not password_ok:
-        user.failed_login_count += 1
-        if user.failed_login_count >= s.MAX_FAILED_LOGINS:
-            user.locked_until = now + timedelta(minutes=s.LOCKOUT_MINUTES)
-            user.failed_login_count = 0
-            security_event(db, ctx, "ACCOUNT_LOCKED", "WARNING", user.id,
-                           {"reason": "too many failed sign-in attempts", "locked_minutes": s.LOCKOUT_MINUTES})
+        _count_failed_password(db, ctx, user, now, "too many failed sign-in attempts")
         raise fail("BAD_PASSWORD")
 
     user.failed_login_count = 0
@@ -107,8 +117,10 @@ def refresh(db: Session, ctx: RequestContext, raw_token: str | None) -> IssuedTo
     if not raw_token:
         raise AuthenticationFailed("No refresh token was provided.", error_code="REFRESH_MISSING")
     now = utcnow()
-    rt = db.scalars(select(RefreshToken).where(RefreshToken.token_hash == hash_refresh_token(raw_token))
-                    .with_for_update()).first()
+    # SQL Server ignores FOR UPDATE: the hint makes a concurrent refresh with the same token wait, then see it used (reuse).
+    rt = db.scalars(select(RefreshToken).with_hint(RefreshToken, LOCK_HINT, "mssql")
+                    .where(RefreshToken.token_hash == hash_refresh_token(raw_token))
+                    .execution_options(populate_existing=True)).first()
     if rt is None:
         raise AuthenticationFailed("The refresh token is invalid.", error_code="REFRESH_INVALID")
     session = db.get(UserSession, rt.session_id)
@@ -175,6 +187,8 @@ def change_password(db: Session, ctx: RequestContext, user: User, session_id: uu
                     current: str, new: str) -> None:
     if not verify_password(current, user.password_hash):
         security_event(db, ctx, "PASSWORD_CHANGE_FAILED", "INFO", user.id)
+        # A stolen session must not allow unlimited guesses of the current password: same counter and lockout as sign-in.
+        _count_failed_password(db, ctx, user, utcnow(), "too many wrong current passwords on password change")
         db.commit()
         raise ValidationFailed("The current password is incorrect.", error_code="CURRENT_PASSWORD_INCORRECT")
     validate_password_policy(new)

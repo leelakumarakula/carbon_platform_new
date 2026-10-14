@@ -275,6 +275,37 @@ def test_imported_compost_leakage_eq_33() -> None:
     assert e.code == "INVALID_INPUT" and e.details["reason"] == "OA_CARBON_OUT_OF_RANGE"
 
 
+def _with_fon(snap: dict, look_back: str, period: str) -> dict:
+    """Organic fertiliser N on farm f1: one look-back year and the reporting period (one year: 2026-06-01..2027-05-31)."""
+    for phase, observed, value in (("BASELINE", "2022-06-01", look_back), ("PROJECT", "2026-09-01", period)):
+        snap["inputs"].append({"seq": len(snap["inputs"]) + 1, "variable": "FON", "value": value, "value_kind": "NUMBER", "unit": "kg N",
+                               "level": "FARM", "stratum_id": None, "farm_id": "f1", "sampling_point_id": None,
+                               "context": {"phase": phase, "observed_on": observed}})
+    return snap
+
+
+def test_organic_n_increase_needs_an_imported_amendment_declaration() -> None:
+    # more organic N than in the look-back (900 vs 500 kg N/yr) and no V42_OA_IMPORTED record: a forgotten compost entry is refused
+    e = _blocked(_with_fon(_with_new_rules(WOODY_NO), "500", "900"))
+    assert e.code == "MISSING_REQUIRED_INPUT" and e.details["reason"] == "OA_DECLARATION_MISSING" and e.details["farms"] == ["f1"]
+    assert e.details["variable"] == "OA_MASS" and "V42_OA_IMPORTED" in e.message
+    # 0 t imported: estate-made compost (exempt) — accepted, no leakage
+    res = fw.execute(Vm0042V22(), _with_fon(_with_new_rules(WOODY_NO, ("OA_MASS", "0", "t", "NUMBER")), "500", "900"))
+    assert _out(res, "LK_OA") == 0
+    # bought compost declared: Eq. 33 leakage as usual
+    res = fw.execute(Vm0042V22(), _with_fon(_with_new_rules(WOODY_NO, ("OA_MASS", "50", "t", "NUMBER"), ("OA_CC", "0.15", "t C/t", "NUMBER")),
+                                            "500", "900"))
+    assert _out(res, "LK_OA") == pytest.approx(3.3, rel=1e-12)
+    # no increase (same N as the look-back): no declaration needed
+    assert _out(fw.execute(Vm0042V22(), _with_fon(_with_new_rules(WOODY_NO), "500", "500")), "LK_OA") == 0
+    # a declaration dated outside the reporting period does not count for it
+    snap = _with_fon(_with_new_rules(WOODY_NO, ("OA_MASS", "0", "t", "NUMBER")), "500", "900")
+    next(r for r in snap["inputs"] if r["variable"] == "OA_MASS")["context"]["observed_on"] = "2025-09-01"
+    assert _blocked(snap).details["reason"] == "OA_DECLARATION_MISSING"
+    # versions without the V42_OA_* rules are unchanged (8.4.1 not applicable there)
+    assert _out(fw.execute(Vm0042V22(), _with_fon(_snapshot(), "500", "900")), "LK_TOTAL") == 0
+
+
 def test_woody_biomass_declaration_protects_shade_trees() -> None:
     assert _out(fw.execute(Vm0042V22(), _with_new_rules(("WOODY", "NONE", "", "TEXT"))), "VCU_TOTAL") == _expected()["vcus"]
     e = _blocked(_with_new_rules())                                            # no declaration for the project farm

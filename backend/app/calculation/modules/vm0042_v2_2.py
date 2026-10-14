@@ -159,7 +159,9 @@ ASSUMPTIONS = (
     "Leakage 8.4.1 (Eq. 33): LE_OA = sum over farms of imported mass (t) x carbon content (t C/t) x 0.12 x 44/12, from the "
     "V42_OA_IMPORTED records of the reporting period. The whole imported mass is counted, also when only part of it is additional "
     "to the look-back (conservative). Exempt amendments (8.4.1 cases 1-3) are not recorded under V42_OA_IMPORTED. A farm with "
-    "imported mass needs exactly one carbon content for the period. Versions set up before these rules existed report zero leakage.",
+    "imported mass needs exactly one carbon content for the period. A farm whose organic fertiliser N (V42_FON) in the reporting period "
+    "is above its look-back annual mean x years needs a V42_OA_IMPORTED record for the period (0 when the amendment was made on the farm), "
+    "else the run is blocked. Versions set up before these rules existed report zero leakage.",
     "Woody biomass (Eqs. 48-51) is not quantified, so it may be left out only while it does not decrease: when the version carries "
     "V42_WOODY, every project farm needs a NO or NONE declaration for the period, and YES (shade trees cut or perennial crops "
     "uprooted) blocks the run.",
@@ -203,11 +205,15 @@ class _State:
     emission_seqs: list[int] = field(default_factory=list)
     leakage_oa: Decimal | None = None                                # Eq. 33 (t CO2e); None = the version has no V42_OA_* rules
     leakage_seqs: list[int] = field(default_factory=list)
+    # organic fertiliser N per farm: (look-back annual mean, reporting-period total), kg N
+    fon: tuple[dict[str, Decimal], dict[str, Decimal]] = field(default_factory=lambda: ({}, {}))
 
 
 class Vm0042V22(CalculationModule):
     code = "VM0042-V2.2-QA2-QA3"
-    version = "1.1.0"                       # 1.1.0: data safeguards (period records, rainfall, risk rating), Eq. 33 leakage, woody biomass
+    # 1.1.0: data safeguards (period records, rainfall, risk rating), Eq. 33 leakage, woody biomass
+    # 1.2.0: an organic-N increase needs a V42_OA_IMPORTED declaration for the period (forgotten compost entry)
+    version = "1.2.0"
     methodology_code = "VM0042"
     version_label = "2.2"
     calculation_rules_version = 0           # bound to the selecting methodology version (registry.bind)
@@ -346,6 +352,15 @@ class Vm0042V22(CalculationModule):
                 raise CalculationBlocked("INVALID_INPUT", "V42_OA_IMPORTED cannot be negative.", {"variable": "OA_MASS"})
             mass[v.farm_id] += Decimal(v.value)
             st.leakage_seqs.append(v.seq)
+        # more organic N than in the look-back means more manure / compost was applied: where it came from must be declared, so a
+        # forgotten V42_OA_IMPORTED entry is never read as "nothing imported" (0 is accepted: estate-made compost is exempt)
+        look_back, period_n = st.fon
+        undeclared = sorted(f for f, n in period_n.items() if n > look_back.get(f, D0) * st.years and f not in mass)
+        if undeclared:
+            raise CalculationBlocked("MISSING_REQUIRED_INPUT", f"Organic fertiliser N on farm {', '.join(undeclared[:5])} is above its look-back "
+                                     "level, but no imported organic amendment (V42_OA_IMPORTED) is recorded for the reporting period. Record "
+                                     "the tonnes brought in from outside the project area, or 0 when the compost was made on the farm "
+                                     "(exempt) (VM0042 §8.4.1).", {"variable": "OA_MASS", "reason": "OA_DECLARATION_MISSING", "farms": undeclared})
         carbon: dict[str, list[InputValue]] = defaultdict(list)
         for v in ctx.values("OA_CC"):
             if v.farm_id:
@@ -465,6 +480,7 @@ class Vm0042V22(CalculationModule):
         out: dict[str, dict[str, Decimal]] = {"BASELINE": defaultdict(Decimal), "PROJECT": defaultdict(Decimal)}  # type: ignore[dict-item]
         gwp_n2o, gwp_ch4, n2o = k(ctx, "GWP_N2O"), k(ctx, "GWP_CH4"), k(ctx, "N2ON_TO_N2O")
         series = {v: totals(v) for v in ("FSN", "FON", "DIESEL", "GASOLINE", "LIMESTONE", "DOLOMITE", "BURN_RICE", "BURN_WHEAT", "BURN_OTHER")}
+        st.fon = series["FON"]
         missing = sorted((f, var) for var, (bsl, prj) in series.items() for f in bsl if f not in prj)
         if missing:
             listed = "; ".join(f"V42_{var} on farm {f}" for f, var in missing[:5]) + (" …" if len(missing) > 5 else "")

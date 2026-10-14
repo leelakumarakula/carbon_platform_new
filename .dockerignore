@@ -1,0 +1,51 @@
+# Build context = this repository root (docker-compose.yml: backend / worker / beat). docker/backend.Dockerfile copies only
+# backend/requirements and backend/ (app, alembic, alembic.ini, manage.py); everything below stays out of the context and the image.
+
+# Secrets: never baked into an image (D30). The example file holds setting names only.
+**/.env
+**/.env.*
+**/*.env
+!**/.env.example
+**/*.pem
+**/*.key
+**/*.pfx
+**/*.p12
+
+# Local Python environments, caches and build leftovers (the Windows .venv would also shadow the image's packages)
+**/.venv
+**/venv
+**/__pycache__
+**/*.py[cod]
+**/*_cache
+**/.pytest_cache
+**/.mypy_cache
+**/.ruff_cache
+**/.coverage
+**/htmlcov
+**/celerybeat-schedule*
+
+# Data folders (local document storage, backups)
+storage
+backend/storage
+
+# Not needed at runtime
+.git
+.gitattributes
+.gitignore
+.dockerignore
+docker-compose.yml
+docker
+docs
+methodology-docs
+database
+ops
+frontend
+carbon_frontend
+**/node_modules
+**/*.md
+backend/tests
+**/.idea
+**/.vscode
+**/*.swp
+**/.DS_Store
+**/Thumbs.db

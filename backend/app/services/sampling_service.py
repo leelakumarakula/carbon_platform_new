@@ -10,7 +10,9 @@ Rules enforced here:
   stratum farm's current boundary (SQL Server STIntersects), inside the project boundary, and not a duplicate
 - a point never moves silently: relocations record old/new location, reason, requester and an approver (≠ requester)
 - field collectors work only on points assigned to them; reviewers never review their own collection; an accepted
-  record is corrected by a new version that supersedes it
+  record is corrected by a new version that supersedes it; field records are edited, submitted, reviewed and corrected only
+  while their period is in DATA_COLLECTION (after submission or approval a new dataset version re-opens it)
+- a control-site farm is not an active participant of this or any other open project
 """
 import json
 import math
@@ -104,7 +106,7 @@ def get_stratum(db: Session, principal: Principal, stratum_id: uuid.UUID, *codes
 
 def control_candidates(db: Session, principal: Principal, project_id: uuid.UUID) -> list[dict[str, Any]]:
     """Farms that may serve as a baseline control site: eligible like a project farm (same organization and environment,
-    VERIFIED with a boundary, active farmer), but NOT participating in this project."""
+    VERIFIED with a boundary, active farmer), but NOT participating in this project nor in any other open (non-CLOSED) project."""
     from app.services.project_farm_service import _eligibility_reasons
     p = mrv_access.project(db, principal, project_id, P.SAMPLING_MANAGE)
     active = {pf.farm_id for pf in project_repo.project_farms(db, p.id, active_only=True)}
@@ -112,12 +114,22 @@ def control_candidates(db: Session, principal: Principal, project_id: uuid.UUID)
                                           Farm.status == "VERIFIED").order_by(Farm.farm_code)).all()
     out = []
     for f in farms:
-        if f.id in active or _eligibility_reasons(db, f, p):
+        if f.id in active or _eligibility_reasons(db, f, p) or _other_open_projects(db, p, f.id):
             continue
         farmer = db.get(Farmer, f.farmer_id)
         out.append({"farm_id": f.id, "farm_code": f.farm_code, "farm_name": f.name,
                     "farmer_name": farmer.full_name if farmer else None, "area_hectares": f.area_hectares})
     return out
+
+
+def _other_open_projects(db: Session, p: Project, farm_id: uuid.UUID) -> list[str]:
+    """Codes of the other non-CLOSED projects the farm is an ACTIVE participant of (a control site must keep baseline practices)."""
+    out = []
+    for pf in project_repo.active_participations_of_farm(db, farm_id):
+        other = db.get(Project, pf.project_id) if pf.project_id != p.id else None
+        if other is not None and other.status != "CLOSED":
+            out.append(other.project_code)
+    return sorted(out)
 
 
 def _check_stratum_farms(db: Session, p: Project, role: str, farm_ids: list[uuid.UUID]) -> None:
@@ -133,6 +145,10 @@ def _check_stratum_farms(db: Session, p: Project, role: str, farm_ids: list[uuid
     if participants:
         raise ValidationFailed("A control site keeps the baseline practices, so its farms cannot be project participants.",
                                error_code="CONTROL_FARM_IN_PROJECT", details={"farm_ids": [str(f) for f in participants]})
+    elsewhere = {str(f): codes for f in farm_ids if (codes := _other_open_projects(db, p, f))}
+    if elsewhere:
+        raise ValidationFailed("A control site keeps the baseline practices, so its farms cannot take part in another open project.",
+                               error_code="CONTROL_FARM_IN_OTHER_PROJECT", details={"farms": elsewhere})
     bad: dict[str, list[str]] = {}
     for fid in farm_ids:
         farm = db.get(Farm, fid)
@@ -782,6 +798,7 @@ def update_collection(db: Session, ctx: RequestContext, principal: Principal, co
         raise PermissionDenied("Only the collector edits a field record.", error_code="NOT_COLLECTOR")
     if fc.status not in ("IN_PROGRESS", "RETURNED"):
         raise Conflict(f"A {fc.status} field record cannot be edited; request a correction instead.", error_code="COLLECTION_NOT_EDITABLE")
+    _require_collecting(db, fc)
     changes = data.model_dump(exclude_unset=True)
     if "checklist" in changes and changes["checklist"] is not None:
         changes["checklist"] = json.dumps(changes["checklist"])
@@ -803,13 +820,25 @@ def checklist_of(fc: FieldCollectionRecord) -> dict[str, bool]:
     return json.loads(fc.checklist) if fc.checklist else {}
 
 
+def _require_collecting(db: Session, fc: FieldCollectionRecord) -> MonitoringPeriod:
+    """Field records change (edit, submit, review, correct) only while their period collects data. After the dataset is submitted or
+    approved they are frozen in its snapshot; a correction first opens a new dataset version, which re-opens the period (V4)."""
+    mp = db.get(MonitoringPeriod, fc.monitoring_period_id)
+    assert mp is not None
+    if mp.status != "DATA_COLLECTION":
+        raise Conflict(f"Field records can only change while the monitoring period is in DATA_COLLECTION (it is {mp.status}). To correct "
+                       "submitted or approved data, open a new dataset version first.", error_code="PERIOD_NOT_COLLECTING",
+                       details={"period_status": mp.status})
+    return mp
+
+
 def submit_collection(db: Session, ctx: RequestContext, principal: Principal, collection_id: uuid.UUID) -> FieldCollectionRecord:
     fc, p = get_collection(db, principal, collection_id, P.SAMPLING_COLLECT)
     if fc.collector_id != principal.user_id:
         raise PermissionDenied("Only the collector submits a field record.", error_code="NOT_COLLECTOR")
-    mp = db.get(MonitoringPeriod, fc.monitoring_period_id)
+    mp = _require_collecting(db, fc)
     sp = db.get(SamplingPoint, fc.sampling_point_id)
-    assert mp is not None and sp is not None
+    assert sp is not None
     fr = rules.of_collection(fc)
     keys = rules.checklist_keys(fr)
     photos = sum(1 for e in mrv_service.evidence_for(db, p.id, entity_id=fc.id) if e.evidence_type == "FIELD_PHOTO" and e.status != "REJECTED")
@@ -848,19 +877,21 @@ def review_collection(db: Session, ctx: RequestContext, principal: Principal, co
     fc, p = get_collection(db, principal, collection_id, P.SAMPLING_REVIEW)
     if fc.collector_id == principal.user_id:
         raise PermissionDenied("You collected this record, so someone else must review it.", error_code="SEPARATION_OF_DUTIES")
+    _require_collecting(db, fc)
     action = "FIELD_COLLECTION_ACCEPTED" if decision == "ACCEPTED" else "FIELD_COLLECTION_RETURNED"
     record_transition(db, ctx, FIELD_COLLECTION_MACHINE, fc.id, fc.status, decision, action, notes, p.organization_id)
     fc.status, fc.reviewed_by, fc.reviewed_at, fc.review_notes = decision, principal.user_id, utcnow(), notes
     sp = db.get(SamplingPoint, fc.sampling_point_id)
     assert sp is not None
-    if decision == "ACCEPTED" and fc.supersedes_id:
-        old = db.get(FieldCollectionRecord, fc.supersedes_id)
-        if old is not None and old.status == "ACCEPTED":
-            record_transition(db, ctx, FIELD_COLLECTION_MACHINE, old.id, "ACCEPTED", "SUPERSEDED", "FIELD_COLLECTION_SUPERSEDED",
-                              f"Corrected by {fc.collection_code}", p.organization_id)
-            old.status = "SUPERSEDED"
+    old = db.get(FieldCollectionRecord, fc.supersedes_id) if fc.supersedes_id else None
+    if decision == "ACCEPTED" and old is not None and old.status == "ACCEPTED":
+        record_transition(db, ctx, FIELD_COLLECTION_MACHINE, old.id, "ACCEPTED", "SUPERSEDED", "FIELD_COLLECTION_SUPERSEDED",
+                          f"Corrected by {fc.collection_code}", p.organization_id)
+        old.status = "SUPERSEDED"
     if decision == "RETURNED":
-        sp.status = "ASSIGNED"
+        # a returned correction leaves the point COLLECTED: the accepted version it corrects stays in force until a correction is accepted
+        if not (old is not None and old.status == "ACCEPTED"):
+            sp.status = "ASSIGNED"
         notify(db, [fc.collector_id], "FIELD_COLLECTION_RETURNED", f"Field record returned: {fc.collection_code}", notes, ENTITY, p.id, "/field")
     _audit(db, ctx, p, action, {"collection_id": fc.id, "collection_code": fc.collection_code}, None, notes)
     db.commit()
@@ -874,8 +905,7 @@ def correct_collection(db: Session, ctx: RequestContext, principal: Principal, c
         raise Conflict("Only accepted records are corrected by a new version; edit or resubmit the others.", error_code="NOT_ACCEPTED")
     if any(c.supersedes_id == fc.id and c.status != "SUPERSEDED" for c in collections_of_period(db, fc.monitoring_period_id)):
         raise Conflict("A correction of this record is already open.", error_code="CORRECTION_EXISTS")
-    mp = db.get(MonitoringPeriod, fc.monitoring_period_id)
-    assert mp is not None
+    mp = _require_collecting(db, fc)
     keep = ("sampling_point_id", "assignment_id", "monitoring_period_id", "project_id", "farm_id", "collector_id", "collected_at", "gps_location",
             "gps_latitude", "gps_longitude", "gps_accuracy_m", "distance_from_point_m", "gps_inside_farm", "deviation_note", "actual_depth_top_cm",
             "actual_depth_bottom_cm", "probe_diameter_mm", "cores_count", "sample_quantity", "sample_unit", "observations", "notes",

@@ -291,7 +291,8 @@ def _prod(tmp_path: Any, **over: Any) -> dict[str, Any]:
                 OBJECT_STORAGE_ENDPOINT="https://minio.internal:9000", OBJECT_STORAGE_ACCESS_KEY="a", OBJECT_STORAGE_SECRET_KEY="b",
                 MALWARE_SCANNER="vendor-x", ANTIVIRUS_ENDPOINT="https://av.internal", ANTIVIRUS_API_KEY="x", RATE_LIMIT_BACKEND="redis",
                 REDIS_URL="rediss://carbon-app:secret@redis.internal:6380/0", SECRETS_DIR=str(tmp_path), LOG_FORMAT="json",
-                SATELLITE_PROVIDER="manual", LAB_PROVIDER="manual")
+                SATELLITE_PROVIDER="manual", LAB_PROVIDER="manual",
+                DATABASE_URL=None, SQL_SERVER_TRUST_SERVER_CERTIFICATE=False, DB_ECHO=False)   # validated SQL Server certificate
     base.update(over)
     return base
 

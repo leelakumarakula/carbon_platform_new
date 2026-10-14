@@ -104,7 +104,8 @@ committed world restored from a SQL Server database snapshot):
 used. A confirmer must hold `credits.confirm` in that organization and must not be the requester.
 
 **Idempotency.** Every POST accepts `Idempotency-Key`. A repeated key with the same body replays the original result. A repeated key with
-a different body gets 409 `IDEMPOTENCY_KEY_REUSED`. The UI sends one key per submission and keeps it across retries.
+a different body gets 409 `IDEMPOTENCY_KEY_REUSED`. A key that belongs to another caller's record (another organization, or for
+reversals another requester) also gets 409 `IDEMPOTENCY_KEY_REUSED`; the other record is never returned. The UI sends one key per submission and keeps it across retries.
 
 **Error codes:**
 - `INSUFFICIENT_AVAILABLE`, `BATCH_NOT_ISSUED`, `OPENING_EXISTS`, `OPENING_NOT_REQUESTED`;

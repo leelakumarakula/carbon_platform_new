@@ -123,7 +123,7 @@ Lifecycle: REQUESTED → APPROVED → COMPLETED / REJECTED. Requester ≠ approv
 |---|---|
 | Before delivery | Order PAID or ATTENTION_REQUIRED with nothing delivered or in delivery → REFUND_PENDING. On completion, the reservations are released, the items RELEASED and the order REFUNDED. The credits never left the seller. |
 | UNMATCHED payment | Refunded; the order is untouched. |
-| After delivery | Order COMPLETED. Money-only remediation (`after_transfer = true`): the credits stay with the buyer. Returning credits is a separate, manual 9B reversal, and only for an INTERNAL transfer whose outputs are untouched. **A REGISTRY transfer is never reversed.** |
+| After delivery | Order COMPLETED. Money-only remediation (`after_transfer = true`): the credits stay with the buyer. Returning credits is a separate, manual 9B reversal, and only for an INTERNAL transfer whose outputs are untouched; the reversal is refused (`ORDER_LINKED`) until the order has a COMPLETED after-delivery refund. **A REGISTRY transfer is never reversed.** |
 | Other states | Refused with `REFUND_NOT_ALLOWED`: resolve the deliveries first. |
 
 Completion needs the refund's payment reference plus a REFUND_EVIDENCE PDF (manual), or the provider's refund reference (TEST adapter).

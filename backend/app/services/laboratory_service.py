@@ -699,6 +699,9 @@ def _result_doc_resolver(db: Session, principal: Principal, result_id: uuid.UUID
     if kind == "manage":
         if not principal.can_in_org(P.LAB_TEST, r.laboratory_org_id):
             raise nf
+        if r.status != "DRAFT":   # QA decides on the report it saw; an approved result's report is evidence and never replaced
+            raise PermissionDenied(f"Laboratory report documents are immutable once the result leaves DRAFT (it is {r.status}); a correction "
+                                   "is a new result version with its own report.", error_code="DOCUMENT_IMMUTABLE")
         return
     if principal.can_in_org(P.LAB_LAB_READ, r.laboratory_org_id):
         vis = visible_sample_ids(db, principal)

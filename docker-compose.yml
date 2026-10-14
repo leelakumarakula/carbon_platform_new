@@ -14,7 +14,7 @@ services:
       ACCEPT_EULA: "Y"
       MSSQL_SA_PASSWORD: ${SQL_SERVER_PASSWORD:?set SQL_SERVER_PASSWORD in .env}
       MSSQL_PID: Developer
-    ports: ["1433:1433"]
+    ports: ["127.0.0.1:1433:1433"]   # local only: never publish SQL Server (sa login) on every interface
     volumes: [sqldata:/var/opt/mssql]
     healthcheck:
       test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -Q 'SELECT 1' || exit 1"]
@@ -61,6 +61,9 @@ services:
       STORAGE_BACKEND: s3
       OBJECT_STORAGE_ENDPOINT: http://minio:9000
       CORS_ORIGINS: http://localhost:4200
+      # D21: the nginx frontend proxies /api from inside the compose network (container range below). The gateway (.1), through which
+      # published-port traffic can arrive, is outside the range, so a direct caller cannot choose its own X-Forwarded-For.
+      TRUSTED_PROXIES: 172.28.0.128/25
     depends_on:
       sqlserver: { condition: service_healthy }
       redis: { condition: service_started }
@@ -85,6 +88,7 @@ services:
       sqlserver: { condition: service_healthy }
       redis: { condition: service_started }
       minio-init: { condition: service_completed_successfully }
+    healthcheck: { disable: true }   # the image's check probes the HTTP API, which a worker does not serve
 
   beat:   # exactly ONE beat per environment (duplicate slots are still harmless: per-slot idempotency keys)
     build: { context: ., dockerfile: docker/backend.Dockerfile }
@@ -99,6 +103,7 @@ services:
       REDIS_URL: redis://redis:6379/0
     depends_on:
       redis: { condition: service_started }
+    healthcheck: { disable: true }   # no HTTP API in the beat container
 
   # The Angular app lives in the sibling repository carbon_project_frontend (checked out next to this one);
   # its docker/Dockerfile builds the app and serves it with nginx, proxying /api to the backend service above.
@@ -106,6 +111,16 @@ services:
     build: { context: ../carbon_project_frontend, dockerfile: docker/Dockerfile }
     depends_on: [backend]
     ports: ["4200:80"]
+
+# Fixed addresses so TRUSTED_PROXIES (backend) can name the proxy: containers get addresses from ip_range only.
+# If 172.28.0.0/24 collides with a local network, change subnet, ip_range, gateway and TRUSTED_PROXIES together.
+networks:
+  default:
+    ipam:
+      config:
+        - subnet: 172.28.0.0/24
+          ip_range: 172.28.0.128/25
+          gateway: 172.28.0.1
 
 volumes:
   sqldata:

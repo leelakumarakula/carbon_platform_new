@@ -8,6 +8,8 @@ Rules:
   review — never auto-rejected. Details of farms the caller cannot see are withheld.
 - verification needs: GIS review, no OPEN/CONFIRMED_CONFLICT overlap, a verified ownership/tenure record,
   farmer KYC-verified; the person who submitted the farm cannot verify it
+- a farm taking part in a project beyond its editable stage (not DRAFT / DATA_COLLECTION, not CLOSED) cannot be
+  re-opened or inactivated: the project relies on its verified boundary (double-counting guard)
 """
 import json
 import uuid
@@ -22,7 +24,7 @@ from sqlalchemy.orm import Session
 from app.audit.service import record, record_transition
 from app.core.context import RequestContext
 from app.core.errors import Conflict, NotFound, PermissionDenied, ValidationFailed
-from app.models import Farm, FarmBoundary, Farmer, FarmEvidence, FarmOverlapCheck, FarmOwnership
+from app.models import Farm, FarmBoundary, Farmer, FarmEvidence, FarmOverlapCheck, FarmOwnership, Project, ProjectFarm
 from app.models.base import utcnow
 from app.models.documents import DocumentCategory
 from app.repositories import farms as repo
@@ -499,10 +501,32 @@ def reject(db: Session, ctx: RequestContext, principal: Principal, farm_id: uuid
     return repo.get(db, farm.id)  # type: ignore[return-value]
 
 
+def locking_projects(db: Session, farm: Farm) -> list[Project]:
+    """Projects in which the farm actively participates and which are past their editable stage (not DRAFT / DATA_COLLECTION,
+    where the farm can still be corrected or removed) and not CLOSED. They rely on the farm's verified boundary."""
+    from app.services.project_service import EDITABLE
+    return list(db.scalars(select(Project).join(ProjectFarm, ProjectFarm.project_id == Project.id).where(
+        ProjectFarm.farm_id == farm.id, ProjectFarm.status == "ACTIVE", Project.status.not_in((*EDITABLE, "CLOSED")))
+        .order_by(Project.project_code)).all())
+
+
+def _require_not_in_locked_project(db: Session, farm: Farm, what: str) -> None:
+    """Double-counting guard: re-opening or inactivating an enrolled farm would let its boundary change, or its land be drawn
+    and enrolled again as a new farm, while a project still credits it."""
+    projects = locking_projects(db, farm)
+    if projects:
+        names = ", ".join(f"{p.project_code} ({p.status})" for p in projects)
+        raise Conflict(f"{what} is not possible while the farm takes part in project {names}: the project relies on its verified "
+                       "boundary. Return the project to data collection (and remove the farm), or close the project, first.",
+                       error_code="FARM_IN_ACTIVE_PROJECT",
+                       details={"projects": [{"project_code": p.project_code, "status": p.status} for p in projects]})
+
+
 def reopen(db: Session, ctx: RequestContext, principal: Principal, farm_id: uuid.UUID, reason: str) -> Farm:
     farm = get_farm(db, principal, farm_id, P.FARMS_MANAGE)
     if farm.status in ("VERIFIED", "INACTIVE"):
         principal.require_in_org(P.FARMS_MANAGE, farm.organization_id)  # not self-service once verified
+    _require_not_in_locked_project(db, farm, "Re-opening the farm")
     _transition(db, ctx, farm, "DRAFT", "FARM_REOPENED", reason)
     farm.verified_at = farm.verified_by = None
     db.commit()
@@ -512,6 +536,7 @@ def reopen(db: Session, ctx: RequestContext, principal: Principal, farm_id: uuid
 def inactivate(db: Session, ctx: RequestContext, principal: Principal, farm_id: uuid.UUID, reason: str) -> Farm:
     farm = get_farm(db, principal, farm_id, P.FARMS_READ)
     principal.require_in_org(P.FARMS_MANAGE, farm.organization_id)
+    _require_not_in_locked_project(db, farm, "Inactivating the farm")
     _transition(db, ctx, farm, "INACTIVE", "FARM_INACTIVATED", reason)
     for chk in repo.overlaps(db, farm.id):
         if chk.status == "OPEN":

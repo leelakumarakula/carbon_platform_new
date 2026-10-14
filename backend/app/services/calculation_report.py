@@ -19,7 +19,7 @@ from app.audit.service import record
 from app.calculation import framework as fw
 from app.core.config import get_settings
 from app.core.context import RequestContext
-from app.core.errors import Conflict, NotFound
+from app.core.errors import Conflict, NotFound, PermissionDenied
 from app.integrations.storage import get_storage
 from app.models import (
     CalculationFinding,
@@ -44,7 +44,9 @@ ENTITY = "calculation_run"
 
 
 def _document_resolver(db: Session, principal: Principal, run_id: uuid.UUID, kind: str) -> None:
-    """Documents attached to a calculation run (reports, finding evidence) follow the run's calculation permissions."""
+    """Documents attached to a calculation run (reports, finding evidence) follow the run's calculation permissions. They are never
+    replaced (no new versions through the generic documents API): a report's PDF hash is recorded, and finding evidence is cited by
+    findings and responses. New evidence is a new document; a changed report is a new report version."""
     run = db.get(CalculationRun, run_id)
     nf = NotFound("Document not found.", error_code="DOCUMENT_NOT_FOUND")
     if run is None:
@@ -54,6 +56,9 @@ def _document_resolver(db: Session, principal: Principal, run_id: uuid.UUID, kin
                                                         (P.CALCULATION_READ,)))
     except NotFound:
         raise nf from None
+    if kind == "manage":
+        raise PermissionDenied("Calculation documents (reports and finding evidence) are immutable; upload a new document instead.",
+                               error_code="DOCUMENT_IMMUTABLE")
 
 
 document_service.register_resolver(ENTITY, _document_resolver)

@@ -99,8 +99,15 @@ def _payable(db: Session, ctx: RequestContext, principal: Principal, order_id: u
 
 
 # ---------------------------------------------------------------- T2 manual recording
+def _payment_replay(db: Session, principal: Principal, order_id: uuid.UUID, key: str | None) -> Payment | None:
+    """The buyer's own earlier payment of this order with this key; any other match is 409 IDEMPOTENCY_KEY_REUSED."""
+    prior: Payment | None = ls.replay(db, Payment, key, lambda p: p.order_id == order_id
+                                      and principal.can_in_org(P.PAYMENTS_RECORD, p.payer_organization_id))
+    return prior
+
+
 def record_manual(db: Session, ctx: RequestContext, principal: Principal, data: Any, key: str | None) -> Payment:
-    if key and (prior := db.scalars(select(Payment).where(Payment.request_key == key)).first()) is not None:
+    if (prior := _payment_replay(db, principal, data.order_id, key)) is not None:
         return prior
     o, amt = _payable(db, ctx, principal, data.order_id, data.amount, data.currency)
     document_service.require_attached(db, data.document_id, os_.ORDER_ENTITY, o.id, {DocumentCategory.PAYMENT_EVIDENCE.value})
@@ -136,7 +143,7 @@ def start_provider_payment(db: Session, ctx: RequestContext, principal: Principa
                            key: str | None = None) -> Payment:
     if adapter.code == "MANUAL":
         raise Conflict("No payment provider is contracted: record the payment manually with evidence.", error_code="MANUAL_ACTION_REQUIRED")
-    if key and (prior := db.scalars(select(Payment).where(Payment.request_key == key)).first()) is not None:
+    if (prior := _payment_replay(db, principal, order_id, key)) is not None:
         return prior
     o = os_.get_order(db, principal, order_id)
     o, amt = _payable(db, ctx, principal, order_id, o.total, o.currency)
@@ -373,8 +380,8 @@ def request_refund(db: Session, ctx: RequestContext, principal: Principal, payme
     - before delivery (order PAID / ATTENTION_REQUIRED with no item delivered or in delivery) — the order goes REFUND_PENDING;
     - after delivery (order COMPLETED) — money-only remediation: credits stay with the buyer (any return of credits is a separate,
       manual 9B reversal where 9B allows it; a REGISTRY transfer is never reversed)."""
-    if key and (prior := db.scalars(select(Refund).where(Refund.request_key == key)).first()) is not None:
-        return prior
+    if (prior := ls.replay(db, Refund, key, lambda r: r.payment_id == payment_id and r.requested_by == principal.user_id)) is not None:
+        return prior                                               # type: ignore[no-any-return]
     p, o = get_payment(db, principal, payment_id)
     _payee(principal, p, P.REFUNDS_REQUEST)
 

@@ -7,6 +7,9 @@ Rules:
   reference (agreement, document or reference) in the same transaction
 - spatial overlaps and other active participations are *shown* and must be acknowledged with a note; they never
   reject the farm automatically (spec section 41) — the eligibility reviewer decides
+- from MRV planning onwards an unresolved double-counting conflict (the farm active in another open project over the
+  same dates, or a farm overlapping a farm of another open project) is a HARD BLOCK (double_counting_conflicts)
+- a baseline control site of any open project cannot participate in a project
 - removing a farm ends its participation and its active carbon-rights records; nothing is deleted
 - the project boundary is computed by SQL Server (geography::UnionAggregate of the farms' current boundaries);
   every recomputation is a new version, GIS review applies to the version reviewed
@@ -82,6 +85,67 @@ def conflicts_for(db: Session, principal: Principal, farm: Farm, project: Projec
     return out
 
 
+# ---------------------------------------------------------------- double counting (hard block from MRV planning onwards)
+def double_counting_conflicts(db: Session, p: Project) -> list[dict[str, Any]]:
+    """Unresolved double-counting conflicts of the project's active farms, against other non-CLOSED projects and only where the
+    participation dates overlap. Acknowledged with a note at enrolment, they block the project from MRV planning onwards
+    (project_service.readiness for MRV_PLANNED; require_no_double_counting for other callers).
+    - OTHER_PROJECT_PARTICIPATION: the same farm is also ACTIVE in the other project;
+    - PROJECT_BOUNDARY_OVERLAP: the farm's current boundary overlaps (above FARM_OVERLAP_MIN_AREA_M2) the current boundary of a farm
+      ACTIVE in the other project — the live, date-aware form of the project-boundary overlap recorded in project_overlaps.
+    Resolved by ending one of the participations or correcting the boundaries. A farm-overlap flag CLEARED for farm verification does
+    not resolve it: the shared land would still be credited by both projects. Other organizations' projects and farms are not
+    identified (spec section 41)."""
+    out: list[dict[str, Any]] = []
+    mine = repo.project_farms(db, p.id, active_only=True)
+    if not mine:
+        return out
+    projects: dict[uuid.UUID, Project | None] = {}
+
+    def add(kind: str, farm_id: uuid.UUID, q: Project, other_farm_id: uuid.UUID, overlap_m2: float | None) -> None:
+        same_org = q.organization_id == p.organization_id
+        farm, other_farm = db.get(Farm, farm_id), db.get(Farm, other_farm_id)
+        farm_code = farm.farm_code if farm else str(farm_id)
+        other_code = other_farm.farm_code if other_farm and same_org else None
+        where = q.project_code if same_org else "a project of another organization"
+        detail = (f"{farm_code} also takes part in {where}" if kind == "OTHER_PROJECT_PARTICIPATION"
+                  else f"{farm_code} overlaps {other_code or 'a farm'} of {where} by {overlap_m2:,.0f} m²")
+        out.append({"kind": kind, "farm_id": str(farm_id), "farm_code": farm_code, "other_project_code": q.project_code if same_org else None,
+                    "other_project_status": q.status if same_org else None, "other_farm_code": other_code, "same_organization": same_org,
+                    "overlap_area_m2": round(overlap_m2, 2) if overlap_m2 is not None else None, "detail": detail})
+
+    def other_project(pid: uuid.UUID) -> Project | None:
+        if pid not in projects:
+            projects[pid] = repo.get(db, pid)
+        return projects[pid]
+
+    for pf in mine:
+        for o in repo.active_participations_of_farm(db, pf.farm_id):
+            q = other_project(o.project_id) if o.project_id != p.id else None
+            if q is not None and q.status != "CLOSED" and _overlaps_ranges(pf.participation_start, pf.participation_end,
+                                                                           o.participation_start, o.participation_end):
+                add("OTHER_PROJECT_PARTICIPATION", pf.farm_id, q, pf.farm_id, None)
+    min_m2 = get_settings().FARM_OVERLAP_MIN_AREA_M2
+    for farm_id, qid, _org, other_farm_id, m2 in gis.cross_project_farm_overlaps(db, p.id, p.environment):
+        q = other_project(qid)
+        if q is not None and m2 > min_m2:
+            add("PROJECT_BOUNDARY_OVERLAP", farm_id, q, other_farm_id, m2)
+    return out
+
+
+def double_counting_summary(conflicts: list[dict[str, Any]], limit: int = 5) -> str:
+    shown = "; ".join(c["detail"] for c in conflicts[:limit])
+    return shown + (f"; and {len(conflicts) - limit} more" if len(conflicts) > limit else "")
+
+
+def require_no_double_counting(db: Session, p: Project, what: str) -> None:
+    """The hard block for callers outside the project state machine (e.g. MRV plan approval, monitoring period start)."""
+    conflicts = double_counting_conflicts(db, p)
+    if conflicts:
+        raise Conflict(f"{what} is blocked by unresolved double counting: {double_counting_summary(conflicts)}. Remove the farm from one of "
+                       "the projects, or correct the boundaries, first.", error_code="DOUBLE_COUNTING_CONFLICT", details={"conflicts": conflicts})
+
+
 def farm_organization_allowed(project: Project, farm: Farm) -> bool:
     """Decision P3: which organizations' farms may join. Only SAME_ORGANIZATION is supported today; a partner-
     organization policy (field partners / farmer groups) plugs in here once the business rules are decided."""
@@ -119,6 +183,8 @@ def eligible_farms(db: Session, principal: Principal, project_id: uuid.UUID) -> 
             continue
         farmer = db.get(Farmer, f.farmer_id)
         reasons = _eligibility_reasons(db, f, p)
+        if control_site_projects(db, f.id):
+            reasons.append("The farm is a baseline control site of a project.")
         conflicts = conflicts_for(db, principal, f, p, today, None)
         out.append({"farm_id": f.id, "farm_code": f.farm_code, "farm_name": f.name, "farmer_id": f.farmer_id,
                     "farmer_name": farmer.full_name if farmer else "", "farmer_status": farmer.status if farmer else "",
@@ -134,6 +200,15 @@ def _is_control_farm(db: Session, project_id: uuid.UUID, farm_id: uuid.UUID) -> 
     return db.scalars(select(StratumFarm.farm_id).join(ProjectStratum, ProjectStratum.id == StratumFarm.stratum_id)
                       .where(ProjectStratum.project_id == project_id, ProjectStratum.role == "CONTROL",
                              ProjectStratum.status.in_(["DRAFT", "APPROVED"]), StratumFarm.farm_id == farm_id)).first() is not None
+
+
+def control_site_projects(db: Session, farm_id: uuid.UUID) -> list[Project]:
+    """Non-CLOSED projects (any) in which the farm is a baseline control site (a DRAFT or APPROVED CONTROL stratum)."""
+    from app.models import ProjectStratum, StratumFarm
+    controlled = (select(ProjectStratum.project_id).join(StratumFarm, StratumFarm.stratum_id == ProjectStratum.id)
+                  .where(StratumFarm.farm_id == farm_id, ProjectStratum.role == "CONTROL", ProjectStratum.status.in_(["DRAFT", "APPROVED"])))
+    return list(db.scalars(select(Project).where(Project.id.in_(controlled), Project.status != "CLOSED")
+                           .order_by(Project.project_code)).all())
 
 
 def add_farm(db: Session, ctx: RequestContext, principal: Principal, project_id: uuid.UUID, data: ProjectFarmIn) -> ProjectFarm:
@@ -154,9 +229,15 @@ def add_farm(db: Session, ctx: RequestContext, principal: Principal, project_id:
                        error_code="FARMER_NOT_ACTIVE")
     if any(pf.farm_id == farm.id for pf in repo.project_farms(db, p.id, active_only=True)):
         raise Conflict("This farm is already in the project.", error_code="FARM_ALREADY_IN_PROJECT")
-    if _is_control_farm(db, p.id, farm.id):
+    controls = control_site_projects(db, farm.id)
+    if any(c.id == p.id for c in controls):
         raise Conflict("This farm is a baseline control site of the project; a control site cannot also participate.",
                        error_code="FARM_IS_CONTROL_SITE")
+    if controls:
+        raise Conflict("This farm is a baseline control site of another project; a control site keeps the baseline practices and "
+                       "cannot also participate in a project.", error_code="FARM_IS_CONTROL_SITE",
+                       details={"control_site_of": [c.project_code if principal.can_in_org(P.PROJECTS_READ, c.organization_id) else None
+                                                    for c in controls]})
     boundary = farm_repo.current_boundary(db, farm.id)
     if boundary is None:
         raise Conflict("The farm has no boundary.", error_code="FARM_HAS_NO_BOUNDARY")

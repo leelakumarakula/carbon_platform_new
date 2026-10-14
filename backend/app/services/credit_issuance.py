@@ -18,7 +18,7 @@ import uuid
 from decimal import Decimal
 from typing import Any
 
-from sqlalchemy import func, select
+from sqlalchemy import Select, func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
@@ -44,6 +44,7 @@ from app.security.principal import Principal
 from app.services import project_service as psvc
 from app.services import registry_access as ra
 from app.services import registry_service as rs
+from app.services.ledger_service import LOCK_HINT
 from app.services.workflows import CREDIT_BATCH_MACHINE, CREDIT_ISSUANCE_MACHINE
 
 ISSUED_LABEL = "Registry-issued credits"
@@ -274,6 +275,17 @@ def record(db: Session, ctx: RequestContext, principal: Principal, submission_id
     return i
 
 
+def lock_submission_stmt(submission_id: uuid.UUID) -> Select[tuple[RegistrySubmission]]:
+    """`with_for_update()` renders as nothing on SQL Server; the table hint is what serializes (same hint as the 9B ledger). Under
+    READ_COMMITTED_SNAPSHOT the statements after this lock see every confirmation committed before it was granted."""
+    return (select(RegistrySubmission).with_hint(RegistrySubmission, LOCK_HINT, "mssql").where(RegistrySubmission.id == submission_id)
+            .execution_options(populate_existing=True))
+
+
+def lock_submission(db: Session, submission_id: uuid.UUID) -> RegistrySubmission:
+    return db.scalars(lock_submission_stmt(submission_id)).one()
+
+
 def confirm(db: Session, ctx: RequestContext, principal: Principal, issuance_id: uuid.UUID, note: str | None) -> CreditIssuance:
     i, s, p = ra.issuance_for(db, principal, issuance_id, P.REGISTRY_CONFIRM)
     if i.status != "RECORDED":
@@ -281,7 +293,10 @@ def confirm(db: Session, ctx: RequestContext, principal: Principal, issuance_id:
     if principal.user_id == i.recorded_by:
         raise PermissionDenied("The issuance must be confirmed by someone other than the person who recorded it.",
                                error_code="SEPARATION_OF_DUTIES", details={"reasons": ["you recorded this issuance"]})
-    db.scalars(select(RegistrySubmission).where(RegistrySubmission.id == s.id).with_for_update()).one()   # serialize confirmations
+    lock_submission(db, s.id)                                       # serialize confirmations (D5: issued ≤ verified across tranches)
+    db.refresh(i)
+    if i.status != "RECORDED":                                      # a concurrent confirmer / voider won
+        raise Conflict(f"Only a RECORDED issuance can be confirmed (it is {i.status}).", error_code="ISSUANCE_NOT_RECORDED")
     if s.status != "ACCEPTED":
         raise Conflict(f"The registry submission is {s.status}.", error_code="SUBMISSION_NOT_ACCEPTED")
     account = db.get(RegistryAccount, i.registry_account_id)

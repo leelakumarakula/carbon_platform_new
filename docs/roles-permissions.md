@@ -220,7 +220,14 @@ Always enforced:
   the same check applies when creating or editing custom roles;
 - platform roles cannot be scoped to an organization, and organization roles need membership (`ROLE_SCOPE_MISMATCH`,
   `USER_NOT_MEMBER`);
-- the last active Platform Admin cannot be suspended or lose the role (`LAST_PLATFORM_ADMIN`).
+- the last active Platform Admin cannot be suspended or lose the role (`LAST_PLATFORM_ADMIN`);
+- account management (edit, status change, password reset, adding a member) needs `users.manage` over **all** of the
+  target's organizations, the target's environment, and every privileged permission the target's roles carry
+  (`ROLE_ESCALATION_BLOCKED`); users the caller cannot manage are invisible to `add_member` (`USER_NOT_FOUND`). So an
+  organization admin cannot take over a multi-organization or platform user, and a Platform Admin cannot reset a
+  Security Admin (since 14 Oct 2026);
+- platform-wide grants apply only inside the caller's environment (DEMO or LIVE), including audit, login audit,
+  security events and sessions; grants in a SUSPENDED or ARCHIVED organization are ignored.
 
 Tests: `backend/tests/test_privilege_escalation.py` (matrix), `test_admin_users_api.py`, `test_multitenancy_api.py`.
 

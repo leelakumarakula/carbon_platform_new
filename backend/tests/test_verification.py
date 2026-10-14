@@ -481,12 +481,13 @@ def test_cross_organization_isolation_and_rbac(client: TestClient, db: Session) 
     assert client.get(f"{VVB}/assignments", headers=k.x.c.t.pm.headers).status_code == 403
     farmerless = staff(db, client, k.x.c.t.org, "FIELD_AGENT")
     assert client.get(f"{V}/projects/{k.project_id}/assignments", headers=farmerless.headers).status_code == 403
-    # a VVB user who is also a member of another VVB cannot use it to reach this assignment; a SUSPENDED VVB loses access
+    # a SUSPENDED VVB loses access: since 14 Oct 2026 grants of a non-ACTIVE organization are dropped when the principal is loaded,
+    # so its members no longer hold any VVB permission and the VVB API refuses them outright (403) instead of hiding the record (404)
     org.status = "SUSPENDED"
     db.flush()
-    assert client.get(f"{VVB}/assignments/{a['id']}", headers=v1.headers).status_code == 404
-    assert client.get(f"{VVB}/submissions/{sid}/package", headers=v1.headers).status_code == 404
-    assert client.get(f"{VVB}/assignments", headers=v1.headers).json() == []
+    assert client.get(f"{VVB}/assignments/{a['id']}", headers=v1.headers).status_code == 403
+    assert client.get(f"{VVB}/submissions/{sid}/package", headers=v1.headers).status_code == 403
+    assert client.get(f"{VVB}/assignments", headers=v1.headers).status_code == 403
     org.status = "ACTIVE"
     db.flush()
     assert client.get(f"{VVB}/submissions/{sid}/package", headers=v1.headers).status_code == 200

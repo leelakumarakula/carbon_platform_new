@@ -22,6 +22,10 @@ DRAFT ─▶ SUBMITTED ─▶ GIS_REVIEW ─▶ VERIFIED ─▶ INACTIVE
 
 Boundaries, ownership and history can only be edited in DRAFT, which is why corrections go through reopen.
 
+Reopen and inactivate are refused (`FARM_IN_ACTIVE_PROJECT`) while the farm is ACTIVE in a project that is past
+DATA_COLLECTION and not CLOSED: return the project to DATA_COLLECTION first, or wait until it is closed. An INACTIVE farm that is
+still ACTIVE in a non-closed project stays in overlap detection, so new land drawn over it is flagged.
+
 ### Boundaries and GIS
 
 - **Input:** drawn in the map editor, pasted GeoJSON, or an uploaded GeoJSON or KML file. KML files that

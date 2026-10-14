@@ -361,7 +361,8 @@ def test_production_configuration_guard_requires_storage_and_scanner(tmp_path: P
     base.update(MALWARE_SCANNER="vendor-x", ANTIVIRUS_ENDPOINT="https://av.internal", ANTIVIRUS_API_KEY="x",
                 # Phase 12B-II production requirements (shared Redis limiter over TLS, secret-store mount, JSON logs, manual providers)
                 RATE_LIMIT_BACKEND="redis", REDIS_URL="rediss://carbon-app:secret@redis.internal:6380/0", SECRETS_DIR=str(tmp_path),
-                LOG_FORMAT="json", SATELLITE_PROVIDER="manual", LAB_PROVIDER="manual")
+                LOG_FORMAT="json", SATELLITE_PROVIDER="manual", LAB_PROVIDER="manual",
+                DATABASE_URL=None, SQL_SERVER_TRUST_SERVER_CERTIFICATE=False)   # production validates the SQL Server certificate
     assert Settings(**base).is_production                          # configuration accepted; the adapter itself is a deployment item
 
 

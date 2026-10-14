@@ -6,12 +6,12 @@
 | Access token | HS256 JWT, 15 min, `sub`/`sid`/`iss`/`exp`/`jti`, kept in memory by the SPA |
 | Refresh token | 48 random bytes; only its SHA-256 is stored; httpOnly + SameSite=Strict cookie on `/api/v1/auth`; rotated on every use; reuse revokes the session and logs a CRITICAL event |
 | Session control | Every request checks the session isn't revoked or expired and the user is ACTIVE and not locked |
-| Lockout | 5 failures → 15-minute lock (configurable); generic error message; login audit records the real reason |
+| Lockout | 5 failures → 15-minute lock (configurable), counted with one atomic database increment (parallel guesses cannot overwrite each other); wrong current passwords on password change count too; generic error message; login audit records the real reason |
 | Rate limiting | per IP and per IP+email on login (10/min), global per IP (600/min); in-memory (Redis needed before scaling out) |
-| Authorization | permission check per route + organization scoping in services; escalation guards; last-admin protection |
+| Authorization | permission check per route + organization scoping in services; escalation guards; last-admin protection; account management needs scope over all of the target's organizations and every privileged permission the target holds (no takeover of platform or security accounts); platform-wide grants stay inside the caller's environment (DEMO / LIVE); grants of suspended or archived organizations are ignored |
 | Temporary passwords | `must_change_password` blocks every permissioned endpoint until changed |
 | Input validation | Pydantic schemas; e-mail normalisation; codes upper-cased and pattern-checked |
-| Headers | nosniff, frame DENY, no-referrer, Permissions-Policy, API `Cache-Control: no-store` and CSP `default-src 'none'`, HSTS in production |
+| Headers | nosniff, frame DENY, no-referrer, Permissions-Policy, API `Cache-Control: no-store` and CSP `default-src 'none'`, HSTS in production; the SPA is served by nginx with its own CSP (`script-src 'self'`, map tile origins allow-listed) and user text is never rendered as HTML in map tooltips |
 | CORS | explicit origin list; credentials allowed only for those origins |
 | Body size | 25 MB request limit (Content-Length); uploads read with a bounded reader, max `MAX_UPLOAD_BYTES` (15 MB) |
 | File uploads | type sniffed from content, not the extension or the client MIME type (PDF/PNG/JPEG/WebP, GeoJSON/KML); filenames sanitised; SHA-256 checksum; `MalwareScanner` hook (dev: EICAR signature only, real engine pending); files served only through the API as attachments; versions append-only |

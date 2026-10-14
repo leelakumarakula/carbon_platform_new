@@ -129,9 +129,10 @@ def cost_items(db: Session, run_id: uuid.UUID) -> list[tuple[SettlementCostItem,
 
 # ---------------------------------------------------------------- create (DRAFT)
 def create(db: Session, ctx: RequestContext, principal: Principal, data: Any, key: str | None) -> SettlementRun:
-    if key and (prior := db.scalars(select(SettlementRun).where(SettlementRun.request_key == key)).first()) is not None:
-        return prior
     p = fs.project_for(db, principal, data.project_id, P.SETTLEMENT_CALCULATE)
+    if (prior := ls.replay(db, SettlementRun, key, lambda r: r.project_id == p.id and r.monitoring_period_id == data.monitoring_period_id)
+        ) is not None:
+        return prior                                               # type: ignore[no-any-return]
     fs.writable(p)
     mp = fs.period_of(db, p, data.monitoring_period_id)
     currency = data.currency.upper()

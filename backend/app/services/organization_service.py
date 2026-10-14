@@ -6,13 +6,13 @@ from sqlalchemy.orm import Session
 from app.audit.service import AuditAction, record, record_transition, snapshot
 from app.core.context import RequestContext
 from app.core.errors import Conflict, NotFound, PermissionDenied
-from app.models import Organization, OrganizationUser, UserRole
-from app.models.base import Environment
+from app.models import Organization, OrganizationUser, UserRole, UserStatus
 from app.repositories import identity as repo
 from app.schemas.common import PageParams
 from app.schemas.identity import MemberAdd, OrganizationCreate, OrganizationUpdate
 from app.security.permissions import P
 from app.security.principal import Principal
+from app.services import user_service
 from app.services.workflows import ORGANIZATION_MACHINE
 
 ORG_FIELDS = ("code", "name", "org_type", "country", "registration_number", "contact_email", "status", "environment")
@@ -30,14 +30,15 @@ def list_orgs(db: Session, principal: Principal, params: PageParams, **filters: 
 
 
 def create(db: Session, ctx: RequestContext, principal: Principal, data: OrganizationCreate,
-           environment: str = Environment.LIVE.value) -> Organization:
+           environment: str | None = None) -> Organization:
     if not principal.has_platform(P.ORGANIZATIONS_MANAGE):
         raise PermissionDenied(details={"required_permission": P.ORGANIZATIONS_MANAGE})
     if repo.get_organization_by_code(db, data.code):
         raise Conflict("An organization with this code already exists.", error_code="ORGANIZATION_CODE_EXISTS")
     if data.org_type == "PLATFORM":
         raise Conflict("The platform organization is created by the reference seed only.", error_code="PLATFORM_ORG_RESERVED")
-    org = Organization(**data.model_dump(), environment=environment)
+    # A new organization belongs to its creator's environment (a DEMO account never creates LIVE records).
+    org = Organization(**data.model_dump(), environment=environment or principal.user.environment)
     db.add(org)
     db.flush()
     record(db, ctx, AuditAction.ORGANIZATION_CREATED, "organization", org.id, None, snapshot(org, ORG_FIELDS),
@@ -86,7 +87,9 @@ def add_member(db: Session, ctx: RequestContext, principal: Principal, org_id: u
     if org.status != "ACTIVE":
         raise Conflict("Members can only be added to active organizations.", error_code="ORGANIZATION_INACTIVE")
     user = repo.get_user(db, data.user_id)
-    if user is None:
+    # Membership hands this organization's administrators power over the account, so only an account the caller may
+    # manage can be enrolled (users.manage over all of its organizations and roles); any other looks like a missing one.
+    if user is None or user.status == UserStatus.SYSTEM.value or not user_service.can_manage(principal, user):
         raise NotFound("User not found.", error_code="USER_NOT_FOUND")
     if user.environment != org.environment:
         raise Conflict("Demo and live records cannot be mixed.", error_code="ENVIRONMENT_MISMATCH")

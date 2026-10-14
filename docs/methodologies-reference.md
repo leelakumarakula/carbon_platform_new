@@ -104,7 +104,7 @@ One project uses **one** methodology version for its whole life. Different activ
 | Standard | Verra (VCS) |
 | Methodology | Improved Agricultural Land Management |
 | Methodology code / version label to create | `VM0042` / `2.2` (or `2.2-<suffix>`) |
-| Calculation module | `VM0042-V2.2-QA2-QA3` · module version 1.1.0 |
+| Calculation module | `VM0042-V2.2-QA2-QA3` · module version 1.2.0 |
 | Option text on the Calculation tab | VM0042 v2.2 - SOC measure & remeasure (QA2) + default-factor emissions (QA3) |
 | Suitable for | Cropland practice change — reduced / zero tillage, stopping residue burning, cover crops, nutrient management — with soil carbon measured twice and compared with control sites. |
 | Field / laboratory work | Yes — two sampling rounds, two depth layers, laboratory OC and soil mass; at least 3 control sites |

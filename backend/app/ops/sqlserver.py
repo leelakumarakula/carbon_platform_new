@@ -33,11 +33,11 @@ class UnsafeTarget(RuntimeError):
 
 
 def master_engine() -> Engine:
-    return create_engine(get_settings().database_url("master"), isolation_level="AUTOCOMMIT")
+    return create_engine(get_settings().database_url("master"), isolation_level="AUTOCOMMIT", hide_parameters=True)
 
 
 def database_engine(name: str) -> Engine:
-    return create_engine(get_settings().database_url(check_name(name)), isolation_level="AUTOCOMMIT")
+    return create_engine(get_settings().database_url(check_name(name)), isolation_level="AUTOCOMMIT", hide_parameters=True)
 
 
 def check_name(name: str) -> str:

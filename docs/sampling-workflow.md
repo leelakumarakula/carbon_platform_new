@@ -92,7 +92,9 @@ The same seed and boundaries reproduce the same points.
 (correction).
 
 - **Code:** `FIELD-YYYY-NNNNNN`.
-- **Start:** only the assigned collector, while the period is ACTIVE or DATA_COLLECTION. One open record per point.
+- **Start:** only the assigned collector, while the period is DATA_COLLECTION. One open record per point.
+- **Edit, submit, review and correct** are allowed only while the period is DATA_COLLECTION (`PERIOD_NOT_COLLECTING` otherwise).
+  A correction after the dataset was submitted or approved starts with a new dataset version, which re-opens collection.
 - **Recorded:**
   - collection time;
   - GPS (lat/lon/accuracy, stored as `geography`);
@@ -116,9 +118,10 @@ The same seed and boundaries reproduce the same points.
 
   On submit the point becomes COLLECTED.
 - **Review** (`sampling.review`, not the collector) ACCEPTS or RETURNS with notes. A return sends the point back to
-  ASSIGNED.
+  ASSIGNED, except when the returned record is a correction: the corrected version is still ACCEPTED, so the point stays COLLECTED.
 - **Corrections** of an accepted record create a new version (`supersedes_id`, reason). The accepted version stays
-  until the new one is accepted.
+  until the new one is accepted. Laboratory results of the earlier version follow the correction chain into the calculation
+  (depth, probe diameter and cores come from the accepted version).
 
 The mobile screens are `/field` and `/field/collections/:id`:
 - large touch targets;

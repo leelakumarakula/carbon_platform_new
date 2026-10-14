@@ -94,6 +94,12 @@ def checks(db: Session, run: CalculationRun, reviewer_id: uuid.UUID | None, reso
             readiness_problems.append("NOT_PRODUCTION_READY module (blocked in production)")
         else:
             readiness_warn.append("NOT_PRODUCTION_READY module: non-production use only")
+    elif snapshot and cs.readiness_revoked(db, snapshot):     # the frozen readiness no longer holds (A8)
+        msg = "the methodology version's production readiness was revoked after the inputs were frozen"
+        if get_settings().is_production:
+            readiness_problems.append(f"{msg} (blocked in production)")
+        else:
+            readiness_warn.append(f"{msg}: non-production use only")
     out.append(_c("module_readiness", "Module readiness allows this environment", readiness_problems, readiness_warn))
     p = db.get(Project, run.project_id)
     env = [] if p and p.environment == run.environment == snapshot.get("project", {}).get("environment") else ["DEMO and live records are mixed"]

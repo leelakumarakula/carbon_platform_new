@@ -16,7 +16,7 @@ from datetime import timedelta
 from decimal import Decimal
 from typing import Any, TypeVar
 
-from sqlalchemy import or_, select
+from sqlalchemy import or_, select, true
 from sqlalchemy.orm import Session
 
 from app.core.context import RequestContext
@@ -32,6 +32,7 @@ from app.models import (
     OrderItem,
     Organization,
     Payment,
+    Refund,
 )
 from app.models.base import utcnow
 from app.models.documents import DocumentCategory
@@ -55,10 +56,26 @@ PAYMENT_HOLDS_ORDER = ("PENDING_CONFIRMATION", "CONFIRMED")      # money reporte
 
 # ---------------------------------------------------------------- links owned by orders (9B public actions refuse them)
 def _link_guard(db: Session, kind: str, entity_id: uuid.UUID) -> str | None:
+    if kind == "unrefunded_transfer":
+        return _unrefunded_delivery(db, entity_id)
     col = OrderItem.reservation_id if kind == "reservation" else OrderItem.transfer_id if kind == "transfer" else None
     if col is None:
         return None
     return db.scalar(select(Order.order_code).join(OrderItem, OrderItem.order_id == Order.id).where(col == entity_id))
+
+
+def _unrefunded_delivery(db: Session, transfer_id: uuid.UUID) -> str | None:
+    """The order code when this transfer delivered an order whose payment was not refunded after the delivery (D19: a refund after
+    delivery is money only; returning the credits is a separate 9B reversal, allowed only once the buyer has its money back)."""
+    row = db.execute(select(Order.id, Order.order_code).join(OrderItem, OrderItem.order_id == Order.id)
+                     .where(OrderItem.transfer_id == transfer_id)).first()
+    if row is None:
+        return None
+    t = db.get(CreditTransfer, transfer_id)
+    refunded = select(Refund.id).where(Refund.order_id == row.id, Refund.status == "COMPLETED", Refund.after_transfer == true())
+    if t is not None and t.completed_at is not None:
+        refunded = refunded.where(Refund.completed_at >= t.completed_at)
+    return None if db.scalars(refunded).first() is not None else str(row.order_code)
 
 
 ls.register_link_guard(_link_guard)
@@ -118,10 +135,9 @@ def parties(o: Order) -> list[uuid.UUID | None]:
 
 # ---------------------------------------------------------------- T1 placement
 def place(db: Session, ctx: RequestContext, principal: Principal, data: Any, key: str | None) -> Order:
-    if key and (prior := db.scalars(select(Order).where(Order.request_key == key)).first()) is not None:
-        if prior.buyer_organization_id != data.buyer_organization_id:
-            raise Conflict("This Idempotency-Key was used for another request.", error_code="IDEMPOTENCY_KEY_REUSED")
-        return prior
+    if (prior := ls.replay(db, Order, key, lambda o: o.buyer_organization_id == data.buyer_organization_id
+                           and principal.can_in_org(P.ORDERS_PLACE, o.buyer_organization_id))) is not None:
+        return prior                                               # type: ignore[no-any-return]
     buyer = ms.org(db, data.buyer_organization_id)
     ms.require(principal, buyer.id, P.ORDERS_PLACE, visible=BUYER_SIDE, what="Organization", nf_code="ORGANIZATION_NOT_FOUND")
     if buyer.org_type != "BUYER":

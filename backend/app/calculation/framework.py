@@ -242,12 +242,13 @@ def output_hash(records: Iterable[dict[str, Any]], module_code: str, module_vers
 
 
 def execute(module: CalculationModule, snapshot: dict[str, Any]) -> ExecutionResult:
-    """Run the module on the frozen snapshot. Raises CalculationBlocked for every deterministic blocker."""
+    """Run the module on the frozen snapshot. Raises CalculationBlocked for every deterministic blocker; any other exception raised
+    inside the module (a bug, e.g. a KeyError) also becomes CalculationBlocked CALCULATION_ERROR, never an unhandled server error."""
     with localcontext(DECIMAL_CONTEXT):
-        ctx = CalculationContext(snapshot)
-        input_seqs = {row["seq"] for row in snapshot["inputs"]}
         ordered: list[Output] = []
         try:
+            ctx = CalculationContext(snapshot)
+            input_seqs = {row["seq"] for row in snapshot["inputs"]}
             module.validate_inputs(ctx)
             for step_name in STEPS:
                 spec = module.step(step_name)
@@ -266,8 +267,13 @@ def execute(module: CalculationModule, snapshot: dict[str, Any]) -> ExecutionRes
                     ctx.outputs[out.code] = out
                     ordered.append(out)
             module.validate_output(ctx, ordered)
+        except CalculationBlocked:
+            raise
         except (InvalidOperation, DivisionByZero, Overflow) as e:
             raise CalculationBlocked("CALCULATION_ERROR", f"Invalid arithmetic in the module: {type(e).__name__}.") from None
+        except Exception as e:
+            raise CalculationBlocked("CALCULATION_ERROR", f"Unexpected error in the module: {type(e).__name__}: {e}",
+                                     {"reason": "MODULE_EXCEPTION", "exception": type(e).__name__}) from e
         finals = [o for o in ordered if o.is_final]
         if len(finals) != 1 or finals[0].step != "NET":
             raise CalculationBlocked("CONFIGURATION_REQUIRED", "The module must produce exactly one final NET output.",

@@ -4,6 +4,11 @@
 
 See the README: native setup (verified) or `docker-compose.yml` (SQL Server, Redis, MinIO, backend, nginx
 frontend built from the sibling repository `../carbon_project_frontend`; written but not yet run on the development machine).
+In compose, SQL Server, Redis and MinIO publish their ports on 127.0.0.1 only; the network has a fixed subnet so the backend trusts
+`X-Forwarded-For` only from the containers' address range (`TRUSTED_PROXIES`, D21). The image's health check probes
+`/api/v1/health/live`; the worker and beat containers (same image, no HTTP API) have it disabled. The repository's `.dockerignore` keeps
+`.env` files, the local `.venv`, caches, tests and `storage/` out of the build context: secrets reach containers only at run time
+(`env_file`), never inside an image.
 
 ## Production checklist
 
@@ -12,6 +17,11 @@ frontend built from the sibling repository `../carbon_project_frontend`; written
    origin, or list exact origins in `CORS_ORIGINS`.
 3. A SQL login with only the rights the app needs (no `sysadmin`, no DDL at runtime). Run migrations from a
    separate deploy step with a DDL-capable login: `python manage.py migrate && python manage.py seed-reference`.
+   Migrate before rolling out the new code: `/api/v1/health/ready` fails only when the schema is behind the code's migration
+   head, so nodes still running the previous release stay in rotation against the newer schema.
+   SQL Server needs a TLS certificate the application host trusts: production refuses `SQL_SERVER_TRUST_SERVER_CERTIFICATE=true`
+   (with `DATABASE_URL`, add `TrustServerCertificate=no`; a URL without it trusts the certificate) and connects with `Encrypt=yes`.
+   `DB_ECHO` must be false (refused at start-up); the application engine never writes SQL parameters to logs (D44).
 4. Run `bootstrap-admin` once; the admin must change the password at first sign-in. Never run `seed-demo` in production.
 5. Run uvicorn behind a reverse proxy with `--no-proxy-headers` and list the proxy addresses in `TRUSTED_PROXIES`, so client
    IPs (rate limiting, audit) are correct and `X-Forwarded-For` from anyone else is ignored (Phase 12B D21; docs/runtime-hardening.md).

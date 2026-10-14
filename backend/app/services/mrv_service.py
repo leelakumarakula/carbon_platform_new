@@ -8,7 +8,9 @@ Rules enforced here:
 - monitoring records are versioned (amend = new version) and typed against their measurement definition
 - datasets freeze an exact snapshot (record ids + versions + evidence checksums, SHA-256) on submission; approved
   datasets never change; a correction is a new dataset version
-- QA runs deterministic checks; PASS is refused while any check FAILs; approver/QA reviewer ≠ submitter
+- QA runs deterministic checks; PASS is refused while any check FAILs; approver/QA reviewer ≠ submitter; approval re-runs the
+  checks and refuses a snapshot whose field records are no longer the accepted versions
+- periods with the same purpose never overlap (CLOSED periods included)
 - nothing is calculated; the project never moves beyond MONITORING in Phase 5
 """
 import hashlib
@@ -232,6 +234,8 @@ def approve_plan(db: Session, ctx: RequestContext, principal: Principal, plan_id
     if plan.submitted_by == principal.user_id:
         raise PermissionDenied("You submitted this plan, so someone else must approve it.", error_code="SEPARATION_OF_DUTIES")
     mrv_access.locked_methodology(db, p)
+    from app.services import project_farm_service  # (circular import at module level)
+    project_farm_service.require_no_double_counting(db, p, "Approving the MRV plan")   # on every approval, before anything changes
     blockers = approval_blockers(plan, p)
     if blockers:
         raise Conflict("Production approval is blocked until the methodology version and the plan configure every required MRV, sampling, "
@@ -296,10 +300,12 @@ def create_period(db: Session, ctx: RequestContext, principal: Principal, data: 
     if (plan.monitoring_start and data.start_date < plan.monitoring_start) or (plan.monitoring_end and data.end_date > plan.monitoring_end):
         raise ValidationFailed("The period must lie within the MRV plan's monitoring window.", error_code="OUTSIDE_PLAN_WINDOW",
                                details={"monitoring_start": str(plan.monitoring_start), "monitoring_end": str(plan.monitoring_end)})
-    clash = [x for x in periods(db, p.id) if x.purpose == data.purpose and x.status != "CLOSED"
-             and x.start_date < data.end_date and data.start_date < x.end_date]
+    # CLOSED periods count too: their approved data covers those dates (no cancelled / withdrawn period status exists)
+    clash = [x for x in periods(db, p.id) if x.purpose == data.purpose and x.start_date < data.end_date and data.start_date < x.end_date]
     if clash:
-        raise Conflict("Another open period with the same purpose overlaps these dates.", error_code="PERIOD_OVERLAP")
+        raise Conflict("Another period with the same purpose overlaps these dates.", error_code="PERIOD_OVERLAP",
+                       details={"periods": [{"period_number": x.period_number, "status": x.status, "start_date": str(x.start_date),
+                                             "end_date": str(x.end_date)} for x in clash]})
     n = (db.scalar(select(func.max(MonitoringPeriod.period_number)).where(MonitoringPeriod.project_id == p.id)) or 0) + 1
     mp = MonitoringPeriod(project_id=p.id, mrv_plan_id=plan.id, methodology_version_id=v.id, period_number=n, created_by=principal.user_id,
                           **data.model_dump(exclude={"project_id"}))
@@ -326,6 +332,9 @@ def period_action(db: Session, ctx: RequestContext, principal: Principal, period
                             "close": ("CLOSED", "MONITORING_PERIOD_CLOSED")}[action]
     if action == "start" and approved_plan(db, p.id) is None:
         raise Conflict("The MRV plan is no longer approved.", error_code="MRV_PLAN_NOT_APPROVED")
+    if action == "start":
+        from app.services import project_farm_service  # (circular import at module level)
+        project_farm_service.require_no_double_counting(db, p, "Starting the monitoring period")
     _period_to(db, ctx, mp, p, target, audit_action, reason)
     if action == "start" and p.status == "MRV_PLANNED":
         psvc.transition_to(db, ctx, p, "MONITORING", "PROJECT_STATUS_CHANGED", "MONITORING_STARTED", reason)
@@ -786,6 +795,16 @@ def approve_dataset(db: Session, ctx: RequestContext, principal: Principal, data
         raise Conflict("Approval needs a completed QA review with result PASS.", error_code="QA_NOT_PASSED")
     if ds.snapshot is None or _hash(json.loads(ds.snapshot)) != ds.snapshot_sha256:
         raise Conflict("The dataset snapshot does not match its checksum.", error_code="SNAPSHOT_MISMATCH")
+    # the data may have changed since QA completed: the snapshot's field records must still be the accepted versions, and the
+    # deterministic QA checks must still pass at approval
+    stale = [f"{c['code']} v{c['version']} is {fc.status if fc else 'missing'}" for c in json.loads(ds.snapshot).get("field_collections", [])
+             if (fc := db.get(FieldCollectionRecord, uuid.UUID(c["id"]))) is None or fc.status != "ACCEPTED"]
+    if stale:
+        raise Conflict("Field records in the dataset snapshot are no longer the accepted versions; reject the dataset and submit a new version.",
+                       error_code="SNAPSHOT_OUT_OF_DATE", details={"field_collections": stale})
+    failed = [c.key for c in qa_checks(db, ds) if c.result == "FAIL"]
+    if failed:
+        raise Conflict("The dataset no longer passes QA: " + ", ".join(failed) + ".", error_code="QA_CHECKS_FAILED", details={"failed": failed})
     mp = db.get(MonitoringPeriod, ds.monitoring_period_id)
     assert mp is not None
     for old in datasets(db, mp.id):

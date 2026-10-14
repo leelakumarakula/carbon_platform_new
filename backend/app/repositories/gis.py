@@ -97,7 +97,10 @@ SELECT ob.id AS other_boundary_id, ob.farm_id AS other_farm_id,
        f.farmer_id AS other_farmer_id, f.organization_id AS other_organization_id
 FROM dbo.farm_boundaries ob
 JOIN dbo.farms f ON f.id = ob.farm_id
-WHERE ob.status = 'CURRENT' AND ob.farm_id <> :farm_id AND f.environment = :env AND f.status <> 'INACTIVE'
+WHERE ob.status = 'CURRENT' AND ob.farm_id <> :farm_id AND f.environment = :env
+  -- an INACTIVE farm still taking part in an open project keeps its land, so a new farm drawn on it is flagged (double counting)
+  AND (f.status <> 'INACTIVE' OR EXISTS (SELECT 1 FROM dbo.project_farms pf JOIN dbo.projects p ON p.id = pf.project_id
+                                         WHERE pf.farm_id = f.id AND pf.status = 'ACTIVE' AND p.status <> 'CLOSED'))
   AND ob.boundary.STIntersects(@g) = 1;
 """)
 
@@ -205,6 +208,37 @@ WHERE ob.status = 'CURRENT' AND ob.project_id <> :pid AND p.environment = :env A
 def project_overlaps(db: Session, boundary_id: uuid.UUID, project_id: uuid.UUID, environment: str) -> list[tuple[uuid.UUID, uuid.UUID, float]]:
     rows = db.execute(_PROJECT_OVERLAPS, {"bid": boundary_id, "pid": project_id, "env": environment}).all()
     return [(uuid.UUID(str(r[0])), uuid.UUID(str(r[1])), float(r[2] or 0)) for r in rows]
+
+
+_CROSS_PROJECT_FARM_OVERLAPS = text("""
+SET NOCOUNT ON;
+DECLARE @u geography = (
+    SELECT geography::UnionAggregate(b.boundary)
+    FROM dbo.project_farms pf
+    JOIN dbo.farms f ON f.id = pf.farm_id
+    JOIN dbo.farm_boundaries b ON b.id = f.current_boundary_id
+    WHERE pf.project_id = :pid AND pf.status = 'ACTIVE');
+SELECT pf.farm_id, opf.project_id, op.organization_id, opf.farm_id, b.boundary.STIntersection(ob.boundary).STArea() AS overlap_m2
+FROM dbo.farm_boundaries ob
+JOIN dbo.farms ofm ON ofm.current_boundary_id = ob.id
+JOIN dbo.project_farms opf ON opf.farm_id = ofm.id AND opf.status = 'ACTIVE' AND opf.project_id <> :pid
+JOIN dbo.projects op ON op.id = opf.project_id AND op.status <> 'CLOSED' AND op.environment = :env
+JOIN dbo.project_farms pf ON pf.project_id = :pid AND pf.status = 'ACTIVE' AND pf.farm_id <> ofm.id
+JOIN dbo.farms f ON f.id = pf.farm_id
+JOIN dbo.farm_boundaries b ON b.id = f.current_boundary_id
+WHERE ob.boundary.STIntersects(@u) = 1 AND b.boundary.STIntersects(ob.boundary) = 1
+  AND (opf.participation_end IS NULL OR pf.participation_start <= opf.participation_end)
+  AND (pf.participation_end IS NULL OR opf.participation_start <= pf.participation_end);
+""")
+
+
+def cross_project_farm_overlaps(db: Session, project_id: uuid.UUID, environment: str
+                                ) -> list[tuple[uuid.UUID, uuid.UUID, uuid.UUID, uuid.UUID, float]]:
+    """Live, farm-level form of the project-boundary overlap: (farm_id, other_project_id, other_organization_id, other_farm_id,
+    overlap_m2) for each active farm of the project whose current boundary intersects the current boundary of a *different* farm
+    actively participating, over overlapping dates, in another non-CLOSED project of the environment."""
+    rows = db.execute(_CROSS_PROJECT_FARM_OVERLAPS, {"pid": project_id, "env": environment}).all()
+    return [(uuid.UUID(str(r[0])), uuid.UUID(str(r[1])), uuid.UUID(str(r[2])), uuid.UUID(str(r[3])), float(r[4] or 0)) for r in rows]
 
 
 # ---------------------------------------------------------------- MRV / sampling (Phase 5)

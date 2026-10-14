@@ -13,11 +13,14 @@ RUN apt-get update \
 WORKDIR /app
 COPY backend/requirements ./requirements
 RUN pip install --no-cache-dir -r requirements/base.txt
+# The repository's .dockerignore keeps secrets (.env), the local virtualenv, caches, tests and storage data out of the image.
 COPY backend/ .
 
 RUN useradd --create-home --uid 10001 appuser
 USER appuser
 EXPOSE 8000
-HEALTHCHECK --interval=30s --timeout=5s CMD curl -fs http://localhost:8000/api/v1/health || exit 1
+# Liveness only (process answers; no dependency touched, not rate limited, no access-log row). Readiness (/api/v1/health/ready) is
+# for the load balancer. Worker / beat containers run another command from this image: compose disables the check there.
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s CMD curl -fs http://localhost:8000/api/v1/health/live || exit 1
 # Client IPs come from TRUSTED_PROXIES in the application (Phase 12B D21); uvicorn must not rewrite them itself.
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--no-proxy-headers"]

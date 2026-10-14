@@ -268,6 +268,12 @@ class ConfirmPaidIn(_Strict):
     note: Note = None
 
 
+class PayoutFailIn(_Strict):
+    reason: Reason
+    # bank evidence that the money did not leave; required when the provider outcome is unknown (UNCONFIRMED, or pending at a provider)
+    document_id: uuid.UUID | None = None
+
+
 class ReconcileIn(_Strict):
     statement_reference: Ref120
     statement_amount: StatementMoney

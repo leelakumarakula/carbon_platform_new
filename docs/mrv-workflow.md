@@ -183,6 +183,8 @@ Dataset rules:
   PASS is refused while any automated check FAILs (`QA_CHECKS_FAILED`).
 - **Approve (`mrv.approve`, not the submitter):**
   - requires the latest QA result PASS;
+  - refuses when a field record in the snapshot is no longer ACCEPTED (`SNAPSHOT_OUT_OF_DATE`) and re-runs the automated QA
+    checks (`QA_CHECKS_FAILED` on any FAIL);
   - **re-verifies the snapshot hash**;
   - moves the period to APPROVED;
   - supersedes the previously approved dataset of the period.

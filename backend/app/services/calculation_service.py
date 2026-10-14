@@ -31,6 +31,7 @@ from app.models import (
     CalculationOutput,
     CalculationQaReview,
     CalculationRun,
+    FieldCollectionRecord,
     LabResult,
     MethodologyCalculationRule,
     MonitoringPeriod,
@@ -251,6 +252,15 @@ def current_problems(db: Session, run: CalculationRun, snapshot: dict[str, Any])
     ds = db.get(MrvDataset, uuid.UUID(snapshot["dataset"]["id"]))
     if ds is None or ds.status != "APPROVED" or ds.snapshot_sha256 != snapshot["dataset"]["snapshot_sha256"]:
         out.append(f"MRV dataset {snapshot['dataset']['code']} is no longer the APPROVED dataset ({ds.status if ds else 'missing'}).")
+    # field records of the frozen datasets (reporting period and, for re-measurement, the previous one) that a correction replaced
+    prev_id = (snapshot.get("previous_period") or {}).get("dataset_id")
+    for d in (ds, db.get(MrvDataset, uuid.UUID(prev_id)) if prev_id else None):
+        if d is None or not d.snapshot:
+            continue
+        for c in json.loads(d.snapshot).get("field_collections", []):
+            fc = db.get(FieldCollectionRecord, uuid.UUID(c["id"]))
+            if fc is None or fc.status != "ACCEPTED":
+                out.append(f"Field collection {c['code']} v{c['version']} is no longer the accepted version ({fc.status if fc else 'missing'}).")
     for row in snapshot["inputs"]:
         if row["source_type"] == "LAB_RESULT":
             res = db.get(LabResult, uuid.UUID(row["source_id"]))
@@ -263,6 +273,22 @@ def current_problems(db: Session, run: CalculationRun, snapshot: dict[str, Any])
             or pm.monitoring_rules_version != meth["monitoring_rules_version"]):
         out.append("The project's methodology lock or its rule revisions changed since the inputs were frozen.")
     return out
+
+
+def readiness_revoked(db: Session, snapshot: dict[str, Any]) -> bool:
+    """The inputs were frozen while the methodology version was PRODUCTION_READY, and that readiness has been revoked since: the frozen
+    readiness must not keep a run (its execution, QA or internal verification readiness) going in production."""
+    meth = snapshot.get("methodology") or {}
+    if meth.get("calculation_readiness") != fw.PRODUCTION_READY:
+        return False
+    from app.models import MethodologyVersion
+    v = db.get(MethodologyVersion, uuid.UUID(meth["version_id"])) if meth.get("version_id") else None
+    return v is None or v.calculation_readiness != fw.PRODUCTION_READY
+
+
+def revoked_blocker(module_code: str | None) -> ci.Blocker:
+    return ci.Blocker("NOT_PRODUCTION_READY", f"The production readiness of the methodology version (module {module_code}) was revoked after "
+                      "the inputs were frozen (blocked in production).", "READINESS_REVOKED")
 
 
 def execute(db: Session, ctx: RequestContext, principal: Principal, run_id: uuid.UUID, resolver: Resolver | None = None) -> CalculationRun:
@@ -286,6 +312,8 @@ def execute(db: Session, ctx: RequestContext, principal: Principal, run_id: uuid
                                                   "MODULE_CHANGED")])
     if module.readiness != fw.PRODUCTION_READY and get_settings().is_production:
         raise _block(db, ctx, p, run, [ci.Blocker("NOT_PRODUCTION_READY", f"Module {module.code} is NOT_PRODUCTION_READY (blocked in production).")])
+    if readiness_revoked(db, snapshot) and get_settings().is_production:
+        raise _block(db, ctx, p, run, [revoked_blocker(module.code)])
     try:
         result = fw.execute(module, snapshot)
     except fw.CalculationBlocked as e:
@@ -427,6 +455,10 @@ def approve(db: Session, ctx: RequestContext, principal: Principal, run_id: uuid
     stale = current_problems(db, run, snapshot)
     if stale:
         raise Conflict("Frozen inputs are out of date; create a new run.", error_code="INPUTS_OUT_OF_DATE", details={"problems": stale})
+    if get_settings().is_production and (run.module_readiness != fw.PRODUCTION_READY or readiness_revoked(db, snapshot)):
+        b = revoked_blocker(run.module_code) if run.module_readiness == fw.PRODUCTION_READY else \
+            ci.Blocker("NOT_PRODUCTION_READY", f"Module {run.module_code} is NOT_PRODUCTION_READY (blocked in production).")
+        raise Conflict(b.message, error_code=b.code, details={"reason": b.reason})
     now = utcnow()
     for old in db.scalars(select(CalculationRun).where(CalculationRun.monitoring_period_id == run.monitoring_period_id,
                                                        CalculationRun.status == "APPROVED", CalculationRun.id != run.id)).all():

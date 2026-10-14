@@ -1,11 +1,13 @@
 """Phase 8A internal pre-verification API (`/api/v1/calculations`): findings, calculation reports and internal verification readiness.
 Internal only — no VVB/ACVA, validation or verification endpoint exists."""
+import hashlib
 import uuid
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, File, Form, Response, UploadFile, status
 
 from app.api.deps import DB, Ctx, read_upload, require, require_any
+from app.core.errors import Conflict
 from app.schemas.lab import DocumentRef
 from app.schemas.preverification import (
     FindingIn,
@@ -118,6 +120,9 @@ def get_report(report_id: uuid.UUID, principal: Reader, db: DB) -> ReportOut:
 def report_pdf(report_id: uuid.UUID, principal: Reader, db: DB, ctx: Ctx) -> Response:
     rep, _ = crep.get_report(db, principal, report_id)
     _, data = document_service.download(db, ctx, principal, rep.document_id)
+    if hashlib.sha256(data).hexdigest() != rep.pdf_sha256:   # the document holds other bytes than the PDF this report recorded
+        raise Conflict("The report PDF does not match the SHA-256 recorded for the report.", error_code="REPORT_INTEGRITY_FAILED",
+                       details={"report_code": rep.report_code})
     return Response(content=data, media_type="application/pdf", headers={"Content-Disposition": f'attachment; filename="{rep.report_code}.pdf"'})
 
 

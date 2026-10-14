@@ -8,6 +8,8 @@ Rules enforced here:
 - every status change goes through PROJECT_MACHINE with readiness checks, and is written to workflow_events,
   audit_logs and the append-only project_status_history
 - the person who submitted the project cannot approve its eligibility review
+- MRV planning (MRV_PLANNED) is refused while a participating farm has an unresolved double-counting conflict with another
+  open project (project_farm_service.double_counting_conflicts); at enrolment such conflicts are only acknowledged
 - no methodology is selected and nothing is calculated in Phase 3 (methodology_status stays NOT_SELECTED)
 """
 import json
@@ -456,6 +458,11 @@ def readiness(db: Session, p: Project) -> list[TransitionReadiness]:
         elif target == "ACTIVITY_SELECTED":
             items = [ChecklistItem(key="activity", label="An activity offered under the selected standard is selected",
                                    done=bool(p.activity_id and p.standard_id and catalog_service.is_linked(db, p.standard_id, p.activity_id)))]
+        elif target == "MRV_PLANNED":
+            conflicts = pfs.double_counting_conflicts(db, p)
+            label = "No double counting: no participating farm takes part in, or overlaps a farm of, another open project over the same dates"
+            items = [ChecklistItem(key="double_counting", label=label + (f" ({pfs.double_counting_summary(conflicts)})" if conflicts else ""),
+                                   done=not conflicts)]
         out.append(TransitionReadiness(target=target, ready=all(i.done for i in items if i.required), items=items))
     return out
 

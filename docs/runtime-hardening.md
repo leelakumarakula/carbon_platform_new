@@ -94,7 +94,7 @@ the algorithm is fixed (HS256). Refresh tokens are opaque and unaffected.
 |---|---|---|
 | `GET /api/v1/health` | compatibility (status, database; environment only outside production) | never 5xx |
 | `GET /api/v1/health/live` | liveness: the process answers; touches nothing | process hung |
-| `GET /api/v1/health/ready` | load balancer readiness | **503**: database unreachable, schema not at migration head, public bucket / versioning off, Redis without noeviction / AOF, no real antivirus scanner configured |
+| `GET /api/v1/health/ready` | load balancer readiness | **503**: database unreachable, schema behind the migration head (a newer schema during a rolling deploy is ready), public bucket / versioning off, Redis without noeviction / AOF, no real antivirus scanner configured |
 
 Outages the platform degrades around (Redis, MinIO, the antivirus engine) are `degraded` with HTTP 200 — removing every node would turn a
 partial outage into a full one (uploads / downloads answer 503 individually; LIVE uploads are never accepted unscanned). Production

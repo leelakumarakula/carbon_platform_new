@@ -55,8 +55,8 @@ class Settings(BaseSettings):
     SQL_SERVER_PASSWORD: str | None = None
     SQL_SERVER_DRIVER: str = "ODBC Driver 17 for SQL Server"
     SQL_SERVER_TRUSTED_CONNECTION: bool = False
-    SQL_SERVER_TRUST_SERVER_CERTIFICATE: bool = True
-    DB_ECHO: bool = False
+    SQL_SERVER_TRUST_SERVER_CERTIFICATE: bool = True   # development / test default; production refuses true (certificate validated)
+    DB_ECHO: bool = False                              # refused in production (D44)
 
     CORS_ORIGINS: Annotated[list[str], NoDecode] = ["http://localhost:4200"]
 
@@ -391,6 +391,11 @@ class Settings(BaseSettings):
         # ---- production only
         if self.LOG_FORMAT != "json":
             raise ValueError("Production logs must be structured JSON (D44)")
+        if self.DB_ECHO:
+            raise ValueError("DB_ECHO must be false in production: echoed SQL would write personal data to the logs (D44)")
+        if self.SQL_SERVER_TRUST_SERVER_CERTIFICATE:
+            raise ValueError("Production requires a validated SQL Server TLS certificate: set SQL_SERVER_TRUST_SERVER_CERTIFICATE=false "
+                             "(in DATABASE_URL: TrustServerCertificate=no) and give SQL Server a certificate this host trusts")
         for name in ("SATELLITE_PROVIDER", "LAB_PROVIDER", "REGISTRY_PROVIDER", "PAYMENT_PROVIDER", "WEATHER_PROVIDER", "SOIL_PROVIDER",
                      "LAND_RECORDS_PROVIDER"):
             if str(getattr(self, name)).strip().lower() in MOCK_PROVIDER_NAMES:
@@ -418,6 +423,8 @@ class Settings(BaseSettings):
 
     def database_url(self, database: str | None = None) -> str | URL:
         query = {"driver": self.SQL_SERVER_DRIVER}
+        if self.is_production:
+            query["Encrypt"] = "yes"         # TLS even on ODBC Driver 17 (off by default); the certificate is validated (guard above)
         if self.SQL_SERVER_TRUST_SERVER_CERTIFICATE:
             query["TrustServerCertificate"] = "yes"
         if self.SQL_SERVER_TRUSTED_CONNECTION:

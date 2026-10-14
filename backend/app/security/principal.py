@@ -2,17 +2,19 @@
 
 A permission can be held platform-wide (role granted with organization_id NULL) or only
 inside specific organisations. Services ask `principal.scope_for(code)`:
-  None              -> may act on every organisation
+  None              -> may act on every organisation (only a principal built without environment data)
   frozenset({...})  -> may act only on records belonging to these organisations
+A platform-wide grant reaches only the organisations of the caller's own environment (DEMO never reads or acts on
+LIVE records, and the reverse), and grants inside an organisation that is not ACTIVE are ignored.
 """
 import uuid
 from dataclasses import dataclass, field
 
-from sqlalchemy import select
+from sqlalchemy import or_, select
 from sqlalchemy.orm import Session
 
 from app.core.errors import PermissionDenied
-from app.models import OrganizationUser, Permission, Role, RolePermission, User, UserRole
+from app.models import Organization, OrganizationStatus, OrganizationUser, Permission, Role, RolePermission, User, UserRole
 
 
 @dataclass(frozen=True)
@@ -30,6 +32,9 @@ class Principal:
     session_id: uuid.UUID | None
     grants: tuple[Grant, ...]
     member_organization_ids: frozenset[uuid.UUID] = field(default_factory=frozenset)
+    # Every organisation of the caller's environment (any status): the reach of a platform-wide grant.
+    # None only for synthetic principals built in code without environment data (no environment restriction).
+    environment_organization_ids: frozenset[uuid.UUID] | None = None
 
     @property
     def user_id(self) -> uuid.UUID:
@@ -49,16 +54,20 @@ class Principal:
     def has_platform(self, code: str) -> bool:
         return any(g.organization_id is None and code in g.permissions for g in self.grants)
 
+    def in_environment(self, organization_id: uuid.UUID) -> bool:
+        """True if the organisation belongs to the caller's environment (the reach of a platform-wide grant)."""
+        return self.environment_organization_ids is None or organization_id in self.environment_organization_ids
+
     def scope_for(self, code: str) -> frozenset[uuid.UUID] | None:
         if self.has_platform(code):
-            return None
+            return self.environment_organization_ids  # the caller's environment only, never "every organisation"
         orgs = frozenset(g.organization_id for g in self.grants if code in g.permissions and g.organization_id)
         if not orgs:
             raise PermissionDenied(details={"required_permission": code})
         return orgs
 
     def can_in_org(self, code: str, organization_id: uuid.UUID | None) -> bool:
-        if self.has_platform(code):
+        if self.has_platform(code) and (organization_id is None or self.in_environment(organization_id)):
             return True
         return organization_id is not None and any(
             g.organization_id == organization_id and code in g.permissions for g in self.grants)
@@ -75,7 +84,10 @@ def load_grants(db: Session, user_id: uuid.UUID) -> tuple[Grant, ...]:
         .join(Role, Role.id == UserRole.role_id)
         .outerjoin(RolePermission, RolePermission.role_id == Role.id)
         .outerjoin(Permission, Permission.id == RolePermission.permission_id)
-        .where(UserRole.user_id == user_id)
+        .outerjoin(Organization, Organization.id == UserRole.organization_id)
+        # A suspended or archived organisation gives its members no access (platform-wide grants are unaffected).
+        .where(UserRole.user_id == user_id,
+               or_(UserRole.organization_id.is_(None), Organization.status == OrganizationStatus.ACTIVE.value))
     ).all()
     grouped: dict[uuid.UUID, tuple[str, str, uuid.UUID | None, set[str]]] = {}
     for ur_id, role_code, scope, org_id, perm in rows:
@@ -87,5 +99,6 @@ def load_grants(db: Session, user_id: uuid.UUID) -> tuple[Grant, ...]:
 
 def load_principal(db: Session, user: User, session_id: uuid.UUID | None) -> Principal:
     orgs = db.scalars(select(OrganizationUser.organization_id).where(OrganizationUser.user_id == user.id)).all()
+    env_orgs = db.scalars(select(Organization.id).where(Organization.environment == user.environment)).all()
     return Principal(user=user, session_id=session_id, grants=load_grants(db, user.id),
-                     member_organization_ids=frozenset(orgs))
+                     member_organization_ids=frozenset(orgs), environment_organization_ids=frozenset(env_orgs))

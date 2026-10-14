@@ -6,7 +6,8 @@ DRAFT → SUBMITTED → READY → INVALIDATED; SUBMITTED → REJECTED / WITHDRAW
 Deterministic prerequisites (re-checked when created, submitted, approved and whenever readiness is read):
 the period's current APPROVED run (not superseded) · input and output hashes valid · inputs current (dataset still APPROVED with the
 same hash, laboratory results still APPROVED at the same version, methodology lock and rule revisions unchanged) · the run's CURRENT
-report exists, its hashes verify and it is not stale · no open blocking finding in the period · a production-ready module in production.
+report exists, its hashes verify and it is not stale · no open blocking finding in the period · a production-ready module in production
+(whose methodology version's readiness has not been revoked since the inputs were frozen).
 A READY review whose prerequisites no longer hold is INVALIDATED automatically.
 """
 import json
@@ -113,6 +114,9 @@ def evaluate(db: Session, period_id: uuid.UUID, run: CalculationRun | None) -> t
     if get_settings().is_production and run.module_readiness != fw.PRODUCTION_READY:
         prod.append(f"module {run.module_code} is {run.module_readiness}")
         blockers.append(Blocker("NOT_PRODUCTION_READY", "A NOT_PRODUCTION_READY module is blocked in production."))
+    elif get_settings().is_production and snap and cs.readiness_revoked(db, snap):   # frozen PRODUCTION_READY, revoked since (A8)
+        prod.append(f"the production readiness of module {run.module_code} was revoked after the inputs were frozen")
+        blockers.append(cs.revoked_blocker(run.module_code))
     checks.append(_check("module_readiness", "Production-ready module in production", prod))
     return blockers, checks, rep
 

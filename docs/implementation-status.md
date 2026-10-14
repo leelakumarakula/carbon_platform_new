@@ -842,7 +842,8 @@ Tests
   - Without a registered calculation module no run reaches APPROVED outside tests, so reports and READY readiness are exercised only with
     the TEST-only fixture; DEMO shows the blocked path.
   - Report generation is synchronous (size-guarded); background generation is deferred to Phase 12. The PDF is text-only.
-  - Cross-module automated checks (duplicate farm, overlaps, double counting) are not part of readiness.
+  - Cross-module automated checks (duplicate farm, overlaps) are not part of calculation readiness. Double counting across projects
+    (the same farm, or overlapping farms, ACTIVE in two non-closed projects) blocks MRV planning since 14 Oct 2026.
 - Phase 8B:
   - Verification only: validation, registry submission, issuance, credits, serials, buffer and allocation are not implemented; a
     recorded VERIFIED decision is not an issuance. No accreditation is modelled (C4).

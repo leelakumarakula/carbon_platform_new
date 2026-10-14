@@ -187,9 +187,9 @@ def share_versions(db: Session, principal: Principal, project_id: uuid.UUID) -> 
 
 
 def create_share_version(db: Session, ctx: RequestContext, principal: Principal, data: Any, key: str | None) -> RevenueShareVersion:
-    if key and (prior := db.scalars(select(RevenueShareVersion).where(RevenueShareVersion.request_key == key)).first()) is not None:
-        return prior
     p = project_for(db, principal, data.project_id, P.SHARING_MANAGE)
+    if (prior := ls.replay(db, RevenueShareVersion, key, lambda v: v.project_id == p.id)) is not None:
+        return prior                                               # type: ignore[no-any-return]
     writable(p)
     if data.effective_to and data.effective_to < data.effective_from:
         raise ValidationFailed("effective_to is before effective_from.", error_code="INVALID_DATES")
@@ -269,9 +269,10 @@ def allocation_lines(db: Session, version_id: uuid.UUID) -> list[FarmAllocationL
 
 
 def create_allocation(db: Session, ctx: RequestContext, principal: Principal, data: Any, key: str | None) -> FarmAllocationVersion:
-    if key and (prior := db.scalars(select(FarmAllocationVersion).where(FarmAllocationVersion.request_key == key)).first()) is not None:
-        return prior
     p = project_for(db, principal, data.project_id, P.SHARING_MANAGE)
+    if (prior := ls.replay(db, FarmAllocationVersion, key, lambda v: v.project_id == p.id
+                           and v.monitoring_period_id == data.monitoring_period_id)) is not None:
+        return prior                                               # type: ignore[no-any-return]
     writable(p)
     mp = period_of(db, p, data.monitoring_period_id)
     ids = [ln.project_farm_id for ln in data.lines]
@@ -323,9 +324,9 @@ def costs(db: Session, principal: Principal, project_id: uuid.UUID) -> list[Proj
 
 
 def create_cost(db: Session, ctx: RequestContext, principal: Principal, data: Any, key: str | None) -> ProjectCost:
-    if key and (prior := db.scalars(select(ProjectCost).where(ProjectCost.request_key == key)).first()) is not None:
-        return prior
     p = project_for(db, principal, data.project_id, P.COSTS_MANAGE)
+    if (prior := ls.replay(db, ProjectCost, key, lambda c: c.project_id == p.id)) is not None:
+        return prior                                               # type: ignore[no-any-return]
     writable(p)
     if data.monitoring_period_id:
         period_of(db, p, data.monitoring_period_id)
@@ -334,22 +335,42 @@ def create_cost(db: Session, ctx: RequestContext, principal: Principal, data: An
     if amount == 0:
         raise ValidationFailed("A cost amount cannot be zero.", error_code="INVALID_AMOUNT")
     ms.money(abs(amount), currency, "amount")                      # ISO 4217 code with known minor units; no excess decimals
+    orig = None
     if amount < 0:
         orig = db.get(ProjectCost, data.corrects_cost_id) if data.corrects_cost_id else None
-        if orig is None or orig.project_id != p.id or orig.status != "APPROVED":
+        if orig is None or orig.project_id != p.id or orig.status != "APPROVED" or orig.amount <= 0:
             raise ValidationFailed("A negative amount corrects an approved cost of the same project (corrects_cost_id).",
                                    error_code="CORRECTION_TARGET_REQUIRED")
-    c = ProjectCost(cost_code=next_code(db, "cost", utcnow().year), project_id=p.id, monitoring_period_id=data.monitoring_period_id,
-                    category=data.category, description=data.description, amount=amount, currency=currency, incurred_on=data.incurred_on,
-                    external_reference=data.external_reference, corrects_cost_id=data.corrects_cost_id, status="PENDING_APPROVAL",
-                    created_by=principal.user_id, request_key=key, environment=p.environment)
-    db.add(c)
-    db.flush()
-    ls.workflow(db, ctx, COST_ENTITY, c.id, None, "PENDING_APPROVAL", None)
-    ls.audit(db, ctx, "PROJECT_COST_CREATED", COST_ENTITY, c.id, [p.organization_id],
-             {"cost_code": c.cost_code, "category": c.category, "amount": str(c.amount), "currency": c.currency})
-    db.commit()
-    return c
+        if orig.currency != currency:
+            raise ValidationFailed(f"A correction is in the corrected cost's currency ({orig.currency}).", error_code="CORRECTION_CURRENCY_MISMATCH",
+                                   details={"currency": orig.currency})
+
+    def op() -> ProjectCost:
+        if orig is not None:
+            ms.lock(db, ProjectCost, orig.id)                       # serializes corrections of the same cost
+            _check_correction(db, orig, amount)
+        c = ProjectCost(cost_code=next_code(db, "cost", utcnow().year), project_id=p.id, monitoring_period_id=data.monitoring_period_id,
+                        category=data.category, description=data.description, amount=amount, currency=currency, incurred_on=data.incurred_on,
+                        external_reference=data.external_reference, corrects_cost_id=data.corrects_cost_id, status="PENDING_APPROVAL",
+                        created_by=principal.user_id, request_key=key, environment=p.environment)
+        db.add(c)
+        db.flush()
+        ls.workflow(db, ctx, COST_ENTITY, c.id, None, "PENDING_APPROVAL", None)
+        ls.audit(db, ctx, "PROJECT_COST_CREATED", COST_ENTITY, c.id, [p.organization_id],
+                 {"cost_code": c.cost_code, "category": c.category, "amount": str(c.amount), "currency": c.currency,
+                  "corrects_cost_id": c.corrects_cost_id})
+        return c
+    return ls.run(db, ctx, op)
+
+
+def _check_correction(db: Session, orig: ProjectCost, amount: Decimal) -> None:
+    """Corrections never take a cost below zero: Σ (pending and approved negative corrections) + this one ≥ −original amount."""
+    done = Decimal(db.scalar(select(func.coalesce(func.sum(ProjectCost.amount), 0)).where(
+        ProjectCost.corrects_cost_id == orig.id, ProjectCost.amount < 0, ProjectCost.status.in_(("PENDING_APPROVAL", "APPROVED")))) or 0)
+    if done + amount < -orig.amount:
+        raise Conflict(f"Corrections of {orig.cost_code} would exceed its amount ({orig.amount} {orig.currency}).",
+                       error_code="CORRECTION_EXCEEDS_COST",
+                       details={"original": str(orig.amount), "already_corrected": str(done), "requested": str(amount)})
 
 
 def cost_evidence(db: Session, ctx: RequestContext, principal: Principal, cost_id: uuid.UUID, filename: str | None, data: bytes,

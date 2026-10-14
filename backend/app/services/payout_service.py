@@ -171,9 +171,9 @@ def _new_payout(db: Session, ctx: RequestContext, principal: Principal, run: Set
 
 def reissue(db: Session, ctx: RequestContext, principal: Principal, payout_id: uuid.UUID, key: str | None) -> Payout:
     """A FAILED payout is replaced by a new CALCULATED payout of the same entitlement (the failed record is never edited)."""
-    if key and (prior := db.scalars(select(Payout).where(Payout.request_key == key)).first()) is not None:
-        return prior
     po = payout_for(db, principal, payout_id, P.PAYOUTS_CALCULATE)
+    if (prior := ls.replay(db, Payout, key, lambda x: x.replaces_payout_id == po.id)) is not None:
+        return prior                                               # type: ignore[no-any-return]
     run = db.get(SettlementRun, po.settlement_run_id)
     project = db.get(Project, run.project_id) if run else None
     assert run is not None and project is not None
@@ -367,7 +367,29 @@ def confirm_paid(db: Session, ctx: RequestContext, principal: Principal, payout_
     return ls.run(db, ctx, op)
 
 
-def fail(db: Session, ctx: RequestContext, principal: Principal, payout_id: uuid.UUID, reason: str, key: str | None) -> Payout:
+def outcome_unknown(po: Payout) -> bool:
+    """The money may still leave (or have left) the bank: the provider never answered (UNCONFIRMED) or accepted the instruction
+    (PAYMENT_PENDING at a provider). Such a payout is FAILED only by the provider's own answer (`query_status`) or with bank evidence —
+    never on a person's word alone, because a FAILED payout is reissued and the entitlement would be paid twice."""
+    return po.status == "UNCONFIRMED" or (po.status == "PAYMENT_PENDING" and po.adapter_code != "MANUAL")
+
+
+def _failure_evidence(db: Session, po: Payout, document_id: uuid.UUID | None) -> uuid.UUID | None:
+    if document_id is not None:
+        document_service.require_attached(db, document_id, ENTITY, po.id, {DocumentCategory.PAYOUT_EVIDENCE.value})
+        return document_id
+    if not outcome_unknown(po):
+        return None
+    docs = [d for d in document_service.list_for(db, ENTITY, po.id) if d.category == DocumentCategory.PAYOUT_EVIDENCE.value and d.status == "ACTIVE"]
+    if not docs:
+        raise Conflict(f"Payout {po.payout_code} is {po.status}: the provider may still pay it. Query the provider status, or attach the bank's "
+                       "evidence that the payment failed (PAYOUT_EVIDENCE PDF) before recording the failure.",
+                       error_code="PAYOUT_FAILURE_EVIDENCE_REQUIRED", details={"status": po.status, "adapter": po.adapter_code})
+    return docs[-1].id
+
+
+def fail(db: Session, ctx: RequestContext, principal: Principal, payout_id: uuid.UUID, reason: str, key: str | None,
+         document_id: uuid.UUID | None = None) -> Payout:
     po = payout_for(db, principal, payout_id, P.PAYOUTS_EXECUTE)
     if ms.replay_action(po, key, "FAILED"):
         return po
@@ -377,10 +399,11 @@ def fail(db: Session, ctx: RequestContext, principal: Principal, payout_id: uuid
 
     def op() -> Payout:
         x = ms.lock(db, Payout, po.id)
+        evidence = _failure_evidence(db, x, document_id)           # under the lock: the status decides what is required
         frm = _move(db, ctx, x, "FAILED", reason)
         x.reason, x.action_key = reason, key
-        _tx(db, x, "FAILED", principal.user_id, note=reason)
-        _audit(db, ctx, "PAYOUT_FAILED", x, {"status": "FAILED"}, reason, {"status": frm})
+        _tx(db, x, "FAILED", principal.user_id, note=reason, evidence=evidence)
+        _audit(db, ctx, "PAYOUT_FAILED", x, {"status": "FAILED", "evidence_document_id": evidence}, reason, {"status": frm})
         return x
     return ls.run(db, ctx, op)
 

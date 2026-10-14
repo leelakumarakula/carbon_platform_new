@@ -384,8 +384,9 @@ def _check_quantity(db: Session, b: CreditBatch, seller_id: uuid.UUID, serial_ra
 
 
 def create_listing(db: Session, ctx: RequestContext, principal: Principal, data: Any, key: str | None) -> MarketplaceListing:
-    if key and (prior := db.scalars(select(MarketplaceListing).where(MarketplaceListing.request_key == key)).first()) is not None:
-        return prior
+    if (prior := ls.replay(db, MarketplaceListing, key, lambda x: x.seller_organization_id == data.seller_organization_id
+                           and x.batch_id == data.batch_id and principal.can_in_org(P.LISTINGS_MANAGE, x.seller_organization_id))) is not None:
+        return prior                                               # type: ignore[no-any-return]
     seller = org(db, data.seller_organization_id)
     require(principal, seller.id, P.LISTINGS_MANAGE, visible=SELLER_VIEW, what="Organization", nf_code="ORGANIZATION_NOT_FOUND")
     if seller.org_type not in SELLER_ORG_TYPES or seller.status != "ACTIVE":

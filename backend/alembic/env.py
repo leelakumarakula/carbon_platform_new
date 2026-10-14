@@ -29,7 +29,7 @@ def run_migrations_offline() -> None:
 def run_migrations_online() -> None:
     connectable = config.attributes.get("connection")
     if connectable is None:
-        engine = create_engine(get_settings().database_url(), poolclass=pool.NullPool)
+        engine = create_engine(get_settings().database_url(), poolclass=pool.NullPool, hide_parameters=True)
         with engine.connect() as connection:
             _run(connection)
     else:

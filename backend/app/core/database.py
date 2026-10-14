@@ -13,7 +13,8 @@ def get_engine() -> Engine:
     s = get_settings()
     return create_engine(
         s.database_url(),
-        echo=s.DB_ECHO,
+        echo=s.DB_ECHO,                 # refused in production (config guard)
+        hide_parameters=True,           # D44: SQL parameters (names, phone / ID numbers) never reach logged errors or echo output
         pool_pre_ping=True,
         pool_size=10,
         max_overflow=20,

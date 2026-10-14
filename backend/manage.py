@@ -37,7 +37,7 @@ def create_db() -> None:
     name = s.SQL_SERVER_DATABASE
     if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]{0,99}", name):
         sys.exit(f"Refusing unsafe database name: {name!r}")
-    engine = create_engine(s.database_url("master"), isolation_level="AUTOCOMMIT")
+    engine = create_engine(s.database_url("master"), isolation_level="AUTOCOMMIT", hide_parameters=True)
     with engine.connect() as c:
         if c.scalar(text("SELECT DB_ID(:n)"), {"n": name}) is None:
             c.execute(text(f"CREATE DATABASE [{name}]"))

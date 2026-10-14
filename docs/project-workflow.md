@@ -73,11 +73,17 @@ in any state except CLOSED. Anything else is refused with `PROJECT_NOT_EDITABLE`
 - The request records the participation period, the farm boundary version in use (for lineage) and **at least
   one carbon-rights record**. The rights must be evidenced by a signed farmer agreement, a CARBON_RIGHTS document
   attached to the project, or a reference text.
-- **Conflicts are shown, never auto-rejected** (spec §41):
+- **Conflicts are shown at enrolment and block MRV** (spec §41, tightened 14 Oct 2026 against double counting):
   - Open or confirmed farm-overlap flags and active participation in another project with overlapping dates are
     returned as `CONFLICTS_REQUIRE_ACKNOWLEDGEMENT`.
   - The farm can be added once the conflicts are acknowledged with a note.
   - A snapshot of the conflicts is stored on the participation; the eligibility reviewer decides.
+  - From MRV planning onwards an unresolved conflict is a hard block (`DOUBLE_COUNTING_CONFLICT`; readiness item
+    `double_counting` for MRV_PLANNED): the same farm ACTIVE in another non-closed project with overlapping dates, or
+    its boundary overlapping a farm ACTIVE in another non-closed project. Remove the farm from one project or correct
+    the boundary. A farm-overlap flag cleared for verification still counts here, because both projects would credit the land.
+  - A farm that is a control site of any non-closed project cannot join a project (`FARM_IS_CONTROL_SITE`), and a project
+    farm of another non-closed project cannot become a control site.
 - Removing a farm sets `REMOVED`, ends its participation and active carbon-rights records, recomputes the
   boundary, and keeps everything.
 

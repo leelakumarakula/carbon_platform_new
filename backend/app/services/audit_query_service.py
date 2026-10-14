@@ -4,7 +4,7 @@ import uuid
 from datetime import datetime
 from typing import Any
 
-from sqlalchemy import Select, select
+from sqlalchemy import ColumnElement, Select, and_, or_, select
 from sqlalchemy.orm import Session
 
 from app.audit.service import AuditAction, record
@@ -32,6 +32,16 @@ def _between(stmt: Select[Any], col: Any, start: datetime | None, end: datetime 
     return stmt
 
 
+def _env_users(principal: Principal) -> Select[Any]:
+    """Users of the caller's environment: platform-wide audit and security reads stay inside DEMO or LIVE (Phase 12B isolation)."""
+    return select(User.id).where(User.environment == principal.user.environment)
+
+
+def _in_env(col: Any, principal: Principal) -> ColumnElement[bool]:
+    """Rows of a user of the caller's environment, or system rows without a user (not tied to an environment)."""
+    return or_(col.is_(None), col.in_(_env_users(principal)))
+
+
 def list_audit(db: Session, principal: Principal, params: PageParams, *, entity_type: str | None,
                entity_id: str | None, action: str | None, user_id: uuid.UUID | None,
                organization_id: uuid.UUID | None, start: datetime | None, end: datetime | None
@@ -39,7 +49,10 @@ def list_audit(db: Session, principal: Principal, params: PageParams, *, entity_
     scope = principal.scope_for(P.AUDIT_READ)
     stmt = select(AuditLog)
     if scope is not None:
-        stmt = stmt.where(AuditLog.organization_id.in_(list(scope)))
+        cond: ColumnElement[bool] = AuditLog.organization_id.in_(list(scope))
+        if principal.has_platform(P.AUDIT_READ):   # rows without an organization (logins, user admin) of the caller's environment
+            cond = or_(cond, and_(AuditLog.organization_id.is_(None), _in_env(AuditLog.user_id, principal)))
+        stmt = stmt.where(cond)
     for col, val in ((AuditLog.entity_type, entity_type), (AuditLog.entity_id, entity_id), (AuditLog.action, action),
                      (AuditLog.user_id, user_id), (AuditLog.organization_id, organization_id)):
         if val:
@@ -63,7 +76,7 @@ def list_workflow_events(db: Session, principal: Principal, params: PageParams, 
                          entity_id: str | None) -> tuple[list[WorkflowEventOut], int]:
     if not principal.has_platform(P.AUDIT_READ):
         raise PermissionDenied(details={"required_permission": P.AUDIT_READ})
-    stmt = select(WorkflowEvent)
+    stmt = select(WorkflowEvent).where(_in_env(WorkflowEvent.user_id, principal))
     if entity_type:
         stmt = stmt.where(WorkflowEvent.entity_type == entity_type)
     if entity_id:
@@ -81,7 +94,7 @@ def _require_security_read(principal: Principal) -> None:
 def list_login_audit(db: Session, principal: Principal, params: PageParams, *, user_id: uuid.UUID | None,
                      success: bool | None, start: datetime | None, end: datetime | None) -> tuple[list[LoginAuditOut], int]:
     _require_security_read(principal)
-    stmt = select(LoginAudit)
+    stmt = select(LoginAudit).where(_in_env(LoginAudit.user_id, principal))
     if user_id:
         stmt = stmt.where(LoginAudit.user_id == user_id)
     if success is not None:
@@ -94,7 +107,7 @@ def list_login_audit(db: Session, principal: Principal, params: PageParams, *, u
 def list_security_events(db: Session, principal: Principal, params: PageParams, *, event_type: str | None,
                          severity: str | None) -> tuple[list[SecurityEventOut], int]:
     _require_security_read(principal)
-    stmt = select(SecurityEvent)
+    stmt = select(SecurityEvent).where(_in_env(SecurityEvent.user_id, principal))
     if event_type:
         stmt = stmt.where(SecurityEvent.event_type == event_type)
     if severity:
@@ -110,7 +123,7 @@ def list_sessions(db: Session, principal: Principal, params: PageParams, *, user
                   active_only: bool) -> tuple[list[SessionOut], int]:
     _require_security_read(principal)
     now = utcnow()
-    stmt = select(UserSession)
+    stmt = select(UserSession).where(UserSession.user_id.in_(_env_users(principal)))
     if user_id:
         stmt = stmt.where(UserSession.user_id == user_id)
     if active_only:
@@ -129,7 +142,8 @@ def revoke_session(db: Session, ctx: RequestContext, principal: Principal, sessi
     if not principal.has_platform(P.SECURITY_MANAGE):
         raise PermissionDenied(details={"required_permission": P.SECURITY_MANAGE})
     s = db.get(UserSession, session_id)
-    if s is None:
+    owner = db.get(User, s.user_id) if s is not None else None
+    if s is None or owner is None or owner.environment != principal.user.environment:
         raise NotFound("Session not found.", error_code="SESSION_NOT_FOUND")
     _revoke_session(db, s, "ADMIN_REVOKED", utcnow())
     record(db, ctx, AuditAction.SESSION_REVOKED, "session", s.id, None, {"user_id": s.user_id}, reason)

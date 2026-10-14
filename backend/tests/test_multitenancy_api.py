@@ -89,13 +89,26 @@ def test_org_scoped_permission_does_not_leak_to_other_org(db: Session, client: T
 
 
 def test_demo_and_live_records_do_not_mix(client: TestClient, db: Session) -> None:
-    admin = make_user(db, roles=[("PLATFORM_ADMIN", None)])
-    h = login(client, admin)
+    """A platform-wide grant reaches only the caller's own environment: neither side sees or changes the other's records."""
+    live_admin = login(client, make_user(db, roles=[("PLATFORM_ADMIN", None)]))
+    demo_admin = login(client, make_user(db, roles=[("PLATFORM_ADMIN", None)], environment="DEMO"))
     demo_org: Organization = make_org(db, environment="DEMO")
     live_user = make_user(db)
-    r = client.post(f"{ORGS}/{demo_org.id}/members", headers=h, json={"user_id": str(live_user.id)})
-    assert r.status_code == 409 and r.json()["error_code"] == "ENVIRONMENT_MISMATCH"
-    created = client.post(USERS, headers=h, json={"email": "d@demo.example", "full_name": "Demo Person",
-                                                  "temporary_password": "Temp-Password-123",
-                                                  "organization_id": str(demo_org.id)}).json()
+    # LIVE admin: the DEMO organization does not exist for it
+    r = client.post(f"{ORGS}/{demo_org.id}/members", headers=live_admin, json={"user_id": str(live_user.id)})
+    assert r.status_code == 404 and r.json()["error_code"] == "ORGANIZATION_NOT_FOUND"
+    r = client.post(USERS, headers=live_admin, json={"email": "x@demo.example", "full_name": "Demo Person",
+                                                     "temporary_password": "Temp-Password-123", "organization_id": str(demo_org.id)})
+    assert r.status_code == 403
+    # DEMO admin: a LIVE account cannot be enrolled (it looks missing); new accounts and organizations are DEMO
+    r = client.post(f"{ORGS}/{demo_org.id}/members", headers=demo_admin, json={"user_id": str(live_user.id)})
+    assert r.status_code == 404 and r.json()["error_code"] == "USER_NOT_FOUND"
+    created = client.post(USERS, headers=demo_admin, json={"email": "d@demo.example", "full_name": "Demo Person",
+                                                           "temporary_password": "Temp-Password-123",
+                                                           "organization_id": str(demo_org.id)}).json()
     assert created["environment"] == "DEMO"
+    no_org = client.post(USERS, headers=demo_admin, json={"email": "p@demo.example", "full_name": "Demo Platform",
+                                                          "temporary_password": "Temp-Password-123"}).json()
+    assert no_org["environment"] == "DEMO"
+    org = client.post(ORGS, headers=demo_admin, json={"code": "DEMO-NEW-X", "name": "Demo new", "org_type": "BUYER"}).json()
+    assert org["environment"] == "DEMO"

@@ -3,7 +3,7 @@
 - `GET /health`      — kept for compatibility: status + database. The environment name is included only outside production.
 - `GET /health/live` — liveness: the process answers. No dependency is touched, so a database / Redis outage never restarts the pod.
 - `GET /health/ready` — readiness for the load balancer. HTTP 503 (`not_ready`) when the node cannot serve correctly:
-    * the database is unreachable, or the schema is not at the migration head;
+    * the database is unreachable, or the schema is behind this code's migration head (a newer schema, mid-deploy, is ready);
     * production security misconfiguration: public bucket policy / versioning off, Redis without `noeviction` or persistence,
       no real antivirus scanner.
   Outages of components the platform degrades around are reported as `degraded` with HTTP 200, because removing every API node would
@@ -64,16 +64,29 @@ def live() -> Live:
 
 
 @lru_cache
-def _migration_head() -> str | None:
+def _scripts() -> Any:
     from alembic.config import Config
     from alembic.script import ScriptDirectory
     backend = Path(__file__).resolve().parents[3]
     cfg = Config(str(backend / "alembic.ini"))
     cfg.set_main_option("script_location", str(backend / "alembic"))
-    return ScriptDirectory.from_config(cfg).get_current_head()
+    return ScriptDirectory.from_config(cfg)
+
+
+@lru_cache
+def _migration_head() -> str | None:
+    return _scripts().get_current_head()
+
+
+@lru_cache
+def _known_revisions() -> frozenset[str]:
+    """Every revision this code ships: the single head and all of its ancestors."""
+    return frozenset(r.revision for r in _scripts().walk_revisions())
 
 
 def _database(db: Any) -> tuple[str, str]:
+    """Not ready only when the schema is BEHIND this code (missing, or an ancestor of the code head). A revision this code does not
+    know is newer: deployments run `migrate` before the new code is rolled out, and the old nodes keep serving until replaced."""
     try:
         db.execute(text("SELECT 1"))
     except Exception as e:
@@ -83,9 +96,11 @@ def _database(db: Any) -> tuple[str, str]:
     except Exception as e:
         return FAILED, f"migration state unreadable ({type(e).__name__})"
     head = _migration_head()
-    if current != head:
-        return FAILED, f"schema at {current}, code expects {head}"
-    return OK, f"schema at {current}"
+    if current == head:
+        return OK, f"schema at {current}"
+    if current is None or current in _known_revisions():
+        return FAILED, f"schema at {current}, code expects {head} (run migrate)"
+    return OK, f"schema at {current}, newer than this code's head {head} (rolling deploy)"
 
 
 def _storage() -> tuple[str, str]:

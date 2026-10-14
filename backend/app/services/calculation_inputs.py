@@ -9,6 +9,7 @@ Eligibility (nothing is ever substituted — no zero, average, previous, estimat
 - MRV: only the reporting period's APPROVED dataset; only records the dataset snapshot lists as authoritative methodology records
 - laboratory: only APPROVED results of the same project, the locked methodology version, a LABORATORY rule of that version and the
   dataset plan's measurement, whose root sample belongs to this period and to a field collection version in the dataset snapshot
+  (or to an earlier version that the snapshot's accepted version supersedes: field context then comes from the accepted version)
 - numeric variables refuse text results (INPUT_NOT_NUMERIC); units must match the module's exact text (UNIT_MISMATCH)
 """
 import json
@@ -390,15 +391,17 @@ def _lab_inputs(db: Session, ev: Evaluation, var: fw.Variable, rules: dict[str, 
     results = db.scalars(select(LabResult).where(
         LabResult.status == "APPROVED", LabResult.project_id == ev.project.id, LabResult.methodology_version_id == rule.methodology_version_id,
         LabResult.methodology_monitoring_rule_id == rule.id, LabResult.mrv_plan_measurement_id == meas.id)).all()
+    accepted = _accepted_versions(db, collections)
     by_collection: dict[str, list[tuple[LabResult, LabSample]]] = {}
     for res in results:
         root = db.get(LabSample, res.root_sample_id)
         if root is None or root.project_id != ev.project.id or root.monitoring_period_id != pd.period.id:
             continue
-        if str(root.field_collection_id) not in collections:
+        fc_of_sample = accepted.get(str(root.field_collection_id))
+        if fc_of_sample is None:
             ev.warnings.append(f"Approved result for sample {root.sample_code} excluded: its field-collection version is not in the dataset.")
             continue
-        by_collection.setdefault(str(root.field_collection_id), []).append((res, root))
+        by_collection.setdefault(fc_of_sample, []).append((res, root))
     out = []
     for fc_id, fc in sorted(collections.items(), key=lambda kv: kv[1]["code"]):
         found = by_collection.get(fc_id, [])
@@ -421,12 +424,23 @@ def _lab_inputs(db: Session, ev: Evaluation, var: fw.Variable, rules: dict[str, 
                 dv = db.scalars(select(DocumentVersion).where(DocumentVersion.document_id == res.report_document_id)
                                 .order_by(DocumentVersion.version.desc())).first()
                 sha = dv.checksum_sha256 if dv else None
-            fcr = db.get(FieldCollectionRecord, uuid.UUID(fc_id))
+            fcr = db.get(FieldCollectionRecord, uuid.UUID(fc_id))   # the accepted version in the dataset: probe, cores and depth
+            depth = _sample_depth(db, root, fcr)
+            if depth is None:
+                problems.append(Blocker("INVALID_INPUT", f"Sample {root.sample_code} ({root.depth_top_cm}-{root.depth_bottom_cm} cm) lies outside "
+                                        f"the corrected depth of field collection {fc['code']}; the laboratory result no longer matches the "
+                                        "field record.", "SAMPLE_OUTSIDE_CORRECTED_DEPTH",
+                                        {"variable": var.code, "sample": root.sample_code, "field_collection": fc["code"]}))
+                continue
+            top, bottom = depth
+            original = str(root.field_collection_id)
             context = {"period": pd.label, "period_id": str(pd.period.id), "period_end": pd.period.end_date.isoformat(),
-                       "depth_top_cm": _num(root.depth_top_cm) if root.depth_top_cm is not None else None,
-                       "depth_bottom_cm": _num(root.depth_bottom_cm) if root.depth_bottom_cm is not None else None,
+                       "depth_top_cm": _num(top) if top is not None else None,
+                       "depth_bottom_cm": _num(bottom) if bottom is not None else None,
                        "probe_diameter_mm": _num(fcr.probe_diameter_mm) if fcr and fcr.probe_diameter_mm is not None else None,
                        "cores_count": fcr.cores_count if fcr else None, "root_sample_id": str(root.id), "field_collection_id": fc_id,
+                       # the sample was registered from an earlier version that a correction superseded (A3)
+                       **({"original_field_collection_id": original} if original != fc_id else {}),
                        **_stratum_context(db, pd, pt.get("stratum_id"))}
             out.append(_row(var, "LAB_RESULT", res.id, res.version, root.sample_code, value, res.unit, "SAMPLING_POINT",
                             kind="NUMBER" if res.result_type == "NUMERIC" else "TEXT", context=context,
@@ -434,6 +448,37 @@ def _lab_inputs(db: Session, ev: Evaluation, var: fw.Variable, rules: dict[str, 
                             field_collection_id=fc_id, sample_id=res.sample_id, root_sample_id=root.id, monitoring_rule_id=rule.id,
                             plan_measurement_id=meas.id, requirement_source="METHODOLOGY", source_sha256=sha))
     return out
+
+
+def _accepted_versions(db: Session, collections: dict[str, dict]) -> dict[str, str]:
+    """Every version id of each field collection in the dataset snapshot → the version the snapshot lists (the accepted one). A lab
+    sample keeps the field-collection version it was registered from; a correction supersedes that version without re-pointing it."""
+    out = {fc_id: fc_id for fc_id in collections}
+    for fc_id in collections:
+        cur, seen = db.get(FieldCollectionRecord, uuid.UUID(fc_id)), {fc_id}
+        while cur is not None and cur.supersedes_id is not None and str(cur.supersedes_id) not in seen:
+            seen.add(str(cur.supersedes_id))
+            out.setdefault(str(cur.supersedes_id), fc_id)
+            cur = db.get(FieldCollectionRecord, cur.supersedes_id)
+    return out
+
+
+def _sample_depth(db: Session, root: LabSample, accepted: FieldCollectionRecord | None) -> tuple[Decimal | None, Decimal | None] | None:
+    """The sample's depth increment against the accepted field-collection version. A sample of an earlier version that was the whole
+    core (that version's full depth) follows the corrected depth; an increment keeps its depth when it lies inside the corrected depth.
+    None: the increment lies outside the corrected depth."""
+    top, bottom = root.depth_top_cm, root.depth_bottom_cm
+    if accepted is None or root.field_collection_id == accepted.id:
+        return top, bottom
+    a_top, a_bottom = accepted.actual_depth_top_cm, accepted.actual_depth_bottom_cm
+    if a_top is None or a_bottom is None:
+        return top, bottom
+    orig = db.get(FieldCollectionRecord, root.field_collection_id)
+    if orig is not None and (top, bottom) == (orig.actual_depth_top_cm, orig.actual_depth_bottom_cm):
+        return a_top, a_bottom
+    if top is not None and bottom is not None and a_top <= top and bottom <= a_bottom:
+        return top, bottom
+    return None
 
 
 def _record_inputs(db: Session, var: fw.Variable, rules: dict[str, MethodologyMonitoringRule], pd: _PeriodData,

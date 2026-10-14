@@ -13,6 +13,7 @@ from app.schemas.finance import (
     ConfirmPaidIn,
     MyPayoutsOut,
     OptionalReasonIn,
+    PayoutFailIn,
     PayoutOut,
     ReasonIn,
     ReconcileIn,
@@ -133,8 +134,8 @@ def confirm_paid(payout_id: uuid.UUID, body: ConfirmPaidIn, principal: Executor,
 
 
 @router.post("/payouts/{payout_id}/fail", response_model=PayoutOut, summary="Record that the payment failed, with a reason")
-def fail_payout(payout_id: uuid.UUID, body: ReasonIn, principal: Executor, db: DB, ctx: Ctx, key: IdemKey = None) -> PayoutOut:
-    return fm.payout_out(db, pys.fail(db, ctx, principal, payout_id, body.reason, key))
+def fail_payout(payout_id: uuid.UUID, body: PayoutFailIn, principal: Executor, db: DB, ctx: Ctx, key: IdemKey = None) -> PayoutOut:
+    return fm.payout_out(db, pys.fail(db, ctx, principal, payout_id, body.reason, key, document_id=body.document_id))
 
 
 @router.post("/payouts/{payout_id}/query-status", response_model=PayoutOut,

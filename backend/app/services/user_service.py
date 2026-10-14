@@ -8,7 +8,7 @@ from app.audit.service import AuditAction, record, record_transition, snapshot
 from app.core.context import RequestContext
 from app.core.errors import Conflict, NotFound, PermissionDenied, ValidationFailed
 from app.models import OrganizationStatus, OrganizationUser, Role, RoleScope, User, UserRole, UserStatus
-from app.models.base import Environment, utcnow
+from app.models.base import utcnow
 from app.repositories import identity as repo
 from app.schemas.common import PageParams
 from app.schemas.identity import RoleGrantIn, UserCreate, UserUpdate
@@ -21,9 +21,21 @@ from app.services.workflows import USER_MACHINE
 PROFILE_FIELDS = ("email", "full_name", "phone", "status", "environment")
 
 
+def _in_scope(principal: Principal, user: User, code: str, *, every: bool) -> bool:
+    """Platform-wide `code`: any user of the caller's environment. Organization-scoped `code`: one of the user's organizations
+    must be in scope to see the user (`every=False`), all of them to manage the user (`every=True`); a user without any
+    organization is platform-level and out of reach of organization-scoped administrators."""
+    if user.environment != principal.user.environment:   # DEMO and LIVE accounts never reach each other
+        return False
+    if principal.has_platform(code):
+        return True
+    scope = principal.scope_for(code) or frozenset()
+    orgs = [m.organization_id for m in user.memberships]
+    return bool(orgs) and (all if every else any)(o in scope for o in orgs)
+
+
 def _visible(principal: Principal, user: User, code: str) -> bool:
-    scope = principal.scope_for(code)
-    return scope is None or any(m.organization_id in scope for m in user.memberships)
+    return _in_scope(principal, user, code, every=False)
 
 
 def get_visible_user(db: Session, principal: Principal, user_id: uuid.UUID, code: str = P.USERS_READ) -> User:
@@ -35,13 +47,31 @@ def get_visible_user(db: Session, principal: Principal, user_id: uuid.UUID, code
 
 
 def _require_manage(principal: Principal, user: User, code: str = P.USERS_MANAGE) -> None:
-    scope = principal.scope_for(code)
-    if scope is not None and not any(m.organization_id in scope for m in user.memberships):
+    """Editing, suspending or resetting an account needs `code` over every organization of the user, and over the scope of
+    each of the user's role grants together with every privileged permission held there: nobody takes over an account
+    that is more powerful than their own (e.g. an organization admin -> a Platform Admin, a Platform Admin -> a Security Admin)."""
+    if not _in_scope(principal, user, code, every=True):
         raise PermissionDenied(details={"required_permission": code})
+    missing = sorted({p for ur in user.roles for p in _missing_privileged(principal, ur.role, ur.organization_id, {code})})
+    if missing:
+        raise PermissionDenied("You cannot manage an account that holds permissions you do not hold.",
+                               error_code="ROLE_ESCALATION_BLOCKED", details={"missing_permissions": missing})
+
+
+def can_manage(principal: Principal, user: User, code: str = P.USERS_MANAGE) -> bool:
+    try:
+        _require_manage(principal, user, code)
+    except PermissionDenied:
+        return False
+    return True
 
 
 def list_users(db: Session, principal: Principal, params: PageParams, **filters: object) -> tuple[list[User], int]:
-    scope = principal.scope_for(P.USERS_READ)
+    env = principal.user.environment
+    if filters.get("environment") not in (None, env):
+        return [], 0  # another environment's accounts are never listed
+    filters["environment"] = env
+    scope = None if principal.has_platform(P.USERS_READ) else principal.scope_for(P.USERS_READ)
     org_id = filters.get("organization_id")
     if scope is not None and org_id is not None and org_id not in scope:
         raise PermissionDenied(details={"organization_id": str(org_id)})
@@ -63,7 +93,7 @@ def create_user(db: Session, ctx: RequestContext, principal: Principal, data: Us
         raise Conflict("A user with this email already exists.", error_code="EMAIL_EXISTS")
     validate_password_policy(data.temporary_password)
 
-    environment = Environment.LIVE.value
+    environment = principal.user.environment  # an account without an organization joins its creator's environment
     if data.organization_id:
         environment = repo.get_organization(db, data.organization_id).environment  # type: ignore[union-attr]
     user = User(email=data.email, full_name=data.full_name, phone=data.phone,
@@ -177,10 +207,15 @@ def _assign(db: Session, ctx: RequestContext, principal: Principal, user: User, 
     return ur
 
 
+def _missing_privileged(principal: Principal, role: Role, org_id: uuid.UUID | None, also: set[str] | None = None) -> list[str]:
+    """The privileged (admin/audit/security) permissions of `role`, plus `also`, that the caller does not hold in that scope."""
+    perms = ({rp.permission.code for rp in role.permissions} & PRIVILEGED_CODES) | (also or set())
+    return sorted(p for p in perms if not principal.can_in_org(p, org_id))
+
+
 def _guard_escalation(principal: Principal, role: Role, org_id: uuid.UUID | None) -> None:
     """Nobody may grant privileged (admin/audit/security) permissions they do not themselves hold in that scope."""
-    perms = {rp.permission.code for rp in role.permissions} & PRIVILEGED_CODES
-    missing = sorted(p for p in perms if not principal.can_in_org(p, org_id))
+    missing = _missing_privileged(principal, role, org_id)
     if missing:
         raise PermissionDenied("You cannot grant a role with permissions you do not hold.",
                                error_code="ROLE_ESCALATION_BLOCKED", details={"missing_permissions": missing})

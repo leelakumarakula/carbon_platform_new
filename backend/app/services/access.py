@@ -14,6 +14,7 @@ SELF_ALLOWED = frozenset({P.FARMERS_READ, P.FARMERS_MANAGE, P.FARMERS_BANK_MANAG
 READ_OF = {P.FARMERS_MANAGE: P.FARMERS_READ, P.FARMERS_KYC_VERIFY: P.FARMERS_READ, P.FARMERS_BANK_MANAGE: P.FARMERS_READ,
            P.FARMERS_BANK_VERIFY: P.FARMERS_READ, P.FARMS_MANAGE: P.FARMS_READ, P.FARMS_REVIEW: P.FARMS_READ,
            P.PROJECTS_MANAGE: P.PROJECTS_READ, P.PROJECTS_REVIEW: P.PROJECTS_READ}
+NO_ORGANIZATION = frozenset({uuid.UUID(int=0)})  # a scope that matches no record
 
 
 def is_self(principal: Principal, owner_user_id: uuid.UUID | None) -> bool:
@@ -38,10 +39,15 @@ def require(principal: Principal, code: str, organization_id: uuid.UUID, owner_u
 
 
 def read_scope(principal: Principal, code: str) -> tuple[frozenset[uuid.UUID] | None, bool]:
-    """For list queries: (organization scope or None for all, include own records via self-service)."""
+    """For list queries: (organization scope or None for all, include own records via self-service).
+
+    A platform-wide grant is limited to the organizations of the caller's environment (Principal.scope_for)."""
     include_self = principal.has(P.FARMERS_SELF)
     if principal.has_platform(code):
-        return None, include_self
+        orgs = principal.scope_for(code)
+        # An environment without organizations must still match nothing: an empty scope means "no organization filter"
+        # to the list queries when self-service is off, so use an id that never exists.
+        return (orgs if orgs is None or orgs or include_self else NO_ORGANIZATION), include_self
     orgs = frozenset(g.organization_id for g in principal.grants if code in g.permissions and g.organization_id)
     if not orgs and not include_self:
         raise PermissionDenied(details={"required_permission": code})

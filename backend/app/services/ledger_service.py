@@ -297,10 +297,20 @@ def post(db: Session, entry: CreditLedgerEntry) -> None:
 
 
 # ---------------------------------------------------------------- idempotency
-def replay(db: Session, model: Any, key: str | None) -> Any:
+def key_reused() -> Conflict:
+    return Conflict("This Idempotency-Key was used for another request.", error_code="IDEMPOTENCY_KEY_REUSED")
+
+
+def replay(db: Session, model: Any, key: str | None, same: Callable[[Any], bool]) -> Any:
+    """The record an earlier request with this Idempotency-Key created. Keys are global, so the earlier record is returned only when
+    `same(prior)` holds — the caller may act on it (judged on the stored record, never on the new body) and it answers the same request;
+    anything else is 409 IDEMPOTENCY_KEY_REUSED, so a key never skips a permission check or reveals another organization's record."""
     if not key:
         return None
-    return db.scalars(select(model).where(model.request_key == key)).first()
+    prior = db.scalars(select(model).where(model.request_key == key)).first()
+    if prior is not None and not same(prior):
+        raise key_reused()
+    return prior
 
 
 def entry_replay(db: Session, key: str | None, entry_type: str, **match: Any) -> CreditLedgerEntry | None:
@@ -310,7 +320,7 @@ def entry_replay(db: Session, key: str | None, entry_type: str, **match: Any) ->
     if e is None:
         return None
     if e.entry_type != entry_type or any(getattr(e, k) != v for k, v in match.items()):
-        raise Conflict("This Idempotency-Key was used for another request.", error_code="IDEMPOTENCY_KEY_REUSED")
+        raise key_reused()
     return e
 
 
@@ -355,7 +365,8 @@ def _close_reservation(db: Session, ctx: RequestContext, r: CreditReservation, t
 
 # ---------------------------------------------------------------- opening (D2)
 def request_opening(db: Session, ctx: RequestContext, principal: Principal, batch_id: uuid.UUID, key: str | None) -> CreditOpening:
-    if (prior := replay(db, CreditOpening, key)) is not None:
+    if (prior := replay(db, CreditOpening, key, lambda o: o.batch_id == batch_id
+                        and principal.can_in_org(P.CREDITS_MANAGE, o.owner_organization_id))) is not None:
         return prior                                               # type: ignore[no-any-return]
     b = get_batch(db, batch_id)
     p = batch_project(db, b)
@@ -461,7 +472,8 @@ def _source(db: Session, b: CreditBatch, serial_range_id: uuid.UUID | None) -> N
 
 
 def create_reservation(db: Session, ctx: RequestContext, principal: Principal, data: Any, key: str | None) -> CreditReservation:
-    if (prior := replay(db, CreditReservation, key)) is not None:
+    if (prior := replay(db, CreditReservation, key, lambda r: r.batch_id == data.batch_id and r.owner_organization_id == data.owner_organization_id
+                        and principal.can_in_org(P.CREDITS_MANAGE, r.owner_organization_id))) is not None:
         return prior                                               # type: ignore[no-any-return]
     b = visible_batch(db, principal, data.batch_id)
     require_in_org(principal, data.owner_organization_id, P.CREDITS_MANAGE)
@@ -565,7 +577,9 @@ def _from_reservation(db: Session, ctx: RequestContext, reservation_id: uuid.UUI
 
 # ---------------------------------------------------------------- transfers (D6, D7)
 def request_transfer(db: Session, ctx: RequestContext, principal: Principal, data: Any, key: str | None) -> CreditTransfer:
-    if (prior := replay(db, CreditTransfer, key)) is not None:
+    if (prior := replay(db, CreditTransfer, key, lambda t: t.batch_id == data.batch_id and t.sender_organization_id == data.sender_organization_id
+                        and t.recipient_organization_id == data.recipient_organization_id
+                        and principal.can_in_org(P.CREDITS_MANAGE, t.sender_organization_id))) is not None:
         return prior                                               # type: ignore[no-any-return]
     b = visible_batch(db, principal, data.batch_id)
     require_in_org(principal, data.sender_organization_id, P.CREDITS_MANAGE)
@@ -770,7 +784,9 @@ def close_transfer_in_tx(db: Session, ctx: RequestContext, t: CreditTransfer, *,
 
 # ---------------------------------------------------------------- retirements (D9, X1)
 def request_retirement(db: Session, ctx: RequestContext, principal: Principal, data: Any, key: str | None) -> CreditRetirement:
-    if (prior := replay(db, CreditRetirement, key)) is not None:
+    if (prior := replay(db, CreditRetirement, key, lambda r: r.batch_id == data.batch_id and r.owner_organization_id == data.owner_organization_id
+                        and any(principal.can_in_org(c, r.owner_organization_id) for c in (P.CREDITS_MANAGE, P.CREDITS_HOLDER_RETIRE)))
+        ) is not None:
         return prior                                               # type: ignore[no-any-return]
     b = get_batch(db, data.batch_id)
     owner = data.owner_organization_id
@@ -893,8 +909,18 @@ def close_retirement(db: Session, ctx: RequestContext, principal: Principal, ret
 
 
 # ---------------------------------------------------------------- reversals (D14)
+def guard_reversal(db: Session, t: CreditTransfer) -> None:
+    """A transfer that delivered a marketplace order was paid for: reversing it would leave the buyer without credits and without money.
+    It is reversed only once the order's payment was refunded after the delivery (the registered guard answers kind "unrefunded_transfer"
+    with the order code while no such refund is COMPLETED). Same 409 ORDER_LINKED as the other public actions on order-linked records."""
+    owner = linked_owner(db, "unrefunded_transfer", t.id)
+    if owner:
+        raise Conflict(f"This transfer delivered marketplace order {owner}; it can be reversed only after the order's payment was refunded.",
+                       error_code="ORDER_LINKED", details={"order_code": owner})
+
+
 def request_reversal(db: Session, ctx: RequestContext, principal: Principal, entry_id: uuid.UUID, reason: str, key: str | None) -> CreditReversal:
-    if (prior := replay(db, CreditReversal, key)) is not None:
+    if (prior := replay(db, CreditReversal, key, lambda v: v.reversed_entry_id == entry_id and v.requested_by == principal.user_id)) is not None:
         return prior                                               # type: ignore[no-any-return]
     e = entry_for(db, principal, entry_id)
     t = db.get(CreditTransfer, e.transfer_id) if e.transfer_id else None
@@ -902,6 +928,7 @@ def request_reversal(db: Session, ctx: RequestContext, principal: Principal, ent
         raise Conflict("Only a completed INTERNAL transfer can be reversed (registry acts and retirements are never reversed internally).",
                        error_code="REVERSAL_NOT_ALLOWED")
     require_in_org(principal, t.sender_organization_id, P.CREDITS_MANAGE)
+    guard_reversal(db, t)
     _untouched_outputs(db, e)
     if db.scalars(select(CreditReversal).where(CreditReversal.reversed_entry_id == e.id, CreditReversal.status.in_(("REQUESTED",
                                                                                                                     "APPLIED")))).first():
@@ -937,6 +964,8 @@ def decide_reversal(db: Session, ctx: RequestContext, principal: Principal, reve
     assert t is not None
     outputs = list(db.scalars(select(CreditPosition).where(CreditPosition.created_by_entry_id == e0.id)).all())
     _require_confirmer(principal, _pending_custodians(db, outputs) or {t.sender_organization_id}, v.requested_by)
+    if apply:
+        guard_reversal(db, t)                                       # rejecting a pending request stays possible
     b = get_batch(db, v.batch_id)
 
     def op() -> CreditReversal:
@@ -1015,6 +1044,8 @@ def reconcile_account(db: Session, ctx: RequestContext, principal: Principal, ac
         raise _nf("Registry account", "REGISTRY_ACCOUNT_NOT_FOUND")
     require_in_org(principal, a.organization_id, P.CREDITS_MANAGE)
     if key and (prior := db.scalars(select(RegistryEvent).where(RegistryEvent.idempotency_key == key)).first()) is not None:
+        if prior.registry_account_id != a.id or prior.outcome != "INVENTORY":
+            raise key_reused()                                      # never another account's (organization's) event
         return prior
     document_service.require_attached(db, data.document_id, ACCOUNT_ENTITY, a.id, {DocumentCategory.REGISTRY_RESPONSE.value})
     held: dict[uuid.UUID, Decimal] = {}
