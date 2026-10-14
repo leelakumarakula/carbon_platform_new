@@ -203,6 +203,11 @@ class Settings(BaseSettings):
     SATELLITE_PLOT_MAX_CLOUD_PCT: int = 10     # a scene is skipped when more than this share of the plot is cloud / shadow
     SATELLITE_MAX_SCENES: int = 6              # least-cloudy scenes checked per fetch (each costs 3 statistics calls)
     EXTERNAL_DATA_TIMEOUT_SECONDS: int = 30
+    # FarmFuture: a farm's estates / farms / mapped areas found by the owner's mobile number. An imported area is only a candidate
+    # boundary — it is saved through the normal boundary flow (SQL Server validation, new version with source IMPORT, GIS review).
+    FARMFUTURE_PROVIDER: str = "farmfuture"   # farmfuture | none
+    FARMFUTURE_API_URL: str = "https://api.farmfuture.io/api"
+    FARMFUTURE_DEFAULT_COUNTRY_CODE: str = "+91"   # prefixed to a 10-digit number entered without a country code
 
     # Phase 12A background jobs. SQL Server is the system of record; REDIS_URL is only the Celery broker (transport). Without it,
     # jobs stay QUEUED in SQL Server (publication is retried by the recovery tick) and lazy expiry keeps the platform correct.
@@ -374,9 +379,11 @@ class Settings(BaseSettings):
         if not 0 <= self.SATELLITE_PLOT_MAX_CLOUD_PCT <= 100 or not 1 <= self.SATELLITE_MAX_SCENES <= 20:
             raise ValueError("SATELLITE_PLOT_MAX_CLOUD_PCT must be 0-100 and SATELLITE_MAX_SCENES 1-20")
         for name in ("OPEN_METEO_ARCHIVE_URL", "SOILGRIDS_URL", "COPERNICUS_TOKEN_URL", "COPERNICUS_STATISTICS_URL", "PLANETARY_COMPUTER_STAC_URL",
-                     "PLANETARY_COMPUTER_DATA_URL"):
+                     "PLANETARY_COMPUTER_DATA_URL", "FARMFUTURE_API_URL"):
             if not str(getattr(self, name)).startswith("https://"):
                 raise ValueError(f"{name} must be an https:// URL")
+        if self.FARMFUTURE_PROVIDER not in ("farmfuture", "none") or not re.fullmatch(r"\+[0-9]{1,4}", self.FARMFUTURE_DEFAULT_COUNTRY_CODE):
+            raise ValueError("FARMFUTURE_PROVIDER must be 'farmfuture' or 'none'; FARMFUTURE_DEFAULT_COUNTRY_CODE looks like +91")
         if not 0 <= self.SATELLITE_MAX_CLOUD_PCT <= 100 or not 1 <= self.EXTERNAL_DATA_TIMEOUT_SECONDS <= 120:
             raise ValueError("SATELLITE_MAX_CLOUD_PCT must be 0-100 and EXTERNAL_DATA_TIMEOUT_SECONDS 1-120")
         if not self.is_production:

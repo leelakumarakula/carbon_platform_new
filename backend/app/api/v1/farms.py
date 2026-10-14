@@ -17,6 +17,9 @@ from app.schemas.farms import (
     ExternalFetchIn,
     ExternalObservationOut,
     FarmCreate,
+    FarmFutureAreasOut,
+    FarmFutureEstatesOut,
+    FarmFutureLookupIn,
     FarmOut,
     FarmSummary,
     FarmTransition,
@@ -37,6 +40,7 @@ from app.security.principal import Principal
 from app.services import external_data_service as external
 from app.services import farm_history_service as history
 from app.services import farm_service as svc
+from app.services import farmfuture_service as farmfuture
 from app.services import gis_service
 from app.services.farm_mappers import boundary_out, evidence_out, farm_out, farm_summaries, overlap_out, ownership_out
 
@@ -227,6 +231,19 @@ def external_data(farm_id: uuid.UUID, principal: Reader, db: DB) -> ExternalData
 def fetch_external_data(farm_id: uuid.UUID, kind: Literal["weather", "soil", "satellite-ndvi", "land-records"], body: ExternalFetchIn,
                         principal: Reader, db: DB, ctx: Ctx) -> ExternalObservationOut:
     return external.fetch(db, ctx, principal, farm_id, kind, body.period_start, body.period_end)
+
+
+@router.post("/{farm_id}/farmfuture/estates", response_model=FarmFutureEstatesOut,
+             summary="FarmFuture estates and farms of a mobile number (default: the farmer's phone on file) — for boundary import")
+def farmfuture_estates(farm_id: uuid.UUID, body: FarmFutureLookupIn, principal: Manager, db: DB, ctx: Ctx) -> FarmFutureEstatesOut:
+    return farmfuture.estates(db, ctx, principal, farm_id, body.phone_number)
+
+
+@router.post("/{farm_id}/farmfuture/farms/{farmfuture_farm_id}/areas", response_model=FarmFutureAreasOut,
+             summary="Mapped areas (zones) and sensor locations of a FarmFuture farm — candidates only, nothing is saved")
+def farmfuture_areas(farm_id: uuid.UUID, farmfuture_farm_id: uuid.UUID, body: FarmFutureLookupIn, principal: Manager, db: DB,
+                     ctx: Ctx) -> FarmFutureAreasOut:
+    return farmfuture.areas(db, ctx, principal, farm_id, farmfuture_farm_id, body.phone_number)
 
 
 @router.post("/{farm_id}/documents", response_model=IdRef, status_code=status.HTTP_201_CREATED)

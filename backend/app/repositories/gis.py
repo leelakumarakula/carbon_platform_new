@@ -4,6 +4,7 @@ Uses: geometry::IsValidDetailed (self-intersection), geography STArea / STLength
 ReorientObject, STIntersects, STIntersection, STContains, STDistance, plus the spatial index on
 farm_boundaries.boundary.
 """
+import json
 import uuid
 from dataclasses import dataclass
 from decimal import Decimal
@@ -57,6 +58,23 @@ def validate_geometry(db: Session, wkt: str) -> GeometryReport:
         return GeometryReport(False, _clean(msg))
     valid, reason, norm, area, perim, lat, lon, re = row
     return GeometryReport(bool(valid), reason, norm, float(area or 0), float(perim or 0), float(lat or 0), float(lon or 0), bool(re))
+
+
+_UNION = text("""
+SET NOCOUNT ON;
+SELECT geometry::UnionAggregate(geometry::STGeomFromText(j.value, 4326).MakeValid()).STAsText()
+FROM OPENJSON(:wkts) j;
+""")
+
+
+def union_polygons(db: Session, wkts: list[str]) -> str | None:
+    """Dissolve several polygons (e.g. adjacent mapped zones sharing edges, which are invalid as one MultiPolygon) into one
+    POLYGON / MULTIPOLYGON WKT. None when SQL Server cannot parse them or the result is not areal."""
+    try:
+        wkt = db.execute(_UNION, {"wkts": json.dumps(wkts)}).scalar()
+    except DBAPIError:
+        return None
+    return wkt if isinstance(wkt, str) and wkt.upper().startswith(("POLYGON", "MULTIPOLYGON")) else None
 
 
 def _clean(msg: str) -> str:

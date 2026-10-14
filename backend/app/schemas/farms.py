@@ -383,3 +383,55 @@ class ExternalDataOut(BaseModel):
     has_boundary: bool
     providers: list[ExternalProviderOut]
     observations: list[ExternalObservationOut]
+
+
+# ---------------------------------------------------------------- FarmFuture boundary import
+class FarmFutureLookupIn(BaseModel):
+    phone_number: Annotated[str, StringConstraints(strip_whitespace=True, pattern=r"^\+?[0-9 ()-]{6,30}$")] | None = None
+
+
+class FarmFutureFarmOut(BaseModel):
+    farm_id: uuid.UUID
+    name: str
+    postal_code: str | None
+    crops: list[str]
+    plants_per_hectare: float | None
+    is_owner_estate: bool
+    active_subscription: bool
+
+
+class FarmFutureEstateOut(BaseModel):
+    estate_id: str
+    name: str
+    postal_code: str | None
+    is_fpo: bool
+    farms: list[FarmFutureFarmOut]
+
+
+class FarmFutureEstatesOut(BaseModel):
+    phone_masked: str
+    phone_source: Literal["ENTERED", "FARMER_PRIMARY_PHONE"]
+    estates: list[FarmFutureEstateOut]
+
+
+class FarmFutureZoneOut(BaseModel):
+    zone_id: str
+    name: str
+    is_main: bool
+    geojson: dict[str, Any]
+    vertex_count: int
+    mean_altitude_m: float | None
+
+
+class FarmFutureDeviceOut(BaseModel):
+    name: str
+    lat: float
+    lon: float
+    device_type: float | None
+
+
+class FarmFutureAreasOut(BaseModel):
+    farm_id: uuid.UUID
+    zones: list[FarmFutureZoneOut]
+    combined_geojson: dict[str, Any] | None = Field(description="All zones dissolved into one shape by SQL Server (None: < 2 zones)")
+    devices: list[FarmFutureDeviceOut]

@@ -31,3 +31,6 @@ storage/local-dev/*
 .DS_Store
 Thumbs.db
 ~$*
+
+# Frontend lives in its own repo (carbon_project_frontend)
+carbon_frontend/carbon_project_frontend/
