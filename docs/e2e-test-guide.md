@@ -863,9 +863,8 @@ Button **Add bank account** → **Pending verification**. Then **fin1 → Verify
 | 14.6e | fin3 | **Record paid** → Bank / remittance reference (required) + PDF → **Upload evidence and record PAID** | `NEFT-` + tester no. + `-0001` | **Paid** |
 | 14.6f | fin2 | **Reconcile** → Statement reference · Statement amount (≥ 0) · Currency · Statement date · PDF → **Upload statement and reconcile** | the same `NEFT-…` · `6000.00` · `INR` · `10/05/2026` | **Reconciled**; settlement run **Completed** |
 
-*Optional — farmer view.* `farmer@yopmail.com` (Farmer role in varsapradaya_developer). There is no UI to link a login to a farmer: pm
-calls `POST /api/v1/farmers/{farmer_id}/link-user` with body `{"user_id": "<farmer user id>"}` in Swagger (http://localhost:8000/docs,
-**Authorize** as pm). The farmer then opens **My payouts**: INR 6,000.00, Reconciled, bank ••••last 4.
+*Optional — farmer view.* `farmer@yopmail.com` (Farmer role in varsapradaya_developer). pm opens the farmer → **Login** tab → picks
+the account → **Link login** (only Farmer-role accounts of the farmer's organization or farmer group are offered). The farmer then opens **My payouts**: INR 6,000.00, Reconciled, bank ••••last 4.
 
 ---
 

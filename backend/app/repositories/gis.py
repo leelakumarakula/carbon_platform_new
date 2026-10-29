@@ -204,7 +204,10 @@ DECLARE @g geography = (SELECT boundary FROM dbo.project_boundaries WHERE id = :
 SELECT ob.project_id, p.organization_id, @g.STIntersection(ob.boundary).STArea() AS overlap_m2
 FROM dbo.project_boundaries ob
 JOIN dbo.projects p ON p.id = ob.project_id
-WHERE ob.status = 'CURRENT' AND ob.project_id <> :pid AND p.environment = :env AND p.status <> 'CLOSED'
+WHERE ob.status = 'CURRENT' AND ob.project_id <> :pid AND p.environment = :env
+  -- projects.holds_land: open, or CLOSED after it monitored the land
+  AND (p.status <> 'CLOSED' OR EXISTS (SELECT 1 FROM dbo.monitoring_periods mp
+       WHERE mp.project_id = p.id AND mp.status IN ('ACTIVE', 'DATA_COLLECTION', 'SUBMITTED', 'QA_REVIEW', 'REJECTED', 'APPROVED', 'CLOSED')))
   AND ob.boundary.STIntersects(@g) = 1;
 """)
 

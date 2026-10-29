@@ -48,12 +48,15 @@ def seed_demo_farms(db: Session) -> dict[str, int]:
     agent, agent_ctx = _actor(db, "collector")
     gis, gis_ctx = _actor(db, "gis")
     farmer_user = db.scalars(select(User).where(User.email == f"farmer@{DEMO_DOMAIN}")).one()
+    fpo = db.scalars(select(Organization).where(Organization.code == "DEMO-FPO-E")).one()   # the demo farmer login's group
 
     farmers: list[Farmer] = []
     for n, (name, village, gender) in enumerate(FARMERS, start=1):
         f = farmer_service.create_farmer(db, pm_ctx, pm, FarmerCreate(
             organization_id=org.id, full_name=name, gender=gender, preferred_language="mr", village=village, district="Nashik",
-            state="Maharashtra", country="IN", primary_phone=f"+91 90000 0000{n}"))
+            state="Maharashtra", country="IN", primary_phone=f"+91 90000 0000{n}",
+            # farmer 1 is a member of the FPO whose Farmer login is linked below (a login is linked only within the farmer's group)
+            participation_type="GROUP_MEMBER" if n == 1 else "INDIVIDUAL", group_organization_id=fpo.id if n == 1 else None))
         farmer_service.change_status(db, pm_ctx, pm, f.id, "REGISTERED", "DEMO onboarding")
         kyc = farmer_service.upload_document(db, pm_ctx, pm, f.id, "KYC_ID", "DEMO identity document", "kyc.pdf", PDF)
         farmer_service.submit_kyc(db, pm_ctx, pm, f.id, "NATIONAL_ID", f"DEMO{n:08d}", kyc)

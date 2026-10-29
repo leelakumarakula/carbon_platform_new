@@ -101,7 +101,9 @@ def test_holds_land_sql_matches_the_python_rule() -> None:
     from app.repositories import gis
     from app.repositories.projects import MONITORED_PERIOD_STATES
     states = "(" + ", ".join(f"'{x}'" for x in MONITORED_PERIOD_STATES) + ")"
-    assert inspect.getsource(gis).count(f"mp.status IN {states}") == 2
+    src = inspect.getsource(gis)
+    assert src.count(f"mp.status IN {states}") == 3                       # farm overlaps, project overlaps, cross-project farm overlaps
+    assert src.count("status <> 'CLOSED'") == src.count("status <> 'CLOSED' OR EXISTS")     # no query skips the monitored rule
 
 
 def test_closed_project_that_monitored_keeps_its_credited_dates(client: TestClient, db: Session) -> None:

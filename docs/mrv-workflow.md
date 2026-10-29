@@ -190,6 +190,8 @@ Dataset rules:
   - supersedes the previously approved dataset of the period.
   - Approved datasets are immutable: no endpoint edits a dataset, the snapshot is written once on submit and
     re-hashed on approval, and a correction is a new version.
+  - MRV evidence documents (field photos, records, files) never get a new version through the documents API
+    (`DOCUMENT_IMMUTABLE`): the file behind an approved dataset cannot be swapped. A correction is new evidence.
 - **Reject:** the dataset becomes REJECTED and so does the period. A new version re-opens collection.
 
 The automated QA checks are deterministic (`mrv_service.qa_checks`):

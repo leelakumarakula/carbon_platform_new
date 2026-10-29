@@ -395,8 +395,7 @@ def test_settlement_payout_execution_and_reconciliation_lifecycle(client: TestCl
         "SETTLEMENT_CALCULATED", "SETTLEMENT_APPROVED", "SETTLEMENT_COMPLETED", "PAYOUT_CALCULATED", "PAYOUT_APPROVED", "PAYOUT_ON_HOLD",
         "PAYOUT_INITIATED", "PAYOUT_PAID", "PAYOUT_RECONCILIATION_EXCEPTION", "PAYOUT_RECONCILED"}
     # farmer self-service: own payouts only, last 4 only
-    group = make_org(db, org_type="FARMER_GROUP")
-    fu = make_user(db, roles=[("FARMER", group)])
+    fu = make_user(db, roles=[("FARMER", f.m.k.x.c.t.org)])                  # a login of the farmer's own organization
     assert client.post(f"{V}/farmers/{farmer_id}/link-user", headers=f.pm.headers, json={"user_id": str(fu.id)}).status_code == 200
     me = client.get(f"{V}/payouts/me", headers=login(client, fu)).json()
     assert me["farmer_linked"] is True and [p["payout_code"] for p in me["payouts"]] == [po["payout_code"]]

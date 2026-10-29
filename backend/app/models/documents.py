@@ -59,7 +59,7 @@ EVIDENCE_IMMUTABLE_CATEGORIES = frozenset({DocumentCategory.KYC_ID.value, Docume
                                            DocumentCategory.LAND_TITLE.value, DocumentCategory.LEASE_AGREEMENT.value,
                                            DocumentCategory.LAND_RECORD.value, DocumentCategory.AGREEMENT.value,
                                            DocumentCategory.CONSENT_FORM.value, DocumentCategory.CARBON_RIGHTS.value,
-                                           DocumentCategory.BUYER_KYC_DOCUMENT.value})
+                                           DocumentCategory.BUYER_KYC_DOCUMENT.value, DocumentCategory.FIELD_PHOTO.value})
 
 
 class DocumentStatus(str, Enum):

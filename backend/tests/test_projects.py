@@ -442,8 +442,7 @@ def test_status_history_is_append_only() -> None:
 
 # ---------------------------------------------------------------- farmer self-service / buyer
 def test_farmer_sees_only_own_participation(client: TestClient, db: Session, t: Team, farmer: dict) -> None:
-    group = make_org(db, org_type="FARMER_GROUP")
-    user = make_user(db, roles=[("FARMER", group)])
+    user = make_user(db, roles=[("FARMER", t.org)])                          # a login of the farmer's own organization
     assert client.post(f"/api/v1/farmers/{farmer['id']}/link-user", headers=t.agent.headers, json={"user_id": str(user.id)}).status_code == 200
     other_farmer = active_farmer(client, t, "4100 2000 3555", full_name="Someone Else")
     p = create_project(client, t)

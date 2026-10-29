@@ -16,7 +16,7 @@ from app.integrations import farmfuture as ff
 from app.integrations.geodata import ProviderUnavailable
 from app.models import AuditLog, FarmBoundary
 from app.services import farmfuture_service as svc
-from tests.conftest import login, make_org, make_user
+from tests.conftest import login, make_user
 from tests.phase2 import create_farm, dev_org, kyc_verified_farmer, staff
 
 FA = "/api/v1/farms"
@@ -223,7 +223,7 @@ def test_permissions_and_farmer_self_service_phone_rule(client: TestClient, db: 
     outsider = staff(db, client, dev_org(db), "FIELD_AGENT")
     assert client.post(f"{FA}/{fid}/farmfuture/estates", headers=outsider.headers, json={}).status_code == 404
     # the farm's own farmer: only their registered numbers
-    user = make_user(db, roles=[("FARMER", make_org(db, org_type="FARMER_GROUP"))])
+    user = make_user(db, roles=[("FARMER", world["org"])])               # a login of the farmer's own organization
     pm = staff(db, client, world["org"], "PROJECT_MANAGER")
     client.post(f"/api/v1/farmers/{world['farmer']['id']}/link-user", headers=pm.headers, json={"user_id": str(user.id)})
     h = login(client, user)

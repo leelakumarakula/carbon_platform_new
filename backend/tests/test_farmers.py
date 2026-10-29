@@ -224,16 +224,20 @@ def test_list_search_scope_and_isolation(client: TestClient, db: Session, pm, or
 
 
 def test_farmer_self_service(client: TestClient, db: Session, pm, org) -> None:  # type: ignore[no-untyped-def]
-    f = create_farmer(client, pm.headers, org)
     group = make_org(db, org_type="FARMER_GROUP")
+    f = create_farmer(client, pm.headers, org, participation_type="GROUP_MEMBER", group_organization_id=str(group.id))
     user = make_user(db, roles=[("FARMER", group)])
     # only a Farmer-role account can be linked; the candidates list offers the farmer's organization and group, never all farmers
     staff_user = make_user(db, roles=[("FIELD_AGENT", org)])
     r = client.post(f"{F}/{f['id']}/link-user", headers=pm.headers, json={"user_id": str(staff_user.id)})
     assert r.status_code == 409 and r.json()["error_code"] == "USER_NOT_FARMER"
     in_org = make_user(db, roles=[("FARMER", org)])
+    stranger = make_user(db, roles=[("FARMER", make_org(db, org_type="FARMER_GROUP"))])
     cands = client.get(f"{F}/{f['id']}/link-candidates", headers=pm.headers).json()
-    assert [c["user_id"] for c in cands] == [str(in_org.id)] and cands[0]["linked"] is False   # not the other group's farmer
+    assert {c["user_id"] for c in cands} == {str(in_org.id), str(user.id)} and not any(c["linked"] for c in cands)   # not the stranger
+    # link-user accepts exactly the candidates: another farmer group's login is refused through the API too
+    r = client.post(f"{F}/{f['id']}/link-user", headers=pm.headers, json={"user_id": str(stranger.id)})
+    assert r.status_code == 409 and r.json()["error_code"] == "USER_NOT_FARMER"
     linked = client.post(f"{F}/{f['id']}/link-user", headers=pm.headers, json={"user_id": str(user.id)})
     assert linked.status_code == 200 and linked.json()["user_id"] == str(user.id)
     h = login(client, user)
@@ -248,6 +252,10 @@ def test_farmer_self_service(client: TestClient, db: Session, pm, org) -> None: 
     assert client.get(f"{F}/{other['id']}", headers=h).status_code == 404
     assert client.post(f"{F}/{f['id']}/agreements", headers=h, json={"agreement_type": "PROGRAM", "template_version": "1"}).status_code == 403
     another = make_user(db, roles=[("FARMER", group)])
-    dup = client.post(f"{F}/{other['id']}/link-user", headers=pm.headers, json={"user_id": str(user.id)})
+    dup = client.post(f"{F}/{f['id']}/link-user", headers=pm.headers, json={"user_id": str(user.id)})
+    assert dup.status_code == 200                                                             # re-linking the same login is a no-op
+    dup = client.post(f"{F}/{other['id']}/link-user", headers=pm.headers, json={"user_id": str(in_org.id)})
+    assert dup.status_code == 200
+    dup = client.post(f"{F}/{f['id']}/link-user", headers=pm.headers, json={"user_id": str(in_org.id)})
     assert dup.json()["error_code"] == "USER_ALREADY_LINKED"
     assert client.get(f"{F}/me", headers=login(client, another)).status_code == 404

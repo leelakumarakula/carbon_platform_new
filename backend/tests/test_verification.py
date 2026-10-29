@@ -400,6 +400,8 @@ def test_decision_report_sod_quantity_status_lineage_and_supersession(client: Te
     assert _decide(client, pm, sid).status_code == 403                                        # the project never records a decision
     # VERIFIED states what was verified: no quantity, or zero, is refused at the decision (not only later at registry submission)
     assert _decide(client, v2, sid).json()["error_code"] == "VERIFIED_QUANTITY_REQUIRED"
+    assert _decide(client, v2, sid, verified_quantity="12.5").json()["error_code"] == "QUANTITY_UNIT_REQUIRED"                # no unit
+    assert _decide(client, v2, sid, verified_quantity="12.5", verified_quantity_unit=" ").json()["error_code"] == "QUANTITY_UNIT_REQUIRED"
     assert _decide(client, v2, sid, verified_quantity="0", verified_quantity_unit="tCO2e").json()["error_code"] == "VERIFIED_QUANTITY_REQUIRED"
     d = _decide(client, v2, sid, verified_quantity="12.5000", verified_quantity_unit="tCO2e")
     assert d.status_code == 201, d.text

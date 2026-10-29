@@ -467,13 +467,17 @@ def _farmer_role_users(db: Session, f: Farmer, organization_ids: list[uuid.UUID]
                            .order_by(User.full_name, User.email)).all())
 
 
+def _link_orgs(f: Farmer) -> list[uuid.UUID]:
+    """Where a farmer's login may come from: the farmer's organization or farmer group — never every farmer of the platform."""
+    return [o for o in (f.organization_id, f.group_organization_id) if o is not None]
+
+
 def link_candidates(db: Session, principal: Principal, farmer_id: uuid.UUID) -> list[LinkCandidate]:
     """Logins the farmer's manager may link for self-service (the linked one first marked)."""
     f = get_farmer(db, principal, farmer_id, P.FARMERS_READ)
     principal.require_in_org(P.FARMERS_MANAGE, f.organization_id)
-    orgs = [o for o in (f.organization_id, f.group_organization_id) if o is not None]   # never every farmer of the platform
     out = []
-    for u in _farmer_role_users(db, f, orgs):
+    for u in _farmer_role_users(db, f, _link_orgs(f)):
         other = repo.get_by_user(db, u.id)
         if other is None or other.id == f.id:
             out.append(LinkCandidate(user_id=u.id, email=u.email, full_name=u.full_name, linked=f.user_id == u.id))
@@ -488,9 +492,11 @@ def link_user(db: Session, ctx: RequestContext, principal: Principal, farmer_id:
         raise NotFound("User not found.", error_code="USER_NOT_FOUND")
     if user.environment != f.environment:
         raise Conflict("Demo and live records cannot be mixed.", error_code="ENVIRONMENT_MISMATCH")
-    if user.id not in {u.id for u in _farmer_role_users(db, f)}:
-        # only a farmer login: a staff account linked here would read the farmer's KYC and bank data as "self" once given the role
-        raise Conflict("Only an account with the Farmer role can be linked to a farmer.", error_code="USER_NOT_FARMER")
+    if user.id not in {u.id for u in _farmer_role_users(db, f, _link_orgs(f))}:
+        # only a farmer login of the farmer's own organization or group (the candidates listed): a staff account linked here would
+        # read the farmer's KYC and bank data as "self" once given the role, and another group's farmer would read this one's
+        raise Conflict("Only an account with the Farmer role in the farmer's organization or farmer group can be linked.",
+                       error_code="USER_NOT_FARMER")
     other = repo.get_by_user(db, user_id)
     if other is not None and other.id != f.id:
         raise Conflict("This login is already linked to another farmer.", error_code="USER_ALREADY_LINKED")

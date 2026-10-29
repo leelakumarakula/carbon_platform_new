@@ -205,8 +205,7 @@ def test_cross_org_overlap_privacy(client: TestClient, db: Session, ctx: dict) -
 
 
 def test_evidence_and_farmer_self_service(client: TestClient, db: Session, ctx: dict) -> None:
-    group = make_org(db, org_type="FARMER_GROUP")
-    user = make_user(db, roles=[("FARMER", group)])
+    user = make_user(db, roles=[("FARMER", ctx["org"])])                 # a login of the farmer's own organization
     pm = staff(db, client, ctx["org"], "PROJECT_MANAGER")
     client.post(f"/api/v1/farmers/{ctx['farmer']['id']}/link-user", headers=pm.headers, json={"user_id": str(user.id)})
     h = login(client, user)

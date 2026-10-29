@@ -73,6 +73,10 @@ def _document_resolver(db: Session, principal: Principal, project_id: uuid.UUID,
     codes = (P.MRV_COLLECT, P.MRV_MANAGE, P.SAMPLING_COLLECT) if kind == "manage" else (P.MRV_READ, P.MRV_COLLECT, P.SAMPLING_COLLECT)
     if not any(principal.can_in_org(c, p.organization_id) for c in codes):
         raise nf
+    if kind == "manage":
+        # MRV evidence (field photos, records, files) is what QA approved and the VVB reviews: a new version would swap the file behind
+        # an approved dataset. A correction is new evidence, reviewed again.
+        raise Conflict("MRV evidence documents cannot be replaced: add new evidence instead.", error_code="DOCUMENT_IMMUTABLE")
 
 
 document_service.register_resolver(DOC_ENTITY, _document_resolver)
