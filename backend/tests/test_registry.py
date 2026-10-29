@@ -192,14 +192,16 @@ def test_eligibility_blockers(client: TestClient, db: Session, monkeypatch: pyte
     _, s, _, v1, v2, run = _submitted(client, db, k)
     assert _decide(client, v1, s["id"], outcome="NOT_VERIFIED", rationale="TEST: not verified").status_code == 201
     assert codes(reg.create()) == "DECISION_NOT_VERIFIED"
-    # 4. VERIFIED without a VVB-stated quantity (new assignment of the same READY package)
+    # 4. VERIFIED without a VVB-stated quantity is refused at the decision itself (new assignment of the same READY package)
     org, w1, _ = _vvb(db, client)
     a2 = client.post(f"{V}/projects/{k.project_id}/assignments", headers=k.x.c.t.pm.headers,
                      json={"monitoring_period_id": k.period_id, "vvb_organization_id": str(org.id)}).json()
     client.post(f"{VVB}/assignments/{a2['id']}/accept", headers=w1.headers, json={"coi_declaration": COI})
     s2 = client.post(f"{V}/assignments/{a2['id']}/submit", headers=k.x.c.t.pm.headers).json()
-    assert _decide(client, w1, s2["id"]).status_code == 201
-    assert codes(reg.create()) == "VERIFIED_QUANTITY_REQUIRED"
+    assert codes(_decide(client, w1, s2["id"])) == "VERIFIED_QUANTITY_REQUIRED"
+    assert codes(_decide(client, w1, s2["id"], verified_quantity="0", verified_quantity_unit="tCO2e")) == "VERIFIED_QUANTITY_REQUIRED"
+    assert _decide(client, w1, s2["id"], outcome="NOT_VERIFIED", rationale="TEST: nothing verifiable").status_code == 201
+    assert codes(reg.create()) == "DECISION_NOT_VERIFIED"
     # VERIFIED with a stated quantity: the remaining prerequisites
     org3, x1, _ = _vvb(db, client)
     a3 = client.post(f"{V}/projects/{k.project_id}/assignments", headers=k.x.c.t.pm.headers,

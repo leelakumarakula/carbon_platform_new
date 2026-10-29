@@ -153,6 +153,15 @@ class LinkUser(BaseModel):
     user_id: uuid.UUID
 
 
+class LinkCandidate(BaseModel):
+    """A login that can be linked to the farmer for self-service: an ACTIVE account holding the Farmer role in the farmer's
+    organization or farmer group, not linked to another farmer. `linked` marks the account currently linked to this farmer."""
+    user_id: uuid.UUID
+    email: str
+    full_name: str
+    linked: bool
+
+
 # ---------------------------------------------------------------- outputs
 class ContactOut(BaseModel):
     id: uuid.UUID

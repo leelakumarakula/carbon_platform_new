@@ -227,7 +227,9 @@ def test_unconfirmed_payout_fails_only_on_provider_answer_or_bank_evidence(clien
     assert pys.initiate(db, ctx, p4, uuid.UUID(p2["id"]), None, adapter=adapter).status == "UNCONFIRMED"
     assert codes(f.post(f"/payouts/{p2['id']}/fail", {"reason": "TEST"}, f.fin4)) == "PAYOUT_FAILURE_EVIDENCE_REQUIRED"
     ev = f.doc(f"/payouts/{p2['id']}/documents", f.fin4, "PAYOUT_EVIDENCE")
-    failed = f.post(f"/payouts/{p2['id']}/fail", {"reason": "TEST: bank return advice attached"}, f.fin4)
+    # evidence already on the payout is not enough: it may be a remittance proof — the failure names its evidence explicitly
+    assert codes(f.post(f"/payouts/{p2['id']}/fail", {"reason": "TEST: unnamed"}, f.fin4)) == "PAYOUT_FAILURE_EVIDENCE_REQUIRED"
+    failed = f.post(f"/payouts/{p2['id']}/fail", {"reason": "TEST: bank return advice attached", "document_id": ev}, f.fin4)
     assert failed.status_code == 200 and failed.json()["status"] == "FAILED", failed.text
     tx = db.scalars(select(PayoutTransaction).where(PayoutTransaction.payout_id == uuid.UUID(p2["id"]), PayoutTransaction.kind == "FAILED")).one()
     assert tx.evidence_document_id == uuid.UUID(ev)

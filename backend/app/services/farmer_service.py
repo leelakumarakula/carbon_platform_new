@@ -40,6 +40,7 @@ from app.schemas.farmers import (
     ContactIn,
     FarmerCreate,
     FarmerUpdate,
+    LinkCandidate,
     TransitionReadiness,
 )
 from app.security import crypto
@@ -455,6 +456,30 @@ def upload_document(db: Session, ctx: RequestContext, principal: Principal, farm
     return doc.id
 
 
+def _farmer_role_users(db: Session, f: Farmer, organization_ids: list[uuid.UUID] | None = None) -> list[User]:
+    """ACTIVE accounts of the farmer's environment holding the FARMER role — in `organization_ids` when given, else in any organization
+    (a farmer's login usually sits in a farmer-group organization, not the developer's)."""
+    from app.models import Role, UserRole
+    q = select(UserRole.user_id).join(Role, Role.id == UserRole.role_id).where(Role.code == "FARMER")
+    if organization_ids is not None:
+        q = q.where(UserRole.organization_id.in_(organization_ids))
+    return list(db.scalars(select(User).where(User.id.in_(q), User.status == "ACTIVE", User.environment == f.environment)
+                           .order_by(User.full_name, User.email)).all())
+
+
+def link_candidates(db: Session, principal: Principal, farmer_id: uuid.UUID) -> list[LinkCandidate]:
+    """Logins the farmer's manager may link for self-service (the linked one first marked)."""
+    f = get_farmer(db, principal, farmer_id, P.FARMERS_READ)
+    principal.require_in_org(P.FARMERS_MANAGE, f.organization_id)
+    orgs = [o for o in (f.organization_id, f.group_organization_id) if o is not None]   # never every farmer of the platform
+    out = []
+    for u in _farmer_role_users(db, f, orgs):
+        other = repo.get_by_user(db, u.id)
+        if other is None or other.id == f.id:
+            out.append(LinkCandidate(user_id=u.id, email=u.email, full_name=u.full_name, linked=f.user_id == u.id))
+    return out
+
+
 def link_user(db: Session, ctx: RequestContext, principal: Principal, farmer_id: uuid.UUID, user_id: uuid.UUID) -> Farmer:
     f = get_farmer(db, principal, farmer_id, P.FARMERS_READ)
     principal.require_in_org(P.FARMERS_MANAGE, f.organization_id)
@@ -463,6 +488,9 @@ def link_user(db: Session, ctx: RequestContext, principal: Principal, farmer_id:
         raise NotFound("User not found.", error_code="USER_NOT_FOUND")
     if user.environment != f.environment:
         raise Conflict("Demo and live records cannot be mixed.", error_code="ENVIRONMENT_MISMATCH")
+    if user.id not in {u.id for u in _farmer_role_users(db, f)}:
+        # only a farmer login: a staff account linked here would read the farmer's KYC and bank data as "self" once given the role
+        raise Conflict("Only an account with the Farmer role can be linked to a farmer.", error_code="USER_NOT_FARMER")
     other = repo.get_by_user(db, user_id)
     if other is not None and other.id != f.id:
         raise Conflict("This login is already linked to another farmer.", error_code="USER_ALREADY_LINKED")

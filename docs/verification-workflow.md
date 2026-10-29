@@ -133,7 +133,7 @@ assignment.
 - `outcome` (VERIFIED / NOT_VERIFIED);
 - `rationale`;
 - the VVB report PDF (`file`, category `VERIFICATION_REPORT`, owned by the VVB organization);
-- optionally `verified_quantity` + `verified_quantity_unit`, accepted only with VERIFIED.
+- `verified_quantity` + `verified_quantity_unit`: required with VERIFIED (a positive number, `VERIFIED_QUANTITY_REQUIRED`) and refused with NOT_VERIFIED.
 
 Refused when:
 

@@ -565,6 +565,16 @@ def reopen(db: Session, ctx: RequestContext, principal: Principal, project_id: u
 def close(db: Session, ctx: RequestContext, principal: Principal, project_id: uuid.UUID, reason: str) -> Project:
     p = get_project(db, principal, project_id, P.PROJECTS_MANAGE)
     _transition(db, ctx, p, "CLOSED", "PROJECT_STATUS_CHANGED", "PROJECT_CLOSED", reason)
+    if repo.has_monitored(db, p.id):
+        # The land stays taken for the dates the project monitored (and may have credited) — repo.holds_land — and is free after the
+        # closing date: open-ended participations end today, so a later project can enrol the farms from tomorrow.
+        today = date.today()
+        for pf in repo.project_farms(db, p.id, active_only=True):
+            if pf.participation_end is None or pf.participation_end > today:
+                before = pf.participation_end
+                pf.participation_end = max(today, pf.participation_start)
+                record(db, ctx, "PROJECT_FARM_PARTICIPATION_ENDED", "project", p.id, {"participation_end": str(before) if before else None},
+                       {"farm_id": str(pf.farm_id), "participation_end": str(pf.participation_end)}, reason, organization_id=p.organization_id)
     db.commit()
     return repo.get(db, p.id)  # type: ignore[return-value]
 

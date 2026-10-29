@@ -368,10 +368,11 @@ def confirm_paid(db: Session, ctx: RequestContext, principal: Principal, payout_
 
 
 def outcome_unknown(po: Payout) -> bool:
-    """The money may still leave (or have left) the bank: the provider never answered (UNCONFIRMED) or accepted the instruction
-    (PAYMENT_PENDING at a provider). Such a payout is FAILED only by the provider's own answer (`query_status`) or with bank evidence —
-    never on a person's word alone, because a FAILED payout is reissued and the entitlement would be paid twice."""
-    return po.status == "UNCONFIRMED" or (po.status == "PAYMENT_PENDING" and po.adapter_code != "MANUAL")
+    """The money may still leave (or have left) the bank: the payout was executed (PAYMENT_PENDING — at a provider, or a MANUAL bank
+    transfer someone was instructed to make) or the provider never answered (UNCONFIRMED). Such a payout is FAILED only by the
+    provider's own answer (`query_status`) or with the bank's evidence — never on a person's word alone, because a FAILED payout is
+    reissued and the entitlement would be paid twice."""
+    return po.status in ("PAYMENT_PENDING", "UNCONFIRMED")
 
 
 def _failure_evidence(db: Session, po: Payout, document_id: uuid.UUID | None) -> uuid.UUID | None:
@@ -380,12 +381,11 @@ def _failure_evidence(db: Session, po: Payout, document_id: uuid.UUID | None) ->
         return document_id
     if not outcome_unknown(po):
         return None
-    docs = [d for d in document_service.list_for(db, ENTITY, po.id) if d.category == DocumentCategory.PAYOUT_EVIDENCE.value and d.status == "ACTIVE"]
-    if not docs:
-        raise Conflict(f"Payout {po.payout_code} is {po.status}: the provider may still pay it. Query the provider status, or attach the bank's "
-                       "evidence that the payment failed (PAYOUT_EVIDENCE PDF) before recording the failure.",
-                       error_code="PAYOUT_FAILURE_EVIDENCE_REQUIRED", details={"status": po.status, "adapter": po.adapter_code})
-    return docs[-1].id
+    # the evidence is named explicitly: any PAYOUT_EVIDENCE already on the payout (e.g. a remittance proof uploaded ahead of
+    # recording PAID) is not proof that the payment failed
+    raise Conflict(f"Payout {po.payout_code} is {po.status}: the money may still be paid. Attach the bank's evidence that the payment "
+                   "failed (PAYOUT_EVIDENCE PDF) and name it (document_id) when recording the failure.",
+                   error_code="PAYOUT_FAILURE_EVIDENCE_REQUIRED", details={"status": po.status, "adapter": po.adapter_code})
 
 
 def fail(db: Session, ctx: RequestContext, principal: Principal, payout_id: uuid.UUID, reason: str, key: str | None,

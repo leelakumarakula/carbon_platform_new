@@ -75,7 +75,9 @@ def _farmer_phones(db: Session, farm: Farm, cc: str) -> list[str]:
 
 
 def _resolve(db: Session, principal: Principal, farm_id: uuid.UUID, entered: str | None) -> tuple[Farm, str, str]:
-    """(farm, E.164 phone, ENTERED | FARMER_PRIMARY_PHONE). Staff may enter any number; a farmer only one of their own."""
+    """(farm, E.164 phone, ENTERED | FARMER_PRIMARY_PHONE). Only a phone on file for the farm's farmer is looked up — by staff and the
+    farmer alike: FarmFuture returns a person's estates and boundaries, so an arbitrary number would expose a stranger's land. A new
+    number is first recorded as the farmer's contact (audited), then used here."""
     farm = farm_service.get_farm(db, principal, farm_id, P.FARMS_MANAGE)
     cc = get_settings().FARMFUTURE_DEFAULT_COUNTRY_CODE
     own = _farmer_phones(db, farm, cc)
@@ -84,8 +86,9 @@ def _resolve(db: Session, principal: Principal, farm_id: uuid.UUID, entered: str
             raise ValidationFailed("The farmer has no phone number on file: enter the FarmFuture mobile number.", error_code="PHONE_REQUIRED")
         return farm, own[0], "FARMER_PRIMARY_PHONE"
     phone = normalise_phone(entered, cc)
-    if not principal.can_in_org(P.FARMS_MANAGE, farm.organization_id) and phone not in own:
-        raise PermissionDenied("You can only look up your own registered phone number.", error_code="PHONE_NOT_OWN")
+    if phone not in own:
+        raise PermissionDenied("Only a phone number on file for this farm's farmer can be looked up. Add the number to the farmer's "
+                               "contacts first.", error_code="PHONE_NOT_OWN")
     return farm, phone, "ENTERED"
 
 

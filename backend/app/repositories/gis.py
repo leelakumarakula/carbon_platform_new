@@ -100,7 +100,11 @@ JOIN dbo.farms f ON f.id = ob.farm_id
 WHERE ob.status = 'CURRENT' AND ob.farm_id <> :farm_id AND f.environment = :env
   -- an INACTIVE farm still taking part in an open project keeps its land, so a new farm drawn on it is flagged (double counting)
   AND (f.status <> 'INACTIVE' OR EXISTS (SELECT 1 FROM dbo.project_farms pf JOIN dbo.projects p ON p.id = pf.project_id
-                                         WHERE pf.farm_id = f.id AND pf.status = 'ACTIVE' AND p.status <> 'CLOSED'))
+                                         WHERE pf.farm_id = f.id AND pf.status = 'ACTIVE'
+                                           -- projects.holds_land: open, or CLOSED after it monitored the land
+                                           AND (p.status <> 'CLOSED' OR EXISTS (SELECT 1 FROM dbo.monitoring_periods mp
+                                  WHERE mp.project_id = p.id
+                                  AND mp.status IN ('ACTIVE', 'DATA_COLLECTION', 'SUBMITTED', 'QA_REVIEW', 'REJECTED', 'APPROVED', 'CLOSED')))))
   AND ob.boundary.STIntersects(@g) = 1;
 """)
 
@@ -222,7 +226,10 @@ SELECT pf.farm_id, opf.project_id, op.organization_id, opf.farm_id, b.boundary.S
 FROM dbo.farm_boundaries ob
 JOIN dbo.farms ofm ON ofm.current_boundary_id = ob.id
 JOIN dbo.project_farms opf ON opf.farm_id = ofm.id AND opf.status = 'ACTIVE' AND opf.project_id <> :pid
-JOIN dbo.projects op ON op.id = opf.project_id AND op.status <> 'CLOSED' AND op.environment = :env
+JOIN dbo.projects op ON op.id = opf.project_id AND op.environment = :env
+     -- projects.holds_land: open, or CLOSED after it monitored the land (its participation dates may have been credited)
+     AND (op.status <> 'CLOSED' OR EXISTS (SELECT 1 FROM dbo.monitoring_periods mp
+          WHERE mp.project_id = op.id AND mp.status IN ('ACTIVE', 'DATA_COLLECTION', 'SUBMITTED', 'QA_REVIEW', 'REJECTED', 'APPROVED', 'CLOSED')))
 JOIN dbo.project_farms pf ON pf.project_id = :pid AND pf.status = 'ACTIVE' AND pf.farm_id <> ofm.id
 JOIN dbo.farms f ON f.id = pf.farm_id
 JOIN dbo.farm_boundaries b ON b.id = f.current_boundary_id

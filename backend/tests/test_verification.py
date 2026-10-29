@@ -398,6 +398,9 @@ def test_decision_report_sod_quantity_status_lineage_and_supersession(client: Te
     assert _decide(client, v2, sid, outcome="NOT_VERIFIED", verified_quantity="1", verified_quantity_unit="tCO2e").json()["error_code"] == \
         "QUANTITY_NOT_ALLOWED"
     assert _decide(client, pm, sid).status_code == 403                                        # the project never records a decision
+    # VERIFIED states what was verified: no quantity, or zero, is refused at the decision (not only later at registry submission)
+    assert _decide(client, v2, sid).json()["error_code"] == "VERIFIED_QUANTITY_REQUIRED"
+    assert _decide(client, v2, sid, verified_quantity="0", verified_quantity_unit="tCO2e").json()["error_code"] == "VERIFIED_QUANTITY_REQUIRED"
     d = _decide(client, v2, sid, verified_quantity="12.5000", verified_quantity_unit="tCO2e")
     assert d.status_code == 201, d.text
     dj = d.json()
@@ -571,7 +574,7 @@ def test_triggers_protect_assignments_submissions_and_decisions() -> None:
     def build3(session: Session, client: TestClient) -> tuple[str, dict, str]:
         k = calc_scenario(session, client, 79.90, 24.90, "9190 2000 3000")
         _, s, _, v1, _, _ = _submitted(client, session, k)
-        d = _decide(client, v1, s["id"]).json()
+        d = _decide(client, v1, s["id"], verified_quantity="10", verified_quantity_unit="tCO2e").json()
         return "UPDATE verification_decisions SET outcome = N'NOT_VERIFIED' WHERE id = :i", {"i": d["id"]}, "immutable"
     _dedicated(build3)
 

@@ -84,6 +84,9 @@ in any state except CLOSED. Anything else is refused with `PROJECT_NOT_EDITABLE`
     the boundary. A farm-overlap flag cleared for verification still counts here, because both projects would credit the land.
   - A farm that is a control site of any non-closed project cannot join a project (`FARM_IS_CONTROL_SITE`), and a project
     farm of another non-closed project cannot become a control site.
+  - A CLOSED project that monitored its land (a monitoring period reached ACTIVE or later) still counts in these checks for its
+    participation dates, because those years may have been credited. Closing such a project ends its open-ended participations on
+    the closing day, so another project can enrol the farm from the next day. A project closed before monitoring frees its land.
 - Removing a farm sets `REMOVED`, ends its participation and active carbon-rights records, recomputes the
   boundary, and keeps everything.
 

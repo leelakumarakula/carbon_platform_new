@@ -53,6 +53,14 @@ RESTRICTED_CATEGORIES = frozenset({DocumentCategory.KYC_ID.value, DocumentCatego
                                    DocumentCategory.BUYER_KYC_DOCUMENT.value, DocumentCategory.PAYOUT_EVIDENCE.value,
                                    DocumentCategory.RECONCILIATION_EVIDENCE.value})
 
+# Evidence a reviewer verifies (KYC, bank account, land ownership, signed agreements and consents): never given a new version, so
+# the file behind a verified record cannot be swapped; a correction is a new document.
+EVIDENCE_IMMUTABLE_CATEGORIES = frozenset({DocumentCategory.KYC_ID.value, DocumentCategory.BANK_PROOF.value,
+                                           DocumentCategory.LAND_TITLE.value, DocumentCategory.LEASE_AGREEMENT.value,
+                                           DocumentCategory.LAND_RECORD.value, DocumentCategory.AGREEMENT.value,
+                                           DocumentCategory.CONSENT_FORM.value, DocumentCategory.CARBON_RIGHTS.value,
+                                           DocumentCategory.BUYER_KYC_DOCUMENT.value})
+
 
 class DocumentStatus(str, Enum):
     ACTIVE = "ACTIVE"

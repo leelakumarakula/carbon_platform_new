@@ -315,6 +315,28 @@ def test_woody_biomass_declaration_protects_shade_trees() -> None:
     assert _blocked(_with_new_rules(("WOODY", "maybe", "", "TEXT"))).code == "INVALID_INPUT"
 
 
+def test_soil_must_be_sampled_to_30_cm_and_reach_the_reference_mass() -> None:
+    # a project core sampled 0-10 / 10-20 cm (e.g. a 20 cm fertility sample) is refused, not extended to 30 cm
+    snap = _snapshot()
+    shallow = {"0": ("0", "10"), "30": ("10", "20")}
+    done: set[int] = set()
+    for r in snap["inputs"]:
+        c = r["context"]                     # OC and soil mass of one sample share this context
+        if (r["variable"] in ("OC_T", "MASS_T") and c.get("stratum_role") == "PROJECT" and c["field_collection_id"].endswith("-0")
+                and id(c) not in done):
+            done.add(id(c))
+            c["depth_top_cm"], c["depth_bottom_cm"] = shallow[c["depth_top_cm"]]
+    e = _blocked(snap)
+    assert e.code == "SAMPLING_DEPTH_INSUFFICIENT" and e.details["reason"] == "TOO_SHALLOW"
+    # sampled to 50 cm but holding less soil than the reference mass (a very light core): the ESM point would be extrapolated
+    snap = _snapshot()
+    for r in snap["inputs"]:
+        if r["variable"] == "MASS_T" and r["context"].get("stratum_role") == "PROJECT" and r["context"]["field_collection_id"].endswith("-0"):
+            r["value"] = str(Decimal(r["value"]) / 4)
+    e = _blocked(snap)
+    assert e.code == "SAMPLING_DEPTH_INSUFFICIENT" and e.details["reason"] == "REFERENCE_MASS_NOT_REACHED"
+
+
 def test_three_increments_use_cubic_spline() -> None:
     from app.calculation.library import esm
     assert esm.method_for(2) == esm.LINEAR and esm.method_for(3) == esm.SPLINE

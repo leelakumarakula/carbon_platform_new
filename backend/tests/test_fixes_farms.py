@@ -94,6 +94,52 @@ def test_closed_project_releases_the_farm(client: TestClient, db: Session) -> No
     assert r.status_code == 200 and r.json()["status"] == "INACTIVE", r.text
 
 
+def test_holds_land_sql_matches_the_python_rule() -> None:
+    """The GIS queries repeat repositories.projects.holds_land in SQL: their monitored-period states must be the same."""
+    import inspect
+
+    from app.repositories import gis
+    from app.repositories.projects import MONITORED_PERIOD_STATES
+    states = "(" + ", ".join(f"'{x}'" for x in MONITORED_PERIOD_STATES) + ")"
+    assert inspect.getsource(gis).count(f"mp.status IN {states}") == 2
+
+
+def test_closed_project_that_monitored_keeps_its_credited_dates(client: TestClient, db: Session) -> None:
+    """A project that monitored (and may have credited) its land is closed: the land stays taken for its participation dates, which
+    end on the closing day; a later project may enrol the farm only from the day after."""
+    from datetime import date, timedelta
+
+    from app.models import ProjectFarm
+    from tests.phase5 import approved_plan, collecting_period
+    c = locked_project(db, client, 79.25, 19.25, "7250 2000 3000", n_farms=1)
+    farm = c.farms[0]
+    approved_plan(client, c)
+    collecting_period(client, c)                                                       # the land was monitored
+    assert client.post(f"{PR}/{c.project['id']}/close", headers=c.t.pm.headers, json=_reason("crediting ended")).json()["status"] == "CLOSED"
+    pf = db.query(ProjectFarm).filter(ProjectFarm.project_id == uuid.UUID(c.project["id"])).one()
+    db.refresh(pf)
+    today = date.today()
+    assert pf.participation_end == today                                               # open-ended participation ended at closing
+    # a new project over the monitored dates: the same farm is double counting (acknowledged at enrolment, blocking MRV planning)
+    q = create_project(client, c.t, name="Re-enrolment over credited years")
+    _start(client, c.t, q["id"])
+    r = add_farm(client, c.t, q["id"], farm["id"])
+    assert r.status_code == 409 and r.json()["error_code"] == "CONFLICTS_REQUIRE_ACKNOWLEDGEMENT", r.text
+    r = add_farm(client, c.t, q["id"], farm["id"], acknowledge_conflicts=True, conflict_notes="TEST: same years")
+    assert r.status_code == 201, r.text
+    conflicts = pfs.double_counting_conflicts(db, db.get(Project, uuid.UUID(q["id"])))
+    assert [(x["kind"], x["other_project_code"]) for x in conflicts] == [("OTHER_PROJECT_PARTICIPATION", c.project["project_code"])]
+    r = client.request("DELETE", f"{PR}/{q['id']}/farms/{farm['id']}", headers=c.t.pm.headers, json=_reason("enrolled over credited years"))
+    assert r.status_code == 200, r.text
+    # from the day after closing the land is free
+    q2 = create_project(client, c.t, name="Enrolment after closing")
+    _start(client, c.t, q2["id"])
+    r = add_farm(client, c.t, q2["id"], farm["id"], participation_start=(today + timedelta(days=1)).isoformat())
+    assert r.status_code == 201, r.text
+    assert [x for x in pfs.double_counting_conflicts(db, db.get(Project, uuid.UUID(q2["id"]))) if x["kind"] == "OTHER_PROJECT_PARTICIPATION"
+            and x["other_project_code"] == c.project["project_code"]] == []
+
+
 def test_inactive_farm_still_enrolled_keeps_its_land_in_overlap_detection(client: TestClient, db: Session) -> None:
     t = team(db, client)
     farmer = active_farmer(client, t, "7300 2000 3000")

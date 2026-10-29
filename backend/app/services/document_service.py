@@ -28,7 +28,7 @@ from app.core.errors import Conflict, NotFound, ServiceUnavailable, ValidationFa
 from app.integrations.malware import ScanResult, get_scanner
 from app.integrations.storage import StorageError, get_storage
 from app.models import Document, DocumentScan, DocumentVersion
-from app.models.documents import RESTRICTED_CATEGORIES, DocumentCategory
+from app.models.documents import EVIDENCE_IMMUTABLE_CATEGORIES, RESTRICTED_CATEGORIES, DocumentCategory
 from app.rules.file_types import GEOSPATIAL_TYPES, safe_filename, sniff
 from app.security.principal import Principal
 
@@ -218,6 +218,11 @@ def create_document(db: Session, ctx: RequestContext, *, entity_type: str, entit
 def add_version(db: Session, ctx: RequestContext, principal: Principal, document_id: uuid.UUID,
                 filename: str | None, data: bytes) -> Document:
     doc = get_document(db, principal, document_id, "manage")
+    if doc.category in EVIDENCE_IMMUTABLE_CATEGORIES:
+        # identity, bank, land and agreement evidence is what a reviewer verified: a new version would silently replace the file behind
+        # a verified KYC, bank account or ownership record. A correction is a new document, reviewed again.
+        raise Conflict("This evidence document cannot be replaced: upload a new document instead.", error_code="DOCUMENT_IMMUTABLE",
+                       details={"category": doc.category})
     if doc.status != "ACTIVE":
         raise Conflict("Only active documents can receive new versions.", error_code="DOCUMENT_NOT_ACTIVE")
     mime = _validate(data, doc.category)

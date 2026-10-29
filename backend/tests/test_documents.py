@@ -62,8 +62,13 @@ def test_category_type_rules(client: TestClient, setup: dict) -> None:
 
 
 def test_versions_are_kept_and_immutable(client: TestClient, db: Session, setup: dict) -> None:
-    doc_id = upload(client, setup["pm"].headers, setup["url"], "LAND_RECORD").json()["id"]
     v2 = PDF.replace(b"Catalog", b"Catalog2")
+    # verified evidence (land, identity, bank, agreements) is never replaced: a correction is a new document
+    for category in ("LAND_RECORD", "KYC_ID"):
+        ev = upload(client, setup["pm"].headers, setup["url"], category).json()["id"]
+        r = client.post(f"/api/v1/evidence/documents/{ev}/versions", headers=setup["pm"].headers, files={"file": ("v2.pdf", v2, "application/pdf")})
+        assert r.status_code == 409 and r.json()["error_code"] == "DOCUMENT_IMMUTABLE", r.text
+    doc_id = upload(client, setup["pm"].headers, setup["url"], "OTHER").json()["id"]
     r = client.post(f"/api/v1/evidence/documents/{doc_id}/versions", headers=setup["pm"].headers,
                     files={"file": ("v2.pdf", v2, "application/pdf")})
     assert r.status_code == 200 and r.json()["current_version"] == 2 and len(r.json()["versions"]) == 2

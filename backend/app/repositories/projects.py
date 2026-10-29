@@ -53,6 +53,22 @@ def project_farms(db: Session, project_id: uuid.UUID, active_only: bool = False)
     return list(db.scalars(stmt.order_by(ProjectFarm.added_at)).all())
 
 
+# Monitoring-period states from which the project has monitored (and may have credited) its land.
+MONITORED_PERIOD_STATES = ("ACTIVE", "DATA_COLLECTION", "SUBMITTED", "QA_REVIEW", "REJECTED", "APPROVED", "CLOSED")
+
+def has_monitored(db: Session, project_id: uuid.UUID) -> bool:
+    from app.models import MonitoringPeriod
+    return db.scalars(select(MonitoringPeriod.id).where(MonitoringPeriod.project_id == project_id,
+                                                        MonitoringPeriod.status.in_(MONITORED_PERIOD_STATES))).first() is not None
+
+
+def holds_land(db: Session, p: Project) -> bool:
+    """Whether the project's farm participations still count for double counting: every open project, and a CLOSED project that
+    monitored its land (its participation dates may have been credited, so the land stays taken for those dates). A project abandoned
+    before monitoring started frees its land."""
+    return p.status != "CLOSED" or has_monitored(db, p.id)
+
+
 def active_participations_of_farm(db: Session, farm_id: uuid.UUID) -> list[ProjectFarm]:
     return list(db.scalars(select(ProjectFarm).where(ProjectFarm.farm_id == farm_id, ProjectFarm.status == "ACTIVE")).all())
 

@@ -435,8 +435,11 @@ def test_refund_after_payout_opens_recovery_case_and_rejected_runs_free_inputs(c
     f.post(f"/payouts/{po['id']}/submit", {}, f.fin2)
     f.post(f"/payouts/{po['id']}/approve", {}, f.fin3)
     f.post(f"/payouts/{po['id']}/initiate", {}, f.fin4)
-    failed = f.post(f"/payouts/{po['id']}/fail", {"reason": "TEST: beneficiary bank returned the transfer"}, f.fin4)
-    assert failed.json()["status"] == "FAILED"
+    # an executed MANUAL transfer may have left the bank: a person's word alone does not fail it (it would be paid twice on reissue)
+    assert codes(f.post(f"/payouts/{po['id']}/fail", {"reason": "TEST: no evidence"}, f.fin4)) == "PAYOUT_FAILURE_EVIDENCE_REQUIRED"
+    ev = f.doc(f"/payouts/{po['id']}/documents", f.fin4, "PAYOUT_EVIDENCE")
+    failed = f.post(f"/payouts/{po['id']}/fail", {"reason": "TEST: beneficiary bank returned the transfer", "document_id": ev}, f.fin4)
+    assert failed.json()["status"] == "FAILED", failed.text
     assert codes(f.post(f"/payouts/{po['id']}/fail", {"reason": "TEST again"}, f.fin4)) == "INVALID_STATUS_TRANSITION"   # FAILED is final
     re = f.post(f"/payouts/{po['id']}/reissue", {}, f.fin2, key="re-1")
     assert re.status_code == 201 and re.json()["replaces_payout_code"] == po["payout_code"] and Decimal(re.json()["amount"]) == Decimal("200")

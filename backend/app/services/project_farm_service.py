@@ -75,7 +75,7 @@ def conflicts_for(db: Session, principal: Principal, farm: Farm, project: Projec
         if pf.project_id == project.id or not _overlaps_ranges(start, end, pf.participation_start, pf.participation_end):
             continue
         other_p = repo.get(db, pf.project_id)
-        if other_p is None or other_p.status == "CLOSED":
+        if other_p is None or not repo.holds_land(db, other_p):
             continue
         visible = principal.can_in_org(P.PROJECTS_READ, other_p.organization_id)
         out.append(ConflictOut(kind="OTHER_PROJECT_PARTICIPATION", status=other_p.status,
@@ -122,8 +122,8 @@ def double_counting_conflicts(db: Session, p: Project) -> list[dict[str, Any]]:
     for pf in mine:
         for o in repo.active_participations_of_farm(db, pf.farm_id):
             q = other_project(o.project_id) if o.project_id != p.id else None
-            if q is not None and q.status != "CLOSED" and _overlaps_ranges(pf.participation_start, pf.participation_end,
-                                                                           o.participation_start, o.participation_end):
+            if q is not None and repo.holds_land(db, q) and _overlaps_ranges(pf.participation_start, pf.participation_end,
+                                                                             o.participation_start, o.participation_end):
                 add("OTHER_PROJECT_PARTICIPATION", pf.farm_id, q, pf.farm_id, None)
     min_m2 = get_settings().FARM_OVERLAP_MIN_AREA_M2
     for farm_id, qid, _org, other_farm_id, m2 in gis.cross_project_farm_overlaps(db, p.id, p.environment):

@@ -185,6 +185,14 @@ def test_farm_without_mapped_areas(client: TestClient, world: dict[str, Any], fa
 def test_unknown_numbers_unlisted_farms_and_switched_off(client: TestClient, world: dict[str, Any], fake: FakeFarmFuture,
                                                          monkeypatch: pytest.MonkeyPatch) -> None:
     fid, h = world["farm"]["id"], world["agent"].headers
+    # staff cannot look up a stranger's number: FarmFuture would return someone else's estates and boundaries
+    calls = len(fake.calls)
+    r = client.post(f"{FA}/{fid}/farmfuture/estates", headers=h, json={"phone_number": "+91 90000 00000"})
+    assert r.status_code == 403 and r.json()["error_code"] == "PHONE_NOT_OWN" and len(fake.calls) == calls
+    # once recorded as the farmer's contact (audited), the number is looked up; FarmFuture does not know it
+    c = client.post(f"/api/v1/farmers/{world['farmer']['id']}/contacts", headers=h,
+                    json={"contact_type": "ALTERNATE_PHONE", "value": "+91 90000 00000"})
+    assert c.status_code == 201, c.text
     r = client.post(f"{FA}/{fid}/farmfuture/estates", headers=h, json={"phone_number": "+91 90000 00000"})
     assert r.status_code == 404 and r.json()["error_code"] == "FARMFUTURE_USER_NOT_FOUND"
     r = client.post(f"{FA}/{fid}/farmfuture/estates", headers=h, json={"phone_number": "12345"})

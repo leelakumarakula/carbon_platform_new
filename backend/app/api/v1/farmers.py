@@ -21,6 +21,7 @@ from app.schemas.farmers import (
     FarmerUpdate,
     KycDecision,
     KycSubmit,
+    LinkCandidate,
     LinkUser,
 )
 from app.security.permissions import P
@@ -145,6 +146,12 @@ def upload_document(farmer_id: uuid.UUID, principal: Manager, db: DB, ctx: Ctx, 
                           category: Annotated[str, Form(max_length=30)], title: Annotated[str, Form(max_length=200)] = "") -> IdRef:
     data = read_upload(file)
     return IdRef(id=svc.upload_document(db, ctx, principal, farmer_id, category, title, file.filename, data))
+
+
+@router.get("/{farmer_id}/link-candidates", response_model=list[LinkCandidate],
+            summary="Farmer-role logins that can be linked to this farmer for self-service")
+def link_candidates(farmer_id: uuid.UUID, principal: Manager, db: DB) -> list[LinkCandidate]:
+    return svc.link_candidates(db, principal, farmer_id)
 
 
 @router.post("/{farmer_id}/link-user", response_model=FarmerOut, summary="Link a login account for farmer self-service")

@@ -213,7 +213,8 @@ class Vm0042V22(CalculationModule):
     code = "VM0042-V2.2-QA2-QA3"
     # 1.1.0: data safeguards (period records, rainfall, risk rating), Eq. 33 leakage, woody biomass
     # 1.2.0: an organic-N increase needs a V42_OA_IMPORTED declaration for the period (forgotten compost entry)
-    version = "1.2.0"
+    # 1.3.0: profiles must reach 30 cm and the reference soil mass (never extrapolated)
+    version = "1.3.0"
     methodology_code = "VM0042"
     version_label = "2.2"
     calculation_rules_version = 0           # bound to the selecting methodology version (registry.bind)
@@ -292,6 +293,12 @@ class Vm0042V22(CalculationModule):
             targets = [p.stratum_record] if p.role == "PROJECT" else [r for r in p.linked if r in st.ref]
             scenario = "PROJECT" if p.role == "PROJECT" else "BASELINE"
             for rec in targets:
+                if p.profile.cumulative_soil_mass_mg_ha[-1] < st.ref[rec]:
+                    # the reference soil mass lies below this core's deepest sample: its SOC there would be extrapolated, not measured
+                    raise CalculationBlocked("SAMPLING_DEPTH_INSUFFICIENT", f"Field collection {p.key} holds less soil "
+                                             f"({p.profile.cumulative_soil_mass_mg_ha[-1]:.1f} Mg/ha) than stratum {rec}'s reference soil mass "
+                                             f"({st.ref[rec]:.1f} Mg/ha); sample deeper so the equivalent soil mass is reached "
+                                             "(Verra SSA Handbook §6).", {"reason": "REFERENCE_MASS_NOT_REACHED", "field_collection": p.key})
                 g = st.groups.setdefault((rec, scenario, p.period), _Group())
                 g.values.append(esm.oc_at_mass(p.profile, st.ref[rec], st.method))
                 g.seqs.extend(p.seqs)
@@ -429,6 +436,11 @@ class Vm0042V22(CalculationModule):
                 if len(layers) < 2:
                     raise CalculationBlocked("DEPTH_INCREMENTS_REQUIRED", f"Field collection {fc} has {len(layers)} depth increment; ESM needs "
                                              "at least two (VM0042 §8.2.1.3 (7c)).", {"reason": "ONE_INCREMENT"})
+                if max(layer.depth_bottom_cm for layer in layers) < REFERENCE_DEPTH_CM:
+                    # never extrapolated: a shallower profile would be extended on its last segment (esm), not measured
+                    raise CalculationBlocked("SAMPLING_DEPTH_INSUFFICIENT", f"Field collection {fc} is sampled to "
+                                             f"{max(layer.depth_bottom_cm for layer in layers)} cm; VM0042 reports SOC to at least "
+                                             f"{REFERENCE_DEPTH_CM} cm (§8.2.1.3 (7b)).", {"reason": "TOO_SHALLOW", "field_collection": fc})
                 try:
                     prof = esm.profile(layers, Decimal(c["probe_diameter_mm"]), int(c["cores_count"]), mineral=True)
                 except esm.EsmError as e:

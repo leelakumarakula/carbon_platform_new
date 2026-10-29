@@ -41,6 +41,11 @@ DRAFT ─▶ REGISTERED ─▶ KYC_PENDING ─▶ KYC_VERIFIED ─▶ ACTIVE ⇄
   account. No payout is made in Phase 2; payouts are Phase 11.
 - **Self-service.** A user with `farmers.self` who is linked to the farmer (`link-user`) can see and edit only
   their own record (`GET /farmers/me`). They cannot verify their own KYC.
+  Only an account holding the Farmer role can be linked (`USER_NOT_FARMER`); the farmer's **Login** tab offers the
+  Farmer-role accounts of the farmer's organization and farmer group (`GET /farmers/{id}/link-candidates`).
+- **Evidence documents are immutable.** KYC, bank proof, land title / record / lease, agreements, consents and
+  carbon-rights documents never get a new version (`DOCUMENT_IMMUTABLE`): the file behind a verified record cannot be
+  swapped. A correction is a new document, reviewed again.
 - **Codes** come from SQL Server sequences: `FRM-YYYY-nnnnnn` and `FARM-YYYY-nnnnnn`.
 
 ## Farm

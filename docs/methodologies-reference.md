@@ -104,7 +104,7 @@ One project uses **one** methodology version for its whole life. Different activ
 | Standard | Verra (VCS) |
 | Methodology | Improved Agricultural Land Management |
 | Methodology code / version label to create | `VM0042` / `2.2` (or `2.2-<suffix>`) |
-| Calculation module | `VM0042-V2.2-QA2-QA3` · module version 1.2.0 |
+| Calculation module | `VM0042-V2.2-QA2-QA3` · module version 1.3.0 |
 | Option text on the Calculation tab | VM0042 v2.2 - SOC measure & remeasure (QA2) + default-factor emissions (QA3) |
 | Suitable for | Cropland practice change — reduced / zero tillage, stopping residue burning, cover crops, nutrient management — with soil carbon measured twice and compared with control sites. |
 | Field / laboratory work | Yes — two sampling rounds, two depth layers, laboratory OC and soil mass; at least 3 control sites |
@@ -261,7 +261,7 @@ Outputs written by this module's code (some appear only for the approach or acti
 - Out of scope and treated as not applicable / zero (Q1 condition): enteric, manure, N-fixing species, woody biomass, leakage 8.4.2-8.4.4.
 
 ### 4.8 Reasons the calculation can be blocked
-`CONTROL_SITES_REQUIRED`, `CONTROL_SITE_REQUIRED`, `DEPTH_INCREMENTS_REQUIRED`, `INSUFFICIENT_SAMPLES`, `INVALID_INPUT` (risk rating outside 0–100; carbon content not one value between 0 and 1; woody answer not NO / NONE / YES), `INVALID_SOIL_PROFILE`, `MISSING_REQUIRED_INPUT` (including `PERIOD_RECORD_MISSING`, `PRECIPITATION_MISSING`, `OA_CARBON_MISSING` and `WOODY_DECLARATION_MISSING`), `NPR_UNACCEPTABLE` (risk rating above 60), `WOODY_BIOMASS_REMOVED` (shade trees cut or perennial crops uprooted).
+`CONTROL_SITES_REQUIRED`, `CONTROL_SITE_REQUIRED`, `DEPTH_INCREMENTS_REQUIRED`, `INSUFFICIENT_SAMPLES`, `INVALID_INPUT` (risk rating outside 0–100; carbon content not one value between 0 and 1; woody answer not NO / NONE / YES), `INVALID_SOIL_PROFILE`, `MISSING_REQUIRED_INPUT` (including `PERIOD_RECORD_MISSING`, `PRECIPITATION_MISSING`, `OA_CARBON_MISSING` and `WOODY_DECLARATION_MISSING`), `NPR_UNACCEPTABLE` (risk rating above 60), `SAMPLING_DEPTH_INSUFFICIENT` (a core sampled to less than 30 cm, or holding less soil than the stratum's reference soil mass: never extrapolated), `WOODY_BIOMASS_REMOVED` (shade trees cut or perennial crops uprooted).
 
 ---
 

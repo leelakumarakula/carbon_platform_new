@@ -301,6 +301,11 @@ def decide(db: Session, ctx: RequestContext, principal: Principal, submission_id
     if open_ca:
         raise Conflict("All corrective actions must be accepted or cancelled first.", error_code="OPEN_CORRECTIVE_ACTIONS",
                        details={"corrective_actions": [c.action_code for c in open_ca]})
+    if outcome == "VERIFIED" and (quantity is None or quantity <= 0):
+        # a VERIFIED decision states what was verified: without a positive quantity nothing could be issued, and the record would claim
+        # a verification that verified nothing (registry eligibility would only refuse it later, at submission)
+        raise ValidationFailed("A VERIFIED decision needs the VVB-stated verified quantity (a positive number) and its unit.",
+                               error_code="VERIFIED_QUANTITY_REQUIRED")
     if not data:
         raise ValidationFailed("The VVB verification report (PDF) is required.", error_code="REPORT_REQUIRED")
     doc = document_service.create_document(db, ctx, entity_type=SUBMISSION_ENTITY, entity_id=s.id, organization_id=org.id, environment=s.environment,
