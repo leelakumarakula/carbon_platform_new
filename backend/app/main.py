@@ -28,7 +28,7 @@ def create_app() -> FastAPI:
     app.add_middleware(  # outermost so CORS headers are added to every response, including errors
         CORSMiddleware, allow_origins=s.CORS_ORIGINS, allow_credentials=True,
         allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE"],
-        allow_headers=["Authorization", "Content-Type", "X-Request-ID"], expose_headers=["X-Request-ID"],
+        allow_headers=["Authorization", "Content-Type", "X-Request-ID", "Idempotency-Key"], expose_headers=["X-Request-ID"],
     )
     install_error_handlers(app)
     app.include_router(api_router, prefix=s.API_PREFIX)

@@ -40,7 +40,9 @@ DRAFT ─▶ REGISTERED ─▶ KYC_PENDING ─▶ KYC_VERIFIED ─▶ ACTIVE ⇄
   with Fernet and only the last 4 digits are ever returned. The verifier must not be the person who added the
   account. No payout is made in Phase 2; payouts are Phase 11.
 - **Self-service.** A user with `farmers.self` who is linked to the farmer (`link-user`) can see and edit only
-  their own record (`GET /farmers/me`). They cannot verify their own KYC.
+  their own record (`GET /farmers/me`). They cannot verify their own KYC, and they never change their own status
+  (`POST /farmers/{id}/status` needs `farmers.manage` in the farmer's organization — fix 29 Oct 2026: before, the farmer could
+  register and activate itself; only suspension / reinstatement was staff-only).
   Only an account holding the Farmer role **in the farmer's organization or farmer group** can be linked
   (`USER_NOT_FARMER` otherwise); the farmer's **Login** tab offers exactly those accounts
   (`GET /farmers/{id}/link-candidates`), and `link-user` accepts nothing else.

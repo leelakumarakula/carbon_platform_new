@@ -115,6 +115,7 @@ class CalcCtx:
     module: CalculationModule
     resolver: Resolver
     lab_values: list[str]
+    signer: Actor | None = None     # a second QA officer: approves what `qa` reviewed (approver ≠ QA reviewer, datasets and runs)
 
     @property
     def project_id(self) -> str:
@@ -126,13 +127,15 @@ class CalcCtx:
 
 
 def approve_dataset(client: TestClient, x: LabCtx) -> dict:
+    """Submit, QA (c.t.qa) and approve the period's dataset; the approver is a second QA officer (t.extra["signer"], set by
+    calc_scenario): whoever reviewed the dataset's QA may not approve it."""
     c = x.c
     ds = client.post(f"{MRV}/datasets", headers=c.mrv.headers, json={"monitoring_period_id": x.period["id"]}).json()
     assert client.post(f"{MRV}/datasets/{ds['id']}/submit", headers=c.mrv.headers, json={"reason": "collection complete"}).status_code == 200
     assert client.post(f"{MRV}/qa/{ds['id']}/start", headers=c.t.qa.headers).status_code == 200
     r = client.post(f"{MRV}/qa/{ds['id']}/complete", headers=c.t.qa.headers, json={"result": "PASS", "notes": "all checks pass"})
     assert r.status_code == 200, r.text
-    r = client.post(f"{MRV}/datasets/{ds['id']}/approve", headers=c.t.qa.headers, json={"reason": "dataset approved"})
+    r = client.post(f"{MRV}/datasets/{ds['id']}/approve", headers=c.t.extra["signer"].headers, json={"reason": "dataset approved"})
     assert r.status_code == 200, r.text
     return r.json()
 
@@ -173,10 +176,11 @@ def calc_scenario(db: Session, client: TestClient, lon: float, lat: float, id_nu
                 q = qa(client, x, res["id"], ack=code != "SOC")
                 assert q.status_code == 200 and q.json()["result"]["status"] == "APPROVED", q.text
                 results.append({**q.json()["result"], "rule_code": code, "sample_id": s["id"]})
+    signer = c.t.extra.setdefault("signer", staff(db, client, c.t.org, "QA_OFFICER"))
     ds = approve_dataset(client, x) if approve_ds else None
     analyst = staff(db, client, c.t.org, "CALCULATION_ANALYST")
     module = fixture_module(db, c.version_id)
-    return CalcCtx(x, analyst, c.t.qa, ds, results, module, resolver_for(module), list(values[:n]))
+    return CalcCtx(x, analyst, c.t.qa, ds, results, module, resolver_for(module), list(values[:n]), signer)
 
 
 def lab_results(client: TestClient, x: LabCtx) -> list[dict]:

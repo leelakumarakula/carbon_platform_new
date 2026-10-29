@@ -4,6 +4,12 @@ Client IP (Phase 12B D21): the TCP peer address, unless the peer is one of TRUST
 address that is not itself a trusted proxy. X-Forwarded-For from any other source is ignored, so a client cannot choose its own IP for
 rate limiting or audit. Uvicorn's own proxy-header handling is switched off (`--no-proxy-headers`) so this is the only interpretation.
 
+Request id: an X-Request-ID header is adopted (if well formed) only from a TRUSTED_PROXIES peer, by the same rule; otherwise a new
+one is generated, so a client cannot plant or collide ids in audit rows and logs.
+
+Unhandled errors: the 500 envelope is produced inside `RequestContextMiddleware` (not by Starlette's outermost error handler), so it
+carries X-Request-ID and the CORS / secure headers and is written to the access log like every other response.
+
 Body size (F6): `BodySizeLimitMiddleware` refuses a declared Content-Length above MAX_REQUEST_BYTES before reading, and counts the
 bytes actually received, so a chunked / undeclared body is cut off at the same limit (HTTP 413).
 """
@@ -45,6 +51,12 @@ def _is_trusted(addr: str, nets: tuple[ipaddress.IPv4Network | ipaddress.IPv6Net
     return any(ip in n for n in nets)
 
 
+def _peer_is_trusted(request: Request) -> bool:
+    peer = request.client.host if request.client else None
+    nets = _trusted_networks(tuple(get_settings().TRUSTED_PROXIES))
+    return peer is not None and bool(nets) and _is_trusted(peer, nets)
+
+
 def client_ip(request: Request) -> str | None:
     peer = request.client.host if request.client else None
     nets = _trusted_networks(tuple(get_settings().TRUSTED_PROXIES))
@@ -63,8 +75,9 @@ def client_ip(request: Request) -> str | None:
 
 class RequestContextMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next: Call) -> Response:
-        incoming = request.headers.get("X-Request-ID", "")
-        rid = incoming if 8 <= len(incoming) <= 64 and incoming.replace("-", "").isalnum() else str(uuid.uuid4())
+        incoming = request.headers.get("X-Request-ID", "") if _peer_is_trusted(request) else ""   # only our own proxies set it
+        bare = incoming.replace("-", "")
+        rid = incoming if 8 <= len(incoming) <= 64 and bare.isascii() and bare.isalnum() else str(uuid.uuid4())
         request.state.request_id = rid
         set_request_id(rid)
         request.state.user_id = None
@@ -72,8 +85,10 @@ class RequestContextMiddleware(BaseHTTPMiddleware):
         try:
             response = await call_next(request)
         except Exception:
-            _observe(request, 500, time.perf_counter() - started)
-            raise
+            # Handled here, inside CORS and this middleware, so the 500 gets the request id, CORS headers and an access-log row.
+            log.exception("Unhandled error (request_id=%s)", rid)
+            response = _secure_headers(request, envelope(request, 500, "INTERNAL_ERROR",
+                                                         "An unexpected error occurred. Please contact support with the request ID."))
         response.headers["X-Request-ID"] = rid
         elapsed = time.perf_counter() - started
         duration_ms = int(elapsed * 1000)
@@ -121,18 +136,21 @@ def _observe(request: Request, status: int, elapsed: float) -> None:
 
 class SecureHeadersMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next: Call) -> Response:
-        response = await call_next(request)
-        h = response.headers
-        h.setdefault("X-Content-Type-Options", "nosniff")
-        h.setdefault("X-Frame-Options", "DENY")
-        h.setdefault("Referrer-Policy", "no-referrer")
-        h.setdefault("Permissions-Policy", "geolocation=(), camera=(), microphone=()")
-        if request.url.path.startswith(get_settings().API_PREFIX):
-            h.setdefault("Cache-Control", "no-store")
-            h.setdefault("Content-Security-Policy", "default-src 'none'; frame-ancestors 'none'")
-        if get_settings().is_production:
-            h.setdefault("Strict-Transport-Security", "max-age=63072000; includeSubDomains")
-        return response
+        return _secure_headers(request, await call_next(request))
+
+
+def _secure_headers(request: Request, response: Response) -> Response:
+    h = response.headers
+    h.setdefault("X-Content-Type-Options", "nosniff")
+    h.setdefault("X-Frame-Options", "DENY")
+    h.setdefault("Referrer-Policy", "no-referrer")
+    h.setdefault("Permissions-Policy", "geolocation=(), camera=(), microphone=()")
+    if request.url.path.startswith(get_settings().API_PREFIX):
+        h.setdefault("Cache-Control", "no-store")
+        h.setdefault("Content-Security-Policy", "default-src 'none'; frame-ancestors 'none'")
+    if get_settings().is_production:
+        h.setdefault("Strict-Transport-Security", "max-age=63072000; includeSubDomains")
+    return response
 
 
 class LimitsMiddleware(BaseHTTPMiddleware):

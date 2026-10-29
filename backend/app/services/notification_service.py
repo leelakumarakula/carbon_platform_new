@@ -6,7 +6,7 @@ from sqlalchemy import func, select, update
 from sqlalchemy.orm import Session
 
 from app.core.errors import NotFound
-from app.models import Notification
+from app.models import Notification, Permission, RolePermission, User, UserRole
 from app.models.base import utcnow
 from app.repositories.common import paginate
 from app.schemas.common import PageParams
@@ -23,6 +23,19 @@ def notify(db: Session, recipients: Iterable[uuid.UUID | None], event_type: str,
                             entity_id=str(entity_id) if entity_id else None, link=link, status="SENT", sent_at=now))
         count += 1
     return count
+
+
+def org_holders(db: Session, organization_id: uuid.UUID | None, *codes: str) -> list[uuid.UUID]:
+    """ACTIVE users holding any of `codes` through a role granted IN `organization_id` (platform-wide grants are not recipients: an
+    organization's event goes to that organization's people). Deterministic order; empty when the organization is None."""
+    if organization_id is None or not codes:
+        return []
+    return list(db.scalars(select(UserRole.user_id).distinct()
+                           .join(User, User.id == UserRole.user_id)
+                           .join(RolePermission, RolePermission.role_id == UserRole.role_id)
+                           .join(Permission, Permission.id == RolePermission.permission_id)
+                           .where(UserRole.organization_id == organization_id, Permission.code.in_(codes), User.status == "ACTIVE")
+                           .order_by(UserRole.user_id)).all())
 
 
 def list_mine(db: Session, user_id: uuid.UUID, params: PageParams, unread_only: bool) -> tuple[list[Notification], int]:

@@ -335,7 +335,9 @@ def test_9a_guard_isolation_and_rbac(client: TestClient, db: Session) -> None:
     assert lg.balance(lg.org.id, second["id"])["available"] == 200 and lg.balance(lg.org.id)["available"] == 350
     # 16. the 9A cancellation / correction is refused once ledger activity exists
     cx = lg.reg.doc(f"{R}/submissions/{lg.sid}/documents", "REGISTRY_RESPONSE")
-    assert codes(lg.reg.post(f"{R}/issuances/{lg.issuance['id']}/cancel", {"reason": "TEST", "document_id": cx})) == "LEDGER_ACTIVITY_EXISTS"
+    canceller = staff(db, client, lg.reg.org, "REGISTRY_MANAGER")                                    # ≠ the issuance's recorder / confirmer
+    refused = lg.reg.post(f"{R}/issuances/{lg.issuance['id']}/cancel", {"reason": "TEST", "document_id": cx}, canceller)
+    assert codes(refused) == "LEDGER_ACTIVITY_EXISTS"
     corr = lg.reg.post(f"{R}/issuances/{lg.issuance['id']}/correct", {
         "external_issuance_id": lg.issuance["external_issuance_id"], "issuance_date": "2026-10-02", "quantity": 590, "unit": "TCU",
         "reason": "TEST", "document_id": lg.reg.doc(f"{R}/submissions/{lg.sid}/documents", "ISSUANCE_STATEMENT"),
@@ -343,7 +345,7 @@ def test_9a_guard_isolation_and_rbac(client: TestClient, db: Session) -> None:
     assert codes(corr) == "LEDGER_ACTIVITY_EXISTS"
     # 17. an untouched opened batch: the 9A cancellation proceeds with an explicit ISSUANCE_ADJUSTMENT; an unopened batch is unaffected
     cx2 = lg.reg.doc(f"{R}/submissions/{lg.sid}/documents", "REGISTRY_RESPONSE")
-    ok = lg.reg.post(f"{R}/issuances/{iss2['id']}/cancel", {"reason": "TEST: registry cancelled", "document_id": cx2})
+    ok = lg.reg.post(f"{R}/issuances/{iss2['id']}/cancel", {"reason": "TEST: registry cancelled", "document_id": cx2}, canceller)
     assert ok.status_code == 200, ok.text
     adj = db.scalars(select(CreditLedgerEntry).where(CreditLedgerEntry.batch_id == uuid.UUID(second["id"]),
                                                      CreditLedgerEntry.entry_type == "ISSUANCE_ADJUSTMENT")).one()
@@ -351,7 +353,7 @@ def test_9a_guard_isolation_and_rbac(client: TestClient, db: Session) -> None:
     assert lg.balance(lg.org.id, second["id"])["available"] == 0
     assert "CREDIT_ISSUANCE_ADJUSTMENT" in _actions(db, "CREDIT_ISSUANCE_ADJUSTMENT")
     cx3 = lg.reg.doc(f"{R}/submissions/{lg.sid}/documents", "REGISTRY_RESPONSE")
-    assert lg.reg.post(f"{R}/issuances/{iss3['id']}/cancel", {"reason": "TEST", "document_id": cx3}).status_code == 200
+    assert lg.reg.post(f"{R}/issuances/{iss3['id']}/cancel", {"reason": "TEST", "document_id": cx3}, canceller).status_code == 200
     # 23. RBAC and organization isolation
     other_cm = staff(db, client, make_org(db), "CREDIT_MANAGER")
     assert client.get(f"{C}/batches/{lg.batch['id']}/positions", headers=other_cm.headers).status_code == 404

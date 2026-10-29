@@ -184,7 +184,11 @@ def test_full_mrv_flow_qa_approval_and_immutability(client: TestClient, db: Sess
     assert client.post(f"{MRV}/qa/{ds['id']}/complete", headers=c.t.qa.headers, json={"result": "PASS",
                                                                                       "notes": "all checks pass"}).status_code == 200
     assert client.post(f"{MRV}/datasets/{ds['id']}/approve", headers=c.collector.headers, json={"reason": "collector"}).status_code == 403
-    r = client.post(f"{MRV}/datasets/{ds['id']}/approve", headers=c.t.qa.headers, json={"reason": "dataset approved"})
+    # the QA reviewer never approves what it reviewed (29 Oct fix): a second QA officer signs off
+    r = client.post(f"{MRV}/datasets/{ds['id']}/approve", headers=c.t.qa.headers, json={"reason": "own review"})
+    assert r.status_code == 403 and r.json()["error_code"] == "SEPARATION_OF_DUTIES"
+    r = client.post(f"{MRV}/datasets/{ds['id']}/approve", headers=staff(db, client, c.t.org, "QA_OFFICER").headers,
+                    json={"reason": "dataset approved"})
     assert r.json()["status"] == "APPROVED"
     assert client.get(f"{MRV}/monitoring-periods/{mp['id']}", headers=c.mrv.headers).json()["status"] == "APPROVED"
     assert client.get(f"{PR}/{pid}", headers=c.t.pm.headers).json()["status"] == "MONITORING"  # never CALCULATION in Phase 5

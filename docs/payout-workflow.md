@@ -26,7 +26,7 @@ person. Until a project has that approved configuration, settlement is refused a
 
 | Configuration | Content | Rules |
 |---|---|---|
-| Revenue-share version (`revenue_share_versions`) | `farmer_share_pct` (0 < x ≤ 100); `deduct_approved_costs`; `rounding_mode` (HALF_UP / HALF_EVEN / DOWN); effective from / to; `source_reference` (the agreement or clause) | DRAFT → IN_REVIEW → APPROVED → SUPERSEDED. Author holds `sharing.manage`; approver holds `sharing.approve` and is never the author. No field has a default. Values freeze once submitted, and an approved version can only become SUPERSEDED (trigger). Approving a new version supersedes the previous one. |
+| Revenue-share version (`revenue_share_versions`) | `farmer_share_pct` (0 < x ≤ 100); `deduct_approved_costs`; `rounding_mode` (HALF_UP / HALF_EVEN / DOWN); effective from / to; `source_reference` (the agreement or clause) | DRAFT → IN_REVIEW → APPROVED → SUPERSEDED. Author holds `sharing.manage`; approver holds `sharing.approve` and is never the author. No field has a default. Values freeze once submitted, and an approved version can only become SUPERSEDED (trigger). Approving a new version supersedes the previous one; approval locks the project row first, then the version and the APPROVED versions it supersedes, so two concurrent approvals never both end APPROVED (fix 29/10). |
 | Farm allocation (`farm_allocation_versions` + append-only `farm_allocation_lines`) | per project and monitoring period: one line per farm participation, with its `share_pct`; `basis_reference` | Every farm appears at most once, and only farms whose participation overlaps the period. The shares must total **exactly 100**, checked on submit. Same approval workflow and immutability as above. Acreage and tCO2e are never used automatically. |
 | Project costs (`project_costs`) | category, description, amount actually incurred, currency, date, optional period and reference, COST_EVIDENCE PDF | PENDING_APPROVAL → APPROVED / REJECTED. Approver holds `costs.approve`, is never the recorder, and needs the evidence. A correction is a new negative cost that references an approved cost. Costs are deducted only when the run's revenue-share version says so. |
 
@@ -70,6 +70,15 @@ redistributed silently.
 - Changed inputs always mean a new run; a calculated run's figures and snapshot never change (trigger).
 - A run becomes COMPLETED when every payout it owes is RECONCILED.
 
+### Project-level costs (fix 29/10)
+
+A period's own approved costs are always deducted by that period's run (when the revenue-share version deducts costs). **Project-level
+costs** (no monitoring period) are deducted only by a run whose calculation explicitly opts in —
+`POST /settlements/{id}/calculate` with `{"include_project_costs": true}` — and then exactly once: the run claims them (filtered unique
+index on active cost items) and a rejected / cancelled run frees them again. Without the opt-in they are never picked up implicitly by
+whichever period happens to be calculated first. The snapshot records `include_project_costs`, each cost's `scope` (PERIOD / PROJECT)
+and `project_level_costs_not_included`; opting in with a version that does not deduct costs is refused (`COSTS_NOT_DEDUCTED`).
+
 ## 4. Refunds after settlement (D10, D29)
 
 When a reversal is calculated:
@@ -105,12 +114,18 @@ There is no public webhook.
 
 `payout_transactions` is append-only and holds INITIATED, PAID, FAILED, UNCONFIRMED and STATUS_QUERIED entries.
 
+A payout reaching PAID (manual or provider-reported) notifies in-app its calculator and approver and the paying organization's
+`payouts.reconcile` / `payouts.approve` holders (`PAYOUT_PAID`). The (run, farmer) slot is freed by the dead statuses REJECTED / CANCELLED /
+FAILED (`payout_service.SLOT_FREEING`, formerly the misnamed `LIVE`).
+
 ## 6. Reconciliation (`payout_reconciliations`, append-only)
 
 `payouts.reconcile` reconciles a PAID payout against a bank statement line with RECONCILIATION_EVIDENCE. The reconciler is never the
 executor or the person who confirmed the payment.
 - **MATCHED** when the amount and currency are equal **and** the reference is equal. After an earlier EXCEPTION, a reference mismatch (but
-  never an amount mismatch) may be matched with a written resolution note.
+  never an amount mismatch) may be matched with a written resolution note **by a different reconciler** than any who recorded an
+  exception on that payout, with its own RECONCILIATION_EVIDENCE (fix 29/10). The person who raised an exception who tries to clear it
+  gets `SEPARATION_OF_DUTIES`; the audit row says `resolves_exception` and names the evidence.
 - **EXCEPTION** otherwise.
 - MATCHED → RECONCILED. When all owed payouts are RECONCILED, the run becomes COMPLETED.
 

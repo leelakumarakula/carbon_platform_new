@@ -63,12 +63,16 @@ def resolve(methodology_code: str, version_label: str, selected: str | None = No
     return next((m for m in found if m.code == selected), found[0] if found else None)
 
 
-def bind(module: CalculationModule | None, calculation_rules_version: int, version_readiness: str | None = None) -> CalculationModule | None:
+def bind(module: CalculationModule | None, calculation_rules_version: int, version_readiness: str | None = None,
+         approved_module_version: str | None = None) -> CalculationModule | None:
     """Pin a version-bound module (calculation_rules_version 0) to the selecting version's calculation-rule revision. When the
-    version's production readiness has been approved (methodology_versions.calculation_readiness), the bound module carries it."""
+    version's production readiness has been approved (methodology_versions.calculation_readiness) FOR THIS MODULE CODE VERSION
+    (calculation_readiness_module_version, recorded at approval), the bound module carries it. A changed module (e.g. VM0042 1.2.0 →
+    1.3.0) is NOT_PRODUCTION_READY until its readiness is approved again; an approval recorded without a module version (before
+    migration 0024) never matches."""
     if module is None or module.calculation_rules_version != 0:
         return module
     attrs: dict[str, object] = {"calculation_rules_version": calculation_rules_version}
-    if version_readiness == "PRODUCTION_READY":
+    if version_readiness == "PRODUCTION_READY" and approved_module_version is not None and approved_module_version == module.version:
         attrs["readiness"] = "PRODUCTION_READY"
     return type(f"{type(module).__name__}Bound", (type(module),), attrs)()

@@ -22,6 +22,7 @@ from typing import Any, ClassVar
 from app.calculation import framework as fw
 from app.calculation.framework import CalculationBlocked, CalculationContext, CalculationModule, Constant, Output, Step, Variable
 from app.calculation.library import stats
+from app.calculation.library.inputs import is_first_comparison, stratum_labels
 
 D0, D1 = Decimal(0), Decimal(1)
 T = "t CO2e"
@@ -90,6 +91,7 @@ CONSTANTS = (
     Constant("EF_NLEACH", "0.011", "t N2O-N/t N leached", "VM0047 v1.1 §9.1 (IPCC 2019 Table 11.3)"),
     Constant("UNC_ALLOWANCE", "0.10", "fraction", "VM0047 v1.1 Eq. 29 (- 0.10)"),
     Constant("NPR_MIN", "12", "%", "AFOLU Non-Permanence Risk Tool v5.0 §2.5.2 (minimum overall rating)"),
+    Constant("NPR_MAX", "60", "%", "AFOLU Non-Permanence Risk Tool v5.0 §2.5.3 (above 60 the project fails the risk analysis)"),
 )
 
 ASSUMPTIONS = (
@@ -101,14 +103,21 @@ ASSUMPTIONS = (
     "as a fraction; strata are combined by adding half-widths in quadrature; UNC = min(1, max(0, relative half-width - 0.10)). T is "
     "the two-tailed 90 % Student-t with n - 1 degrees of freedom.",
     "§8.5.2: no removals are credited when the 90 % half-width exceeds 100 % of the stock (CR_t = 0).",
-    "Eq. 33: dC(t - x) and UNC(t - x) come from the previous approved period; when it has no biomass sample (the census at t = 0), "
-    "dC(t - x) = 0.",
+    "Eq. 33: dC(t - x) and UNC(t - x) come from the previous approved period. dC(t - x) = 0 only at the first verification: the "
+    "previous approved period is the project's first monitoring period (the census at t = 0) and has no biomass sample in any "
+    "stratum. Otherwise a stratum without previous biomass samples blocks the run (PREVIOUS_STOCK_MISSING), so a stock already "
+    "credited is never credited again.",
     "Eq. 27: biomass subject to burning uses the previous period's mean biomass of the stratum (the current mean when there is none).",
     "Burning factors: the highest IPCC 2006 Table 2.5 forest factors (CH4 6.8, N2O 0.26 kg/t d.m.); VM0047 §9.1 cites a "
     "stationary-combustion table by mistake.",
     "Fertiliser: Frac_LEACH always applied (conservative); fertiliser N is recorded as mass x N content (Eqs. 17/18).",
     "Leakage is zero (§8.4). Buffer = max(rating, 12) % x the uncertainty-adjusted stock change of the interval (stock change only, "
-    "never negative); VCUs = removals - buffer, whole tonnes rounded down; a negative result is a REVERSAL.",
+    "never negative); VCUs = removals - buffer, whole tonnes rounded down; a negative result is a REVERSAL. A rating outside 0-100 % "
+    "or above 60 % (the project fails the risk analysis, NPRT §2.5.3) blocks the run.",
+    "Every stratum with a census population needs its area (the 50 units/ha census density limit, §4.3(3), is always checked); "
+    "conflicting root-to-shoot ratios (V47_ROOT_SHOOT) block the run (one value is used for all units).",
+    "Per-stratum outputs are named by the stratum code, or by a collision-free prefix of the stratum record id when it is not "
+    "available.",
     "GWPs: IPCC AR5 (VCS Standard v5.0 §3.14.4).",
 )
 
@@ -137,11 +146,13 @@ class _State:
     years: Decimal = D1
     root_shoot: Decimal = D0
     rs_seqs: tuple[int, ...] = ()
+    labels: dict[str, str] = field(default_factory=dict)
 
 
 class Vm0047V11Census(CalculationModule):
     code = "VM0047-V1.1-CENSUS"
-    version = "1.0.0"
+    # 1.1.0: previous stock required after the first verification, NPR range / > 60 check, area and R guards, stratum-code output names
+    version = "1.1.0"
     methodology_code = "VM0047"
     version_label = "1.1"
     calculation_rules_version = 0
@@ -202,8 +213,13 @@ class Vm0047V11Census(CalculationModule):
         for a in ctx.values("AREA"):
             if self._rec(a) in st.strata:
                 st.strata[self._rec(a)].area = Decimal(a.value)
+        no_area = sorted(s.record for s in st.strata.values() if s.area is None or s.area <= 0)
+        if no_area:
+            raise CalculationBlocked("MISSING_REQUIRED_INPUT", f"Stratum {', '.join(no_area[:5])} has a census population but no area, so the "
+                                     "census density limit of 50 planting units per hectare (VM0047 §4.3(3)) cannot be checked.",
+                                     {"variable": "AREA", "reason": "STRATUM_AREA_MISSING", "strata": no_area})
         for s in st.strata.values():
-            if s.area is not None and s.area > 0 and s.population > MAX_DENSITY * s.area:
+            if s.area is not None and s.population > MAX_DENSITY * s.area:
                 raise CalculationBlocked("DENSITY_EXCEEDED", f"Stratum {s.record}: {s.population} planting units on {s.area} ha exceeds "
                                          "50 per hectare (VM0047 §4.3(3)); use the area-based approach.", {"reason": "CENSUS_DENSITY"})
         for period, alive_var, agb_var in (("CURRENT", "ALIVE", "AGB"), ("PREVIOUS", "ALIVE_T0", "AGB_T0")):
@@ -237,7 +253,48 @@ class Vm0047V11Census(CalculationModule):
                 raise CalculationBlocked("INSUFFICIENT_SAMPLES", f"Stratum {s.record}: {c.n_sampled} sampled units ({len(c.agb_live)} alive); "
                                          "the uncertainty needs at least 2 live sampled units.", {"reason": "TOO_FEW_SAMPLES"})
         rs = ctx.values("ROOT_SHOOT")
-        st.root_shoot, st.rs_seqs = Decimal(rs[0].value), tuple(v.seq for v in rs)
+        ratios = sorted({Decimal(v.value) for v in rs})
+        if len(ratios) > 1:
+            raise CalculationBlocked("INCONSISTENT_INPUT", f"V47_ROOT_SHOOT has different values ({', '.join(fw.decimal_text(r) for r in ratios)}); "
+                                     "one root-to-shoot ratio is applied to every planting unit (Eq. 25).",
+                                     {"variable": "ROOT_SHOOT", "values": [fw.decimal_text(r) for r in ratios]})
+        if ratios[0] < 0:
+            raise CalculationBlocked("INVALID_INPUT", "The root-to-shoot ratio (V47_ROOT_SHOOT) cannot be negative.", {"variable": "ROOT_SHOOT"})
+        st.root_shoot, st.rs_seqs = ratios[0], tuple(v.seq for v in rs)
+        self._previous_required(ctx, st)
+        self._npr(ctx)
+        st.labels = stratum_labels([*ctx.values("N"), *ctx.values("AREA")], st.strata)
+
+    @staticmethod
+    def _previous_required(ctx: CalculationContext, st: _State) -> None:
+        """dC(t - x) = 0 is accepted only at the first verification (the previous period is the t = 0 census without samples)."""
+        missing = sorted(s.record for s in st.strata.values() if not s.camp["PREVIOUS"].n_sampled)
+        if not missing:
+            return
+        first = is_first_comparison(ctx.snapshot) and all(not s.camp["PREVIOUS"].n_sampled for s in st.strata.values())
+        if not first:
+            prev = ctx.snapshot.get("previous_period") or {}
+            raise CalculationBlocked("PREVIOUS_STOCK_MISSING", f"Stratum {', '.join(missing[:5])} has no sampled planting unit in the previous "
+                                     f"approved period (#{prev.get('number')}). Its stock there would be read as zero and the whole "
+                                     "cumulative stock credited again (VM0047 Eq. 33); only the first verification after the t = 0 census "
+                                     "(previous period #1, no samples) starts from zero.",
+                                     {"reason": "NO_PREVIOUS_BIOMASS", "strata": missing, "previous_period_number": prev.get("number")})
+
+    def _npr(self, ctx: CalculationContext) -> tuple[Decimal, tuple[int, ...]]:
+        """(rating applied to the buffer = max(mean rating, 12), input seqs) - NPRT §2.5.2 / §2.5.3."""
+        vals = ctx.values("NPR")
+        ratings = [Decimal(v.value) for v in vals]
+        if not ratings:
+            raise CalculationBlocked("MISSING_REQUIRED_INPUT", "No AFOLU non-permanence risk rating (V47_NPR).", {"variable": "NPR"})
+        if any(r < 0 or r > 100 for r in ratings):
+            raise CalculationBlocked("INVALID_INPUT", "The non-permanence risk rating (V47_NPR) must be between 0 and 100 %.",
+                                     {"variable": "NPR", "reason": "NPR_OUT_OF_RANGE"})
+        rated = sum(ratings, D0) / Decimal(len(ratings))
+        if rated > self._k(ctx, "NPR_MAX"):
+            raise CalculationBlocked("NPR_UNACCEPTABLE", f"The non-permanence risk rating is {fw.decimal_text(rated)} %: above 60 the project "
+                                     "fails the risk analysis and cannot be credited (AFOLU NPRT v5.0 §2.5.3).",
+                                     {"variable": "NPR", "rating": fw.decimal_text(rated)})
+        return max(self._k(ctx, "NPR_MIN"), rated), tuple(v.seq for v in vals)
 
     # ------------------------------------------------------------------ helpers
     def _carbon_per_unit(self, ctx: CalculationContext, agb_kg: list[Decimal]) -> list[Decimal]:
@@ -291,15 +348,16 @@ class Vm0047V11Census(CalculationModule):
     def calculate_project(self, ctx: CalculationContext) -> list[Output]:
         st, outs = self._state(ctx), []
         for rec, s in sorted(st.strata.items()):
+            lbl = st.labels[rec]
             c = s.camp["CURRENT"]
             m = Decimal(c.dead) / Decimal(c.n_sampled)
             cpu = stats.mean([x / self._k(ctx, "C_TO_CO2") for x in self._carbon_per_unit(ctx, c.agb_live)])     # t C per unit (Eq. 25)
             seqs = tuple(sorted(set(c.seqs) | set(st.rs_seqs)))
-            outs += [Output(f"MORTALITY_{rec[:8]}", "PROJECT", R_PRJ, m, "fraction", "STRATUM", rec, inputs=tuple(sorted(set(c.seqs)))),
-                     Output(f"C_PU_AVG_{rec[:8]}", "PROJECT", R_PRJ, cpu, "t C/planting unit", "STRATUM", rec,
+            outs += [Output(f"MORTALITY_{lbl}", "PROJECT", R_PRJ, m, "fraction", "STRATUM", rec, inputs=tuple(sorted(set(c.seqs)))),
+                     Output(f"C_PU_AVG_{lbl}", "PROJECT", R_PRJ, cpu, "t C/planting unit", "STRATUM", rec,
                             inputs=(*seqs, ctx.constant("CF").seq)),
-                     Output(f"C_WOODY_{rec[:8]}", "PROJECT", R_PRJ, s.population * (D1 - m) * cpu, "t C", "STRATUM", rec,     # Eq. 24
-                            inputs=(s.population_seq,) if s.population_seq else (), outputs=(f"MORTALITY_{rec[:8]}", f"C_PU_AVG_{rec[:8]}"))]
+                     Output(f"C_WOODY_{lbl}", "PROJECT", R_PRJ, s.population * (D1 - m) * cpu, "t C", "STRATUM", rec,     # Eq. 24
+                            inputs=(s.population_seq,) if s.population_seq else (), outputs=(f"MORTALITY_{lbl}", f"C_PU_AVG_{lbl}"))]
         return outs
 
     def calculate_emissions(self, ctx: CalculationContext) -> list[Output]:
@@ -360,15 +418,14 @@ class Vm0047V11Census(CalculationModule):
         if not eligible:
             stock_change = min(D0, stock_change)
         cr = stock_change - o("PE_TOTAL").value - o("LK_TOTAL").value                                         # Eq. 33
-        npr_vals = ctx.values("NPR")
-        npr = max(self._k(ctx, "NPR_MIN"), sum((Decimal(v.value) for v in npr_vals), D0) / Decimal(len(npr_vals)))
+        npr, npr_seqs = self._npr(ctx)
         buffer = max(D0, stock_change) * npr / 100
         years = st.years if st.years > 0 else D1
         lin = ("DC_WP_T", "DC_WP_T_X", "UNC_T", "UNC_T_X", "HALF_WIDTH_UNC_T")
         return [Output("STOCK_CHANGE_ADJ", "ADJUSTMENT", R_ADJ, stock_change, T, outputs=lin),
                 Output("CR_T", "ADJUSTMENT", R_ADJ, cr, T, outputs=("STOCK_CHANGE_ADJ", "PE_TOTAL", "LK_TOTAL")),
                 Output("CR_ANNUALIZED", "ADJUSTMENT", R_ADJ, cr / years, "t CO2e/yr", outputs=("CR_T",)),            # Eq. 34
-                Output("NPR_PCT", "ADJUSTMENT", R_ADJ, npr, "%", inputs=(*(v.seq for v in npr_vals), ctx.constant("NPR_MIN").seq)),
+                Output("NPR_PCT", "ADJUSTMENT", R_ADJ, npr, "%", inputs=(*npr_seqs, ctx.constant("NPR_MIN").seq, ctx.constant("NPR_MAX").seq)),
                 Output("BUFFER", "ADJUSTMENT", R_ADJ, buffer, T, outputs=("STOCK_CHANGE_ADJ", "NPR_PCT"))]
 
     def calculate_net_result(self, ctx: CalculationContext) -> list[Output]:

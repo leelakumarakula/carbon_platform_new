@@ -128,6 +128,24 @@ Lifecycle: REQUESTED → APPROVED → COMPLETED / REJECTED. Requester ≠ approv
 
 Completion needs the refund's payment reference plus a REFUND_EVIDENCE PDF (manual), or the provider's refund reference (TEST adapter).
 
+Provider refunds use the outbox rule (fix 29/10; dormant while only MANUAL is registered): order → payment → refund are locked and the
+refund re-checked (APPROVED) first; a `REFUND_ATTEMPT` marker (a `payment_events` row, unique per refund) and the
+`REFUND_PROVIDER_ATTEMPTED` audit row are committed; only then is the provider called, with the refund code as idempotency key. A
+concurrent completion is refused (`REFUND_IN_PROGRESS`). A provider error / timeout after the marker leaves the refund APPROVED
+(`REFUND_UNCONFIRMED`, audited `REFUND_PROVIDER_UNCONFIRMED`) and the provider is never called again automatically: the outcome is
+reconciled with the provider and the refund completed manually with its reference and REFUND_EVIDENCE.
+
+## Stuck orders and notifications (fix 29/10)
+
+- The order is COMPLETED in the transaction that delivers its last item, from TRANSFER_PENDING **or ATTENTION_REQUIRED**
+  (ORDER_MACHINE: ATTENTION_REQUIRED → COMPLETED).
+- `retry-transfer` resolves an ATTENTION_REQUIRED order only when an item is FAILED or RESERVED (it is requested again); with nothing to
+  deliver again it refuses with `NOTHING_TO_RETRY` (never TRANSFER_PENDING with nothing pending). An attention order whose items are all
+  DELIVERED is completed.
+- In-app notifications to the order people of both sides (the placer, buyer `orders.*` / `payments.record` holders, seller
+  `orders.*` / `payments.confirm` / `refunds.*` holders): `ORDER_PAID` (seller confirmed the payment), `ORDER_ITEM_DELIVERED`,
+  `ORDER_COMPLETED`.
+
 ## RBAC (D27, D28)
 
 | Role | Phase 10 permissions |

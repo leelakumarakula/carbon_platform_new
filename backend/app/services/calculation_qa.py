@@ -2,7 +2,6 @@
 value bounds exist only where the methodology module declares them (its validate_output), and those already block execution."""
 import json
 import uuid
-from collections import Counter
 from typing import Any
 
 from sqlalchemy.orm import Session
@@ -22,6 +21,7 @@ def _c(key: str, label: str, problems: list[str], warn: list[str] | None = None)
 
 
 def checks(db: Session, run: CalculationRun, reviewer_id: uuid.UUID | None, resolver: Resolver) -> list[dict[str, Any]]:
+    from app.services import calculation_inputs as ci
     from app.services import calculation_service as cs
     snapshot = json.loads(run.input_snapshot or "{}")
     out: list[dict[str, Any]] = []
@@ -41,14 +41,13 @@ def checks(db: Session, run: CalculationRun, reviewer_id: uuid.UUID | None, reso
     type_problems = [f"{r['variable']} {r['source_code']}" for r in rows
                      if r["variable"] in variables and variables[r["variable"]]["kind"] == "NUMBER" and r["value_kind"] != "NUMBER"]
     out.append(_c("input_types", "Numeric variables have numeric inputs (text results are never parsed)", type_problems))
-    keys = Counter((r["variable"], r["source_type"], r["source_id"]) for r in rows if r["source_id"])
-    roots = Counter((r["variable"], r["root_sample_id"]) for r in rows if r["source_type"] == "LAB_RESULT")
-    dups = [f"{k[0]} {k[2]}" for k, n in keys.items() if n > 1] + [f"{k[0]} root sample {k[1]}" for k, n in roots.items() if n > 1]
-    out.append(_c("no_duplicate_inputs", "No duplicate authoritative inputs (one result per root sample and rule)", dups))
+    dups = ci.duplicate_keys(rows)     # the same keys block the input freeze (DUPLICATE_INPUT); re-checked on the frozen snapshot
+    out.append(_c("no_duplicate_inputs", "No duplicate authoritative inputs (one result per root sample, rule and depth increment)", dups))
     from app.calculation.registry import bind
     module = bind(resolver(snapshot.get("methodology", {}).get("code", ""), snapshot.get("methodology", {}).get("version_label", "")),
                   int(snapshot.get("methodology", {}).get("calculation_rules_version") or 0),
-                  snapshot.get("methodology", {}).get("calculation_readiness"))
+                  snapshot.get("methodology", {}).get("calculation_readiness"),
+                  snapshot.get("methodology", {}).get("calculation_readiness_module_version"))
     mod_problems = []
     if module is None:
         mod_problems.append("no calculation module is registered for this methodology version")

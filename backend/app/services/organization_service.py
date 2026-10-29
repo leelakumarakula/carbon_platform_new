@@ -12,6 +12,7 @@ from app.schemas.common import PageParams
 from app.schemas.identity import MemberAdd, OrganizationCreate, OrganizationUpdate
 from app.security.permissions import P
 from app.security.principal import Principal
+from app.security.scoping import org_predicate
 from app.services import user_service
 from app.services.workflows import ORGANIZATION_MACHINE
 
@@ -26,7 +27,9 @@ def get_visible(db: Session, principal: Principal, org_id: uuid.UUID, code: str 
 
 
 def list_orgs(db: Session, principal: Principal, params: PageParams, **filters: object) -> tuple[list[Organization], int]:
-    return repo.list_organizations(db, params, scope=principal.scope_for(P.ORGANIZATIONS_READ), **filters)  # type: ignore[arg-type]
+    principal.scope_for(P.ORGANIZATIONS_READ)   # raises PermissionDenied without any organizations.read grant
+    return repo.list_organizations(db, params, visible=org_predicate(principal, (P.ORGANIZATIONS_READ,), Organization.id),
+                                   **filters)  # type: ignore[arg-type]
 
 
 def create(db: Session, ctx: RequestContext, principal: Principal, data: OrganizationCreate,
@@ -113,9 +116,19 @@ def remove_member(db: Session, ctx: RequestContext, principal: Principal, org_id
         raise NotFound("Membership not found.", error_code="MEMBERSHIP_NOT_FOUND")
     if user_id == principal.user_id:
         raise Conflict("You cannot remove yourself from an organization.", error_code="SELF_MEMBERSHIP_CHANGE")
+    # Removal revokes the user's roles here, so it takes the same checks as editing the account and revoking those roles
+    # (user_service): users.manage over every organization of the user with no privileged permission the caller lacks
+    # (ROLE_ESCALATION_BLOCKED), and users.assign_roles in this organization when there are roles to revoke.
+    user = repo.get_user(db, user_id)
+    if user is None or user.status == UserStatus.SYSTEM.value:
+        raise NotFound("Membership not found.", error_code="MEMBERSHIP_NOT_FOUND")
+    user_service.require_manage(principal, user)
     # Leaving an organization ends every role held inside it.
     grants = db.query(UserRole).filter(UserRole.user_id == user_id, UserRole.organization_id == org.id).all()
+    if grants:
+        principal.require_in_org(P.USERS_ASSIGN_ROLES, org.id)
     for g in grants:
+        user_service.guard_escalation(principal, g.role, org.id)
         record(db, ctx, AuditAction.ROLE_REVOKED, "user", user_id,
                {"role_id": g.role_id, "organization_id": org.id, "user_role_id": g.id}, None,
                "membership removed", organization_id=org.id)

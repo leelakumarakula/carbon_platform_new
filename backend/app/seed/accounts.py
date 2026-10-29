@@ -89,6 +89,7 @@ DEMO_USERS = [
     ("mrv", "Demo MRV Manager", "DEMO-DEV-A", "MRV_MANAGER"),
     ("analyst", "Demo Calculation Analyst", "DEMO-DEV-A", "CALCULATION_ANALYST"),
     ("qa", "Demo QA Officer", "DEMO-DEV-A", "QA_OFFICER"),
+    ("qa2", "Demo QA Approver", "DEMO-DEV-A", "QA_OFFICER"),     # second QA officer: approves what qa reviewed (approver ≠ QA reviewer)
     ("registry", "Demo Registry Manager", "DEMO-DEV-A", "REGISTRY_MANAGER"),
     ("credits", "Demo Credit Manager", "DEMO-DEV-A", "CREDIT_MANAGER"),
     ("finance", "Demo Finance Manager", "DEMO-DEV-A", "FINANCE_MANAGER"),

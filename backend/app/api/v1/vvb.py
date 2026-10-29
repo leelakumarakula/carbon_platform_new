@@ -51,7 +51,8 @@ def list_assignments(principal: VvbReader, db: DB) -> list[AssignmentOut]:
 @router.get("/assignments/{assignment_id}", response_model=AssignmentOut)
 def get_assignment(assignment_id: uuid.UUID, principal: VvbReader, db: DB, ctx: Ctx) -> AssignmentOut:
     a, _, _ = va.vvb_assignment(db, principal, assignment_id, P.VERIFICATION_VVB_READ)
-    vs.refresh(db, ctx, a)
+    if vs.refresh(db, ctx, a):
+        db.commit()                                             # the lazy invalidation only (read-time re-check, C6)
     return vm.assignment_out(db, principal, a, vvb=True)
 
 

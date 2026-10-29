@@ -11,12 +11,13 @@ from app.audit.service import AuditAction, record
 from app.core.context import RequestContext
 from app.core.errors import NotFound, PermissionDenied
 from app.models import AuditLog, LoginAudit, SecurityEvent, User, UserSession, WorkflowEvent
-from app.models.base import utcnow
+from app.models.base import Environment, utcnow
 from app.repositories.common import paginate
 from app.schemas.audit import AuditLogOut, LoginAuditOut, SecurityEventOut, SessionOut, WorkflowEventOut
 from app.schemas.common import PageParams
 from app.security.permissions import P
 from app.security.principal import Principal
+from app.security.scoping import org_predicate
 from app.services.auth_service import _revoke_session
 
 
@@ -38,18 +39,22 @@ def _env_users(principal: Principal) -> Select[Any]:
 
 
 def _in_env(col: Any, principal: Principal) -> ColumnElement[bool]:
-    """Rows of a user of the caller's environment, or system rows without a user (not tied to an environment)."""
-    return or_(col.is_(None), col.in_(_env_users(principal)))
+    """Rows of a user of the caller's environment. Rows without a user (sign-in attempts for an unknown email, rate-limit events
+    carrying the email typed, system rows) are not tied to an environment and may hold LIVE people's data: LIVE callers only."""
+    own = col.in_(_env_users(principal))
+    return or_(col.is_(None), own) if principal.user.environment == Environment.LIVE.value else own
 
 
 def list_audit(db: Session, principal: Principal, params: PageParams, *, entity_type: str | None,
                entity_id: str | None, action: str | None, user_id: uuid.UUID | None,
                organization_id: uuid.UUID | None, start: datetime | None, end: datetime | None
                ) -> tuple[list[AuditLogOut], int]:
-    scope = principal.scope_for(P.AUDIT_READ)
+    scope = principal.scope_for(P.AUDIT_READ)   # raises PermissionDenied without any audit.read grant
     stmt = select(AuditLog)
     if scope is not None:
-        cond: ColumnElement[bool] = AuditLog.organization_id.in_(list(scope))
+        # org_predicate: a subquery for a platform caller, never an IN list of every organization of the environment (SQL Server
+        # allows 2100 parameters per statement).
+        cond: ColumnElement[bool] = org_predicate(principal, (P.AUDIT_READ,), AuditLog.organization_id)
         if principal.has_platform(P.AUDIT_READ):   # rows without an organization (logins, user admin) of the caller's environment
             cond = or_(cond, and_(AuditLog.organization_id.is_(None), _in_env(AuditLog.user_id, principal)))
         stmt = stmt.where(cond)

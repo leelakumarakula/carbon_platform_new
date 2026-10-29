@@ -56,7 +56,7 @@ def test_unexpected_module_exception_is_a_calculation_error() -> None:
     module = type("Boom", (FixtureModule,), {"methodology_code": "TEST", "version_label": "1", "calculate_removals": _boom})()
     with pytest.raises(fw.CalculationBlocked) as e:
         fw.execute(module, {"inputs": rows})
-    assert e.value.code == "CALCULATION_ERROR" and "KeyError" in e.value.message and "T_AREA_MISSING" in e.value.message
+    assert e.value.code == "CALCULATION_ERROR" and "KeyError" in e.value.message and "T_AREA_MISSING" not in e.value.message  # internals logged, not shown
     assert e.value.details == {"reason": "MODULE_EXCEPTION", "exception": "KeyError"}
     # a malformed frozen value is refused the same way (never an unhandled server error)
     bad = [dict(r, value="not-a-number") if r["seq"] == 1 else r for r in rows]
@@ -111,10 +111,11 @@ def test_revoked_readiness_module_errors_and_immutable_calculation_documents(cli
     cs.complete_qa(db, qctx, q, run.id, "PASS", "TEST checks pass", resolver=prod)
     production(True)
     with pytest.raises(Conflict) as e:
-        cs.approve(db, qctx, q, run.id, "TEST approved")
+        cs.approve(db, *as_principal(db, k.signer)[::-1], run.id, "TEST approved")
     production(False)
     assert e.value.error_code == "NOT_PRODUCTION_READY" and e.value.details["reason"] == "READINESS_REVOKED"
-    run = cs.approve(db, qctx, q, run.id, "TEST approved")
+    s_, sctx = as_principal(db, k.signer)                                   # approver ≠ QA reviewer
+    run = cs.approve(db, sctx, s_, run.id, "TEST approved")
     production(True)
     blockers, _, _ = cr.evaluate(db, run.monitoring_period_id, run)
     production(False)
@@ -218,18 +219,18 @@ def test_field_records_frozen_outside_collection_and_lab_results_follow_correcti
     assert row is not None
     row.status = "RETURNED"
     db.flush()
-    r = client.post(approve, headers=c.t.qa.headers, json={"reason": "dataset approved"})
+    r = client.post(approve, headers=k.signer.headers, json={"reason": "dataset approved"})
     assert r.status_code == 409 and r.json()["error_code"] == "SNAPSHOT_OUT_OF_DATE"
     row.status = "ACCEPTED"
     ev = db.scalars(select(MrvEvidence).where(MrvEvidence.entity_id == uuid.UUID(corr["id"]))).first()
     assert ev is not None
     kept, ev.status = ev.status, "REJECTED"
     db.flush()
-    r = client.post(approve, headers=c.t.qa.headers, json={"reason": "dataset approved"})
+    r = client.post(approve, headers=k.signer.headers, json={"reason": "dataset approved"})
     assert r.status_code == 409 and r.json()["error_code"] == "QA_CHECKS_FAILED" and "evidence" in r.json()["details"]["failed"]
     ev.status = kept
     db.flush()
-    assert client.post(approve, headers=c.t.qa.headers, json={"reason": "dataset approved"}).status_code == 200
+    assert client.post(approve, headers=k.signer.headers, json={"reason": "dataset approved"}).status_code == 200
 
     # A3: the approved results of the superseded version follow the accepted correction (no MISSING_APPROVED_LAB_RESULT)
     p, mp = db.get(Project, uuid.UUID(k.project_id)), db.get(MonitoringPeriod, uuid.UUID(k.period_id))

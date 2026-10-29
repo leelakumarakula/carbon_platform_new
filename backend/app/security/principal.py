@@ -8,7 +8,9 @@ A platform-wide grant reaches only the organisations of the caller's own environ
 LIVE records, and the reverse), and grants inside an organisation that is not ACTIVE are ignored.
 """
 import uuid
+from collections.abc import Iterable, Iterator, Set
 from dataclasses import dataclass, field
+from typing import Any
 
 from sqlalchemy import or_, select
 from sqlalchemy.orm import Session
@@ -32,9 +34,10 @@ class Principal:
     session_id: uuid.UUID | None
     grants: tuple[Grant, ...]
     member_organization_ids: frozenset[uuid.UUID] = field(default_factory=frozenset)
-    # Every organisation of the caller's environment (any status): the reach of a platform-wide grant.
-    # None only for synthetic principals built in code without environment data (no environment restriction).
-    environment_organization_ids: frozenset[uuid.UUID] | None = None
+    # Every organisation of the caller's environment (any status): the reach of a platform-wide grant. A request principal gets
+    # an `EnvironmentOrganizations` (read on demand, not per request); None only for synthetic principals built in code without
+    # environment data (no environment restriction).
+    environment_organization_ids: Set[uuid.UUID] | None = None
 
     @property
     def user_id(self) -> uuid.UUID:
@@ -58,7 +61,7 @@ class Principal:
         """True if the organisation belongs to the caller's environment (the reach of a platform-wide grant)."""
         return self.environment_organization_ids is None or organization_id in self.environment_organization_ids
 
-    def scope_for(self, code: str) -> frozenset[uuid.UUID] | None:
+    def scope_for(self, code: str) -> Set[uuid.UUID] | None:
         if self.has_platform(code):
             return self.environment_organization_ids  # the caller's environment only, never "every organisation"
         orgs = frozenset(g.organization_id for g in self.grants if code in g.permissions and g.organization_id)
@@ -76,6 +79,47 @@ class Principal:
         if not self.can_in_org(code, organization_id):
             raise PermissionDenied(details={"required_permission": code,
                                             "organization_id": str(organization_id) if organization_id else None})
+
+
+class EnvironmentOrganizations(Set[uuid.UUID]):
+    """The ids of every organisation of one environment, read only when needed: a membership test is one primary-key lookup
+    (cached), and the full id list is loaded on first iteration only. Semantically the same set `load_principal` used to load on
+    every request. SQL listings should not iterate it (an IN list of every organisation breaks SQL Server's 2100-parameter limit):
+    they use `security.scoping.org_predicate`, which filters with a subquery on the environment instead."""
+
+    def __init__(self, db: Session, environment: str) -> None:
+        self._db, self.environment = db, environment
+        self._ids: frozenset[uuid.UUID] | None = None
+        self._known: dict[Any, bool] = {}
+
+    def _all(self) -> frozenset[uuid.UUID]:
+        if self._ids is None:
+            with self._db.no_autoflush:
+                self._ids = frozenset(self._db.scalars(select(Organization.id).where(Organization.environment == self.environment)))
+        return self._ids
+
+    def __contains__(self, organization_id: object) -> bool:
+        if self._ids is not None:
+            return organization_id in self._ids
+        if organization_id not in self._known:
+            if not isinstance(organization_id, uuid.UUID):
+                return False
+            with self._db.no_autoflush:
+                env = self._db.scalar(select(Organization.environment).where(Organization.id == organization_id))
+            self._known[organization_id] = env == self.environment
+        return self._known[organization_id]
+
+    def __iter__(self) -> Iterator[uuid.UUID]:
+        return iter(self._all())
+
+    def __len__(self) -> int:
+        return len(self._all())
+
+    @classmethod
+    def _from_iterable(cls, it: Iterable[uuid.UUID]) -> frozenset[uuid.UUID]:   # set operators (&, |, -) return a plain frozenset
+        return frozenset(it)
+
+    __hash__ = object.__hash__   # keeps Principal (a frozen dataclass) hashable
 
 
 def load_grants(db: Session, user_id: uuid.UUID) -> tuple[Grant, ...]:
@@ -99,6 +143,5 @@ def load_grants(db: Session, user_id: uuid.UUID) -> tuple[Grant, ...]:
 
 def load_principal(db: Session, user: User, session_id: uuid.UUID | None) -> Principal:
     orgs = db.scalars(select(OrganizationUser.organization_id).where(OrganizationUser.user_id == user.id)).all()
-    env_orgs = db.scalars(select(Organization.id).where(Organization.environment == user.environment)).all()
-    return Principal(user=user, session_id=session_id, grants=load_grants(db, user.id),
-                     member_organization_ids=frozenset(orgs), environment_organization_ids=frozenset(env_orgs))
+    return Principal(user=user, session_id=session_id, grants=load_grants(db, user.id), member_organization_ids=frozenset(orgs),
+                     environment_organization_ids=EnvironmentOrganizations(db, user.environment))

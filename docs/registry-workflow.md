@@ -147,6 +147,26 @@ The snapshot is canonical JSON plus SHA-256, fixed by a trigger once FROZEN. It 
 - **Cancellation:** records the registry's cancellation with evidence; the batches become CANCELLED.
 - **No one row per credit:** a batch and its serial ranges represent the registry's blocks.
 
+## Concurrency, superseded sources and cancellation (fix 29/10)
+
+- Every submission state change (freeze, submit, record submitted, record query / response, withdraw, cancel, reconcile) locks the
+  submission row WITH (UPDLOCK, HOLDLOCK, ROWLOCK) and re-checks the status under the lock: two concurrent sends never both call the
+  registry adapter (the second finds SUBMITTING / SUBMITTED).
+- The lazy source re-check (`check_source`, `current_decision`) never commits; a write runs it first, commits it alone, then locks.
+  The SOURCE_SUPERSEDED flag is written once (checked under the submission lock).
+- **Issuance on a superseded decision is refused** (`SOURCE_SUPERSEDED`): recording and confirming an issuance lock the submission and
+  then the VVB decision row, and require it to be the period's CURRENT VERIFIED decision with its verified package intact. A RECORDED
+  issuance whose decision is superseded afterwards cannot be confirmed; void it, and correct / cancel through the registry with evidence.
+  A correction of an already CONFIRMED issuance (the registry's corrected facts) stays possible on a superseded source, but never above
+  the quantity it corrects.
+- Record, confirm, void, cancel and correct of one submission are serialized on the submission row.
+- **Cancellation needs a second person**: the registry's cancellation of a confirmed issuance is recorded by a `registry.manage` holder
+  who neither recorded nor confirmed that issuance (`SEPARATION_OF_DUTIES`).
+- The ledger guard locks the batch's openings and OPEN positions before it checks them (see credit-ledger-workflow), so no reservation
+  or transfer can slip in between the check and the ISSUANCE_ADJUSTMENT.
+- Confirming an issuance notifies (in-app) its recorder and the project organization's `registry.manage` / `credits.manage` holders
+  (`CREDIT_ISSUANCE_CONFIRMED`).
+
 ## Recalculation after verification or issuance (D12)
 
 | When | Effect |

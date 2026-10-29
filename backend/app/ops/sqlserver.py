@@ -56,6 +56,19 @@ def protected_names() -> set[str]:
     return names
 
 
+def sql_string(value: str) -> str:
+    """A T-SQL Unicode string literal: N'...' with embedded quotes doubled. Control characters (NUL, newlines, ...) are refused:
+    no legitimate path or logical file name holds one."""
+    if any(ord(ch) < 32 for ch in value):
+        raise UnsafeTarget(f"{value!r} contains control characters")
+    return "N'" + value.replace("'", "''") + "'"
+
+
+def backup_source(destination: str) -> str:
+    """`URL = N'...'` for an s3:// object, `DISK = N'...'` for a server-side file; the path is always an escaped literal."""
+    return f"{'URL' if destination.startswith('s3://') else 'DISK'} = {sql_string(destination)}"
+
+
 def check_scratch(name: str) -> str:
     """The only database name a drill may create, overwrite or drop."""
     check_name(name)
@@ -135,9 +148,9 @@ def backup_sql(database: str, kind: str, destination: str, *, copy_only: bool, c
     check_name(database)
     if kind not in BACKUP_TYPES:
         raise ValueError(f"backup type must be one of {sorted(BACKUP_TYPES)}")
-    target = f"URL = N'{destination}'" if destination.startswith("s3://") else f"DISK = N'{destination}'"
     if "'" in destination:
         raise UnsafeTarget("backup destination must not contain quotes")
+    target = backup_source(destination)
     opts = ["CHECKSUM", "COMPRESSION", "FORMAT", "INIT"]
     if kind == "diff":
         opts.insert(0, "DIFFERENTIAL")
@@ -188,23 +201,29 @@ def backup(database: str, kind: str = "full", *, destination: str | None = None,
 
 
 def verify_backup(eng: Engine, destination: str) -> None:
-    src = f"URL = N'{destination}'" if destination.startswith("s3://") else f"DISK = N'{destination}'"
-    run(eng, f"RESTORE VERIFYONLY FROM {src} WITH CHECKSUM")
+    run(eng, f"RESTORE VERIFYONLY FROM {backup_source(destination)} WITH CHECKSUM")
 
 
 def restore_to_scratch(eng: Engine, destination: str, scratch: str) -> None:
     """Restore a backup into the scratch database only (never over another database)."""
     check_scratch(scratch)
-    src = f"URL = N'{destination}'" if destination.startswith("s3://") else f"DISK = N'{destination}'"
+    src = backup_source(destination)   # --from-backup is operator input: always an escaped literal
     with eng.connect() as c:
-        files = c.execute(text(f"RESTORE FILELISTONLY FROM {src}")).all()
+        files = c.exec_driver_sql(f"RESTORE FILELISTONLY FROM {src}").all()   # driver SQL: no ':name' bind parsing of the path
         data_dir = str(c.execute(text("SELECT CAST(SERVERPROPERTY('InstanceDefaultDataPath') AS nvarchar(400))")).scalar()).rstrip("\\/")
+    run(eng, restore_sql(scratch, src, [(str(f.LogicalName), str(f.Type)) for f in files], data_dir, replace=exists(eng, scratch)))
+
+
+def restore_sql(scratch: str, src: str, files: list[tuple[str, str]], data_dir: str, *, replace: bool) -> str:
+    """RESTORE ... WITH MOVE for every file of the backup. The logical names come from the backup file itself (untrusted): they and
+    the target paths are escaped literals; the database name is a checked scratch identifier in brackets."""
+    check_scratch(scratch)
     moves = []
-    for i, f in enumerate(files):
-        ext = "ldf" if str(f.Type).upper() == "L" else "mdf" if i == 0 else "ndf"
-        moves.append(f"MOVE N'{f.LogicalName}' TO N'{data_dir}\\{scratch}_{i}.{ext}'")
-    replace = ", REPLACE" if exists(eng, scratch) else ""
-    run(eng, f"RESTORE DATABASE [{scratch}] FROM {src} WITH {', '.join(moves)}, CHECKSUM, RECOVERY{replace}")
+    for i, (logical, kind) in enumerate(files):
+        ext = "ldf" if kind.upper() == "L" else "mdf" if i == 0 else "ndf"
+        target = data_dir + "\\" + f"{scratch}_{i}.{ext}"
+        moves.append(f"MOVE {sql_string(logical)} TO {sql_string(target)}")
+    return f"RESTORE DATABASE [{scratch}] FROM {src} WITH {', '.join(moves)}, CHECKSUM, RECOVERY{', REPLACE' if replace else ''}"
 
 
 def drop_scratch(eng: Engine, scratch: str) -> None:
@@ -218,7 +237,7 @@ def delete_backup_file(eng: Engine, path: str) -> None:
     """Removes a LOCAL drill backup file written by SQL Server (the service account owns it)."""
     if path.startswith("s3://") or "'" in path or not path.lower().endswith(".bak"):
         raise UnsafeTarget("only local .bak files created by a drill are deleted here")
-    run(eng, f"EXEC master.sys.xp_delete_files N'{path}'")
+    run(eng, f"EXEC master.sys.xp_delete_files {sql_string(path)}")
 
 
 def backup_freshness(eng: Engine, database: str) -> dict[str, float | None]:

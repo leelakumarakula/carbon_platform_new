@@ -3,6 +3,12 @@
 Every methodology the platform can calculate, with **all of its rules exactly as built into the code** (`backend/app/calculation/modules/`). Generated from the registered calculation modules — when a module changes, regenerate this document.
 
 > **Status of every module: NOT PRODUCTION READY.** Each module runs in development and testing; in production it is blocked until a methodology expert has checked it against the official methodology text and the readiness is approved on the version's Calculation tab (ms1 *Request production readiness* → ms2 *Approve*). Interpretations the code makes are listed under each module for that review.
+>
+> **Readiness is approved for one module code version** (since 29 Oct 2026, migration 0024): the approval records the module's
+> version (e.g. VM0042 `1.2.0`) in `methodology_versions.calculation_readiness_module_version`, and the version counts as
+> production-ready only while the registered module has exactly that version. A module code change (1.2.0 → 1.3.0) makes it
+> NOT_PRODUCTION_READY until readiness is requested and approved again. Approvals made before 0024 recorded no module version: the
+> migration reset them to NOT_PRODUCTION_READY. Approval also needs the version to be still APPROVED (`READINESS_NOT_APPLICABLE`).
 
 ## Contents
 1. [How methodologies work in the platform](#1-how-methodologies-work-in-the-platform)
@@ -30,9 +36,14 @@ Every methodology the platform can calculate, with **all of its rules exactly as
 | Item | What it is | Where |
 |---|---|---|
 | **Methodology** | Code (e.g. `VM0042`), name, one standard, the activities it covers | Methodologies → Add a methodology |
-| **Version** | Label (e.g. `2.2`), effective dates, source; status Draft → In review → Approved (→ Superseded / Retired) | Methodology → New draft version |
+| **Version** | Label (e.g. `2.2`), effective dates, source; status Draft → In review → Approved (→ Superseded / Retired). A version locked by a non-closed project cannot be retired (`VERSION_IN_USE`); supersede it instead | Methodology → New draft version |
 | **Calculation module** | The code that implements the version's equations; one per version, chosen while the version is a Draft | Version → Calculation tab |
 | **Project lock** | A project is evaluated, recommended and confirmed on exactly one approved version; that version is locked | Project → Methodology tab |
+
+**Who manages the catalog:** creating, editing, submitting, approving, retiring versions and deciding readiness need a
+**platform-wide** grant of `methodologies.manage` / `methodologies.approve` (the Methodology Specialist role); an
+organization-scoped grant of the same permission is refused, and a DEMO account never changes a LIVE entry (or the reverse;
+`ENVIRONMENT_MISMATCH`).
 
 **Matching rule:** a module is offered only when the methodology **code is exactly** the module's code and the **version label is the module's label or that label plus a suffix** (`1.0`, `1.0-IT-A3`, `2.2-02`). This lets one official version (e.g. GS402 1.0) be set up once per module.
 
@@ -104,7 +115,7 @@ One project uses **one** methodology version for its whole life. Different activ
 | Standard | Verra (VCS) |
 | Methodology | Improved Agricultural Land Management |
 | Methodology code / version label to create | `VM0042` / `2.2` (or `2.2-<suffix>`) |
-| Calculation module | `VM0042-V2.2-QA2-QA3` · module version 1.3.0 |
+| Calculation module | `VM0042-V2.2-QA2-QA3` · module version 1.4.0 |
 | Option text on the Calculation tab | VM0042 v2.2 - SOC measure & remeasure (QA2) + default-factor emissions (QA3) |
 | Suitable for | Cropland practice change — reduced / zero tillage, stopping residue burning, cover crops, nutrient management — with soil carbon measured twice and compared with control sites. |
 | Field / laboratory work | Yes — two sampling rounds, two depth layers, laboratory OC and soil mass; at least 3 control sites |
@@ -256,12 +267,19 @@ Outputs written by this module's code (some appear only for the approach or acti
 - Cumulative project stock change for the I(dCO2_wp) switch is taken as the change since the earlier campaign of this comparison (equal to the change since the project start at the first verification).
 - Baseline emissions per farm = mean annual activity of the BASELINE-phase records (t=-1..-3) x years in the reporting period; project emissions = PROJECT/MONITORING-phase records observed in the reporting period. A farm and source with baseline records but no record in the reporting period blocks the run (a missing record is never read as zero, which would credit a cut that was not monitored); record 0 when the source was not used.
 - Buffer: the AFOLU non-permanence risk rating is applied as max(rating, 12) (NPR Procedure v5.0 §2.5.2); a rating above 60 blocks the run (§2.5.3), as does a rating below 0 or above 100.
-- Leakage 8.4.1 (Eq. 33): LE_OA = sum over farms of imported mass (t) x carbon content (t C/t) x 0.12 x 44/12, from the V42_OA_IMPORTED records of the reporting period. The whole imported mass is counted, also when only part of it is additional to the look-back (conservative). Exempt amendments (8.4.1 cases 1-3) are not recorded under V42_OA_IMPORTED. A farm with imported mass needs exactly one carbon content for the period. Versions set up before these rules existed report zero leakage.
+- Leakage 8.4.1 (Eq. 33): LE_OA = sum over farms of imported mass (t) x carbon content (t C/t) x 0.12 x 44/12, from the V42_OA_IMPORTED records of the reporting period. The whole imported mass is counted, also when only part of it is additional to the look-back (conservative). Exempt amendments (8.4.1 cases 1-3) are not recorded under V42_OA_IMPORTED. A farm with imported mass needs exactly one carbon content for the period. A farm whose organic fertiliser N (V42_FON) in the reporting period is above its look-back annual mean x years needs a V42_OA_IMPORTED record for the period (0 when the amendment was made on the farm), else the run is blocked. Versions set up before these rules existed report zero leakage.
 - Woody biomass (Eqs. 48-51) is not quantified, so it may be left out only while it does not decrease: when the version carries V42_WOODY, every project farm needs a NO or NONE declaration for the period, and YES (shade trees cut or perennial crops uprooted) blocks the run.
 - Out of scope and treated as not applicable / zero (Q1 condition): enteric, manure, N-fixing species, woody biomass, leakage 8.4.2-8.4.4.
+- Eqs. 46/47 (x 1/x): the SOC change between the two campaigns is credited whole to this reporting period (the annual rate x 1/x times the x years between the campaigns), while emissions are annual baseline means x the years of this period. The two only describe the same span when the earlier campaign closes the immediately preceding period: an earlier approved period that ends more than one day before this period starts (a gap, e.g. an intervening period without an approved dataset) blocks the run (PREVIOUS_PERIOD_NOT_ADJACENT), so a multi-period SOC change is never credited against one period's emissions.
+- Vintages (Q16): the result of the reporting period is quantified and rounded down once for the whole period; the split by calendar-year vintage is not made by the module (the registry states the vintages of what it issues).
+- Eqs. 44/45: one sign indicator I(dCO2_soil) is taken from the net SOC change (project minus baseline) and the same factor (1 - UNC x I) is applied to the project and the baseline stock change.
+- Control sites linked to more than one project stratum enter the baseline of each of those strata; the covariance this creates between strata is ignored in the Eq. 70/71 variance (strata are treated as independent).
+- Activity records need an observed-on date: BASELINE records are grouped by calendar year for the look-back mean, project records count only when dated inside the reporting period; an undated record blocks the run (MISSING_OBSERVED_ON). Irrigation type is read per phase: the baseline uses the look-back (BASELINE) records - leaching applies only when all of them are OTHER - and the project uses the reporting period's records (any OTHER applies leaching); a farm with look-back irrigation records needs one for the period.
+- Each sample has exactly one approved organic carbon and one soil mass result, and each field collection one sample per depth increment; duplicates or a result without its partner block the run (DUPLICATE_LAB_RESULT / MASS_RESULT_MISSING).
+- Per-stratum outputs are named by the stratum code (e.g. REF_MASS_S1), or by a collision-free prefix of the stratum record id when the code is not available.
 
 ### 4.8 Reasons the calculation can be blocked
-`CONTROL_SITES_REQUIRED`, `CONTROL_SITE_REQUIRED`, `DEPTH_INCREMENTS_REQUIRED`, `INSUFFICIENT_SAMPLES`, `INVALID_INPUT` (risk rating outside 0–100; carbon content not one value between 0 and 1; woody answer not NO / NONE / YES), `INVALID_SOIL_PROFILE`, `MISSING_REQUIRED_INPUT` (including `PERIOD_RECORD_MISSING`, `PRECIPITATION_MISSING`, `OA_CARBON_MISSING` and `WOODY_DECLARATION_MISSING`), `NPR_UNACCEPTABLE` (risk rating above 60), `SAMPLING_DEPTH_INSUFFICIENT` (a core sampled to less than 30 cm, or holding less soil than the stratum's reference soil mass: never extrapolated), `WOODY_BIOMASS_REMOVED` (shade trees cut or perennial crops uprooted).
+`CONTROL_SITES_REQUIRED`, `CONTROL_SITE_REQUIRED`, `DEPTH_INCREMENTS_REQUIRED`, `INSUFFICIENT_SAMPLES`, `INVALID_INPUT` (risk rating outside 0–100; carbon content not one value between 0 and 1; woody answer not NO / NONE / YES), `INVALID_SOIL_PROFILE`, `MISSING_REQUIRED_INPUT` (including `PERIOD_RECORD_MISSING`, `PRECIPITATION_MISSING`, `OA_CARBON_MISSING` and `WOODY_DECLARATION_MISSING`), `NPR_UNACCEPTABLE` (risk rating above 60), `SAMPLING_DEPTH_INSUFFICIENT` (a core sampled to less than 30 cm, or holding less soil than the stratum's reference soil mass: never extrapolated), `WOODY_BIOMASS_REMOVED` (shade trees cut or perennial crops uprooted). Added 29/10: `DUPLICATE_LAB_RESULT` (two approved results of one kind for a sample, or two samples for one depth increment), `MASS_RESULT_MISSING` (an organic carbon result without its soil mass), `MISSING_OBSERVED_ON` (an undated activity record), `PREVIOUS_PERIOD_NOT_ADJACENT` (the earlier campaign's period does not end the day before this period starts).
 
 ---
 
@@ -272,7 +290,7 @@ Outputs written by this module's code (some appear only for the approach or acti
 | Standard | Gold Standard |
 | Methodology | Soil Organic Carbon Framework + 402.4 Zero Tillage, Approach 1 |
 | Methodology code / version label to create | `GS402` / `1.0` (or `1.0-<suffix>`) |
-| Calculation module | `GS402-ZT-A1` · module version 1.0.0 |
+| Calculation module | `GS402-ZT-A1` · module version 1.1.0 |
 | Option text on the Calculation tab | GS 402 + 402.4 Zero Tillage - Approach 1 (SOC measured to 50 cm, equivalent soil mass) |
 | Suitable for | Switch to zero tillage; soil carbon measured to 50 cm (equivalent soil mass); no control sites. |
 | Field / laboratory work | Yes — two sampling rounds, laboratory OC and soil mass |
@@ -383,12 +401,13 @@ Outputs written by this module's code (some appear only for the approach or acti
 - Eq. 14: the electricity term is summed over the years like the fuel term (the printed bracket closes early).
 - Eqs. 15/16/18: emissions are t CO2e per farm (litres, kWh and kg give t CO2e; the printed 'per ha' is not applied).
 - Project emissions per farm and source: project records in the period minus the baseline annual mean (5 baseline years) x years in the period, floored at zero (decreases are never credited). Without baseline records the baseline is 50 % of the project value.
-- Leakage: per stratum, max[(CY_BL - CY_t) / CY_BL; 0] x area x leakage-area emissions per ha. CY_min is taken as CY_BL (CY_min can never exceed CY_BL, so this is conservative); yields are the means of the farms' records (baseline years / this period).
+- Leakage: per stratum, max[(CY_BL - CY_t) / CY_BL; 0] x area x leakage-area emissions per ha. CY_min is taken as CY_BL (CY_min can never exceed CY_BL, so this is conservative); yields are the means of the farms' records (baseline years / this period). Yield records are required (no exemption is applied, G8): a stratum without a farm that has both baseline and period yields, or a farm with yields in only one of the two, blocks the run (YIELD_RECORDS_REQUIRED) instead of reading leakage as zero.
+- Per-stratum outputs are named by the stratum code, or by a collision-free prefix of the stratum record id when it is not available; each sample has exactly one organic carbon and one soil mass result (duplicates or unpaired results block the run).
 - GS VERs are whole tonnes rounded down; a negative result is reported as REVERSAL with zero credits.
 - GS 119 v1.2 §3.1: the share of a positive result falling in vintages from 1 January 2026 (by days of the period) is not credited unless GS_PAA = YES (Gold Standard approved the Paris-aligned transition); the buffer applies to the credited share.
 
 ### 5.8 Reasons the calculation can be blocked
-`DEPTH_INCREMENTS_REQUIRED`, `DUPLICATE_INPUT`, `INSUFFICIENT_SAMPLES`, `INVALID_INPUT`, `INVALID_SOIL_PROFILE`, `MISSING_REQUIRED_INPUT`, `SAMPLING_DEPTH_INSUFFICIENT`.
+`DEPTH_INCREMENTS_REQUIRED`, `DUPLICATE_INPUT`, `INSUFFICIENT_SAMPLES`, `INVALID_INPUT`, `INVALID_SOIL_PROFILE`, `MISSING_REQUIRED_INPUT`, `SAMPLING_DEPTH_INSUFFICIENT`. Added 29/10: `DUPLICATE_LAB_RESULT` / `MASS_RESULT_MISSING` (Approach 1), `YIELD_RECORDS_REQUIRED` (a stratum without baseline and period crop yields, or a farm with yields of one phase only).
 
 ---
 
@@ -399,7 +418,7 @@ Outputs written by this module's code (some appear only for the approach or acti
 | Standard | Gold Standard |
 | Methodology | Soil Organic Carbon Framework + 402.1 Improved Tillage, Approach 1 |
 | Methodology code / version label to create | `GS402` / `1.0` (or `1.0-<suffix>`) |
-| Calculation module | `GS402-IT-A1` · module version 1.0.0 |
+| Calculation module | `GS402-IT-A1` · module version 1.1.0 |
 | Option text on the Calculation tab | GS 402 + 402.1 Improved Tillage - Approach 1 (SOC measured, equivalent soil mass to 30 cm) |
 | Suitable for | Switch to reduced tillage; soil carbon measured to 30 cm; no control sites. |
 | Field / laboratory work | Yes — two sampling rounds, laboratory OC and soil mass |
@@ -510,12 +529,13 @@ Outputs written by this module's code (some appear only for the approach or acti
 - Eq. 14: the electricity term is summed over the years like the fuel term (the printed bracket closes early).
 - Eqs. 15/16/18: emissions are t CO2e per farm (litres, kWh and kg give t CO2e; the printed 'per ha' is not applied).
 - Project emissions per farm and source: project records in the period minus the baseline annual mean (5 baseline years) x years in the period, floored at zero (decreases are never credited). Without baseline records the baseline is 50 % of the project value.
-- Leakage: per stratum, max[(CY_BL - CY_t) / CY_BL; 0] x area x leakage-area emissions per ha. CY_min is taken as CY_BL (CY_min can never exceed CY_BL, so this is conservative); yields are the means of the farms' records (baseline years / this period).
+- Leakage: per stratum, max[(CY_BL - CY_t) / CY_BL; 0] x area x leakage-area emissions per ha. CY_min is taken as CY_BL (CY_min can never exceed CY_BL, so this is conservative); yields are the means of the farms' records (baseline years / this period). Yield records are required (no exemption is applied, G8): a stratum without a farm that has both baseline and period yields, or a farm with yields in only one of the two, blocks the run (YIELD_RECORDS_REQUIRED) instead of reading leakage as zero.
+- Per-stratum outputs are named by the stratum code, or by a collision-free prefix of the stratum record id when it is not available; each sample has exactly one organic carbon and one soil mass result (duplicates or unpaired results block the run).
 - GS VERs are whole tonnes rounded down; a negative result is reported as REVERSAL with zero credits.
 - GS 119 v1.2 §3.1: the share of a positive result falling in vintages from 1 January 2026 (by days of the period) is not credited unless GS_PAA = YES (Gold Standard approved the Paris-aligned transition); the buffer applies to the credited share.
 
 ### 6.8 Reasons the calculation can be blocked
-`DEPTH_INCREMENTS_REQUIRED`, `DUPLICATE_INPUT`, `INSUFFICIENT_SAMPLES`, `INVALID_INPUT`, `INVALID_SOIL_PROFILE`, `MISSING_REQUIRED_INPUT`, `SAMPLING_DEPTH_INSUFFICIENT`.
+`DEPTH_INCREMENTS_REQUIRED`, `DUPLICATE_INPUT`, `INSUFFICIENT_SAMPLES`, `INVALID_INPUT`, `INVALID_SOIL_PROFILE`, `MISSING_REQUIRED_INPUT`, `SAMPLING_DEPTH_INSUFFICIENT`. Added 29/10: `DUPLICATE_LAB_RESULT` / `MASS_RESULT_MISSING` (Approach 1), `YIELD_RECORDS_REQUIRED` (a stratum without baseline and period crop yields, or a farm with yields of one phase only).
 
 ---
 
@@ -526,7 +546,7 @@ Outputs written by this module's code (some appear only for the approach or acti
 | Standard | Gold Standard |
 | Methodology | Soil Organic Carbon Framework + 402.1 Improved Tillage, Approach 3 |
 | Methodology code / version label to create | `GS402` / `1.0` (or `1.0-<suffix>`) |
-| Calculation module | `GS402-IT-A3` · module version 1.0.0 |
+| Calculation module | `GS402-IT-A3` · module version 1.1.0 |
 | Option text on the Calculation tab | GS 402 + 402.1 Improved Tillage - Approach 3 (IPCC stock change factors, Eqs. 4 and 6) |
 | Suitable for | Reduced tillage without soil sampling — soil carbon change from IPCC stock-change factors (smallholders, pilots). |
 | Field / laboratory work | No — factor values per stratum |
@@ -647,7 +667,7 @@ Outputs written by this module's code (some appear only for the approach or acti
 | `GS_VER_TOTAL` | NET |
 
 ### 7.7 Interpretations made by the code (for the expert review)
-- Approach 3: dSOC in the period = SOC_REF x F_LU x (F_MG,PR x F_I,PR - F_MG,BL x F_I,BL) x (min(T_PR, D) - min(T_PR - years, D)) / D, i.e. Eq. 6 at the end minus Eq. 6 at the start of the period (D = 20).
+- Approach 3: dSOC in the period = SOC_REF x F_LU x (F_MG,PR x F_I,PR - F_MG,BL x F_I,BL) x (min(T_PR, D) - min(T_PR - years, D)) / D, i.e. Eq. 6 at the end minus Eq. 6 at the start of the period (D = 20); the reported SOC_0 / SOC_T are Eq. 6 at the start / end of the period (the time dependency stops D years after the project start).
 - Uncertainty (Eqs. 7-9): for a factor with a ± % (two standard deviations, IPCC tables) SE = value x % / 200 and t = 1.675 (n unknown); without a ± %, SE = 50 % and t = 3 (402.4/402.6 §9.1.2). Lower / Upper = the smallest / largest dSOC over all combinations of the factors' bounds.
 - Buffer: 20 % of the GS VERs from SOC sequestration go to the GS Compliance Buffer (GS GHG ER&S Product Requirements v3.2 §11.1.1); the whole net amount is sequestration for these activity modules, so (1 - BUF) applies to all of Eq. 1.
 - GWPs: IPCC AR5 (Gold Standard rule update RU-2020-P&R v1.2, from 1 January 2021); EF_FE is used as printed (0.01 t CO2e per kg N), which is more conservative than 0.01 kg N2O-N/kg N x 44/28 x 265.
@@ -656,12 +676,13 @@ Outputs written by this module's code (some appear only for the approach or acti
 - Eq. 14: the electricity term is summed over the years like the fuel term (the printed bracket closes early).
 - Eqs. 15/16/18: emissions are t CO2e per farm (litres, kWh and kg give t CO2e; the printed 'per ha' is not applied).
 - Project emissions per farm and source: project records in the period minus the baseline annual mean (5 baseline years) x years in the period, floored at zero (decreases are never credited). Without baseline records the baseline is 50 % of the project value.
-- Leakage: per stratum, max[(CY_BL - CY_t) / CY_BL; 0] x area x leakage-area emissions per ha. CY_min is taken as CY_BL (CY_min can never exceed CY_BL, so this is conservative); yields are the means of the farms' records (baseline years / this period).
+- Leakage: per stratum, max[(CY_BL - CY_t) / CY_BL; 0] x area x leakage-area emissions per ha. CY_min is taken as CY_BL (CY_min can never exceed CY_BL, so this is conservative); yields are the means of the farms' records (baseline years / this period). Yield records are required (no exemption is applied, G8): a stratum without a farm that has both baseline and period yields, or a farm with yields in only one of the two, blocks the run (YIELD_RECORDS_REQUIRED) instead of reading leakage as zero.
+- Per-stratum outputs are named by the stratum code, or by a collision-free prefix of the stratum record id when it is not available; each sample has exactly one organic carbon and one soil mass result (duplicates or unpaired results block the run).
 - GS VERs are whole tonnes rounded down; a negative result is reported as REVERSAL with zero credits.
 - GS 119 v1.2 §3.1: the share of a positive result falling in vintages from 1 January 2026 (by days of the period) is not credited unless GS_PAA = YES (Gold Standard approved the Paris-aligned transition); the buffer applies to the credited share.
 
 ### 7.8 Reasons the calculation can be blocked
-`DEPTH_INCREMENTS_REQUIRED`, `DUPLICATE_INPUT`, `INSUFFICIENT_SAMPLES`, `INVALID_INPUT`, `INVALID_SOIL_PROFILE`, `MISSING_REQUIRED_INPUT`, `SAMPLING_DEPTH_INSUFFICIENT`.
+`DEPTH_INCREMENTS_REQUIRED`, `DUPLICATE_INPUT`, `INSUFFICIENT_SAMPLES`, `INVALID_INPUT`, `INVALID_SOIL_PROFILE`, `MISSING_REQUIRED_INPUT`, `SAMPLING_DEPTH_INSUFFICIENT`. Added 29/10: `DUPLICATE_LAB_RESULT` / `MASS_RESULT_MISSING` (Approach 1), `YIELD_RECORDS_REQUIRED` (a stratum without baseline and period crop yields, or a farm with yields of one phase only).
 
 ---
 
@@ -672,7 +693,7 @@ Outputs written by this module's code (some appear only for the approach or acti
 | Standard | Gold Standard |
 | Methodology | Soil Organic Carbon Framework + 402.6 Cover Crops, Approach 1 |
 | Methodology code / version label to create | `GS402` / `1.0` (or `1.0-<suffix>`) |
-| Calculation module | `GS402-CC-A1` · module version 1.0.0 |
+| Calculation module | `GS402-CC-A1` · module version 1.1.0 |
 | Option text on the Calculation tab | GS 402 + 402.6 Cover Crops - Approach 1 (SOC measured, equivalent soil mass to 30 cm) + seed emissions |
 | Suitable for | Cover crops; soil carbon measured; cover-crop seed production and transport emissions included. |
 | Field / laboratory work | Yes — two sampling rounds, laboratory OC and soil mass |
@@ -791,12 +812,13 @@ Outputs written by this module's code (some appear only for the approach or acti
 - Eq. 14: the electricity term is summed over the years like the fuel term (the printed bracket closes early).
 - Eqs. 15/16/18: emissions are t CO2e per farm (litres, kWh and kg give t CO2e; the printed 'per ha' is not applied).
 - Project emissions per farm and source: project records in the period minus the baseline annual mean (5 baseline years) x years in the period, floored at zero (decreases are never credited). Without baseline records the baseline is 50 % of the project value.
-- Leakage: per stratum, max[(CY_BL - CY_t) / CY_BL; 0] x area x leakage-area emissions per ha. CY_min is taken as CY_BL (CY_min can never exceed CY_BL, so this is conservative); yields are the means of the farms' records (baseline years / this period).
+- Leakage: per stratum, max[(CY_BL - CY_t) / CY_BL; 0] x area x leakage-area emissions per ha. CY_min is taken as CY_BL (CY_min can never exceed CY_BL, so this is conservative); yields are the means of the farms' records (baseline years / this period). Yield records are required (no exemption is applied, G8): a stratum without a farm that has both baseline and period yields, or a farm with yields in only one of the two, blocks the run (YIELD_RECORDS_REQUIRED) instead of reading leakage as zero.
+- Per-stratum outputs are named by the stratum code, or by a collision-free prefix of the stratum record id when it is not available; each sample has exactly one organic carbon and one soil mass result (duplicates or unpaired results block the run).
 - GS VERs are whole tonnes rounded down; a negative result is reported as REVERSAL with zero credits.
 - GS 119 v1.2 §3.1: the share of a positive result falling in vintages from 1 January 2026 (by days of the period) is not credited unless GS_PAA = YES (Gold Standard approved the Paris-aligned transition); the buffer applies to the credited share.
 
 ### 8.8 Reasons the calculation can be blocked
-`DEPTH_INCREMENTS_REQUIRED`, `DUPLICATE_INPUT`, `INSUFFICIENT_SAMPLES`, `INVALID_INPUT`, `INVALID_SOIL_PROFILE`, `MISSING_REQUIRED_INPUT`, `SAMPLING_DEPTH_INSUFFICIENT`.
+`DEPTH_INCREMENTS_REQUIRED`, `DUPLICATE_INPUT`, `INSUFFICIENT_SAMPLES`, `INVALID_INPUT`, `INVALID_SOIL_PROFILE`, `MISSING_REQUIRED_INPUT`, `SAMPLING_DEPTH_INSUFFICIENT`. Added 29/10: `DUPLICATE_LAB_RESULT` / `MASS_RESULT_MISSING` (Approach 1), `YIELD_RECORDS_REQUIRED` (a stratum without baseline and period crop yields, or a farm with yields of one phase only).
 
 ---
 
@@ -807,7 +829,7 @@ Outputs written by this module's code (some appear only for the approach or acti
 | Standard | Gold Standard |
 | Methodology | Soil Organic Carbon Framework + 402.6 Cover Crops, Approach 3.1 |
 | Methodology code / version label to create | `GS402` / `1.0` (or `1.0-<suffix>`) |
-| Calculation module | `GS402-CC-A3` · module version 1.0.0 |
+| Calculation module | `GS402-CC-A3` · module version 1.1.0 |
 | Option text on the Calculation tab | GS 402 + 402.6 Cover Crops - Approach 3.1 (national / regional Tier 2 factors, Eqs. 4 and 6) + seed emissions |
 | Suitable for | Cover crops without soil sampling — national / regional Tier 2 stock-change factors; seed emissions included. |
 | Field / laboratory work | No — factor values per stratum |
@@ -936,7 +958,7 @@ Outputs written by this module's code (some appear only for the approach or acti
 | `GS_VER_TOTAL` | NET |
 
 ### 9.7 Interpretations made by the code (for the expert review)
-- Approach 3: dSOC in the period = SOC_REF x F_LU x (F_MG,PR x F_I,PR - F_MG,BL x F_I,BL) x (min(T_PR, D) - min(T_PR - years, D)) / D, i.e. Eq. 6 at the end minus Eq. 6 at the start of the period (D = 20).
+- Approach 3: dSOC in the period = SOC_REF x F_LU x (F_MG,PR x F_I,PR - F_MG,BL x F_I,BL) x (min(T_PR, D) - min(T_PR - years, D)) / D, i.e. Eq. 6 at the end minus Eq. 6 at the start of the period (D = 20); the reported SOC_0 / SOC_T are Eq. 6 at the start / end of the period (the time dependency stops D years after the project start).
 - Uncertainty (Eqs. 7-9): for a factor with a ± % (two standard deviations, IPCC tables) SE = value x % / 200 and t = 1.675 (n unknown); without a ± %, SE = 50 % and t = 3 (402.4/402.6 §9.1.2). Lower / Upper = the smallest / largest dSOC over all combinations of the factors' bounds.
 - Buffer: 20 % of the GS VERs from SOC sequestration go to the GS Compliance Buffer (GS GHG ER&S Product Requirements v3.2 §11.1.1); the whole net amount is sequestration for these activity modules, so (1 - BUF) applies to all of Eq. 1.
 - GWPs: IPCC AR5 (Gold Standard rule update RU-2020-P&R v1.2, from 1 January 2021); EF_FE is used as printed (0.01 t CO2e per kg N), which is more conservative than 0.01 kg N2O-N/kg N x 44/28 x 265.
@@ -945,12 +967,13 @@ Outputs written by this module's code (some appear only for the approach or acti
 - Eq. 14: the electricity term is summed over the years like the fuel term (the printed bracket closes early).
 - Eqs. 15/16/18: emissions are t CO2e per farm (litres, kWh and kg give t CO2e; the printed 'per ha' is not applied).
 - Project emissions per farm and source: project records in the period minus the baseline annual mean (5 baseline years) x years in the period, floored at zero (decreases are never credited). Without baseline records the baseline is 50 % of the project value.
-- Leakage: per stratum, max[(CY_BL - CY_t) / CY_BL; 0] x area x leakage-area emissions per ha. CY_min is taken as CY_BL (CY_min can never exceed CY_BL, so this is conservative); yields are the means of the farms' records (baseline years / this period).
+- Leakage: per stratum, max[(CY_BL - CY_t) / CY_BL; 0] x area x leakage-area emissions per ha. CY_min is taken as CY_BL (CY_min can never exceed CY_BL, so this is conservative); yields are the means of the farms' records (baseline years / this period). Yield records are required (no exemption is applied, G8): a stratum without a farm that has both baseline and period yields, or a farm with yields in only one of the two, blocks the run (YIELD_RECORDS_REQUIRED) instead of reading leakage as zero.
+- Per-stratum outputs are named by the stratum code, or by a collision-free prefix of the stratum record id when it is not available; each sample has exactly one organic carbon and one soil mass result (duplicates or unpaired results block the run).
 - GS VERs are whole tonnes rounded down; a negative result is reported as REVERSAL with zero credits.
 - GS 119 v1.2 §3.1: the share of a positive result falling in vintages from 1 January 2026 (by days of the period) is not credited unless GS_PAA = YES (Gold Standard approved the Paris-aligned transition); the buffer applies to the credited share.
 
 ### 9.8 Reasons the calculation can be blocked
-`DEPTH_INCREMENTS_REQUIRED`, `DUPLICATE_INPUT`, `INSUFFICIENT_SAMPLES`, `INVALID_INPUT`, `INVALID_SOIL_PROFILE`, `MISSING_REQUIRED_INPUT`, `SAMPLING_DEPTH_INSUFFICIENT`.
+`DEPTH_INCREMENTS_REQUIRED`, `DUPLICATE_INPUT`, `INSUFFICIENT_SAMPLES`, `INVALID_INPUT`, `INVALID_SOIL_PROFILE`, `MISSING_REQUIRED_INPUT`, `SAMPLING_DEPTH_INSUFFICIENT`. Added 29/10: `DUPLICATE_LAB_RESULT` / `MASS_RESULT_MISSING` (Approach 1), `YIELD_RECORDS_REQUIRED` (a stratum without baseline and period crop yields, or a farm with yields of one phase only).
 
 ---
 
@@ -961,7 +984,7 @@ Outputs written by this module's code (some appear only for the approach or acti
 | Standard | Verra (VCS) |
 | Methodology | Afforestation, Reforestation and Revegetation — census-based approach |
 | Methodology code / version label to create | `VM0047` / `1.1` (or `1.1-<suffix>`) |
-| Calculation module | `VM0047-V1.1-CENSUS` · module version 1.0.0 |
+| Calculation module | `VM0047-V1.1-CENSUS` · module version 1.1.0 |
 | Option text on the Calculation tab | VM0047 v1.1 - census-based approach (planting units on farmland, <= 50 per ha) |
 | Suitable for | Trees planted on farmland where farming continues, at most 50 planting units per hectare; every unit counted at t = 0. |
 | Field / laboratory work | No soil sampling — tree census and sampled-tree measurements |
@@ -1034,6 +1057,7 @@ Outputs written by this module's code (some appear only for the approach or acti
 | `EF_NLEACH` | 0.011 | t N2O-N/t N leached | VM0047 v1.1 §9.1 (IPCC 2019 Table 11.3) |
 | `UNC_ALLOWANCE` | 0.10 | fraction | VM0047 v1.1 Eq. 29 (- 0.10) |
 | `NPR_MIN` | 12 | % | AFOLU Non-Permanence Risk Tool v5.0 §2.5.2 (minimum overall rating) |
+| `NPR_MAX` | 60 | % | AFOLU Non-Permanence Risk Tool v5.0 §2.5.3 (above 60 the project fails the risk analysis) |
 
 ### 10.6 Outputs
 Outputs written by this module's code (some appear only for the approach or activity module in use; `<stratum>` = one output per stratum).
@@ -1065,15 +1089,17 @@ Outputs written by this module's code (some appear only for the approach or acti
 - Biomass per sampled unit is entered in kg d.m. from the documented allometric equation (species > genus > family, same ecoregion); live units below the fixed size threshold are entered as 0.
 - Eq. 29 read dimensionally: per stratum, relative half-width = sqrt((T x SE / mean carbon per unit)^2 + U_M^2) with U_M from Eq. 31 as a fraction; strata are combined by adding half-widths in quadrature; UNC = min(1, max(0, relative half-width - 0.10)). T is the two-tailed 90 % Student-t with n - 1 degrees of freedom.
 - §8.5.2: no removals are credited when the 90 % half-width exceeds 100 % of the stock (CR_t = 0).
-- Eq. 33: dC(t - x) and UNC(t - x) come from the previous approved period; when it has no biomass sample (the census at t = 0), dC(t - x) = 0.
+- Eq. 33: dC(t - x) and UNC(t - x) come from the previous approved period. dC(t - x) = 0 only at the first verification: the previous approved period is the project's first monitoring period (the census at t = 0) and has no biomass sample in any stratum. Otherwise a stratum without previous biomass samples blocks the run (PREVIOUS_STOCK_MISSING), so a stock already credited is never credited again.
 - Eq. 27: biomass subject to burning uses the previous period's mean biomass of the stratum (the current mean when there is none).
 - Burning factors: the highest IPCC 2006 Table 2.5 forest factors (CH4 6.8, N2O 0.26 kg/t d.m.); VM0047 §9.1 cites a stationary-combustion table by mistake.
 - Fertiliser: Frac_LEACH always applied (conservative); fertiliser N is recorded as mass x N content (Eqs. 17/18).
-- Leakage is zero (§8.4). Buffer = max(rating, 12) % x the uncertainty-adjusted stock change of the interval (stock change only, never negative); VCUs = removals - buffer, whole tonnes rounded down; a negative result is a REVERSAL.
+- Leakage is zero (§8.4). Buffer = max(rating, 12) % x the uncertainty-adjusted stock change of the interval (stock change only, never negative); VCUs = removals - buffer, whole tonnes rounded down; a negative result is a REVERSAL. A rating outside 0-100 % or above 60 % (the project fails the risk analysis, NPRT §2.5.3) blocks the run.
+- Every stratum with a census population needs its area (the 50 units/ha census density limit, §4.3(3), is always checked); conflicting root-to-shoot ratios (V47_ROOT_SHOOT) block the run (one value is used for all units).
+- Per-stratum outputs are named by the stratum code, or by a collision-free prefix of the stratum record id when it is not available.
 - GWPs: IPCC AR5 (VCS Standard v5.0 §3.14.4).
 
 ### 10.8 Reasons the calculation can be blocked
-`DENSITY_EXCEEDED`, `DUPLICATE_INPUT`, `INSUFFICIENT_SAMPLES`, `MISSING_REQUIRED_INPUT`.
+`DENSITY_EXCEEDED`, `DUPLICATE_INPUT`, `INSUFFICIENT_SAMPLES`, `MISSING_REQUIRED_INPUT`. Added 29/10: `PREVIOUS_STOCK_MISSING` (no sampled unit in the previous approved period after the first verification), `NPR_UNACCEPTABLE` (rating above 60), `INVALID_INPUT` (rating outside 0-100, negative R), `INCONSISTENT_INPUT` (conflicting root-to-shoot ratios), `MISSING_REQUIRED_INPUT` `STRATUM_AREA_MISSING`.
 
 ---
 
@@ -1084,7 +1110,7 @@ Outputs written by this module's code (some appear only for the approach or acti
 | Standard | Verra (VCS) |
 | Methodology | Biochar Utilization in Soil and Non-Soil Applications |
 | Methodology code / version label to create | `VM0044` / `1.2` (or `1.2-<suffix>`) |
-| Calculation module | `VM0044-V1.2` · module version 1.0.0 |
+| Calculation module | `VM0044-V1.2` · module version 1.1.0 |
 | Option text on the Calculation tab | VM0044 v1.2 - biochar in soil and non-soil applications |
 | Suitable for | Biochar produced from biomass (e.g. crop residue) and applied to soil or used in non-soil applications. |
 | Field / laboratory work | Laboratory results of the biochar (carbon content, H:C ratio) entered as values |
@@ -1190,15 +1216,16 @@ Outputs written by this module's code (some appear only for the approach or acti
 - One project = one production facility; quantities are the period totals of the batch and application records.
 - Table 3 boundaries: > 600 degC -> 0.89; > 450 to 600 -> 0.80; 350 to 450 (450 itself, where the table overlaps) -> 0.65; below 350 or not measured -> 0.56 (the table does not cover < 350 degC; the unknown-temperature value is the conservative choice).
 - High technology requires laboratory F_Cp and a measured temperature; low technology uses laboratory F_Cp when recorded, otherwise Table 4 (mixed feedstock: record the class with the lowest value).
-- Non-soil applications use the Table 3 soil value (VM0044 §8.2.1) unless a lower literature value is configured.
-- Soil biochar with any batch H:C_org above 0.7 is refused (condition 10).
+- Non-soil applications use the Table 3 soil value (VM0044 §8.2.1: the soil value unless robust permanence evidence gives a lower one; no alternative value is configured). Non-soil use of low-technology biochar is refused (condition 11: non-soil applications only for high-technology facilities).
+- Soil biochar needs H:C_org results (condition 10); soil biochar with no H:C_org record or with any batch above 0.7 is refused.
+- F_Cp and the production temperature are mass-weighted over the period: one recorded value applies to the whole period; several values are weighted by the biochar produced (V44_PRODUCED) on the same observed-on date, and values that cannot be matched to exactly one production date block the run (a simple mean is never taken).
 - Eq. 1: production emissions are subtracted once per facility (the t index of PE_PS is not repeated per biochar type).
-- Eq. 9 uses the biochar used (M_used), as printed; production emissions are allocated by M_used / M_produced (Eqs. 3/7).
+- Eq. 9 / A8: the kiln methane is computed on the biochar produced (F_e x GWP_CH4 x M_produced) and then allocated by M_used / M_produced with the other production emissions (Eqs. 3/7), so the methane of the used biochar is counted once in full (the literal reading, Eq. 9 on M_used, would scale it down twice).
 - Electricity, fossil fuel and freight are calculated with CDM TOOL05 / TOOL03 / TOOL12 outside the platform and recorded in t CO2e; transport legs with a round trip under 200 km are not recorded (zero).
 - No uncertainty deduction and no buffer (VM0044 has neither); VCUs are whole tonnes rounded down; a negative balance gives no VCUs.
 
 ### 11.8 Reasons the calculation can be blocked
-`INCONSISTENT_INPUT`, `INELIGIBLE_BIOCHAR`, `INVALID_INPUT`, `MISSING_REQUIRED_INPUT`.
+`INCONSISTENT_INPUT`, `INELIGIBLE_BIOCHAR`, `INVALID_INPUT`, `MISSING_REQUIRED_INPUT`. Added 29/10: `MISSING_REQUIRED_INPUT` `HC_RATIO_MISSING` (soil use without H:C_org), `INELIGIBLE_BIOCHAR` `NONSOIL_LOW_TECH`, `INVALID_INPUT` `NOT_MASS_WEIGHTABLE` (several F_Cp / temperature values not dated like one production batch each).
 
 ---
 
@@ -1209,7 +1236,7 @@ Outputs written by this module's code (some appear only for the approach or acti
 | Standard | India CCTS |
 | Methodology | BM FR05.002 — Afforestation / reforestation of lands except wetlands |
 | Methodology code / version label to create | `BM-FR05.002` / `1.0` (or `1.0-<suffix>`) |
-| Calculation module | `CCTS-FR05.002` · module version 1.0.0 |
+| Calculation module | `CCTS-FR05.002` · module version 1.1.0 |
 | Option text on the Calculation tab | CCTS BM FR05.002 v1.0 - afforestation / reforestation of lands except wetlands |
 | Suitable for | Tree plantations on degraded or non-forest land in India, credited under the Carbon Credit Trading Scheme. |
 | Field / laboratory work | No soil sampling — plot inventory (tree biomass) |
@@ -1301,7 +1328,7 @@ Outputs written by this module's code (some appear only for the approach or acti
 ### 12.7 Interpretations made by the code (for the expert review)
 - Sample plots are the sampling points of the period's design; each records the plot's above-ground tree biomass (t d.m.) from the species allometric equation (or volume x density x BEF 1.15); the per-tree sheets are attached as evidence.
 - Below-ground biomass per plot: R = e^(-1.085 + 0.9256 ln b) / b with b = the plot's above-ground biomass per ha (Appendix 1).
-- Stock change = difference of two independent estimates (Eqs. 1-2): the current campaign minus the previous approved campaign, or minus the pre-project stock (AR_BSL_STOCK, 0 when not recorded) at the first verification; the previous estimate is used undiscounted (Eq. 1 note 2).
+- Stock change = difference of two independent estimates (Eqs. 1-2): the current campaign minus the previous approved campaign, or minus the pre-project stock (AR_BSL_STOCK, 0 when not recorded) at the first verification; the previous estimate is used undiscounted (Eq. 1 note 2). The pre-project stock replaces the previous campaign only when the previous approved period is the project's first monitoring period (#1); otherwise a previous period without sample plots, or a stratum with plots now but none in the previous campaign, blocks the run (PREVIOUS_STOCK_MISSING) so a stock already credited is never credited again.
 - Appendix 2 discount is applied to the stock change (a project estimate: decreased by discount x U x |dC|).
 - Shrubs (optional): crown cover per stratum x BDR_SF 0.10 x b_FOREST; < 5 % crown cover = 0.
 - Dead wood and litter (optional pools) are excluded (conservative); FR05.002 SOC (BM-T-AR-0006) is not included.
@@ -1309,7 +1336,7 @@ Outputs written by this module's code (some appear only for the approach or acti
 - Credits: lCCC = net removals of the verification period (Eq. 7), whole units rounded down; a negative lCCC is reported as REPLACEMENT_DUE (para 21). tCCC (Eq. 6) is the running sum of the lCCC of all verifications, kept by the registry.
 
 ### 12.8 Reasons the calculation can be blocked
-`INSUFFICIENT_SAMPLES`, `MISSING_REQUIRED_INPUT`.
+`INSUFFICIENT_SAMPLES`, `MISSING_REQUIRED_INPUT`. Added 29/10: `PREVIOUS_STOCK_MISSING` (no plots in the previous approved period after the first verification, or a stratum with plots now but none in the previous campaign).
 
 ---
 
@@ -1320,7 +1347,7 @@ Outputs written by this module's code (some appear only for the approach or acti
 | Standard | India CCTS |
 | Methodology | BM FR05.001 — Afforestation / reforestation of degraded mangrove habitats |
 | Methodology code / version label to create | `BM-FR05.001` / `1.0` (or `1.0-<suffix>`) |
-| Calculation module | `CCTS-FR05.001` · module version 1.0.0 |
+| Calculation module | `CCTS-FR05.001` · module version 1.1.0 |
 | Option text on the Calculation tab | CCTS BM FR05.001 v1.0 - afforestation / reforestation of degraded mangrove habitats |
 | Suitable for | Mangrove restoration in India under the Carbon Credit Trading Scheme. |
 | Field / laboratory work | No soil sampling — plot inventory (tree biomass) |
@@ -1416,7 +1443,7 @@ Outputs written by this module's code (some appear only for the approach or acti
 ### 13.7 Interpretations made by the code (for the expert review)
 - Sample plots are the sampling points of the period's design; each records the plot's above-ground tree biomass (t d.m.) from the species allometric equation (or volume x density x BEF 1.15); the per-tree sheets are attached as evidence.
 - Below-ground biomass per plot: R = e^(-1.085 + 0.9256 ln b) / b with b = the plot's above-ground biomass per ha (Appendix 1).
-- Stock change = difference of two independent estimates (Eqs. 1-2): the current campaign minus the previous approved campaign, or minus the pre-project stock (AR_BSL_STOCK, 0 when not recorded) at the first verification; the previous estimate is used undiscounted (Eq. 1 note 2).
+- Stock change = difference of two independent estimates (Eqs. 1-2): the current campaign minus the previous approved campaign, or minus the pre-project stock (AR_BSL_STOCK, 0 when not recorded) at the first verification; the previous estimate is used undiscounted (Eq. 1 note 2). The pre-project stock replaces the previous campaign only when the previous approved period is the project's first monitoring period (#1); otherwise a previous period without sample plots, or a stratum with plots now but none in the previous campaign, blocks the run (PREVIOUS_STOCK_MISSING) so a stock already credited is never credited again.
 - Appendix 2 discount is applied to the stock change (a project estimate: decreased by discount x U x |dC|).
 - Shrubs (optional): crown cover per stratum x BDR_SF 0.10 x b_FOREST; < 5 % crown cover = 0.
 - Dead wood and litter (optional pools) are excluded (conservative); FR05.002 SOC (BM-T-AR-0006) is not included.
@@ -1424,7 +1451,7 @@ Outputs written by this module's code (some appear only for the approach or acti
 - Credits: lCCC = net removals of the verification period (Eq. 7), whole units rounded down; a negative lCCC is reported as REPLACEMENT_DUE (para 21). tCCC (Eq. 6) is the running sum of the lCCC of all verifications, kept by the registry.
 
 ### 13.8 Reasons the calculation can be blocked
-`INSUFFICIENT_SAMPLES`, `MISSING_REQUIRED_INPUT`.
+`INSUFFICIENT_SAMPLES`, `MISSING_REQUIRED_INPUT`. Added 29/10: `PREVIOUS_STOCK_MISSING` (no plots in the previous approved period after the first verification, or a stratum with plots now but none in the previous campaign).
 
 ---
 
@@ -1435,7 +1462,7 @@ Outputs written by this module's code (some appear only for the approach or acti
 | Standard | Verra (VCS) |
 | Methodology | Improved Management in Rice Production Systems — Quantification Approach 3 |
 | Methodology code / version label to create | `VM0051` / `1.1` (or `1.1-<suffix>`) |
-| Calculation module | `VM0051-V1.1-QA3` · module version 1.0.0 |
+| Calculation module | `VM0051-V1.1-QA3` · module version 1.1.0 |
 | Option text on the Calculation tab | VM0051 v1.1 - improved rice management, IPCC emission factors (QA3) |
 | Suitable for | Paddy rice methane reduction — water regime (e.g. alternate wetting and drying), pre-season water status, straw and organic amendment management — with IPCC emission factors. |
 | Field / laboratory work | No — seasonal field records per farm |
@@ -1560,7 +1587,7 @@ Outputs written by this module's code (some appear only for the approach or acti
 ### 14.7 Interpretations made by the code (for the expert review)
 - QA3 only (IPCC 2019 Tables 5.11-5.14 or a country-specific EF); QA2 is mandatory for methanotrophs, biochar, low-emission cultivars and AWD shallower than 10 cm and is not included.
 - Eq. 5 / Eq. 8: GWP is applied once (BE_CH4 from Eq. 8 is used as the areal mean); Eq. 8 is summed over the seasons of the period.
-- Season = the farm's records with the same observed-on date in the reporting period; baseline = the farm's BASELINE look-back records.
+- Season = the farm's records with the same observed-on date in the reporting period; baseline = the farm's BASELINE look-back records. A project record that matches no season (no RI_AREA on its date, dated outside the period, or undated) blocks the run (UNMATCHED_SEASON_RECORD / MISSING_OBSERVED_ON); it is never dropped.
 - Baseline water regime: the lowest-emission regime recorded in the look-back (single drainage in any year -> single drainage, p. 14); baseline straw 5 t/ha with the look-back incorporation timing (LONG = 0.19 when not recorded); baseline cultivation period = the look-back mean, at most the project season's length.
 - Pre-season factors from IPCC Table 5.13 including FLOODED 2.41 and VERY_LONG 0.59 (Eq. 6 refers to the full table).
 - N2O: change in N rate at EF1FR continuous flooding 0.003 (Eq. 19) plus, on fields that start draining, Eq. 25 with CF_N2O = (0.005 - 0.003) x 44/28 = 0.00314 kg N2O/kg N (the drying increment is deducted after the uncertainty, Eq. 29).
@@ -1569,7 +1596,7 @@ Outputs written by this module's code (some appear only for the approach or acti
 - GWPs IPCC AR5 (CH4 28, N2O 265); VCUs are whole tonnes rounded down.
 
 ### 14.8 Reasons the calculation can be blocked
-`DUPLICATE_INPUT`, `INVALID_INPUT`, `MISSING_REQUIRED_INPUT`.
+`DUPLICATE_INPUT`, `INVALID_INPUT`, `MISSING_REQUIRED_INPUT`. Added 29/10: `UNMATCHED_SEASON_RECORD` (a project record dated on no season's RI_AREA date or outside the period), `MISSING_OBSERVED_ON`.
 
 ---
 
@@ -1580,7 +1607,7 @@ Outputs written by this module's code (some appear only for the approach or acti
 | Standard | India CCTS |
 | Methodology | BM AG04.002 — Improved rice management, IPCC default-value approach |
 | Methodology code / version label to create | `BM-AG04.002` / `1.0` (or `1.0-<suffix>`) |
-| Calculation module | `CCTS-AG04.002` · module version 1.0.0 |
+| Calculation module | `CCTS-AG04.002` · module version 1.1.0 |
 | Option text on the Calculation tab | CCTS BM AG04.002 v1.0 - improved rice management, IPCC default-value approach |
 | Suitable for | Paddy rice methane reduction under India's Carbon Credit Trading Scheme. |
 | Field / laboratory work | No — seasonal field records per farm |
@@ -1693,7 +1720,7 @@ Outputs written by this module's code (some appear only for the approach or acti
 
 ### 15.7 Interpretations made by the code (for the expert review)
 - IPCC default-value approach (paras 26-35); EFc measured on reference fields (RI_EFC) or the IPCC Table 5.11 region value.
-- Season = the farm's records with the same observed-on date; baseline = continuation of current practice from the farm's BASELINE records (same conservative rules as VM0051 where AG04.002 is silent).
+- Season = the farm's records with the same observed-on date; baseline = continuation of current practice from the farm's BASELINE records (same conservative rules as VM0051 where AG04.002 is silent). A project record that matches no season blocks the run (UNMATCHED_SEASON_RECORD / MISSING_OBSERVED_ON); it is never dropped.
 - Pre-season factor and straw CFOA from the recorded pre-season status and incorporation timing (equivalent to the regional double / single cropping defaults 1.0 / 0.89 and 1.0 / 0.19).
 - PE_n corrected: N x (0.005 - 0.003) x 44/28 x GWP, positive (the printed sign and the missing 44/28 are errors).
 - Decreases in N2O are not credited; land-preparation fuel (BM-T-002) is recorded in t CO2e.
@@ -1701,7 +1728,7 @@ Outputs written by this module's code (some appear only for the approach or acti
 - GWPs IPCC AR6 (CH4 29.8, N2O 273); credits are whole tonnes rounded down.
 
 ### 15.8 Reasons the calculation can be blocked
-`DUPLICATE_INPUT`, `INVALID_INPUT`, `MISSING_REQUIRED_INPUT`.
+`DUPLICATE_INPUT`, `INVALID_INPUT`, `MISSING_REQUIRED_INPUT`. Added 29/10: `UNMATCHED_SEASON_RECORD` (a project record dated on no season's RI_AREA date or outside the period), `MISSING_OBSERVED_ON`.
 
 ---
 
@@ -1712,7 +1739,7 @@ Outputs written by this module's code (some appear only for the approach or acti
 | Standard | Gold Standard |
 | Methodology | GS 403 Afforestation / Reforestation v2.1 |
 | Methodology code / version label to create | `GS403` / `2.1` (or `2.1-<suffix>`) |
-| Calculation module | `GS403-V2.1` · module version 1.0.0 |
+| Calculation module | `GS403-V2.1` · module version 1.1.0 |
 | Option text on the Calculation tab | GS 403 v2.1 - afforestation / reforestation (inventory stem volume, GS conversion factors) |
 | Suitable for | Tree plantations and forests — stem-volume inventory plots converted with Gold Standard factors. |
 | Field / laboratory work | No soil sampling — forest inventory plots |
@@ -1820,12 +1847,13 @@ Outputs written by this module's code (some appear only for the approach or acti
 - Creditable stock per MU = min(inventory stock, growth-model stock at the date, long-term value) when those are recorded (§3.6, §3.11.1).
 - CF 0.47 (the printed '0.475' has the 5 struck through); GS default factors WD 0.3, BEF 1.1, R:S 0.2 unless MU factors are recorded.
 - Baseline and leakage are recorded as project-area totals from the GS template (conservative factors WD 0.7, BEF 3.5, R:S 0.8 / 4.0) and deducted once; burning = 10 % of the baseline.
-- Issuable = max(0, cumulative net removal) - units already issued (§3.3.3); cumulative fertiliser N = prior + this period.
-- GS 119 v1.2: the share of the issuable amount falling in vintages from 1 January 2026 (by days of the period) is not credited unless GA_PAA = YES.
+- Issuable = max(0, cumulative net removal) - units already issued (§3.3.3); cumulative fertiliser N = prior + this period. The units already issued are a recorded value (GA_ISSUED_PRIOR, 0 when none): it is required for every reporting period after the project's first (period number above 1), so a missing entry is never read as nothing issued.
+- GS 119 v1.2: the share of the issuable amount falling in vintages from 1 January 2026 (by days of the reporting period) is not credited unless GA_PAA = YES. The issuable amount is the increment since the units already issued, so the day share of this period is at least the day share of any longer accrual span (conservative under even accrual).
+- Per-MU outputs are named by the stratum code, or by a collision-free prefix of the stratum record id when it is not available.
 - 20 % of the issuable units go to the GS Compliance Buffer; GSVERs to the project account are whole units rounded down. PERs (forward issuance) are not calculated here.
 
 ### 16.8 Reasons the calculation can be blocked
-`INSUFFICIENT_SAMPLES`, `MISSING_REQUIRED_INPUT`.
+`INSUFFICIENT_SAMPLES`, `MISSING_REQUIRED_INPUT`. Added 29/10: `ISSUED_PRIOR_REQUIRED` (GA_ISSUED_PRIOR missing in a reporting period after the first).
 
 ---
 

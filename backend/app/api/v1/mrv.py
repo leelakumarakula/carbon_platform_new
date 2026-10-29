@@ -90,7 +90,7 @@ def mrv_projects(principal: Reader, db: DB) -> list[ProjectMrvSummary]:
 @router.get("/projects/{project_id}/requirements", summary="MRV requirements of the locked methodology version (or CONFIGURATION_REQUIRED)")
 def project_requirements(project_id: uuid.UUID, principal: Reader, db: DB) -> dict[str, Any]:
     p = mrv_access.project(db, principal, project_id)
-    _, v = mrv_access.locked_methodology(db, p)
+    _, v = mrv_access.locked_methodology(db, p, read_only=True)    # a CLOSED project's requirements stay readable
     return requirements(db, v).as_dict()
 
 

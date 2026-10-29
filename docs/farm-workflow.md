@@ -21,9 +21,12 @@ DRAFT ─▶ SUBMITTED ─▶ GIS_REVIEW ─▶ VERIFIED ─▶ INACTIVE
 | SUBMITTED → DRAFT (withdraw), VERIFIED / REJECTED / INACTIVE → DRAFT (reopen) | a reason. A reopened farm must be reviewed again. | farms.manage |
 
 Boundaries, ownership and history can only be edited in DRAFT, which is why corrections go through reopen.
+GIS_REVIEW → VERIFIED re-runs overlap detection first (fix 29/10): new overlaps are flagged and committed before the readiness
+refusal, so the reviewer sees them.
 
 Reopen and inactivate are refused (`FARM_IN_ACTIVE_PROJECT`) while the farm is ACTIVE in a project that is past
-DATA_COLLECTION and not CLOSED: return the project to DATA_COLLECTION first, or wait until it is closed. An INACTIVE farm that is
+DATA_COLLECTION and not CLOSED, and while the farm is a control site (CONTROL stratum) of such a project (fix 29/10): return the
+project to DATA_COLLECTION first, or wait until it is closed. An INACTIVE farm that is
 still ACTIVE in a non-closed project stays in overlap detection, so new land drawn over it is flagged.
 
 ### Boundaries and GIS

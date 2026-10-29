@@ -20,7 +20,7 @@ UNITS = {
 STR = {"stratum_role": "PROJECT", "stratum_record_id": "S1", "farm_ids": ["f1"]}
 
 
-def _snapshot(units: dict = UNITS, npr: str = "10", fert: bool = True, population: int = N) -> dict:
+def _snapshot(units: dict = UNITS, npr: str = "10", fert: bool = True, population: int = N, prev_number: int = 1) -> dict:
     rows: list[dict] = []
 
     def add(var: str, value: str, unit: str, level: str, farm: str | None = None, point: str | None = None, ctx: dict | None = None) -> None:
@@ -45,7 +45,7 @@ def _snapshot(units: dict = UNITS, npr: str = "10", fert: bool = True, populatio
     add("NPR", npr, "%", "PROJECT")
     for c in Vm0047V11Census.constants:
         add(c.code, fw.decimal_text(Decimal(c.value)), c.unit, "PROJECT")
-    return {"reporting_period": {"start": "2022-06-01", "end": "2027-05-31"}, "previous_period": {"start": "2021-06-01", "end": "2022-05-31"},
+    return {"reporting_period": {"start": "2022-06-01", "end": "2027-05-31"}, "previous_period": {"number": prev_number, "start": "2021-06-01", "end": "2022-05-31"},
             "inputs": rows}
 
 
@@ -109,3 +109,43 @@ def test_census_guards() -> None:
     # first verification after the census (no previous biomass sample): dC(t - x) = 0
     res = fw.execute(Vm0047V11Census(), _snapshot({"CURRENT": UNITS["CURRENT"], "PREVIOUS": []}, npr="20", fert=False))
     assert _out(res, "DC_WP_T_X") == 0 and _out(res, "NPR_PCT") == 20 and _out(res, "VCU_TOTAL") > 0
+
+
+# ---------------------------------------------------------------- fixes 29/10
+def _blocked(snap: dict) -> fw.CalculationBlocked:
+    with pytest.raises(fw.CalculationBlocked) as e:
+        fw.execute(Vm0047V11Census(), snap)
+    return e.value
+
+
+def test_previous_stock_is_zero_only_at_the_first_verification() -> None:
+    no_prev = {"CURRENT": UNITS["CURRENT"], "PREVIOUS": []}
+    # a later verification whose previous approved period has no biomass sample would re-credit the whole stock
+    e = _blocked(_snapshot(no_prev, prev_number=2))
+    assert e.code == "PREVIOUS_STOCK_MISSING" and e.details["strata"] == ["S1"] and e.details["previous_period_number"] == 2
+    snap = _snapshot(no_prev)
+    del snap["previous_period"]
+    assert _blocked(snap).code == "PREVIOUS_STOCK_MISSING"
+    # previous period with samples: fine whatever its number
+    assert _out(fw.execute(Vm0047V11Census(), _snapshot(prev_number=3)), "DC_WP_T_X") > 0
+
+
+def test_risk_rating_range_and_failure_above_60() -> None:
+    assert _out(fw.execute(Vm0047V11Census(), _snapshot(npr="60")), "NPR_PCT") == 60
+    assert _blocked(_snapshot(npr="61")).code == "NPR_UNACCEPTABLE"
+    assert _blocked(_snapshot(npr="-5")).code == "INVALID_INPUT"
+
+
+def test_area_and_root_shoot_guards() -> None:
+    snap = _snapshot()
+    snap["inputs"] = [r for r in snap["inputs"] if r["variable"] != "AREA"]
+    e = _blocked(snap)                                                   # density can no longer be skipped
+    assert e.code == "MISSING_REQUIRED_INPUT" and e.details["reason"] == "STRATUM_AREA_MISSING"
+    snap = _snapshot()
+    rs = next(r for r in snap["inputs"] if r["variable"] == "ROOT_SHOOT")
+    snap["inputs"].append({**rs, "seq": len(snap["inputs"]) + 1, "value": "0.40"})
+    assert _blocked(snap).code == "INCONSISTENT_INPUT"
+    snap = _snapshot()                                                   # the same value twice is not a conflict
+    rs = next(r for r in snap["inputs"] if r["variable"] == "ROOT_SHOOT")
+    snap["inputs"].append({**rs, "seq": len(snap["inputs"]) + 1})
+    assert _out(fw.execute(Vm0047V11Census(), snap), "VCU_TOTAL") == _out(fw.execute(Vm0047V11Census(), _snapshot()), "VCU_TOTAL")

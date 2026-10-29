@@ -202,15 +202,21 @@ def test_failed_sign_ins_are_counted_atomically(client: TestClient, db: Session)
 
 def test_wrong_current_password_counts_towards_the_lockout(client: TestClient, db: Session) -> None:
     u = make_user(db)
-    h = login(client, u)
+    other = login(client, u)                       # the owner's own session elsewhere
+    h = login(client, u)                           # the session guessing the current password
     for _ in range(get_settings().MAX_FAILED_LOGINS):
         r = client.post("/api/v1/auth/change-password", headers=h,
                         json={"current_password": "Guess-Password-1", "new_password": "Brand-New-Secret-7"})
         assert r.status_code == 422 and r.json()["error_code"] == "CURRENT_PASSWORD_INCORRECT"
     db.refresh(u)
     assert u.locked_until is not None and u.locked_until > utcnow()
+    # fix 29/10: the guessing session is ended; the lockout itself no longer signs out the account's other sessions
     r = client.get("/api/v1/auth/me", headers=h)
-    assert r.status_code == 401 and r.json()["error_code"] == "ACCOUNT_INACTIVE"
+    assert r.status_code == 401 and r.json()["error_code"] == "SESSION_REVOKED"
+    assert client.get("/api/v1/auth/me", headers=other).status_code == 200
+    r = client.post("/api/v1/auth/change-password", headers=other,
+                    json={"current_password": PASSWORD, "new_password": "Brand-New-Secret-7"})
+    assert r.status_code == 409 and r.json()["error_code"] == "ACCOUNT_LOCKED"   # no guess is checked while locked
     assert db.scalars(select(SecurityEvent).where(SecurityEvent.user_id == u.id, SecurityEvent.event_type == "ACCOUNT_LOCKED")).first()
 
 

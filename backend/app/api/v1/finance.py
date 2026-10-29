@@ -22,6 +22,7 @@ from app.schemas.finance import (
     RecognizeIn,
     RevenueOut,
     ReverseRefundIn,
+    SettlementCalculateIn,
     SettlementIn,
     SettlementOut,
     ShareVersionIn,
@@ -189,8 +190,9 @@ def get_settlement(run_id: uuid.UUID, principal: SettlementReader, db: DB) -> Se
 
 @router.post("/settlements/{run_id}/calculate", response_model=SettlementOut,
              summary="Calculate (DRAFT → CALCULATED): claims unsettled revenue / costs, freezes inputs, hashes the snapshot")
-def calculate_settlement(run_id: uuid.UUID, principal: Calculator, db: DB, ctx: Ctx, key: IdemKey = None) -> SettlementOut:
-    return fm.settlement_out(db, ss.calculate(db, ctx, principal, run_id, key))
+def calculate_settlement(run_id: uuid.UUID, principal: Calculator, db: DB, ctx: Ctx, key: IdemKey = None,
+                         body: SettlementCalculateIn | None = None) -> SettlementOut:
+    return fm.settlement_out(db, ss.calculate(db, ctx, principal, run_id, key, include_project_costs=bool(body and body.include_project_costs)))
 
 
 @router.get("/settlements/{run_id}/verify", response_model=VerifyOut, summary="Recompute the run from its frozen snapshot")

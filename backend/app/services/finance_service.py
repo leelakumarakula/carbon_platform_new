@@ -215,7 +215,9 @@ def create_share_version(db: Session, ctx: RequestContext, principal: Principal,
 def config_action(db: Session, ctx: RequestContext, principal: Principal, model: Any, entity_id: uuid.UUID, action: str, reason: str | None,
                   key: str | None) -> Any:
     """submit (DRAFT → IN_REVIEW, author side) · approve (IN_REVIEW → APPROVED, never the author; the previous APPROVED version of the same
-    scope becomes SUPERSEDED) · return (IN_REVIEW → DRAFT with a reason). Shared by revenue-share versions and farm allocation versions."""
+    scope becomes SUPERSEDED) · return (IN_REVIEW → DRAFT with a reason). Shared by revenue-share versions and farm allocation versions.
+    Approval locks the project row first, then the version, then the other APPROVED versions of the scope: under READ_COMMITTED_SNAPSHOT
+    a concurrent approval of a sibling version would otherwise read a stale "nothing else APPROVED" and both would end APPROVED."""
     v = db.get(model, entity_id)
     if v is None:
         raise ms.nf("Configuration version", "CONFIG_VERSION_NOT_FOUND")
@@ -231,6 +233,8 @@ def config_action(db: Session, ctx: RequestContext, principal: Principal, model:
     entity = "revenue_share_version" if model is RevenueShareVersion else "farm_allocation_version"
 
     def op() -> Any:
+        if action == "approve":                                     # project → version (as create_share_version): two approvals of one
+            ms.lock(db, Project, v.project_id)                      # scope are serialized, so the second supersedes the first
         x = ms.lock(db, model, v.id)
         if action == "submit" and model is FarmAllocationVersion:
             _validate_allocation(db, x)
@@ -245,7 +249,8 @@ def config_action(db: Session, ctx: RequestContext, principal: Principal, model:
             scope = [model.project_id == x.project_id, model.status == "APPROVED", model.id != x.id]
             if model is FarmAllocationVersion:
                 scope.append(model.monitoring_period_id == x.monitoring_period_id)
-            for old in db.scalars(select(model).where(*scope)).all():
+            for old in db.scalars(select(model).with_hint(model, ls.LOCK_HINT, "mssql").where(*scope)       # locked, current
+                                  .order_by(model.id).execution_options(populate_existing=True)).all():
                 ms.transition(db, ctx, SHARING_CONFIG_MACHINE, old, entity, "SUPERSEDED", f"superseded by {x.version_code}")
         prefix = "REVENUE_SHARE_RULE" if model is RevenueShareVersion else "ALLOCATION"
         event = {"submit": f"{prefix}_SUBMITTED", "approve": f"{prefix}_APPROVED", "return": f"{prefix}_RETURNED"}[action]

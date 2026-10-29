@@ -31,6 +31,7 @@ from typing import Any, ClassVar
 from app.calculation import framework as fw
 from app.calculation.framework import CalculationBlocked, CalculationContext, CalculationModule, Constant, InputValue, Output, Step, Variable
 from app.calculation.library import esm, stats
+from app.calculation.library.inputs import pair_lab_samples, previous_period_gap, stratum_labels
 
 D0, D1 = Decimal(0), Decimal(1)
 REFERENCE_DEPTH_CM = Decimal(30)          # VM0042 §8.2.1.3 (7b): SOC reported to a minimum of 30 cm on an ESM basis
@@ -167,11 +168,41 @@ ASSUMPTIONS = (
     "uprooted) blocks the run.",
     "Out of scope and treated as not applicable / zero (Q1 condition): enteric, manure, N-fixing species, woody biomass, leakage "
     "8.4.2-8.4.4.",
+    "Eqs. 46/47 (x 1/x): the SOC change between the two campaigns is credited whole to this reporting period (the annual rate x 1/x "
+    "times the x years between the campaigns), while emissions are annual baseline means x the years of this period. The two only "
+    "describe the same span when the earlier campaign closes the immediately preceding period: an earlier approved period that ends "
+    "more than one day before this period starts (a gap, e.g. an intervening period without an approved dataset) blocks the run "
+    "(PREVIOUS_PERIOD_NOT_ADJACENT), so a multi-period SOC change is never credited against one period's emissions.",
+    "Vintages (Q16): the result of the reporting period is quantified and rounded down once for the whole period; the split by "
+    "calendar-year vintage is not made by the module (the registry states the vintages of what it issues).",
+    "Eqs. 44/45: one sign indicator I(dCO2_soil) is taken from the net SOC change (project minus baseline) and the same factor "
+    "(1 - UNC x I) is applied to the project and the baseline stock change.",
+    "Control sites linked to more than one project stratum enter the baseline of each of those strata; the covariance this creates "
+    "between strata is ignored in the Eq. 70/71 variance (strata are treated as independent).",
+    "Activity records need an observed-on date: BASELINE records are grouped by calendar year for the look-back mean, project records "
+    "count only when dated inside the reporting period; an undated record blocks the run (MISSING_OBSERVED_ON). Irrigation type is "
+    "read per phase: the baseline uses the look-back (BASELINE) records - leaching applies only when all of them are OTHER - and the "
+    "project uses the reporting period's records (any OTHER applies leaching); a farm with look-back irrigation records needs one for "
+    "the period.",
+    "Each sample has exactly one approved organic carbon and one soil mass result, and each field collection one sample per depth "
+    "increment; duplicates or a result without its partner block the run (DUPLICATE_LAB_RESULT / MASS_RESULT_MISSING).",
+    "Per-stratum outputs are named by the stratum code (e.g. REF_MASS_S1), or by a collision-free prefix of the stratum record id "
+    "when the code is not available.",
 )
 
 
 def _activity_var(code: str, rule: str, unit: str) -> Variable:
     return Variable(code, "MONITORING_RECORD", unit, "FARM", rule_code=rule, required=False)
+
+
+def _observed(v: InputValue, variable: str) -> date:
+    """The record's observed-on date; an undated activity record can be placed neither in a look-back year nor in the period."""
+    observed = v.context.get("observed_on")
+    if not observed:
+        raise CalculationBlocked("MISSING_OBSERVED_ON", f"A {variable} record (input #{v.seq}) has no observed-on date, so it can be placed "
+                                 "neither in a look-back year nor in the reporting period. Record the date.",
+                                 {"variable": variable, "input_seq": v.seq, "farm_id": v.farm_id, "phase": v.context.get("phase")})
+    return date.fromisoformat(str(observed)[:10])
 
 
 @dataclass
@@ -200,6 +231,7 @@ class _State:
     area: dict[str, Decimal] = field(default_factory=dict)           # project stratum record -> ha
     area_seqs: dict[str, int] = field(default_factory=dict)
     groups: dict[tuple[str, str, str], _Group] = field(default_factory=dict)  # (stratum record, PROJECT|BASELINE, CURRENT|PREVIOUS)
+    labels: dict[str, str] = field(default_factory=dict)             # project stratum record -> output-code label
     years: Decimal = D1
     emissions: dict[str, dict[str, Decimal]] = field(default_factory=dict)    # scenario -> source -> t CO2e
     emission_seqs: list[int] = field(default_factory=list)
@@ -214,7 +246,8 @@ class Vm0042V22(CalculationModule):
     # 1.1.0: data safeguards (period records, rainfall, risk rating), Eq. 33 leakage, woody biomass
     # 1.2.0: an organic-N increase needs a V42_OA_IMPORTED declaration for the period (forgotten compost entry)
     # 1.3.0: profiles must reach 30 cm and the reference soil mass (never extrapolated)
-    version = "1.3.0"
+    # 1.4.0: duplicate / unpaired lab results, dated records, irrigation per phase, adjacent previous campaign, stratum-code output names
+    version = "1.4.0"
     methodology_code = "VM0042"
     version_label = "2.2"
     calculation_rules_version = 0           # bound to the selecting methodology version (registry.bind)
@@ -268,6 +301,12 @@ class Vm0042V22(CalculationModule):
 
     def validate_inputs(self, ctx: CalculationContext) -> None:
         st = self._state(ctx)
+        gap = previous_period_gap(ctx.snapshot)
+        if gap is not None:
+            raise CalculationBlocked("PREVIOUS_PERIOD_NOT_ADJACENT", "The earlier approved sampling campaign does not close the period "
+                                     "immediately before this reporting period. The SOC change between the campaigns would be credited "
+                                     "against this period's emissions only (VM0042 Eqs. 46/47); calculate each period against the campaign "
+                                     "that precedes it.", gap)
         profiles = self._profiles(ctx)
         st.method = esm.method_for(min(p.increments for p in profiles))
         project_records = sorted({p.stratum_record for p in profiles if p.role == "PROJECT"})
@@ -309,6 +348,7 @@ class Vm0042V22(CalculationModule):
                     if grp is None or len(grp.values) < 2:
                         raise CalculationBlocked("INSUFFICIENT_SAMPLES", f"Stratum {rec}: {scenario.lower()} samples in the {period.lower()} "
                                                  "campaign are fewer than 2 (a variance needs at least two).", {"reason": "TOO_FEW_SAMPLES"})
+        st.labels = stratum_labels([*ctx.values("AREA"), *ctx.values("OC_T"), *ctx.values("OC_T0")], project_records)
         self._npr(ctx)                       # refuse an unusable risk rating before any result is produced
         rp = ctx.snapshot["reporting_period"]
         start, end = date.fromisoformat(rp["start"]), date.fromisoformat(rp["end"])
@@ -352,8 +392,7 @@ class Vm0042V22(CalculationModule):
         """VM0042 Eq. 33: LE_OA = sum of M_OA x CC_OA x 0.12 x 44/12 over the farms' imported amendments in the reporting period."""
         mass: dict[str, Decimal] = defaultdict(Decimal)
         for v in ctx.values("OA_MASS"):
-            observed = v.context.get("observed_on")
-            if not v.farm_id or v.context.get("phase") == "BASELINE" or (observed and not start <= date.fromisoformat(observed) <= end):
+            if not v.farm_id or v.context.get("phase") == "BASELINE" or not start <= _observed(v, "OA_MASS") <= end:
                 continue
             if Decimal(v.value) < 0:
                 raise CalculationBlocked("INVALID_INPUT", "V42_OA_IMPORTED cannot be negative.", {"variable": "OA_MASS"})
@@ -414,14 +453,7 @@ class Vm0042V22(CalculationModule):
         """One soil profile per field collection and campaign: depth increments paired by sample (OC + soil mass)."""
         out: list[_Profile] = []
         for period, oc_var, mass_var in (("CURRENT", "OC_T", "MASS_T"), ("PREVIOUS", "OC_T0", "MASS_T0")):
-            oc = {v.context.get("root_sample_id"): v for v in ctx.values(oc_var)}
-            by_fc: dict[str, list[tuple[InputValue, InputValue]]] = defaultdict(list)
-            for m in ctx.values(mass_var):
-                o = oc.get(m.context.get("root_sample_id"))
-                if o is None:
-                    raise CalculationBlocked("MISSING_REQUIRED_INPUT", f"Sample {m.context.get('root_sample_id')} has a soil mass but no organic "
-                                             "carbon result.", {"variable": oc_var})
-                by_fc[m.context["field_collection_id"]].append((o, m))
+            by_fc = pair_lab_samples(ctx, oc_var, mass_var)
             for fc, pairs in sorted(by_fc.items()):
                 c = pairs[0][1].context
                 if c.get("probe_diameter_mm") is None or c.get("cores_count") is None:
@@ -468,9 +500,9 @@ class Vm0042V22(CalculationModule):
             raise CalculationBlocked("MISSING_REQUIRED_INPUT", f"No mean annual precipitation (PRECIPITATION_MM) on project stratum "
                                      f"{', '.join(no_rain)}: it decides the IPCC wet or dry factors, so it is required.",
                                      {"variable": "PRECIP", "reason": "PRECIPITATION_MISSING", "strata": no_rain})
-        irrigation = {v.farm_id: str(v.value).strip().upper() for v in ctx.values("IRRIGATION") if v.farm_id}
         rp = ctx.snapshot["reporting_period"]
         p_start, p_end = date.fromisoformat(rp["start"]), date.fromisoformat(rp["end"])
+        irrigation = self._irrigation(ctx, p_start, p_end, rp)
 
         def totals(var: str) -> tuple[dict[str, Decimal], dict[str, Decimal]]:
             """(baseline annual mean per farm, project total per farm in the reporting period)."""
@@ -480,11 +512,10 @@ class Vm0042V22(CalculationModule):
                 if not v.farm_id:
                     continue
                 st.emission_seqs.append(v.seq)
-                phase, observed = v.context.get("phase"), v.context.get("observed_on")
-                year = observed[:4] if observed else "unknown"
+                phase, observed = v.context.get("phase"), _observed(v, var)
                 if phase == "BASELINE":
-                    hist[v.farm_id][year] += Decimal(v.value)
-                elif observed is None or p_start <= date.fromisoformat(observed) <= p_end:
+                    hist[v.farm_id][str(observed.year)] += Decimal(v.value)
+                elif p_start <= observed <= p_end:
                     proj[v.farm_id] += Decimal(v.value)
             bsl = {f: sum(years.values(), D0) / Decimal(len(years)) for f, years in hist.items()}
             return bsl, dict(proj)
@@ -516,7 +547,7 @@ class Vm0042V22(CalculationModule):
                 ef1_syn = k(ctx, "EF1_WET_SYN") if wet else k(ctx, "EF1_DRY")
                 ef1_org = k(ctx, "EF1_WET_OTHER") if wet else k(ctx, "EF1_DRY")
                 ef4 = k(ctx, "EF4_WET") if wet else k(ctx, "EF4_DRY")
-                leach = k(ctx, "FRAC_LEACH") if (wet or irrigation.get(f) == "OTHER") else D0
+                leach = k(ctx, "FRAC_LEACH") if (wet or irrigation[scenario].get(f, False)) else D0
                 # Eqs. 18, 22, 23 with N in kg (kg N2O-N -> t N2O via / 1000)
                 direct = (fsn * ef1_syn + fon * ef1_org) * n2o * gwp_n2o / 1000
                 volat = (fsn * k(ctx, "FRAC_GASF") + fon * k(ctx, "FRAC_GASM")) * ef4 * n2o * gwp_n2o / 1000
@@ -532,6 +563,29 @@ class Vm0042V22(CalculationModule):
         st.emission_seqs = sorted(set(st.emission_seqs)) or [ctx.constant("GWP_N2O").seq]
         return {s: dict(v) for s, v in out.items()}
 
+    @staticmethod
+    def _irrigation(ctx: CalculationContext, p_start: date, p_end: date, rp: dict[str, Any]) -> dict[str, dict[str, bool]]:
+        """Scenario -> farm -> irrigation other than drip (FracLEACH in dry climates), each read from its own phase's records."""
+        look_back: dict[str, set[str]] = defaultdict(set)
+        period: dict[str, set[str]] = defaultdict(set)
+        for v in ctx.values("IRRIGATION"):
+            if not v.farm_id:
+                continue
+            value, observed = str(v.value).strip().upper(), _observed(v, "IRRIGATION")
+            if v.context.get("phase") == "BASELINE":
+                look_back[v.farm_id].add(value)
+            elif p_start <= observed <= p_end:
+                period[v.farm_id].add(value)
+        missing = sorted(f for f in look_back if f not in period)
+        if missing:
+            raise CalculationBlocked("MISSING_REQUIRED_INPUT", f"Baseline irrigation records exist but the reporting period {rp['start']} to "
+                                     f"{rp['end']} has none: V42_IRRIGATION on farm {', '.join(missing[:5])}. Record the period's "
+                                     "irrigation type.", {"reason": "PERIOD_RECORD_MISSING", "variable": "IRRIGATION",
+                                                          "missing": [{"farm_id": f, "variable": "IRRIGATION"} for f in missing]})
+        # conservative: the baseline leaches only when every look-back record is OTHER, the project when any period record is
+        return {"BASELINE": {f: vals == {"OTHER"} for f, vals in look_back.items()},
+                "PROJECT": {f: "OTHER" in vals for f, vals in period.items()}}
+
     # ------------------------------------------------------------------ steps
     def _soc_outputs(self, ctx: CalculationContext, scenario: str, rule: str, step: str) -> list[Output]:
         st = self._state(ctx)
@@ -539,7 +593,7 @@ class Vm0042V22(CalculationModule):
         for rec in sorted(st.ref):
             for period in ("PREVIOUS", "CURRENT"):
                 g = st.groups[(rec, scenario, period)]
-                outs.append(Output(f"SOC_{scenario[:3]}_{period[:4]}_{rec[:8]}", step, rule, stats.mean(g.values), "Mg C/ha", "STRATUM",
+                outs.append(Output(f"SOC_{scenario[:3]}_{period[:4]}_{st.labels[rec]}", step, rule, stats.mean(g.values), "Mg C/ha", "STRATUM",
                                    rec, inputs=tuple(sorted(set(g.seqs)))))
         return outs
 
@@ -551,7 +605,7 @@ class Vm0042V22(CalculationModule):
 
     def calculate_baseline(self, ctx: CalculationContext) -> list[Output]:
         st = self._state(ctx)
-        refs = [Output(f"REF_MASS_{rec[:8]}", "BASELINE", R_BSL, st.ref[rec], "Mg/ha", "STRATUM", rec,
+        refs = [Output(f"REF_MASS_{st.labels[rec]}", "BASELINE", R_BSL, st.ref[rec], "Mg/ha", "STRATUM", rec,
                        inputs=tuple(sorted({s for (r, sc, pe), g in st.groups.items() if r == rec and sc == "BASELINE" and pe == "PREVIOUS"
                                             for s in g.seqs}))) for rec in sorted(st.ref)]
         return refs + self._soc_outputs(ctx, "BASELINE", R_BSL, "BASELINE") + self._emission_outputs(ctx, "BASELINE", R_BSL, "BASELINE")
@@ -575,7 +629,8 @@ class Vm0042V22(CalculationModule):
         for scenario, code in (("PROJECT", "DCO2_SOIL_WP"), ("BASELINE", "DCO2_SOIL_BSL")):
             total, used = D0, []
             for rec in sorted(st.ref):
-                prev, cur = ctx.output(f"SOC_{scenario[:3]}_PREV_{rec[:8]}"), ctx.output(f"SOC_{scenario[:3]}_CURR_{rec[:8]}")
+                lbl = st.labels[rec]
+                prev, cur = ctx.output(f"SOC_{scenario[:3]}_PREV_{lbl}"), ctx.output(f"SOC_{scenario[:3]}_CURR_{lbl}")
                 total += (cur.value - prev.value) * st.area[rec] * c2                                   # Eqs. 46/47 (x 44/12)
                 used += [prev.code, cur.code]
             outs.append(Output(code, "REMOVALS", R_CR, total, T, inputs=(*sorted(st.area_seqs.values()), ctx.constant("C_TO_CO2").seq),

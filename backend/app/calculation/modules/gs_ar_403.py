@@ -19,6 +19,7 @@ from typing import Any, ClassVar
 from app.calculation import framework as fw
 from app.calculation.framework import CalculationBlocked, CalculationContext, CalculationModule, Constant, InputValue, Output, Step, Variable
 from app.calculation.library import stats
+from app.calculation.library.inputs import stratum_labels
 
 D0, D1 = Decimal(0), Decimal(1)
 T = "t CO2e"
@@ -99,9 +100,13 @@ ASSUMPTIONS = (
     "CF 0.47 (the printed '0.475' has the 5 struck through); GS default factors WD 0.3, BEF 1.1, R:S 0.2 unless MU factors are recorded.",
     "Baseline and leakage are recorded as project-area totals from the GS template (conservative factors WD 0.7, BEF 3.5, R:S 0.8 / 4.0) "
     "and deducted once; burning = 10 % of the baseline.",
-    "Issuable = max(0, cumulative net removal) - units already issued (§3.3.3); cumulative fertiliser N = prior + this period.",
-    "GS 119 v1.2: the share of the issuable amount falling in vintages from 1 January 2026 (by days of the period) is not credited unless "
-    "GA_PAA = YES.",
+    "Issuable = max(0, cumulative net removal) - units already issued (§3.3.3); cumulative fertiliser N = prior + this period. The units "
+    "already issued are a recorded value (GA_ISSUED_PRIOR, 0 when none): it is required for every reporting period after the "
+    "project's first (period number above 1), so a missing entry is never read as nothing issued.",
+    "GS 119 v1.2: the share of the issuable amount falling in vintages from 1 January 2026 (by days of the reporting period) is not "
+    "credited unless GA_PAA = YES. The issuable amount is the increment since the units already issued, so the day share of this "
+    "period is at least the day share of any longer accrual span (conservative under even accrual).",
+    "Per-MU outputs are named by the stratum code, or by a collision-free prefix of the stratum record id when it is not available.",
     "20 % of the issuable units go to the GS Compliance Buffer; GSVERs to the project account are whole units rounded down. PERs (forward "
     "issuance) are not calculated here.",
 )
@@ -113,7 +118,8 @@ def _rec(code: str, rule: str, unit: str, level: str, kind: str = "NUMBER") -> V
 
 class Gs403V21(CalculationModule):
     code = "GS403-V2.1"
-    version = "1.0.0"
+    # 1.1.0: GA_ISSUED_PRIOR required after the first reporting period; stratum-code output names
+    version = "1.1.0"
     methodology_code = "GS403"
     version_label = "2.1"
     calculation_rules_version = 0
@@ -209,6 +215,12 @@ class Gs403V21(CalculationModule):
 
     def validate_inputs(self, ctx: CalculationContext) -> None:
         self._mus(ctx)
+        number = (ctx.snapshot.get("reporting_period") or {}).get("number")
+        if not ctx.values("ISSUED_PRIOR") and number != 1:
+            raise CalculationBlocked("ISSUED_PRIOR_REQUIRED", f"Reporting period #{number} follows earlier periods, but the units already "
+                                     "issued for the project (GA_ISSUED_PRIOR) are not recorded. Issuable units are the cumulative net "
+                                     "removal minus the units already issued (GS 403 §3.3.3); record the issued total (0 when none) so "
+                                     "nothing is issued twice.", {"variable": "ISSUED_PRIOR", "reporting_period_number": number})
 
     def calculate_baseline(self, ctx: CalculationContext) -> list[Output]:
         bsl, seqs = self._total(ctx, "BSL")
@@ -216,8 +228,10 @@ class Gs403V21(CalculationModule):
 
     def calculate_project(self, ctx: CalculationContext) -> list[Output]:
         outs = []
-        for mu in self._mus(ctx):
-            r = mu["rec"][:8]
+        mus = self._mus(ctx)
+        labels = stratum_labels(ctx.values("AREA"), [mu["rec"] for mu in mus])
+        for mu in mus:
+            r = labels[mu["rec"]]
             outs += [Output(f"V_MEAN_{r}", "PROJECT", R_PRJ, mu["mean"], "m3/ha", "STRATUM", mu["rec"], inputs=mu["seqs"]),
                      Output(f"STOCK_{r}", "PROJECT", R_PRJ, mu["stock"], "t CO2/ha", "STRATUM", mu["rec"],
                             inputs=(ctx.constant("CF_TREE").seq, ctx.constant("PRECISION").seq), outputs=(f"V_MEAN_{r}",)),

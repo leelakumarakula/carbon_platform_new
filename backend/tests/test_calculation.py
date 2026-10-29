@@ -223,6 +223,8 @@ def test_fixture_lifecycle_lineage_recalculation_and_project_calculated(client: 
     checks = {c["key"]: c["result"] for c in json.loads(rv.checks)}
     assert "FAIL" not in checks.values() and checks["reproducible"] == "PASS" and checks["module_readiness"] == "WARN"
     r = client.post(f"{CALC}/runs/{run.id}/approve", headers=h, json={"reason": "TEST calculation approved"})
+    assert r.status_code == 403 and r.json()["error_code"] == "SEPARATION_OF_DUTIES", r.text           # approver ≠ QA reviewer
+    r = client.post(f"{CALC}/runs/{run.id}/approve", headers=k.signer.headers, json={"reason": "TEST calculation approved"})
     assert r.status_code == 200 and r.json()["status"] == "APPROVED", r.text
     assert _status(db, k.project_id) == "CALCULATED"
     # recalculation: a new run with its own snapshot, outputs, QA and approval; the old run is untouched until then
@@ -236,7 +238,7 @@ def test_fixture_lifecycle_lineage_recalculation_and_project_calculated(client: 
     client.post(f"{CALC}/qa/{run2.id}/start", headers=h)
     _do(db, k.qa, cs.complete_qa, run2, result="PASS", notes="re-run checks pass", resolver=k.resolver)
     assert client.get(f"{CALC}/runs/{run.id}", headers=h).json()["status"] == "APPROVED"      # still authoritative
-    assert client.post(f"{CALC}/runs/{run2.id}/approve", headers=h, json={"reason": "TEST re-run approved"}).status_code == 200
+    assert client.post(f"{CALC}/runs/{run2.id}/approve", headers=k.signer.headers, json={"reason": "TEST re-run approved"}).status_code == 200
     db.expire_all()
     old, new = db.get(CalculationRun, run.id), db.get(CalculationRun, run2.id)
     assert old is not None and new is not None

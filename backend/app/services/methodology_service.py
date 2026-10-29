@@ -8,6 +8,11 @@ Rules enforced here:
   that a change means a new version (optionally copied from an existing one). Each rule set has a revision counter
 - every change is written to the append-only methodology_change_history and to the audit log
 - no equation is implemented here; calculation readiness stays NOT_PRODUCTION_READY (Phase 7 decides per module)
+- managing and approving the catalog needs a PLATFORM-wide grant of methodologies.manage / .approve (an organization-scoped grant
+  does not reach the shared catalog) and stays inside the caller's environment (ENVIRONMENT_MISMATCH)
+- a version cannot be retired while a non-CLOSED project is locked to it (VERSION_IN_USE): supersede it instead
+- production readiness is decided for one module code version (calculation_readiness_module_version); a changed module is not
+  production-ready until approved again, and approval needs the version to be still APPROVED
 """
 import json
 import uuid
@@ -68,9 +73,26 @@ def _change(db: Session, ctx: RequestContext, m: Methodology, v: MethodologyVers
            reason)
 
 
+CATALOG_CODES = (P.METHODOLOGIES_MANAGE, P.METHODOLOGIES_APPROVE)
+
+
 def _require(principal: Principal, code: str) -> None:
-    if not principal.has(code):
+    """Reading the catalog needs the permission anywhere. Managing / approving the catalog is a platform function: an organization-
+    scoped grant of methodologies.manage / .approve (e.g. a custom role inside a developer organization) does not reach the shared
+    platform catalog, which every organization's projects lock and calculate against."""
+    if code in CATALOG_CODES:
+        if not principal.has_platform(code):
+            raise PermissionDenied("Managing or approving the methodology catalog needs a platform-wide grant.",
+                                   details={"required_permission": code, "required_scope": "PLATFORM"})
+    elif not principal.has(code):
         raise PermissionDenied(details={"required_permission": code})
+
+
+def _in_environment(principal: Principal, environment: str) -> None:
+    """Catalog changes stay inside the caller's environment (a DEMO account never changes LIVE entries, and the reverse)."""
+    if principal.environment_organization_ids is not None and principal.user.environment != environment:
+        raise PermissionDenied(f"This is a {environment} catalog entry; your account works in {principal.user.environment}.",
+                               error_code="ENVIRONMENT_MISMATCH")
 
 
 def get_methodology(db: Session, principal: Principal, methodology_id: uuid.UUID) -> Methodology:
@@ -92,7 +114,15 @@ def get_version(db: Session, principal: Principal, version_id: uuid.UUID) -> tup
 
 
 def _document_resolver(db: Session, principal: Principal, methodology_id: uuid.UUID, kind: str) -> None:
-    if db.get(Methodology, methodology_id) is None or not principal.has(P.METHODOLOGIES_MANAGE if kind == "manage" else P.METHODOLOGIES_READ):
+    m = db.get(Methodology, methodology_id)
+    if m is None:
+        raise NotFound("Document not found.", error_code="DOCUMENT_NOT_FOUND")
+    if kind == "manage":   # catalog management is platform-wide and inside the caller's environment (see _require)
+        allowed = principal.has_platform(P.METHODOLOGIES_MANAGE) and (principal.environment_organization_ids is None
+                                                                     or principal.user.environment == m.environment)
+    else:
+        allowed = principal.has(P.METHODOLOGIES_READ)
+    if not allowed:
         raise NotFound("Document not found.", error_code="DOCUMENT_NOT_FOUND")
 
 
@@ -127,6 +157,7 @@ def list_methodologies(db: Session, principal: Principal, environment: str | Non
 # ---------------------------------------------------------------- methodologies
 def create_methodology(db: Session, ctx: RequestContext, principal: Principal, data: MethodologyIn) -> Methodology:
     _require(principal, P.METHODOLOGIES_MANAGE)
+    _in_environment(principal, data.environment)
     std = db.get(Standard, data.standard_id)
     if std is None:
         raise NotFound("Standard not found.", error_code="STANDARD_NOT_FOUND")
@@ -154,6 +185,7 @@ def create_methodology(db: Session, ctx: RequestContext, principal: Principal, d
 def update_methodology(db: Session, ctx: RequestContext, principal: Principal, methodology_id: uuid.UUID, data: MethodologyUpdate) -> Methodology:
     _require(principal, P.METHODOLOGIES_MANAGE)
     m = get_methodology(db, principal, methodology_id)
+    _in_environment(principal, m.environment)
     changes = data.model_dump(exclude_unset=True, exclude={"reason"})
     old = {k: getattr(m, k) for k in changes}
     for k, v in changes.items():
@@ -168,6 +200,7 @@ def update_methodology(db: Session, ctx: RequestContext, principal: Principal, m
 def create_version(db: Session, ctx: RequestContext, principal: Principal, methodology_id: uuid.UUID, data: VersionIn) -> MethodologyVersion:
     _require(principal, P.METHODOLOGIES_MANAGE)
     m = get_methodology(db, principal, methodology_id)
+    _in_environment(principal, m.environment)
     if any(v.version_label == data.version_label for v in versions(db, m.id)):
         raise Conflict(f"Version {data.version_label} already exists.", error_code="VERSION_EXISTS")
     base = None
@@ -205,6 +238,7 @@ def _draft(v: MethodologyVersion, what: str) -> None:
 def update_version(db: Session, ctx: RequestContext, principal: Principal, version_id: uuid.UUID, data: VersionUpdate) -> MethodologyVersion:
     _require(principal, P.METHODOLOGIES_MANAGE)
     m, v = get_version(db, principal, version_id)
+    _in_environment(principal, m.environment)
     _draft(v, "Editing version details")
     changes = data.model_dump(exclude_unset=True)
     eff_from, eff_to = changes.get("effective_from", v.effective_from), changes.get("effective_to", v.effective_to)
@@ -231,6 +265,7 @@ def add_rule(db: Session, ctx: RequestContext, principal: Principal, version_id:
              data: ApplicabilityRuleIn | MonitoringRuleIn | CalculationRuleIn | GeneralRuleIn) -> Any:
     _require(principal, P.METHODOLOGIES_MANAGE)
     m, v = get_version(db, principal, version_id)
+    _in_environment(principal, m.environment)
     _draft(v, "Changing rules")
     model = RULE_MODELS[kind]
     if any(r.rule_code == data.rule_code for r in rules(db, v.id)[kind]):
@@ -279,6 +314,7 @@ def delete_rule(db: Session, ctx: RequestContext, principal: Principal, version_
     """Only draft rules (never used by any evaluation) can be removed; the removal is in the change history."""
     _require(principal, P.METHODOLOGIES_MANAGE)
     m, v = get_version(db, principal, version_id)
+    _in_environment(principal, m.environment)
     _draft(v, "Changing rules")
     r = db.get(RULE_MODELS[kind], rule_id)
     if r is None or r.methodology_version_id != v.id:
@@ -302,6 +338,7 @@ def _transition(db: Session, ctx: RequestContext, m: Methodology, v: Methodology
 def submit_version(db: Session, ctx: RequestContext, principal: Principal, version_id: uuid.UUID, reason: str) -> MethodologyVersion:
     _require(principal, P.METHODOLOGIES_MANAGE)
     m, v = get_version(db, principal, version_id)
+    _in_environment(principal, m.environment)
     missing = []
     if not rules(db, v.id)["applicability"]:
         missing.append("at least one applicability rule")
@@ -324,6 +361,7 @@ def approve_version(db: Session, ctx: RequestContext, principal: Principal, vers
                     supersedes_version_id: uuid.UUID | None) -> MethodologyVersion:
     _require(principal, P.METHODOLOGIES_APPROVE)
     m, v = get_version(db, principal, version_id)
+    _in_environment(principal, m.environment)
     if v.submitted_by == principal.user_id:
         raise PermissionDenied("You submitted this version, so someone else must approve it.", error_code="SEPARATION_OF_DUTIES")
     old = None
@@ -349,6 +387,7 @@ def approve_version(db: Session, ctx: RequestContext, principal: Principal, vers
 def return_version(db: Session, ctx: RequestContext, principal: Principal, version_id: uuid.UUID, reason: str) -> MethodologyVersion:
     _require(principal, P.METHODOLOGIES_APPROVE)
     m, v = get_version(db, principal, version_id)
+    _in_environment(principal, m.environment)
     _transition(db, ctx, m, v, "DRAFT", "METHODOLOGY_VERSION_RETURNED", reason)
     db.commit()
     return v
@@ -357,15 +396,31 @@ def return_version(db: Session, ctx: RequestContext, principal: Principal, versi
 def retire_version(db: Session, ctx: RequestContext, principal: Principal, version_id: uuid.UUID, reason: str) -> MethodologyVersion:
     _require(principal, P.METHODOLOGIES_MANAGE)
     m, v = get_version(db, principal, version_id)
+    _in_environment(principal, m.environment)
+    locked = locked_projects(db, v.id)
+    if locked:   # their MRV and calculation need the locked version to stay APPROVED / SUPERSEDED (mrv_access.locked_methodology)
+        raise Conflict("Projects are locked to this version; it cannot be retired while any of them is open. Supersede it with a "
+                       "new version instead (locked projects keep using it).", error_code="VERSION_IN_USE",
+                       details={"projects": [{"project_code": code, "status": status} for code, status in locked]})
     _transition(db, ctx, m, v, "RETIRED", "METHODOLOGY_VERSION_RETIRED", reason)
     v.effective_to = v.effective_to or utcnow().date()
     db.commit()
     return v
 
 
+def locked_projects(db: Session, version_id: uuid.UUID) -> list[tuple[str, str]]:
+    """(project code, status) of the non-CLOSED projects whose LOCKED methodology is this version."""
+    from app.models import Project, ProjectMethodology
+    return [(c, st) for c, st in db.execute(
+        select(Project.project_code, Project.status).join(ProjectMethodology, ProjectMethodology.project_id == Project.id)
+        .where(ProjectMethodology.methodology_version_id == version_id, ProjectMethodology.status == "LOCKED", Project.status != "CLOSED")
+        .order_by(Project.project_code)).all()]
+
+
 def withdraw_version(db: Session, ctx: RequestContext, principal: Principal, version_id: uuid.UUID, reason: str) -> MethodologyVersion:
     _require(principal, P.METHODOLOGIES_MANAGE)
     m, v = get_version(db, principal, version_id)
+    _in_environment(principal, m.environment)
     _transition(db, ctx, m, v, "WITHDRAWN", "METHODOLOGY_VERSION_WITHDRAWN", reason)
     db.commit()
     return v
@@ -376,6 +431,7 @@ def upload_document(db: Session, ctx: RequestContext, principal: Principal, meth
                     category: str, title: str, filename: str | None, data: bytes, as_source: bool) -> uuid.UUID:
     _require(principal, P.METHODOLOGIES_MANAGE)
     m = get_methodology(db, principal, methodology_id)
+    _in_environment(principal, m.environment)
     if category not in DOC_CATEGORIES:
         raise ValidationFailed("Use METHODOLOGY_DOCUMENT or OTHER.", error_code="INVALID_CATEGORY")
     v = None
@@ -419,6 +475,7 @@ def select_calculation_module(db: Session, ctx: RequestContext, principal: Princ
     from app.calculation import registry
     _require(principal, P.METHODOLOGIES_MANAGE)
     m, v = get_version(db, principal, version_id)
+    _in_environment(principal, m.environment)
     _draft(v, "Choosing the calculation module")
     old = {"calculation_module_code": v.calculation_module_code}
     if module_code is None:
@@ -496,40 +553,63 @@ def readiness_request(db: Session, version_id: uuid.UUID) -> MethodologyChangeHi
     return entries[0] if entries and entries[0].change_type == READINESS_REQUESTED else None
 
 
+def module_version(v: MethodologyVersion) -> str | None:
+    """The registered code version of the version's selected calculation module (None: none selected or not registered)."""
+    from app.calculation import registry
+    mod = registry.by_code(v.calculation_module_code) if v.calculation_module_code else None
+    return mod.version if mod is not None else None
+
+
+def readiness_current(v: MethodologyVersion) -> bool:
+    """PRODUCTION_READY and decided for the module code that is registered now (registry.bind applies the same rule)."""
+    return (v.calculation_readiness == "PRODUCTION_READY" and v.calculation_readiness_module_version is not None
+            and v.calculation_readiness_module_version == module_version(v))
+
+
 def request_calculation_readiness(db: Session, ctx: RequestContext, principal: Principal, version_id: uuid.UUID, evidence: str) -> MethodologyVersion:
     """A methodology specialist asks for the selected module to be declared production-ready, citing the verification evidence
-    (expert review of the equations, worked-example tests). Only an APPROVED version with a selected module qualifies."""
+    (expert review of the equations, worked-example tests). Only an APPROVED version with a selected module qualifies. A version whose
+    readiness was decided for another module code version (or before module versions were recorded) may ask again."""
     _require(principal, P.METHODOLOGIES_MANAGE)
     m, v = get_version(db, principal, version_id)
+    _in_environment(principal, m.environment)
     if v.status != "APPROVED" or not v.calculation_module_code:
         raise Conflict("Production readiness is requested for an APPROVED version that has a calculation module selected.",
                        error_code="READINESS_NOT_APPLICABLE")
-    if v.calculation_readiness == "PRODUCTION_READY":
+    if readiness_current(v):
         raise Conflict("The calculation is already production-ready.", error_code="ALREADY_PRODUCTION_READY")
     if readiness_request(db, v.id) is not None:
         raise Conflict("A readiness request is already open.", error_code="READINESS_REQUEST_OPEN")
     _change(db, ctx, m, v, READINESS_REQUESTED, f"Production readiness requested for {v.calculation_module_code} on version {v.version_label}",
-            {"calculation_readiness": v.calculation_readiness}, {"module": v.calculation_module_code}, evidence)
+            {"calculation_readiness": v.calculation_readiness, "module_version": v.calculation_readiness_module_version},
+            {"module": v.calculation_module_code, "module_version": module_version(v)}, evidence)
     db.commit()
     return v
 
 
 def decide_calculation_readiness(db: Session, ctx: RequestContext, principal: Principal, version_id: uuid.UUID, approve: bool,
                                  notes: str) -> MethodologyVersion:
-    """Approve (someone other than the requester) or reject the open request."""
+    """Approve (someone other than the requester) or reject the open request. Approval needs the version to be still APPROVED (it may
+    have been superseded or retired since the request) and records the module code version it is for (registry.bind)."""
     _require(principal, P.METHODOLOGIES_APPROVE)
     m, v = get_version(db, principal, version_id)
+    _in_environment(principal, m.environment)
     req = readiness_request(db, v.id)
     if req is None:
         raise Conflict("There is no open readiness request.", error_code="NO_READINESS_REQUEST")
     if req.changed_by == principal.user_id:
         raise PermissionDenied("You requested production readiness, so someone else must decide.", error_code="SEPARATION_OF_DUTIES")
-    old = {"calculation_readiness": v.calculation_readiness}
+    mod_version = module_version(v)
+    if approve and (v.status != "APPROVED" or mod_version is None):
+        raise Conflict(f"Production readiness is approved only for an APPROVED version with a registered calculation module (this version "
+                       f"is {v.status}).", error_code="READINESS_NOT_APPLICABLE", details={"version_status": v.status})
+    old = {"calculation_readiness": v.calculation_readiness, "module_version": v.calculation_readiness_module_version}
     if approve:
-        v.calculation_readiness = "PRODUCTION_READY"
+        v.calculation_readiness, v.calculation_readiness_module_version = "PRODUCTION_READY", mod_version
     _change(db, ctx, m, v, READINESS_APPROVED if approve else READINESS_REVOKED,
             f"Production readiness {'approved' if approve else 'rejected'} for {v.calculation_module_code} on version {v.version_label}",
-            old, {"calculation_readiness": v.calculation_readiness, "module": v.calculation_module_code}, notes)
+            old, {"calculation_readiness": v.calculation_readiness, "module": v.calculation_module_code,
+                  "module_version": v.calculation_readiness_module_version}, notes)
     db.commit()
     return v
 
@@ -537,10 +617,12 @@ def decide_calculation_readiness(db: Session, ctx: RequestContext, principal: Pr
 def revoke_calculation_readiness(db: Session, ctx: RequestContext, principal: Principal, version_id: uuid.UUID, reason: str) -> MethodologyVersion:
     _require(principal, P.METHODOLOGIES_APPROVE)
     m, v = get_version(db, principal, version_id)
+    _in_environment(principal, m.environment)
     if v.calculation_readiness != "PRODUCTION_READY":
         raise Conflict("The calculation is not production-ready.", error_code="NOT_PRODUCTION_READY")
-    v.calculation_readiness = "NOT_PRODUCTION_READY"
+    old = {"calculation_readiness": "PRODUCTION_READY", "module_version": v.calculation_readiness_module_version}
+    v.calculation_readiness, v.calculation_readiness_module_version = "NOT_PRODUCTION_READY", None
     _change(db, ctx, m, v, READINESS_REVOKED, f"Production readiness revoked for {v.calculation_module_code} on version {v.version_label}",
-            {"calculation_readiness": "PRODUCTION_READY"}, {"calculation_readiness": "NOT_PRODUCTION_READY"}, reason)
+            old, {"calculation_readiness": "NOT_PRODUCTION_READY"}, reason)
     db.commit()
     return v

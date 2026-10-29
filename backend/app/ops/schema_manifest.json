@@ -1284,7 +1284,7 @@
   "verification_submissions.uq_verification_submissions_submission_code",
   "workflow_events.pk_workflow_events"
  ],
- "head": "0023",
+ "head": "0024",
  "indexes": [
   "activities.pk_activities",
   "activities.uq_activities_code",
@@ -3137,6 +3137,7 @@
    "based_on_version_id",
    "calculation_module_code",
    "calculation_readiness",
+   "calculation_readiness_module_version",
    "calculation_rules_version",
    "created_at",
    "created_by",

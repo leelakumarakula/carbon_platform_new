@@ -197,6 +197,7 @@ class Coffee:
     strata: dict[str, dict]
     lab: Lab
     analyst: Actor
+    signer: Actor                           # a second QA officer: approves what the first one reviewed (four eyes on QA)
     periods: dict[int, dict] = field(default_factory=dict)
     points: dict[int, list[dict]] = field(default_factory=dict)
     records: dict[int, list[dict]] = field(default_factory=dict)
@@ -420,7 +421,10 @@ def approve_dataset(client: TestClient, k: Coffee, n: int) -> dict:
     checks = {x["key"]: x["result"] for x in ok(client.get(f"{MRV}/qa/{ds['id']}", headers=c.t.qa.headers))["checks"]}
     assert "FAIL" not in checks.values(), checks
     ok(client.post(f"{MRV}/qa/{ds['id']}/complete", headers=c.t.qa.headers, json={"result": "PASS", "notes": "all checks pass"}))
-    ds = ok(client.post(f"{MRV}/datasets/{ds['id']}/approve", headers=c.t.qa.headers, json={"reason": "dataset approved"}))
+    # the QA reviewer may not approve the dataset it reviewed: a second QA officer signs it off
+    assert client.post(f"{MRV}/datasets/{ds['id']}/approve", headers=c.t.qa.headers,
+                       json={"reason": "own review"}).json()["error_code"] == "SEPARATION_OF_DUTIES"
+    ds = ok(client.post(f"{MRV}/datasets/{ds['id']}/approve", headers=k.signer.headers, json={"reason": "dataset approved"}))
     assert ds["status"] == "APPROVED"
     k.datasets[n] = ds
     return ds
@@ -473,7 +477,7 @@ def coffee_scenario(db: Session, client: TestClient, admin: Actor, p2_project: d
         "project_id": c.project["id"], "laboratory_org_id": str(lab_org.id), "rule_ids": [r["rule_id"] for r in rules.values()]}), 201)
     ok(client.post(f"{LABV}/engagements/{e['id']}/accept", headers=mgr.headers))
     k = Coffee(c, admin, author, approver, farmer, est, est_area, controls, strata, Lab(lab_org, tech, mgr, lqa, e),
-               staff(db, client, org, "CALCULATION_ANALYST"), measurements=measurements)
+               staff(db, client, org, "CALCULATION_ANALYST"), staff(db, client, org, "QA_OFFICER"), measurements=measurements)
     # 6. period 1 — the baseline campaign (t0): sampling, laboratory, look-back + period activity, NPR, dataset approved
     k.periods[1] = open_period(client, c, "Campaign 1 (baseline t0)", "BASELINE", P1)
     sampling_campaign(client, k, 1)
@@ -549,7 +553,9 @@ def test_coffee_estate_vm0042_field_to_payout(client: TestClient, db: Session, a
     qa_view = ok(client.post(f"{CALC}/qa/{run['id']}/complete", headers=c.t.qa.headers,
                              json={"result": "PASS", "notes": "Inputs, lineage and outputs checked against the hand calculation"}))
     assert "FAIL" not in {x["result"] for x in qa_view["checks"]}, qa_view["checks"]
-    run = ok(client.post(f"{CALC}/runs/{run['id']}/approve", headers=c.t.qa.headers, json={"reason": "VM0042 calculation approved"}))
+    assert client.post(f"{CALC}/runs/{run['id']}/approve", headers=c.t.qa.headers,
+                       json={"reason": "own review"}).json()["error_code"] == "SEPARATION_OF_DUTIES"
+    run = ok(client.post(f"{CALC}/runs/{run['id']}/approve", headers=k.signer.headers, json={"reason": "VM0042 calculation approved"}))
     assert run["status"] == "APPROVED"
     assert ok(client.get(f"{PR}/{k.pid}", headers=c.t.pm.headers))["status"] == "CALCULATED"
     assert val["BUFFER_ER"] == pytest.approx(exp["bu_er"], rel=1e-6, abs=1e-12)
@@ -772,7 +778,7 @@ def test_vm0042_platform_blocks_missing_period_record_and_woody_removal(client: 
     ok(client.post(f"{MRV}/datasets/{ds['id']}/submit", headers=c.mrv.headers, json={"reason": "corrected records"}))
     ok(client.post(f"{MRV}/qa/{ds['id']}/start", headers=c.t.qa.headers))
     ok(client.post(f"{MRV}/qa/{ds['id']}/complete", headers=c.t.qa.headers, json={"result": "PASS", "notes": "corrections checked"}))
-    assert ok(client.post(f"{MRV}/datasets/{ds['id']}/approve", headers=c.t.qa.headers, json={"reason": "v2 approved"}))["status"] == "APPROVED"
+    assert ok(client.post(f"{MRV}/datasets/{ds['id']}/approve", headers=k.signer.headers, json={"reason": "v2 approved"}))["status"] == "APPROVED"
     run2, r = calculation_run(client, k)
     assert r.status_code == 409, r.text
     err = r.json()

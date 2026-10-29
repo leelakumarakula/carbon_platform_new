@@ -103,6 +103,9 @@ def install_error_handlers(app: FastAPI) -> None:
 
     @app.exception_handler(Exception)
     async def _unhandled(request: Request, exc: Exception) -> JSONResponse:
+        # Last resort only: Starlette runs this outside every user middleware (no CORS / X-Request-ID / access log). API errors are
+        # turned into the same 500 envelope earlier, inside core.middleware.RequestContextMiddleware; this catches failures of the
+        # middleware stack itself.
         log.exception("Unhandled error (request_id=%s)", getattr(request.state, "request_id", None))
         return envelope(request, 500, "INTERNAL_ERROR",
                         "An unexpected error occurred. Please contact support with the request ID.")

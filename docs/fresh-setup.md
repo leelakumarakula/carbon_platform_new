@@ -26,7 +26,7 @@ git clone <frontend-repo-url> carbon_project_frontend  # Angular app
 cd carbon_platform_new
 ```
 
-The migrations are part of the code: `backend/alembic/versions/` (0001 … 0019). You don't run SQL scripts by hand.
+The migrations are part of the code: `backend/alembic/versions/` (numbered from `0001`; the newest one is the head). You don't run SQL scripts by hand.
 
 ## 3. Backend: Python environment
 
@@ -81,7 +81,7 @@ Generate the keys:
 | Step | What it does |
 |---|---|
 | `create-db` | Creates the database only if it's missing, so your existing one is kept. Turns on the snapshot isolation the app needs. |
-| `migrate` | Runs all 19 migrations: about 140 tables, the append-only triggers and the sequences. |
+| `migrate` | Runs every migration up to the head (`alembic upgrade head`): about 140 tables, the append-only triggers and the sequences. |
 | `seed-reference` | Adds the 96 permissions, 21 system roles, the **PLATFORM** organization, and the **Personal data processing** consent type. |
 
 Expected last line:
@@ -91,7 +91,8 @@ reference data: {'permissions_added': 96, 'roles_added': 21, ..., 'consent_defin
 
 Check that the migrations are at the latest version:
 ```powershell
-.venv\Scripts\alembic current        # shows: 0019 (head)
+.venv\Scripts\alembic heads          # the newest migration in the code
+.venv\Scripts\alembic current        # must show the same revision, followed by (head)
 ```
 
 Every one of these commands is safe to run again; nothing is duplicated.

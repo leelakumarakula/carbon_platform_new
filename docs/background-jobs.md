@@ -109,6 +109,10 @@ client or a stored payload.
 | Retryable | DB connection lost / deadlock (after `ledger_service.run`'s own retries), broker / network errors, soft time limit | RETRY_WAITING with deterministic exponential backoff `JOB_RETRY_BACKOFF_SECONDS × 2^(n−1)` (capped at 1 h), at most `JOB_MAX_RETRIES` times, then FAILED |
 | Non-retryable | any business / validation / permission / configuration error (`AppError`), environment mismatch, missing SYSTEM actor, unexpected exception | FAILED at once, with `error_code` and a sanitized message (no SQL text, no traceback; tracebacks go to the server log only) |
 
+**Due retries are republished at once** (fix 29/10): the recovery tick moves a due RETRY_WAITING job to QUEUED and publishes it in the
+same tick. (Before, a job whose first publication was recent waited for the stale-publish window, so the real backoff was
+`max(backoff, JOB_STALE_AFTER_SECONDS)`.) Duplicate publication stays harmless — the SQL claim decides.
+
 **Stale leases.**
 - Claims and runs hold a lease of `JOB_STALE_AFTER_SECONDS` (longer than every task time limit).
 - A **CLAIMED** job whose worker died is requeued; nothing ran.

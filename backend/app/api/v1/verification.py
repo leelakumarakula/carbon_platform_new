@@ -77,7 +77,8 @@ def propose(project_id: uuid.UUID, body: AssignmentIn, principal: Manager, db: D
 @router.get("/assignments/{assignment_id}", response_model=AssignmentOut)
 def get_assignment(assignment_id: uuid.UUID, principal: Reader, db: DB, ctx: Ctx) -> AssignmentOut:
     a, _ = va.project_assignment(db, principal, assignment_id)
-    vs.refresh(db, ctx, a)
+    if vs.refresh(db, ctx, a):
+        db.commit()                                             # the lazy invalidation only (read-time re-check, C6)
     return _assignment(db, principal, a)
 
 
@@ -139,14 +140,16 @@ def lineage(decision_id: uuid.UUID, principal: Reader, db: DB) -> LineageOut:
 @router.get("/assignments/{assignment_id}/submissions", response_model=list[SubmissionOut])
 def list_submissions(assignment_id: uuid.UUID, principal: Reader, db: DB, ctx: Ctx) -> list[SubmissionOut]:
     a, _ = va.project_assignment(db, principal, assignment_id)
-    vs.refresh(db, ctx, a)
+    if vs.refresh(db, ctx, a):
+        db.commit()                                             # the lazy invalidation only (read-time re-check, C6)
     return [vm.submission_out(db, s) for s in vs.submissions(db, a.id)]
 
 
 @router.get("/submissions/{submission_id}", response_model=SubmissionOut)
 def get_submission(submission_id: uuid.UUID, principal: Reader, db: DB, ctx: Ctx) -> SubmissionOut:
     s, a, _ = va.project_submission(db, principal, submission_id)
-    vs.refresh(db, ctx, a)
+    if vs.refresh(db, ctx, a):
+        db.commit()                                             # the lazy invalidation only (read-time re-check, C6)
     db.refresh(s)
     return vm.submission_out(db, s)
 

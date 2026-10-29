@@ -36,7 +36,7 @@ Reviewer = Annotated[Principal, Depends(require(P.CALCULATION_REVIEW))]
 Approver = Annotated[Principal, Depends(require(P.CALCULATION_APPROVE))]
 
 
-@router.get("/modules", response_model=list[ModuleOut], summary="Registered methodology calculation modules (none in Phase 7)")
+@router.get("/modules", response_model=list[ModuleOut], summary="Registered calculation modules and their readiness")
 def list_modules(principal: Reader) -> list[ModuleOut]:
     return [cm.module_out(m) for m in registry.modules()]
 

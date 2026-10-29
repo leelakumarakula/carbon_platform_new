@@ -394,6 +394,10 @@ def recover(db: Session, limit: int | None = None) -> dict[str, int]:
         _move(db, system_ctx(x.environment, f"job:{x.job_code}:recovery"), x, "QUEUED", "JOB_REQUEUED", "retry due")
         db.commit()
         out["retries_requeued"] += 1
+        # published right away: its first publication is recent, so the stale-publish sweep below would hold a due retry back for
+        # JOB_STALE_AFTER_SECONDS (real backoff = max(backoff, stale window)). Duplicate publication is harmless (the SQL claim decides)
+        if publish(db, jid):
+            out["republished"] += 1
     stale_publish = now - timedelta(seconds=s.JOB_STALE_AFTER_SECONDS)
     for jid in db.scalars(select(BackgroundJob.id).where(
             BackgroundJob.status == "QUEUED", BackgroundJob.available_at <= utcnow(),

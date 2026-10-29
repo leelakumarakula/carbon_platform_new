@@ -8,8 +8,12 @@ Rules enforced here:
 - monitoring records are versioned (amend = new version) and typed against their measurement definition
 - datasets freeze an exact snapshot (record ids + versions + evidence checksums, SHA-256) on submission; approved
   datasets never change; a correction is a new dataset version
-- QA runs deterministic checks; PASS is refused while any check FAILs; approver/QA reviewer ≠ submitter; approval re-runs the
-  checks and refuses a snapshot whose field records are no longer the accepted versions
+- QA runs deterministic checks; PASS is refused while any check FAILs; approver/QA reviewer ≠ submitter, and approver ≠ the QA
+  reviewer (who started or completed the review); approval re-runs the checks and refuses a snapshot whose field records are no
+  longer the accepted versions
+- an APPROVED period is re-opened by a correction (new dataset version) only until a calculation of it is approved: after that the
+  approved figures may be verified / issued, so the period is PERIOD_LOCKED (a correction then needs a new monitoring period)
+- a CLOSED project's MRV records stay readable; every write is refused (PROJECT_CLOSED, mrv_access)
 - periods with the same purpose never overlap (CLOSED periods included)
 - nothing is calculated; the project never moves beyond MONITORING in Phase 5
 """
@@ -29,6 +33,7 @@ from app.core.context import RequestContext
 from app.core.errors import Conflict, NotFound, PermissionDenied, ValidationFailed
 from app.models import (
     AuditLog,
+    CalculationRun,
     FieldCollectionRecord,
     MethodologyMonitoringRule,
     MonitoringPeriod,
@@ -618,6 +623,12 @@ def open_dataset(db: Session, period_id: uuid.UUID) -> MrvDataset | None:
                                                MrvDataset.status.in_(["DRAFT", "COLLECTING", "SUBMITTED", "QA_REVIEW"]))).first()
 
 
+def approved_runs(db: Session, period_id: uuid.UUID) -> list[CalculationRun]:
+    """APPROVED calculation runs of a period (a SUPERSEDED run always has a newer APPROVED one)."""
+    return list(db.scalars(select(CalculationRun).where(CalculationRun.monitoring_period_id == period_id,
+                                                        CalculationRun.status == "APPROVED")).all())
+
+
 def get_dataset(db: Session, principal: Principal, dataset_id: uuid.UUID, *codes: str) -> tuple[MrvDataset, Project]:
     ds = db.scalars(select(MrvDataset).where(MrvDataset.id == dataset_id).execution_options(populate_existing=True)).first()
     if ds is None:
@@ -633,6 +644,12 @@ def create_dataset(db: Session, ctx: RequestContext, principal: Principal, data:
                        error_code="PERIOD_NOT_OPEN")
     if open_dataset(db, mp.id) is not None:
         raise Conflict("This period already has an open dataset.", error_code="DATASET_OPEN")
+    if mp.status == "APPROVED":
+        locked = approved_runs(db, mp.id)
+        if locked:
+            raise Conflict("The period's calculation has been approved (and may be verified or issued), so its approved dataset can no "
+                           "longer be corrected here.", error_code="PERIOD_LOCKED",
+                           details={"reason": "CALCULATION_APPROVED", "calculation_runs": [r.run_code for r in locked]})
     plan = db.get(MrvPlan, mp.mrv_plan_id)
     assert plan is not None
     prev = datasets(db, mp.id)
@@ -797,6 +814,8 @@ def approve_dataset(db: Session, ctx: RequestContext, principal: Principal, data
     last = next((r for r in reversed(qa_reviews(db, ds.id)) if r.completed_at is not None), None)
     if last is None or last.result != "PASS":
         raise Conflict("Approval needs a completed QA review with result PASS.", error_code="QA_NOT_PASSED")
+    if principal.user_id in {u for r in qa_reviews(db, ds.id) for u in (r.started_by, r.completed_by) if u is not None}:
+        raise PermissionDenied("You reviewed this dataset's QA, so someone else must approve it.", error_code="SEPARATION_OF_DUTIES")
     if ds.snapshot is None or _hash(json.loads(ds.snapshot)) != ds.snapshot_sha256:
         raise Conflict("The dataset snapshot does not match its checksum.", error_code="SNAPSHOT_MISMATCH")
     # the data may have changed since QA completed: the snapshot's field records must still be the accepted versions, and the

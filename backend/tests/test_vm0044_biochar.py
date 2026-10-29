@@ -49,11 +49,12 @@ def test_high_technology_matches_hand_calculation() -> None:
 
 
 def test_low_technology_uses_table_defaults_and_kiln_methane() -> None:
-    res = fw.execute(Vm0044V12(), _snap(TECH="LOW", FCP=None, TEMP=None, FEEDSTOCK="RICE", PROCESS="PYROLYSIS", PE_AUX=None))
-    used = 110.0
+    res = fw.execute(Vm0044V12(), _snap(TECH="LOW", FCP=None, TEMP=None, FEEDSTOCK="RICE", PROCESS="PYROLYSIS", PE_AUX=None,
+                                        USED_NONSOIL=None))   # low technology: soil use only (condition 11)
+    used = 100.0
     cc = used * 0.49 * 0.56                                   # Table 4 rice / pyrolysis; temperature unknown
-    p_ep = 0.049 * 28 * used                                  # Eq. 9, default F_e
-    pe_ps = (4.5 + p_ep) * used / 120
+    p_ep = 0.049 * 28 * 120                                   # Eq. 9 on the biochar produced, default F_e (A8)
+    pe_ps = (4.5 + p_ep) * used / 120                         # Eq. 7: the used share, CH4 of the used biochar counted once
     er = cc * 44 / 12 - pe_ps - 0.8 - 2.2
     assert _out(res, "F_CP") == 0.49 and _out(res, "PR_DE") == 0.56
     assert _out(res, "P_EP") == pytest.approx(p_ep) and _out(res, "ER_NET") == pytest.approx(er)
@@ -72,3 +73,31 @@ def test_guards() -> None:
     # non-soil only: the H:C_org gate does not apply
     res = fw.execute(Vm0044V12(), _snap(USED_SOIL=None, HC_RATIO=["0.9"]))
     assert _out(res, "M_USED") == 10
+
+
+# ---------------------------------------------------------------- fixes 29/10
+def test_kiln_methane_of_the_used_biochar_is_counted_once_in_full() -> None:
+    res = fw.execute(Vm0044V12(), _snap(TECH="LOW", FCP=["0.70"], USED_NONSOIL=None, PE_PRETREAT=None, PE_AUX=None))
+    assert _out(res, "PE_PS") == pytest.approx(0.049 * 28 * 100)          # F_e x GWP x M_used, not x M_used^2 / M_produced
+
+
+def test_soil_use_needs_hc_ratio_and_non_soil_needs_high_technology() -> None:
+    for over, code, reason in (({"HC_RATIO": None}, "MISSING_REQUIRED_INPUT", "HC_RATIO_MISSING"),
+                               ({"TECH": "LOW"}, "INELIGIBLE_BIOCHAR", "NONSOIL_LOW_TECH")):
+        with pytest.raises(fw.CalculationBlocked) as e:
+            fw.execute(Vm0044V12(), _snap(**over))
+        assert e.value.code == code and e.value.details["reason"] == reason
+
+
+def test_fcp_and_temperature_are_mass_weighted() -> None:
+    # batches of 100 t (Jan) and 20 t (Feb); F_Cp 0.80 / 0.20 and 620 / 380 degC
+    snap = _snap(PRODUCED=["100", "20"], FCP=["0.80", "0.20"], TEMP=["620", "380"])
+    res = fw.execute(Vm0044V12(), snap)
+    assert _out(res, "F_CP") == pytest.approx((0.80 * 100 + 0.20 * 20) / 120)           # 0.70, not the simple mean 0.50
+    assert _out(res, "PR_DE") == 0.80                                               # 580 degC weighted (simple mean 500 -> also 0.80)
+    snap = _snap(PRODUCED=["20", "100"], TEMP=["620", "400"], USED_SOIL=["70", "30"])
+    assert _out(fw.execute(Vm0044V12(), snap), "PR_DE") == 0.65                      # 436.7 degC weighted; the simple mean 510 gave 0.80
+    # values that cannot be matched to one production batch are refused
+    with pytest.raises(fw.CalculationBlocked) as e:
+        fw.execute(Vm0044V12(), _snap(PRODUCED=["120"], FCP=["0.80", "0.20"]))
+    assert e.value.details["reason"] == "NOT_MASS_WEIGHTABLE"

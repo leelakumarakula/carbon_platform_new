@@ -84,7 +84,8 @@ def test_health(client: TestClient) -> None:
 
 def test_secure_headers_and_request_id(client: TestClient) -> None:
     r = client.get("/api/v1/health", headers={"X-Request-ID": "abc12345-req"})
-    assert r.headers["x-request-id"] == "abc12345-req"
+    # fix 29/10: a client (not a trusted proxy) cannot choose its request id; see test_fixes_29_identity for the proxy case
+    assert r.headers["x-request-id"] != "abc12345-req" and len(r.headers["x-request-id"]) == 36
     for h in ("x-content-type-options", "x-frame-options", "referrer-policy", "content-security-policy", "cache-control"):
         assert h in r.headers
     assert r.headers["cache-control"] == "no-store"

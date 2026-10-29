@@ -9,7 +9,13 @@
   committed before the provider is called; a timeout leaves UNCONFIRMED (no automatic retry); provider events are append-only and
   deduplicated on (provider, external event id) (D17); a provider "succeeded" still needs the seller-finance confirmation (T3).
 - Refunds are money only (D19): never a carbon quantity, never an ownership change; requested and approved by different people.
+- Provider refunds (dormant: only MANUAL is registered) follow the same outbox rule: order → payment → refund are locked and the refund
+  re-checked (APPROVED) first, then a REFUND_ATTEMPT marker (a PaymentEvent, unique per refund) and its audit row are COMMITTED, and only
+  then is the provider called with the refund code as idempotency key. A concurrent completion is refused (REFUND_IN_PROGRESS); a
+  provider error / timeout after the marker leaves the refund APPROVED with the attempt on record (REFUND_UNCONFIRMED) — never called
+  again automatically: the outcome is reconciled with the provider and completed manually with its reference and evidence.
 """
+import hashlib
 import uuid
 from decimal import Decimal
 from typing import Any
@@ -288,6 +294,9 @@ def confirm(db: Session, ctx: RequestContext, principal: Principal, payment_id: 
                  None, {"status": frm_pay})
         ls.audit(db, ctx, "ORDER_PAID", os_.ORDER_ENTITY, x.id, os_.parties(x), {"order_code": x.order_code, "payment_code": pay.payment_code},
                  None, {"status": frm})
+        os_.notify_parties(db, x, "ORDER_PAID", f"Order paid: {x.order_code}",
+                           f"Payment {pay.payment_code} of {pay.amount} {pay.currency} confirmed by the seller."
+                           + (" Some reservations expired: the order needs attention." if lost else " The credit transfer is requested."))
         if lost:
             for it in lost:
                 if it.status == "RESERVED":
@@ -449,18 +458,17 @@ def decide_refund(db: Session, ctx: RequestContext, principal: Principal, refund
             raise PermissionDenied("You requested this refund, so someone else must decide on it.", error_code="SEPARATION_OF_DUTIES")
     ext_ref, doc_id = None, None
     if action == "complete":
-        if p.adapter_code == "MANUAL":
+        manual = p.adapter_code == "MANUAL" or _refund_attempt(db, r) is not None   # an attempted provider refund is reconciled by people
+        if manual:
             ext_ref = (getattr(data, "external_reference", None) or "").strip()
             doc_id = getattr(data, "document_id", None)
             if not ext_ref or doc_id is None:
-                raise ValidationFailed("A manual refund completes only with its payment reference and evidence (PDF).",
-                                       error_code="REFUND_EVIDENCE_REQUIRED")
+                raise ValidationFailed("A manual refund completes only with its payment reference and evidence (PDF)" +
+                                       ("" if p.adapter_code == "MANUAL" else ": the provider refund was already attempted and its outcome "
+                                        "is unknown — reconcile it with the provider") + ".", error_code="REFUND_EVIDENCE_REQUIRED")
             document_service.require_attached(db, doc_id, REFUND_ENTITY, r.id, {DocumentCategory.REFUND_EVIDENCE.value})
-        elif r.status == "APPROVED":
-            try:
-                ext_ref = adapter_for(p.adapter_code, adapter).refund(p.external_reference or "", r.amount, r.currency, r.refund_code).external_id
-            except ManualActionRequired as e:
-                raise Conflict(str(e), error_code="MANUAL_ACTION_REQUIRED") from None
+        else:
+            ext_ref = _provider_refund(db, ctx, principal, r, p, o, adapter_for(p.adapter_code, adapter))
     reason = getattr(data, "reason", None)
     if action == "reject" and not (reason and reason.strip()):
         raise ValidationFailed("Give a reason.", error_code="REASON_REQUIRED")
@@ -498,6 +506,49 @@ def decide_refund(db: Session, ctx: RequestContext, principal: Principal, refund
                   "after_transfer": ref.after_transfer}, reason, {"status": frm})
         return ref
     return ls.run(db, ctx, op)
+
+
+def _attempt_id(r: Refund) -> str:
+    return f"REFUND-ATTEMPT:{r.refund_code}"
+
+
+def _refund_attempt(db: Session, r: Refund) -> PaymentEvent | None:
+    return db.scalars(select(PaymentEvent).where(PaymentEvent.external_event_id == _attempt_id(r),
+                                                 PaymentEvent.event_type == "REFUND_ATTEMPT")).first()
+
+
+def _provider_refund(db: Session, ctx: RequestContext, principal: Principal, r: Refund, p: Payment, o: Order, impl: PaymentAdapter) -> str:
+    """Outbox: lock + re-check, commit the attempt marker, then call the provider (outside any lock). Returns the provider reference."""
+    def mark() -> None:
+        ms.lock(db, Order, o.id)                                    # D26 order → payment → refund
+        ms.lock(db, Payment, p.id)
+        ref = ms.lock(db, Refund, r.id)
+        if ref.status != "APPROVED":
+            raise Conflict(f"Refund {ref.refund_code} is {ref.status}; only an APPROVED refund is completed.", error_code="REFUND_NOT_APPROVED")
+        if _refund_attempt(db, ref) is not None:
+            raise Conflict(f"The provider refund of {ref.refund_code} was already attempted; complete it manually with the provider's "
+                           "reference and evidence.", error_code="REFUND_IN_PROGRESS")
+        db.add(PaymentEvent(payment_id=p.id, provider=impl.code, external_event_id=_attempt_id(ref), external_payment_id=p.external_reference,
+                            event_type="REFUND_ATTEMPT", payload_sha256=hashlib.sha256(_attempt_id(ref).encode()).hexdigest(),
+                            outcome="IGNORED", note="Outbox: provider refund requested (idempotency key = refund code)"))
+        db.flush()                                                  # the unique (provider, event id) index refuses a concurrent attempt
+        ls.audit(db, ctx, "REFUND_PROVIDER_ATTEMPTED", REFUND_ENTITY, ref.id, os_.parties(o),
+                 {"refund_code": ref.refund_code, "provider": impl.code, "idempotency_key": ref.refund_code})
+    try:
+        ls.run(db, ctx, mark)                                       # committed BEFORE the provider is called
+    except IntegrityError:
+        raise Conflict("The provider refund is already being attempted.", error_code="REFUND_IN_PROGRESS") from None
+    try:
+        return impl.refund(p.external_reference or "", r.amount, r.currency, r.refund_code).external_id
+    except Exception as e:                                          # unknown outcome: the provider may have refunded
+        db.rollback()
+        ls.audit(db, ctx, "REFUND_PROVIDER_UNCONFIRMED", REFUND_ENTITY, r.id, os_.parties(o),
+                 {"refund_code": r.refund_code, "provider": impl.code, "error": type(e).__name__})
+        db.commit()
+        if isinstance(e, ManualActionRequired):
+            raise Conflict(str(e), error_code="MANUAL_ACTION_REQUIRED") from None
+        raise Conflict("The payment provider did not confirm the refund; nothing is retried automatically. Reconcile it with the provider "
+                       "and complete it manually with the reference and evidence.", error_code="REFUND_UNCONFIRMED") from None
 
 
 def _payment_resolver(db: Session, principal: Principal, entity_id: uuid.UUID, kind: str) -> None:

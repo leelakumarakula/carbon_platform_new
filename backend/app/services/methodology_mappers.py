@@ -30,7 +30,8 @@ RULE_COMMON = ("rule_code", "title", "description", "source_reference", "sort_or
 
 def version_out(db: Session, v: MethodologyVersion) -> VersionOut:
     rs = msvc.rules(db, v.id)
-    return VersionOut.model_validate({**{f: getattr(v, f) for f in VERSION_FIELDS}, "rule_counts": {k: len(x) for k, x in rs.items()}})
+    return VersionOut.model_validate({**{f: getattr(v, f) for f in VERSION_FIELDS}, "calculation_readiness": shown_readiness(v),
+                                     "rule_counts": {k: len(x) for k, x in rs.items()}})
 
 
 def rule_out(kind: str, r: Any) -> RuleOut:
@@ -43,6 +44,19 @@ def rule_out(kind: str, r: Any) -> RuleOut:
     return RuleOut(id=r.id, kind=kind, data=data, **{k: getattr(r, k) for k in RULE_COMMON})  # type: ignore[arg-type]
 
 
+def shown_readiness(v: MethodologyVersion) -> str:
+    """The readiness the module really has: a PRODUCTION_READY decision taken for an earlier module code version (registry.bind
+    refuses it) is shown as NOT_PRODUCTION_READY, so no screen claims a readiness the engine will not honour."""
+    if v.calculation_readiness == "PRODUCTION_READY" and not msvc.readiness_current(v):
+        return "NOT_PRODUCTION_READY"
+    return v.calculation_readiness
+
+
+def _can_catalog(principal: Principal, code: str, v: MethodologyVersion, m: Methodology) -> bool:
+    """Catalog actions are platform functions inside the caller's environment (methodology_service._require / _in_environment)."""
+    return principal.has_platform(code) and (principal.environment_organization_ids is None or principal.user.environment == m.environment)
+
+
 def version_detail(db: Session, principal: Principal, m: Methodology, v: MethodologyVersion) -> VersionDetail:
     rs = msvc.rules(db, v.id)
     base = version_out(db, v)
@@ -51,9 +65,10 @@ def version_detail(db: Session, principal: Principal, m: Methodology, v: Methodo
                          readiness_request={"requested_by": str(req.changed_by) if req.changed_by else None,
                                             "requested_at": req.changed_at.isoformat(), "evidence": req.reason} if req else None,
                          rules=[rule_out(k, r) for k, items in rs.items() for r in items],
-                         can_edit=principal.has(P.METHODOLOGIES_MANAGE) and v.status == "DRAFT",
-                         can_submit=principal.has(P.METHODOLOGIES_MANAGE) and v.status == "DRAFT",
-                         can_approve=principal.has(P.METHODOLOGIES_APPROVE) and v.status == "IN_REVIEW" and v.submitted_by != principal.user_id)
+                         can_edit=_can_catalog(principal, P.METHODOLOGIES_MANAGE, v, m) and v.status == "DRAFT",
+                         can_submit=_can_catalog(principal, P.METHODOLOGIES_MANAGE, v, m) and v.status == "DRAFT",
+                         can_approve=_can_catalog(principal, P.METHODOLOGIES_APPROVE, v, m) and v.status == "IN_REVIEW"
+                         and v.submitted_by != principal.user_id)
 
 
 def methodology_out(db: Session, m: Methodology) -> MethodologyOut:
@@ -85,7 +100,7 @@ def evaluation_out(db: Session, ev: MethodologyEvaluation) -> EvaluationOut:
         rules = [RuleResultOut.model_validate(x) for x in json.loads(r.rule_results)]
         cands.append(CandidateOut(
             id=r.id, methodology_id=m.id, methodology_code=m.code, methodology_name=m.name, methodology_version_id=v.id,
-            version_label=v.version_label, version_status=v.status, calculation_readiness=v.calculation_readiness,
+            version_label=v.version_label, version_status=v.status, calculation_readiness=shown_readiness(v),
             is_demo_illustrative=v.is_demo_illustrative, outcome=r.outcome, rules_version=r.rules_version, rules=rules,  # type: ignore[arg-type]
             evidence_requirements=sorted({x.evidence_requirement for x in rules if x.evidence_requirement and x.check in ("PASS", "FAIL")}),
             reviews=[ReviewOut(id=x.id, evaluation_result_id=x.evaluation_result_id, recommendation=x.recommendation, notes=x.notes,
@@ -106,7 +121,7 @@ def project_methodology_out(db: Session, pm: ProjectMethodology) -> ProjectMetho
     return ProjectMethodologyOut(id=pm.id, methodology_id=m.id, methodology_code=m.code, methodology_name=m.name, methodology_version_id=v.id,
                                  version_label=v.version_label, version_status=v.status, rules_version=pm.rules_version,
                                  monitoring_rules_version=pm.monitoring_rules_version, calculation_rules_version=pm.calculation_rules_version,
-                                 calculation_readiness=v.calculation_readiness, status=pm.status, confirmation_notes=pm.confirmation_notes,
+                                 calculation_readiness=shown_readiness(v), status=pm.status, confirmation_notes=pm.confirmation_notes,
                                  confirmed_by=pm.confirmed_by, locked_at=pm.locked_at, unlocked_at=pm.unlocked_at,
                                  unlock_reason=pm.unlock_reason, newer_version_available=newer)
 

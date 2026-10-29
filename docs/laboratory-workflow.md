@@ -8,7 +8,8 @@ and text are stored exactly as the laboratory reported them, and every rule belo
 engagement (project proposes → laboratory accepts)
   → sample registered from a SUBMITTED / ACCEPTED field record  → tests created automatically (one per in-scope rule)
   → sealed → added to a shipment → dispatched → received by the laboratory (per item) → laboratory registration (accession)
-  → test started → result entered (+ PDF report) → submitted → laboratory QA (another LAB_MANAGER) → APPROVED
+  → test started → result entered (+ PDF report, replaceable only while the result is DRAFT — `RESULT_NOT_EDITABLE` once submitted,
+  fix 29/10) → submitted → laboratory QA (another LAB_MANAGER) → APPROVED
   → approved result + lineage visible to project users; the Phase 5 field record shows ANALYSED (display only)
 ```
 

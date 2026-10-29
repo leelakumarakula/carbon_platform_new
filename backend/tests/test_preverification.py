@@ -52,7 +52,8 @@ def _run(db: Session, k: CalcCtx, actor: Actor | None = None, approve: bool = Tr
     run = cs.submit(db, actx, a, run.id)
     cs.start_qa(db, qctx, q, run.id)
     cs.complete_qa(db, qctx, q, run.id, "PASS", "TEST checks pass", resolver=k.resolver)
-    return cs.approve(db, qctx, q, run.id, "TEST approved")
+    s, sctx = as_principal(db, k.signer)                    # approver ≠ QA reviewer
+    return cs.approve(db, sctx, s, run.id, "TEST approved")
 
 
 def _recalc(db: Session, k: CalcCtx, prev: CalculationRun) -> CalculationRun:
@@ -64,7 +65,8 @@ def _recalc(db: Session, k: CalcCtx, prev: CalculationRun) -> CalculationRun:
     run = cs.submit(db, actx, a, run.id)
     cs.start_qa(db, qctx, q, run.id)
     cs.complete_qa(db, qctx, q, run.id, "PASS", "TEST checks pass", resolver=k.resolver)
-    return cs.approve(db, qctx, q, run.id, "TEST re-run approved")
+    s, sctx = as_principal(db, k.signer)
+    return cs.approve(db, sctx, s, run.id, "TEST re-run approved")
 
 
 def _finding(client: TestClient, actor: Actor, run_id: Any, **kw: Any) -> Any:
@@ -187,7 +189,8 @@ def test_report_approved_only_deterministic_tamper_supersession_and_guard(client
     cs.submit(db, actx, a, calculated.id)
     cs.start_qa(db, qctx, q, calculated.id)
     cs.complete_qa(db, qctx, q, calculated.id, "PASS", "TEST checks pass", resolver=k.resolver)
-    run = cs.approve(db, qctx, q, calculated.id, "TEST approved")
+    s, sctx = as_principal(db, k.signer)
+    run = cs.approve(db, sctx, s, calculated.id, "TEST approved")
     assert client.post(f"{CALC}/runs/{run.id}/reports", headers=k.qa.headers).status_code == 403             # manage only
     monkeypatch.setattr(get_settings(), "CALCULATION_REPORT_MAX_ROWS", 2)
     assert client.post(f"{CALC}/runs/{run.id}/reports", headers=k.analyst.headers).json()["error_code"] == "REPORT_TOO_LARGE"

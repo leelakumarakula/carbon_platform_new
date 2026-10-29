@@ -16,7 +16,7 @@
 | 10 | Marketplace: buyer KYC, listings, orders, manual payments, refunds (no fee, tax, commission or payout) | **Done** |
 | 11 | Revenue, farmer entitlement, payouts & reconciliation (configurable sharing; no tax, fee or payout provider) | **Done** |
 | 12A | Background job infrastructure (Celery + Redis transport, SQL Server job record, scheduled expiry sweeps, orphan scan, retention infrastructure) | **Done** |
-| 12B | Remaining production hardening (S3, antivirus, monitoring stack, Redis rate limiter, backup / restore, performance) | — |
+| 12B | Production hardening: 12B-I storage & antivirus boundary, 12B-II runtime hardening (Redis rate limiter, proxies, health, metrics, key rotation), 12B-III operations (backup / restore, retention, disk safety, runbooks) | **Done** (code; deployment environment not provisioned) |
 
 ## Phase 1 — delivered
 
@@ -828,10 +828,11 @@ Tests
   - Each E2E run adds an engagement, two samples, two shipments and laboratory results to its DEMO project in the development
     database.
 - Phase 7:
-  - No calculation module is registered: a real methodology must be entered from its authoritative source and its module implemented
-    and verified with reference tests; illustrative DEMO equations need explicit approval. Until then every calculation is blocked
-    (CONFIGURATION_REQUIRED — NO_CALCULATION_MODULE).
-  - Modules are NOT_PRODUCTION_READY (blocked in production); the production-readiness workflow is deferred.
+  - Superseded: 13 calculation modules are now registered (`app/calculation/registry.py`: VM0042 v2.2 coffee, GS402 ×5, VM0047,
+    VM0044, CCTS FR05.002 / FR05.001, VM0051, CCTS AG04.002, GS403), with specs in `methodology-docs/*_calculation_spec.md`. A project
+    whose locked methodology version has no module is still blocked (CONFIGURATION_REQUIRED — NO_CALCULATION_MODULE).
+  - Every module is NOT_PRODUCTION_READY and therefore blocked in production; a module becomes usable there only through the two-person
+    production-readiness approval on its methodology version.
   - Execution is synchronous with an input-size guard; background execution (Celery / Redis) is deferred to Phase 12.
   - Reference / baseline periods for multi-period (remeasurement) modules and `calculation_run_datasets` come with the first module that
     needs them. Calculation report PDF, findings and farm-level allocation are deferred.
@@ -839,16 +840,16 @@ Tests
 - Phase 8A:
   - Internal only: VVB/ACVA organizations, assignment, VVB findings, corrective actions, validation / verification decisions and states
     are Phase 8B (not started). READY is "internally approved for submission to verification", not verification.
-  - Without a registered calculation module no run reaches APPROVED outside tests, so reports and READY readiness are exercised only with
-    the TEST-only fixture; DEMO shows the blocked path.
+  - On the seeded DEMO data no run reaches APPROVED, so reports and READY readiness are exercised with the TEST-only fixture and the
+    VM0042 coffee end-to-end test (`tests/test_e2e_vm0042_coffee.py`); DEMO shows the blocked path.
   - Report generation is synchronous (size-guarded); background generation is deferred to Phase 12. The PDF is text-only.
   - Cross-module automated checks (duplicate farm, overlaps) are not part of calculation readiness. Double counting across projects
     (the same farm, or overlapping farms, ACTIVE in two non-closed projects) blocks MRV planning since 14 Oct 2026.
 - Phase 8B:
   - Verification only: validation, registry submission, issuance, credits, serials, buffer and allocation are not implemented; a
     recorded VERIFIED decision is not an issuance. No accreditation is modelled (C4).
-  - Without a registered calculation module no period reaches READY outside tests, so submission, findings and decisions are exercised
-    only with the TEST-only fixture; DEMO shows assignment and COI only.
+  - On the seeded DEMO data no period reaches READY, so submission, findings and decisions are exercised with the TEST-only fixture and
+    the VM0042 coffee end-to-end test; DEMO shows assignment and COI only.
   - Findings belong to one submission; a superseded package's findings remain as history (I5).
   - Each E2E run adds a VVB assignment to its DEMO project (and reuses Niphad's open assignment) in the development database.
 - Phase 9A:
@@ -900,8 +901,15 @@ Tests
     real-worker test uses the test-only `fakeredis` TCP server unless `REDIS_TEST_URL` points at a real Redis.
   - Windows workers use the solo pool, which does not enforce Celery hard time limits (cooperative budgets and SQL leases still bound
     jobs). Production workers are Linux.
-  - Orphan files are detected and reported, never deleted (the storage abstraction has no delete).
-  - No retention period exists, so the purge job purges nothing and job history is kept.
+  - Superseded by 12B-I: `ORPHAN_FILE_SCAN` deletes aged, unreferenced, server-generated objects after a locked re-check (audited).
+  - Superseded by 12B-III: `RETENTION_PURGE` applies 60-day operational policies (access logs, read notifications, worker heartbeats,
+    temporary files); append-only, financial, credit, audit and verification records are never purged.
   - Calculation / report execution, provider polling, notification delivery, the Redis rate limiter, alerting and monitoring are not
     in 12A.
 - The browser logs one expected 401 at start-up: the silent session-restore attempt when nobody is signed in.
+- Fixes of 29 Oct 2026 (identity / HTTP): the sign-in lockout blocks new sign-ins only and no longer ends live sessions; a sign-in
+  flood is audited once per client IP per minute; CORS allows `Idempotency-Key`; unhandled errors keep `X-Request-ID`, CORS headers and
+  the access log; `X-Request-ID` is adopted only from trusted proxies; DEMO security readers no longer see user-less rows; platform
+  organization and audit listings filter with a subquery (no IN list of every organization); `seed-demo` refuses production; member
+  removal takes the account-management checks; restore-drill SQL escapes paths and logical names. Tests:
+  `tests/test_fixes_29_identity.py`.

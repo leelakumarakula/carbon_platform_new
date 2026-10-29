@@ -31,7 +31,9 @@ def get_principal(request: Request, db: DB, token: Annotated[str | None, Depends
     if session is None or session.user_id != claims.user_id or not session.is_active(utcnow()):
         raise AuthenticationFailed("Your session has ended. Please sign in again.", error_code="SESSION_REVOKED")
     user = db.get(User, claims.user_id)
-    if user is None or user.status != UserStatus.ACTIVE.value or user.is_locked():
+    # A sign-in lockout blocks NEW sign-ins only (auth_service.login). It must not end live sessions: anyone can trigger it with
+    # wrong passwords, so checking it here would let a stranger sign a user out at will. Suspension / deactivation still apply.
+    if user is None or user.status != UserStatus.ACTIVE.value:
         raise AuthenticationFailed("This account is not active.", error_code="ACCOUNT_INACTIVE")
     request.state.user_id = user.id
     principal = load_principal(db, user, session.id)

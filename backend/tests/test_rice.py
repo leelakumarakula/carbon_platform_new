@@ -98,3 +98,25 @@ def test_country_ef_and_guards() -> None:
     with pytest.raises(fw.CalculationBlocked) as blocked:
         fw.execute(Vm0051V11(), _snap(Vm0051V11, bad, BASELINE))
     assert blocked.value.code == "INVALID_INPUT"
+
+
+# ---------------------------------------------------------------- fixes 29/10
+def test_records_outside_a_season_block_instead_of_being_dropped() -> None:
+    # diesel dated a week after the season's RI_AREA: before 1.1.0 it formed its own "season" without area and was dropped,
+    # so the project diesel read 0 and the whole baseline diesel was credited
+    snap = _snap(Vm0051V11, PROJECT, BASELINE)
+    diesel = next(r for r in snap["inputs"] if r["variable"] == "DIESEL" and r["context"]["phase"] == "PROJECT")
+    diesel["context"] = {**diesel["context"], "observed_on": "2026-10-27"}
+    with pytest.raises(fw.CalculationBlocked) as e:
+        fw.execute(Vm0051V11(), snap)
+    assert e.value.code == "UNMATCHED_SEASON_RECORD"
+    assert e.value.details["records"] == [{"variable": "DIESEL", "farm_id": "f1", "observed_on": "2026-10-27", "input_seq": diesel["seq"],
+                                           "reason": "NO_SEASON_ON_DATE"}]
+    # dated outside the reporting period, or undated
+    for observed, code in (("2027-07-01", "UNMATCHED_SEASON_RECORD"), (None, "MISSING_OBSERVED_ON")):
+        snap = _snap(CctsAg04002, PROJECT, BASELINE)
+        n = next(r for r in snap["inputs"] if r["variable"] == "N" and r["context"]["phase"] == "PROJECT")
+        n["context"] = {**n["context"], "observed_on": observed}
+        with pytest.raises(fw.CalculationBlocked) as e:
+            fw.execute(CctsAg04002(), snap)
+        assert e.value.code == code

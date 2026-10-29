@@ -91,8 +91,9 @@ def characteristics(db: Session, stratum_id: uuid.UUID) -> list[StratumCharacter
 
 
 def required_characteristics(db: Session, p: Project) -> list[str]:
-    """Stratification variables the locked methodology version configures (SAMPLING rule `stratification_variables`)."""
-    _, v = mrv_access.locked_methodology(db, p)
+    """Stratification variables the locked methodology version configures (SAMPLING rule `stratification_variables`). Also a view
+    (stratum lists of a CLOSED project): writes are refused by their own access check."""
+    _, v = mrv_access.locked_methodology(db, p, read_only=True)
     val = requirements(db, v).value("stratification_variables")
     return [str(x).upper() for x in val] if isinstance(val, list) else []
 
@@ -601,6 +602,8 @@ def get_point(db: Session, principal: Principal, point_id: uuid.UUID, *codes: st
     assert p is not None
     if sp.assigned_collector_id == principal.user_id and principal.can_in_org(P.SAMPLING_COLLECT, p.organization_id) \
             and (not codes or P.SAMPLING_COLLECT in codes):
+        if mrv_access.is_write(codes):
+            mrv_access.require_open(p)     # a CLOSED project's points stay readable, never collected again
         return sp, p
     staff = tuple(c for c in codes if c != P.SAMPLING_COLLECT) or (P.MRV_READ,)
     return sp, mrv_access.project(db, principal, sp.project_id, *staff)
@@ -743,6 +746,8 @@ def get_collection(db: Session, principal: Principal, collection_id: uuid.UUID, 
     assert p is not None
     if fc.collector_id == principal.user_id and principal.can_in_org(P.SAMPLING_COLLECT,
                                                                      p.organization_id) and (not codes or P.SAMPLING_COLLECT in codes):
+        if mrv_access.is_write(codes):
+            mrv_access.require_open(p)
         return fc, p
     staff = tuple(c for c in codes if c != P.SAMPLING_COLLECT) or (P.MRV_READ,)
     return fc, mrv_access.project(db, principal, fc.project_id, *staff)

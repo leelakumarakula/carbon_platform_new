@@ -94,7 +94,10 @@ The same seed and boundaries reproduce the same points.
 - **Code:** `FIELD-YYYY-NNNNNN`.
 - **Start:** only the assigned collector, while the period is DATA_COLLECTION. One open record per point.
 - **Edit, submit, review and correct** are allowed only while the period is DATA_COLLECTION (`PERIOD_NOT_COLLECTING` otherwise).
-  A correction after the dataset was submitted or approved starts with a new dataset version, which re-opens collection.
+  A correction after the dataset was submitted or approved starts with a new dataset version, which re-opens collection (refused
+  with `PERIOD_LOCKED` once a calculation of the period is approved).
+- **CLOSED project:** strata, designs, points and collections stay readable; every sampling write — including the assigned
+  collector's start / edit / submit — is refused with `PROJECT_CLOSED`.
 - **Recorded:**
   - collection time;
   - GPS (lat/lon/accuracy, stored as `geography`);

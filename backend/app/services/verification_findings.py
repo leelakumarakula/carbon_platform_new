@@ -134,7 +134,8 @@ def _current(s: VerificationSubmission, a: VerificationAssignment) -> None:
 
 
 def _refreshed(db: Session, ctx: RequestContext, s: VerificationSubmission, a: VerificationAssignment) -> None:
-    vs.refresh(db, ctx, a)
+    if vs.refresh(db, ctx, a):
+        db.commit()           # refresh no longer commits: persist the invalidation before _current refuses on it
     db.refresh(s)
     _current(s, a)
 

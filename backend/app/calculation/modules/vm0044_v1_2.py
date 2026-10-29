@@ -6,7 +6,7 @@ against the v1.1 PDF in `extract_vm0044.md`). One project = one biochar producti
 - persistent carbon CC = M_used x F_Cp x PR_de (Eqs. 2/6): F_Cp from laboratory analysis (mandatory for high technology) or
   Table 4 by feedstock and process; PR_de from Table 3 by production temperature (0.56 when unknown);
 - production-stage emissions PE_PS = (P_ED + P_EP + P_EC) x M_used / M_produced (Eqs. 3/7); P_EP = 0 for high technology,
-  F_e x GWP_CH4 x M_used for low technology (Eq. 9, default F_e 0.049 t CH4/t);
+  F_e x GWP_CH4 x M_produced for low technology (Eq. 9 on the kiln's whole output, extract A8; default F_e 0.049 t CH4/t);
 - application-stage emissions (Eqs. 11/12), leakage from transport (Eq. 13; activity shifting / diversion = 0);
 - ER = CC x 44/12 − PE_PS − PE_AS − LE (Eqs. 1, 14, 15). No uncertainty deduction and no buffer (VM0044 has none; permanence is
   the 100-year decay factor PR_de).
@@ -99,10 +99,17 @@ ASSUMPTIONS = (
     "or not measured -> 0.56 (the table does not cover < 350 degC; the unknown-temperature value is the conservative choice).",
     "High technology requires laboratory F_Cp and a measured temperature; low technology uses laboratory F_Cp when recorded, otherwise "
     "Table 4 (mixed feedstock: record the class with the lowest value).",
-    "Non-soil applications use the Table 3 soil value (VM0044 §8.2.1) unless a lower literature value is configured.",
-    "Soil biochar with any batch H:C_org above 0.7 is refused (condition 10).",
+    "Non-soil applications use the Table 3 soil value (VM0044 §8.2.1: the soil value unless robust permanence evidence gives a lower "
+    "one; no alternative value is configured). Non-soil use of low-technology biochar is refused (condition 11: non-soil applications "
+    "only for high-technology facilities).",
+    "Soil biochar needs H:C_org results (condition 10); soil biochar with no H:C_org record or with any batch above 0.7 is refused.",
+    "F_Cp and the production temperature are mass-weighted over the period: one recorded value applies to the whole period; several "
+    "values are weighted by the biochar produced (V44_PRODUCED) on the same observed-on date, and values that cannot be matched to "
+    "exactly one production date block the run (a simple mean is never taken).",
     "Eq. 1: production emissions are subtracted once per facility (the t index of PE_PS is not repeated per biochar type).",
-    "Eq. 9 uses the biochar used (M_used), as printed; production emissions are allocated by M_used / M_produced (Eqs. 3/7).",
+    "Eq. 9 / A8: the kiln methane is computed on the biochar produced (F_e x GWP_CH4 x M_produced) and then allocated by M_used / "
+    "M_produced with the other production emissions (Eqs. 3/7), so the methane of the used biochar is counted once in full (the "
+    "literal reading, Eq. 9 on M_used, would scale it down twice).",
     "Electricity, fossil fuel and freight are calculated with CDM TOOL05 / TOOL03 / TOOL12 outside the platform and recorded in t CO2e; "
     "transport legs with a round trip under 200 km are not recorded (zero).",
     "No uncertainty deduction and no buffer (VM0044 has neither); VCUs are whole tonnes rounded down; a negative balance gives no VCUs.",
@@ -115,7 +122,8 @@ def _var(code: str, rule: str, unit: str, required: bool = False, kind: str = "N
 
 class Vm0044V12(CalculationModule):
     code = "VM0044-V1.2"
-    version = "1.0.0"
+    # 1.1.0: Eq. 9 on the biochar produced (A8), H:C_org required for soil use, mass-weighted F_Cp / temperature, low-tech non-soil refused
+    version = "1.1.0"
     methodology_code = "VM0044"
     version_label = "1.2"
     calculation_rules_version = 0
@@ -164,6 +172,29 @@ class Vm0044V12(CalculationModule):
         return sum((Decimal(v.value) for v in vals), D0) / Decimal(len(vals)), tuple(v.seq for v in vals)
 
     @staticmethod
+    def _weighted(ctx: CalculationContext, var: str) -> tuple[Decimal | None, tuple[int, ...]]:
+        """Period value of a batch property, weighted by the biochar produced: one value applies to the whole period; several values
+        are weighted by the V44_PRODUCED mass of the same observed-on date (one value per production date)."""
+        vals = ctx.values(var)
+        if len(vals) <= 1:
+            return (Decimal(vals[0].value), (vals[0].seq,)) if vals else (None, ())
+        mass: dict[str, Decimal] = {}
+        mass_seqs: dict[str, list[int]] = {}
+        for p in ctx.values("PRODUCED"):
+            day = str(p.context.get("observed_on") or "")
+            mass[day] = mass.get(day, D0) + Decimal(p.value)
+            mass_seqs.setdefault(day, []).append(p.seq)
+        days = [str(v.context.get("observed_on") or "") for v in vals]
+        bad = sorted({d for d in days if not d or d not in mass or mass[d] <= 0 or days.count(d) > 1})
+        if bad:
+            raise CalculationBlocked("INVALID_INPUT", f"{var} has {len(vals)} values in the period; each must be dated like exactly one "
+                                     "V44_PRODUCED batch so it can be weighted by the biochar produced (or record one value for the period).",
+                                     {"variable": var, "reason": "NOT_MASS_WEIGHTABLE", "dates": bad})
+        total = sum((mass[d] for d in days), D0)
+        value = sum((Decimal(v.value) * mass[d] for v, d in zip(vals, days, strict=True)), D0) / total
+        return value, tuple(sorted({v.seq for v in vals} | {q for d in days for q in mass_seqs[d]}))
+
+    @staticmethod
     def _text(ctx: CalculationContext, var: str) -> tuple[str | None, tuple[int, ...]]:
         vals = ctx.values(var)
         if not vals:
@@ -184,7 +215,13 @@ class Vm0044V12(CalculationModule):
             raise CalculationBlocked("MISSING_REQUIRED_INPUT", "No biochar produced in the period (V44_PRODUCED).", {"variable": "PRODUCED"})
         if used > produced:
             raise CalculationBlocked("INVALID_INPUT", f"Biochar used ({used} t) exceeds biochar produced ({produced} t).", {"variable": "PRODUCED"})
+        if self._sum(ctx, "USED_NONSOIL")[0] > 0 and tech != "HIGH":
+            raise CalculationBlocked("INELIGIBLE_BIOCHAR", "Biochar from a low-technology facility may not be credited in non-soil "
+                                     "applications (VM0044 §4 condition 11).", {"variable": "USED_NONSOIL", "reason": "NONSOIL_LOW_TECH"})
         if self._sum(ctx, "USED_SOIL")[0] > 0:
+            if not ctx.values("HC_RATIO"):
+                raise CalculationBlocked("MISSING_REQUIRED_INPUT", "Biochar applied to soil needs the H:C_org ratio of its batches (V44_HC_RATIO, "
+                                         "at most 0.7; VM0044 §4 condition 10).", {"variable": "HC_RATIO", "reason": "HC_RATIO_MISSING"})
             too_high = [v for v in ctx.values("HC_RATIO") if Decimal(v.value) > self._k(ctx, "HC_MAX")]
             if too_high:
                 raise CalculationBlocked("INELIGIBLE_BIOCHAR", "A batch has H:C_org above 0.7: it may not be credited for soil application "
@@ -198,7 +235,7 @@ class Vm0044V12(CalculationModule):
                                          {"variable": "TEMP"})
 
     def _fcp(self, ctx: CalculationContext) -> tuple[Decimal, tuple[int, ...]]:
-        lab, seqs = self._mean(ctx, "FCP")
+        lab, seqs = self._weighted(ctx, "FCP")
         if lab is not None:
             return lab, seqs
         feed, fs = self._text(ctx, "FEEDSTOCK")
@@ -210,7 +247,7 @@ class Vm0044V12(CalculationModule):
         return Decimal(c.value), (*fs, *ps, c.seq)
 
     def _pr(self, ctx: CalculationContext) -> tuple[Decimal, tuple[int, ...]]:
-        temp, seqs = self._mean(ctx, "TEMP")
+        temp, seqs = self._weighted(ctx, "TEMP")
         if temp is None or temp < 350:
             code = "PR_UNKNOWN"
         elif temp > 600:
@@ -245,11 +282,12 @@ class Vm0044V12(CalculationModule):
         else:
             fe, fe_seqs = self._mean(ctx, "FE")
             fe_seqs = fe_seqs or (ctx.constant("FE_DEFAULT").seq,)
-            p_ep = (fe if fe is not None else self._k(ctx, "FE_DEFAULT")) * self._k(ctx, "GWP_CH4") * used                           # Eq. 9
-            ep_in = (*t_seqs, *fe_seqs, ctx.constant("GWP_CH4").seq)
+            # Eq. 9 on the kiln's whole output (A8): Eq. 7 then allocates it to the used biochar by M_used / M_produced
+            p_ep = (fe if fe is not None else self._k(ctx, "FE_DEFAULT")) * self._k(ctx, "GWP_CH4") * produced                       # Eq. 9
+            ep_in = (*t_seqs, *fe_seqs, *pr_seqs, ctx.constant("GWP_CH4").seq)
         pe_ps = (pre + p_ep + aux) * used / produced                                                                                # Eqs. 3/7
         processing, proc_seqs = self._sum(ctx, "PE_PROCESSING")
-        return [Output("P_EP", "EMISSIONS", R_PE, p_ep, T, inputs=ep_in, outputs=("M_USED",)),
+        return [Output("P_EP", "EMISSIONS", R_PE, p_ep, T, inputs=ep_in),
                 Output("PE_PS", "EMISSIONS", R_PE, pe_ps, T, inputs=(*pr_seqs, *pre_seqs, *aux_seqs), outputs=("P_EP", "M_USED")),
                 Output("PE_AS", "EMISSIONS", R_PE, processing, T, inputs=proc_seqs or (ctx.constant("C_TO_CO2").seq,))]        # Eqs. 11/12
 

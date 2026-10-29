@@ -4,6 +4,7 @@ Access = organization-scoped permission  OR  self-service (the farmer's own logi
 Out-of-scope records raise NotFound so their existence is not revealed.
 """
 import uuid
+from collections.abc import Set as AbstractSet
 
 from app.core.errors import NotFound, PermissionDenied
 from app.security.permissions import P
@@ -38,7 +39,7 @@ def require(principal: Principal, code: str, organization_id: uuid.UUID, owner_u
     raise not_found
 
 
-def read_scope(principal: Principal, code: str) -> tuple[frozenset[uuid.UUID] | None, bool]:
+def read_scope(principal: Principal, code: str) -> tuple[AbstractSet[uuid.UUID] | None, bool]:
     """For list queries: (organization scope or None for all, include own records via self-service).
 
     A platform-wide grant is limited to the organizations of the caller's environment (Principal.scope_for)."""

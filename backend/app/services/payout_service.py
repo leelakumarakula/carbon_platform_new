@@ -6,8 +6,11 @@ FAILED / UNCONFIRMED / ON_HOLD. Calculator ≠ approver ≠ executor; executor �
 Phase 2 bank account — referenced, never copied (last 4 only), re-checked under lock at execution (a change puts the payout ON_HOLD).
 
 MANUAL adapter (the only runtime adapter): finance pays at the bank, then records the bank reference and a PAYOUT_EVIDENCE PDF (PAID).
-PAID is not RECONCILED: a different person matches it against a statement (MATCHED → RECONCILED, otherwise EXCEPTION). A reversal of
-already-paid revenue is a recovery case closed manually with a resolution — no automatic clawback.
+PAID is not RECONCILED: a different person matches it against a statement (MATCHED → RECONCILED, otherwise EXCEPTION). The amount and
+currency must always match. A reference mismatch is MATCHED only as the resolution of an earlier EXCEPTION, by a reconciler who recorded
+none of the payout's exceptions (≠ executor as always), with a resolution note and the RECONCILIATION_EVIDENCE every reconciliation
+carries — the person who raised an exception can never also clear it (SEPARATION_OF_DUTIES). A reversal of already-paid revenue is a
+recovery case closed manually with a resolution — no automatic clawback. Finance is notified in-app when a payout is PAID.
 """
 import uuid
 from collections import defaultdict
@@ -50,11 +53,12 @@ from app.services import finance_service as fs
 from app.services import ledger_service as ls
 from app.services import marketplace_service as ms
 from app.services import settlement_service as ss
+from app.services.notification_service import notify, org_holders
 from app.services.workflows import PAYOUT_ADJUSTMENT_MACHINE, PAYOUT_MACHINE
 
 ENTITY = "payout"
 PAYOUT_VIEW = (P.PAYOUTS_READ, P.PAYOUTS_CALCULATE, P.PAYOUTS_APPROVE, P.PAYOUTS_EXECUTE, P.PAYOUTS_RECONCILE)
-LIVE = ("REJECTED", "CANCELLED", "FAILED")                     # statuses that free the (run, farmer) slot
+SLOT_FREEING = ("REJECTED", "CANCELLED", "FAILED")             # dead statuses: they free the (run, farmer) slot for a new payout
 
 
 def adapter_for(code: str, override: PayoutAdapter | None = None) -> PayoutAdapter:
@@ -143,7 +147,7 @@ def create_for_run(db: Session, ctx: RequestContext, principal: Principal, run_i
 
     def op() -> list[Payout]:
         x = ms.lock(db, SettlementRun, r.id)
-        taken = set(db.scalars(select(Payout.farmer_id).where(Payout.settlement_run_id == x.id, Payout.status.not_in(LIVE))).all())
+        taken = set(db.scalars(select(Payout.farmer_id).where(Payout.settlement_run_id == x.id, Payout.status.not_in(SLOT_FREEING))).all())
         created = []
         for farmer_id, amount in sorted(_owed(db, x.id).items(), key=lambda kv: str(kv[0])):
             if amount <= 0 or farmer_id in taken:
@@ -289,6 +293,13 @@ def initiate(db: Session, ctx: RequestContext, principal: Principal, payout_id: 
                              None)
 
 
+def _notify_paid(db: Session, x: Payout) -> None:
+    """Finance of the paying organization: the payout is PAID and now awaits reconciliation by someone other than its executor."""
+    notify(db, [x.calculated_by, x.approved_by, *org_holders(db, x.organization_id, P.PAYOUTS_RECONCILE, P.PAYOUTS_APPROVE)], "PAYOUT_PAID",
+           f"Payout paid: {x.payout_code} — {x.amount} {x.currency}", f"Bank reference {x.external_reference or '(pending)'}; reconcile it "
+           "against the bank statement.", ENTITY, x.id, "/finance/payouts")
+
+
 def _provider_outcome(db: Session, ctx: RequestContext, po: Payout, to: str, external_id: str | None, note: str | None) -> Payout:
     def op() -> Payout:
         x = ms.lock(db, Payout, po.id)
@@ -300,6 +311,7 @@ def _provider_outcome(db: Session, ctx: RequestContext, po: Payout, to: str, ext
         frm = _move(db, ctx, x, to, note)
         if to == "PAID":
             x.paid_at = utcnow()
+            _notify_paid(db, x)
         if to == "FAILED":
             x.reason = note
         _tx(db, x, to if to in ("PAID", "FAILED", "UNCONFIRMED") else "STATUS_QUERIED", None, note=note)
@@ -363,6 +375,7 @@ def confirm_paid(db: Session, ctx: RequestContext, principal: Principal, payout_
         _tx(db, x, "PAID", principal.user_id, evidence=data.document_id, note=data.note)
         _audit(db, ctx, "PAYOUT_PAID", x, {"status": "PAID", "external_reference": ref, "evidence_document_id": data.document_id}, None,
                {"status": frm})
+        _notify_paid(db, x)
         return x
     return ls.run(db, ctx, op)
 
@@ -425,11 +438,17 @@ def reconcile(db: Session, ctx: RequestContext, principal: Principal, payout_id:
         x = ms.lock(db, Payout, po.id)
         if x.status != "PAID":
             raise Conflict(f"Payout {x.payout_code} is {x.status}; only a PAID payout is reconciled.", error_code="PAYOUT_NOT_PAID")
-        had_exception = db.scalars(select(PayoutReconciliation.id).where(PayoutReconciliation.payout_id == x.id,
-                                                                         PayoutReconciliation.result == "EXCEPTION")).first() is not None
+        raisers = set(db.scalars(select(PayoutReconciliation.reconciled_by).where(PayoutReconciliation.payout_id == x.id,
+                                                                                  PayoutReconciliation.result == "EXCEPTION")).all())
         same_money = amount == x.amount and currency == x.currency
         same_ref = data.statement_reference.strip() == (x.external_reference or "")
-        resolved = had_exception and bool(data.note and data.note.strip())
+        resolving = bool(raisers) and bool(data.note and data.note.strip())
+        if same_money and not same_ref and resolving and principal.user_id in raisers:
+            raise PermissionDenied("You recorded a reconciliation exception on this payout, so someone else must resolve it.",
+                                   error_code="SEPARATION_OF_DUTIES", details={"reasons": ["you recorded an exception on this payout"]})
+        # a reference mismatch is matched only as the resolution of an earlier exception: by a different reconciler, with a resolution
+        # note and this reconciliation's own RECONCILIATION_EVIDENCE (required above); money is never matched by a note
+        resolved = resolving and principal.user_id not in raisers
         result = "MATCHED" if same_money and (same_ref or resolved) else "EXCEPTION"
         rec = PayoutReconciliation(payout_id=x.id, result=result, statement_reference=data.statement_reference.strip(), statement_amount=amount,
                                    statement_currency=currency, statement_date=data.statement_date, evidence_document_id=data.document_id,
@@ -437,7 +456,8 @@ def reconcile(db: Session, ctx: RequestContext, principal: Principal, payout_id:
         db.add(rec)
         x.action_key = key
         payload = {"result": result, "statement_reference": rec.statement_reference, "statement_amount": str(amount),
-                   "statement_currency": currency, "amount_matches": same_money, "reference_matches": same_ref}
+                   "statement_currency": currency, "amount_matches": same_money, "reference_matches": same_ref,
+                   "resolves_exception": result == "MATCHED" and not same_ref, "evidence_document_id": data.document_id}
         if result == "MATCHED":
             frm = _move(db, ctx, x, "RECONCILED")
             x.reconciled_at = utcnow()

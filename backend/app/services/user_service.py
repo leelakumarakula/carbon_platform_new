@@ -221,6 +221,11 @@ def _guard_escalation(principal: Principal, role: Role, org_id: uuid.UUID | None
                                error_code="ROLE_ESCALATION_BLOCKED", details={"missing_permissions": missing})
 
 
+# Shared with organization_service.remove_member (removing a member revokes the roles held in that organization).
+require_manage = _require_manage
+guard_escalation = _guard_escalation
+
+
 def assign_role(db: Session, ctx: RequestContext, principal: Principal, user_id: uuid.UUID, grant: RoleGrantIn) -> User:
     user = get_visible_user(db, principal, user_id)
     if user.status == UserStatus.DEACTIVATED.value:

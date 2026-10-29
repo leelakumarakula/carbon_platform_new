@@ -62,6 +62,9 @@ ScanResult`, `health()`); the vendor adapter is registered with `register_scanne
 ### Flow
 - **Upload:** scanned synchronously before anything is written. INFECTED → refused (422 `MALWARE_DETECTED`, CRITICAL security event,
   nothing stored). ERROR (outside production LIVE) → stored, document **QUARANTINED**, `DOCUMENT_RESCAN` job queued.
+  A refused upload (INFECTED, or scanner unavailable in production LIVE → 503 `SCANNER_UNAVAILABLE`) persists only its security
+  event: the caller's uncommitted work in the same request (e.g. the record the document was meant for) is rolled back first, then
+  the event alone is committed (`document_service._record_refusal`; before 29 Oct 2026 the event's commit also committed that work).
 - **History:** every scan (upload, background rescan, release rescan) is a new row in `document_scans` (append-only trigger; downgrade
   refused while rows exist), with SHA-256, result, provider, engine version, threat, trigger, job, actor and duration.
 - **Background rescan:** job `DOCUMENT_RESCAN` (`maintenance.rescan_documents`) — one document on request, or every document of the

@@ -492,7 +492,7 @@ def farm_facts(db: Session, p: Project, farms: list[ProjectFarm]) -> dict[str, A
     rights = [r for r in repo.carbon_rights(db, p.id) if r.status == "ACTIVE"]
     by_pf = {r.project_farm_id for r in rights}
     all_verified = True
-    open_overlaps = 0
+    open_overlaps = 0   # unresolved overlap flags: OPEN, and CONFIRMED_CONFLICT (a confirmed conflict blocks like an open one)
     for pf in farms:
         farm = farm_repo.get(db, pf.farm_id)
         farmer = db.get(Farmer, pf.farmer_id)
@@ -500,7 +500,7 @@ def farm_facts(db: Session, p: Project, farms: list[ProjectFarm]) -> dict[str, A
             all_verified = False
         open_overlaps += db.query(FarmOverlapCheck).filter(
             ((FarmOverlapCheck.farm_id == pf.farm_id) | (FarmOverlapCheck.other_farm_id == pf.farm_id)),
-            FarmOverlapCheck.status == "OPEN").count()
+            FarmOverlapCheck.status.in_(farm_service.BLOCKING_OVERLAPS)).count()
     b = repo.current_boundary(db, p.id)
     return {"all_verified": all_verified, "all_have_rights": all(pf.id in by_pf for pf in farms),
             "all_rights_verified": bool(rights) and all(r.verification_status == "VERIFIED" for r in rights),

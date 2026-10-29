@@ -39,7 +39,8 @@ from app.security.principal import Principal
 from app.services import calculation_service as cs
 from app.services import document_service
 
-GENERATOR_VERSION = f"calc-report-1.0+{pdf.WRITER_VERSION}"
+# 1.1: the module's documented assumptions (methodology interpretations) are part of the report
+GENERATOR_VERSION = f"calc-report-1.1+{pdf.WRITER_VERSION}"
 ENTITY = "calculation_run"
 
 
@@ -115,7 +116,8 @@ def build_content(db: Session, run: CalculationRun) -> dict[str, Any]:
         "reporting_period": snap.get("reporting_period"),
         "crediting_period": snap.get("crediting_period"),
         "methodology": snap.get("methodology"),
-        "module": {k: mod.get(k) for k in ("code", "version", "readiness", "label", "steps", "constants", "variables")},
+        "module": {**{k: mod.get(k) for k in ("code", "version", "readiness", "label", "steps", "constants", "variables")},
+                   "assumptions": list(mod.get("assumptions") or [])},
         "engine_version": run.engine_version,
         "dataset": {**(snap.get("dataset") or {}), "evidence": ds.get("evidence", []), "field_collections": len(collections),
                     "sampling_points": len(points)},
@@ -151,6 +153,8 @@ def lines(content: dict[str, Any]) -> list[str]:
     out += [f"  {r['rule_code']} [{r['step']}] {r.get('equation_reference') or ''} {r.get('title') or ''}" for r in meth.get("calculation_rules", [])]
     out += ["", "STEPS"] + [f"  {s['step']}: {s['status']} {s.get('rule_code') or ''}" for s in mod.get("steps") or []]
     out += ["", "CONSTANTS"] + [f"  {c['code']} = {c['value']} {c['unit']} ({c['source_reference']})" for c in mod.get("constants") or []]
+    out += ["", "ASSUMPTIONS (documented interpretations of the methodology)"] + (
+        [f"  {i}. {a}" for i, a in enumerate(mod.get("assumptions") or [], 1)] or ["  none declared"])
     out += ["", "INPUTS (frozen)"]
     for i in content["inputs"]:
         where = " · ".join(x for x in (i.get("field_collection"), i.get("sampling_point"), i.get("stratum")) if x)

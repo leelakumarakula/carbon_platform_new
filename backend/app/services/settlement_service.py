@@ -2,7 +2,13 @@
 
 Inputs (all immutable when used): the recognized and reversed revenue not yet in an active run, the approved costs not yet in an active
 run (only when the revenue-share version deducts costs), one APPROVED revenue-share version covering the period, one APPROVED farm
-allocation version of the period. Model (`calculate_figures`, fin-calc-1):
+allocation version of the period.
+
+Costs: a period's own approved costs are always deducted by that period's run (when the version deducts costs). Project-level costs
+(no monitoring period) are deducted ONLY by a run whose calculation explicitly opts in (`include_project_costs`), and then exactly once —
+claimed by that run (filtered unique index on active cost items) and freed again only if the run is rejected / cancelled. Without the
+opt-in they are never picked up implicitly by whichever period happens to be calculated first; the snapshot records the choice and the
+number of project-level costs left for a later run. Model (`calculate_figures`, fin-calc-1):
 
     gross          = Σ included revenue records (recognitions > 0, reversals < 0)
     deducted_costs = Σ included approved costs            (0 when the version does not deduct costs)
@@ -190,7 +196,8 @@ def _executed_run_of(db: Session, recognition_id: uuid.UUID) -> uuid.UUID | None
     return run_id if hit else None
 
 
-def calculate(db: Session, ctx: RequestContext, principal: Principal, run_id: uuid.UUID, key: str | None) -> SettlementRun:
+def calculate(db: Session, ctx: RequestContext, principal: Principal, run_id: uuid.UUID, key: str | None,
+              include_project_costs: bool = False) -> SettlementRun:
     r, p = run_for(db, principal, run_id, P.SETTLEMENT_CALCULATE)
     fs.writable(p)
     if ms.replay_action(r, key, "CALCULATED"):
@@ -225,14 +232,23 @@ def calculate(db: Session, ctx: RequestContext, principal: Principal, run_id: uu
                     recovery.append((rec, paid_run))
                     continue
             revenue.append(rec)
+        if include_project_costs and not rv.deduct_approved_costs:
+            raise ValidationFailed(f"Revenue-share version {rv.version_code} does not deduct costs; project-level costs cannot be included.",
+                                   error_code="COSTS_NOT_DEDUCTED")
         costs: list[ProjectCost] = []
+        project_level_left = 0
         if rv.deduct_approved_costs:
             used = select(SettlementCostItem.project_cost_id).where(SettlementCostItem.active == true())
-            costs = list(db.scalars(select(ProjectCost).where(
+            unclaimed = select(ProjectCost).where(
                 ProjectCost.project_id == p.id, ProjectCost.status == "APPROVED", ProjectCost.currency == x.currency,
-                ProjectCost.environment == x.environment,
-                (ProjectCost.monitoring_period_id == mp.id) | ProjectCost.monitoring_period_id.is_(None),
-                ProjectCost.id.not_in(used)).order_by(ProjectCost.cost_code)).all())
+                ProjectCost.environment == x.environment, ProjectCost.id.not_in(used))
+            costs = list(db.scalars(unclaimed.where(ProjectCost.monitoring_period_id == mp.id)).all())
+            project_level = list(db.scalars(unclaimed.where(ProjectCost.monitoring_period_id.is_(None))).all())
+            if include_project_costs:                               # explicit opt-in: this run carries the project-level costs, once
+                costs += project_level
+            else:
+                project_level_left = len(project_level)
+            costs.sort(key=lambda c: c.cost_code)
         for rec, paid_run in recovery:                              # recovery cases stand even if this run is later refused
             _open_recovery(db, ctx, p, rec, paid_run)
         if not revenue:
@@ -250,7 +266,9 @@ def calculate(db: Session, ctx: RequestContext, principal: Principal, run_id: uu
                                       "farmer_id": str(ln.farmer_id), "share_pct": str(ln.share_pct)} for ln in lines]},
             "revenue": [{"id": str(rec.id), "revenue_code": rec.revenue_code, "kind": rec.kind, "amount": str(rec.amount),
                          "order_item_id": str(rec.order_item_id)} for rec in revenue],
-            "costs": [{"id": str(c.id), "cost_code": c.cost_code, "category": c.category, "amount": str(c.amount)} for c in costs],
+            "costs": [{"id": str(c.id), "cost_code": c.cost_code, "category": c.category, "amount": str(c.amount),
+                       "scope": "PERIOD" if c.monitoring_period_id else "PROJECT"} for c in costs],
+            "include_project_costs": include_project_costs, "project_level_costs_not_included": project_level_left,
         }
         res = calculate_figures(inputs)
 
@@ -286,7 +304,8 @@ def calculate(db: Session, ctx: RequestContext, principal: Principal, run_id: uu
                  {"run_code": x.run_code, "calculation_version": CALCULATION_VERSION, "input_sha256": x.input_sha256,
                   "revenue_records": len(revenue), "costs": len(costs), "gross_revenue": res["gross_revenue"],
                   "deducted_costs": res["deducted_costs"], "distributable": res["distributable"], "farmer_total": res["farmer_total"],
-                  "developer_residual": res["developer_residual"], "recovery_cases_opened": len(recovery)}, None, {"status": frm})
+                  "developer_residual": res["developer_residual"], "recovery_cases_opened": len(recovery),
+                  "include_project_costs": include_project_costs, "project_level_costs_not_included": project_level_left}, None, {"status": frm})
         return x
     return ls.run(db, ctx, op)
 

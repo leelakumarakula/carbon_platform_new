@@ -75,3 +75,28 @@ def test_paris_alignment_gate() -> None:
     assert _out(res, "PAA_BLOCKED_SHARE") == pytest.approx(181 / 365, rel=1e-9)
     ok = fw.execute(Gs403V21(), _snap("2025-07-01", "2026-06-30", [("PAA", "YES", "", "TEXT")]))
     assert _out(ok, "PAA_BLOCKED_SHARE") == 0 and _out(ok, "GSVER_PROJECT") >= _out(res, "GSVER_PROJECT")
+
+
+# ---------------------------------------------------------------- fixes 29/10
+def test_units_already_issued_are_required_after_the_first_period() -> None:
+    def without_prior(number: int | None) -> dict:
+        snap = _snap()
+        snap["inputs"] = [r for r in snap["inputs"] if r["variable"] != "ISSUED_PRIOR"]
+        if number is not None:
+            snap["reporting_period"]["number"] = number
+        return snap
+    for number in (2, None):                                             # a later period, or a snapshot that does not say
+        with pytest.raises(fw.CalculationBlocked) as e:
+            fw.execute(Gs403V21(), without_prior(number))
+        assert e.value.code == "ISSUED_PRIOR_REQUIRED"
+    res = fw.execute(Gs403V21(), without_prior(1))                       # the first period: nothing can have been issued
+    assert _out(res, "ISSUABLE") == pytest.approx(_out(res, "NET_CUMULATIVE"))
+
+
+def test_mu_outputs_use_the_stratum_code() -> None:
+    snap = _snap()
+    for r in snap["inputs"]:
+        if r["context"].get("stratum_record_id") == "M1":
+            r["context"] = {**r["context"], "stratum_code": "MU-TEAK"}
+    codes = {r["output_code"] for r in fw.execute(Gs403V21(), snap).outputs}
+    assert {"V_MEAN_MU-TEAK", "STOCK_MU-TEAK", "CREDITABLE_MU-TEAK", "CREDITABLE_M2"} <= codes

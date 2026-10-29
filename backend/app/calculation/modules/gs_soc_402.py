@@ -28,6 +28,7 @@ from typing import Any, ClassVar
 from app.calculation import framework as fw
 from app.calculation.framework import CalculationBlocked, CalculationContext, CalculationModule, Constant, InputValue, Output, Step, Variable
 from app.calculation.library import esm, stats
+from app.calculation.library.inputs import pair_lab_samples, stratum_labels
 
 D0, D1 = Decimal(0), Decimal(1)
 T = "t CO2e"
@@ -155,7 +156,11 @@ COMMON_ASSUMPTIONS = (
     "Project emissions per farm and source: project records in the period minus the baseline annual mean (5 baseline years) x years in "
     "the period, floored at zero (decreases are never credited). Without baseline records the baseline is 50 % of the project value.",
     "Leakage: per stratum, max[(CY_BL - CY_t) / CY_BL; 0] x area x leakage-area emissions per ha. CY_min is taken as CY_BL (CY_min "
-    "can never exceed CY_BL, so this is conservative); yields are the means of the farms' records (baseline years / this period).",
+    "can never exceed CY_BL, so this is conservative); yields are the means of the farms' records (baseline years / this period). "
+    "Yield records are required (no exemption is applied, G8): a stratum without a farm that has both baseline and period yields, "
+    "or a farm with yields in only one of the two, blocks the run (YIELD_RECORDS_REQUIRED) instead of reading leakage as zero.",
+    "Per-stratum outputs are named by the stratum code, or by a collision-free prefix of the stratum record id when it is not available; "
+    "each sample has exactly one organic carbon and one soil mass result (duplicates or unpaired results block the run).",
     "GS VERs are whole tonnes rounded down; a negative result is reported as REVERSAL with zero credits.",
     "GS 119 v1.2 §3.1: the share of a positive result falling in vintages from 1 January 2026 (by days of the period) is not credited "
     "unless GS_PAA = YES (Gold Standard approved the Paris-aligned transition); the buffer applies to the credited share.",
@@ -170,7 +175,8 @@ A1_ASSUMPTIONS = (
 )
 A3_ASSUMPTIONS = (
     "Approach 3: dSOC in the period = SOC_REF x F_LU x (F_MG,PR x F_I,PR - F_MG,BL x F_I,BL) x (min(T_PR, D) - min(T_PR - years, D)) / D, "
-    "i.e. Eq. 6 at the end minus Eq. 6 at the start of the period (D = 20).",
+    "i.e. Eq. 6 at the end minus Eq. 6 at the start of the period (D = 20); the reported SOC_0 / SOC_T are Eq. 6 at the start / end "
+    "of the period (the time dependency stops D years after the project start).",
     "Uncertainty (Eqs. 7-9): for a factor with a ± % (two standard deviations, IPCC tables) SE = value x % / 200 and t = 1.675 (n unknown); "
     "without a ± %, SE = 50 % and t = 3 (402.4/402.6 §9.1.2). Lower / Upper = the smallest / largest dSOC over all combinations of "
     "the factors' bounds.",
@@ -201,11 +207,13 @@ class _State:
     years: Decimal = D1
     pe: dict[str, Decimal] = field(default_factory=dict)
     pe_seqs: list[int] = field(default_factory=list)
+    labels: dict[str, str] = field(default_factory=dict)              # stratum record -> output-code label
 
 
 class _GsSoc402(CalculationModule):
     """Shared GS 402 chain; subclasses choose the activity module and the quantification approach."""
-    version = "1.0.0"
+    # 1.1.0: yield records required for leakage, A3 SOC_0/SOC_T beyond D years, duplicate lab results, stratum-code output names
+    version = "1.1.0"
     methodology_code = "GS402"
     version_label = "1.0"
     calculation_rules_version = 0           # bound to the selecting methodology version (registry.bind)
@@ -305,19 +313,13 @@ class _GsSoc402(CalculationModule):
             self._measured(ctx, st)
         else:
             self._factors(ctx, st)
+        st.labels = stratum_labels([*ctx.values("AREA"), *(ctx.values("OC_T") if self.approach == "A1" else ())], st.strata)
         st.pe = self._project_emissions(ctx, st)
 
     def _measured(self, ctx: CalculationContext, st: _State) -> None:
         profiles: list[tuple[str, str, esm.Profile, int, list[int]]] = []     # (period, stratum record, profile, increments, seqs)
         for period, oc_var, mass_var in (("CURRENT", "OC_T", "MASS_T"), ("PREVIOUS", "OC_T0", "MASS_T0")):
-            oc = {v.context.get("root_sample_id"): v for v in ctx.values(oc_var)}
-            by_fc: dict[str, list[tuple[InputValue, InputValue]]] = defaultdict(list)
-            for m in ctx.values(mass_var):
-                o = oc.get(m.context.get("root_sample_id"))
-                if o is None:
-                    raise CalculationBlocked("MISSING_REQUIRED_INPUT", f"Sample {m.context.get('root_sample_id')} has a soil mass but no organic "
-                                             "carbon result.", {"variable": oc_var})
-                by_fc[m.context["field_collection_id"]].append((o, m))
+            by_fc = pair_lab_samples(ctx, oc_var, mass_var)
             for fc, pairs in sorted(by_fc.items()):
                 c = pairs[0][1].context
                 if c.get("stratum_role", "PROJECT") != "PROJECT":
@@ -445,10 +447,13 @@ class _GsSoc402(CalculationModule):
 
     # ------------------------------------------------------------------ Approach 3 model (Eq. 6 over the period)
     def _dsoc_a3(self, ctx: CalculationContext, s: _Stratum, f: dict[str, Decimal], years: Decimal) -> Decimal:
+        """Eq. 6 at the end minus Eq. 6 at the start of the last `years` years before T_PR."""
+        return self._change_a3(ctx, f, max(D0, s.factors["T_PR"] - years), s.factors["T_PR"])
+
+    def _change_a3(self, ctx: CalculationContext, f: dict[str, Decimal], t0: Decimal, t1: Decimal) -> Decimal:
+        """Eq. 6 change between t0 and t1 years after the project start; the time dependency stops at D years."""
         d = self._k(ctx, "D_YEARS")
-        t_end = min(s.factors["T_PR"], d)
-        t_start = min(max(D0, s.factors["T_PR"] - years), d)
-        return f["SOC_REF"] * f["F_LU"] * (f["F_MG_PR"] * f["F_I_PR"] - f["F_MG_BL"] * f["F_I_BL"]) * (t_end - t_start) / d
+        return f["SOC_REF"] * f["F_LU"] * (f["F_MG_PR"] * f["F_I_PR"] - f["F_MG_BL"] * f["F_I_BL"]) * (min(t1, d) - min(t0, d)) / d
 
     def _soc_bl_a3(self, ctx: CalculationContext, s: _Stratum) -> Decimal:
         f, d = s.factors, self._k(ctx, "D_YEARS")
@@ -458,30 +463,32 @@ class _GsSoc402(CalculationModule):
     def calculate_baseline(self, ctx: CalculationContext) -> list[Output]:
         st, outs = self._state(ctx), []
         for rec, s in sorted(st.strata.items()):
+            lbl = st.labels[rec]
             if self.approach == "A1":
-                outs.append(Output(f"REF_MASS_{rec[:8]}", "BASELINE", R_BSL, s.ref_mass, "Mg/ha", "STRATUM", rec,
+                outs.append(Output(f"REF_MASS_{lbl}", "BASELINE", R_BSL, s.ref_mass, "Mg/ha", "STRATUM", rec,
                                    inputs=tuple(sorted(set(s.seqs["PREVIOUS"])))))
-                outs.append(Output(f"SOC_0_{rec[:8]}", "BASELINE", R_BSL, stats.mean(s.soc["PREVIOUS"]), "t C/ha", "STRATUM", rec,
+                outs.append(Output(f"SOC_0_{lbl}", "BASELINE", R_BSL, stats.mean(s.soc["PREVIOUS"]), "t C/ha", "STRATUM", rec,
                                    inputs=tuple(sorted(set(s.seqs["PREVIOUS"])))))
             else:
                 soc_bl = self._soc_bl_a3(ctx, s)
                 t_start = max(D0, s.factors["T_PR"] - st.years)
-                outs.append(Output(f"SOC_BL_{rec[:8]}", "BASELINE", R_BSL, soc_bl, "t C/ha", "STRATUM", rec,
+                outs.append(Output(f"SOC_BL_{lbl}", "BASELINE", R_BSL, soc_bl, "t C/ha", "STRATUM", rec,
                                    inputs=(*s.factor_seqs, ctx.constant("D_YEARS").seq)))
-                start = soc_bl + self._dsoc_a3(ctx, s, s.factors, t_start) if t_start > 0 else soc_bl
-                outs.append(Output(f"SOC_0_{rec[:8]}", "BASELINE", R_BSL, start, "t C/ha", "STRATUM", rec, outputs=(f"SOC_BL_{rec[:8]}",)))
+                start = soc_bl + self._change_a3(ctx, s.factors, D0, t_start)                             # Eq. 6 at the period start
+                outs.append(Output(f"SOC_0_{lbl}", "BASELINE", R_BSL, start, "t C/ha", "STRATUM", rec, outputs=(f"SOC_BL_{lbl}",)))
         return outs
 
     def calculate_project(self, ctx: CalculationContext) -> list[Output]:
         st, outs = self._state(ctx), []
         for rec, s in sorted(st.strata.items()):
+            lbl = st.labels[rec]
             if self.approach == "A1":
-                outs.append(Output(f"SOC_T_{rec[:8]}", "PROJECT", R_PRJ, stats.mean(s.soc["CURRENT"]), "t C/ha", "STRATUM", rec,
+                outs.append(Output(f"SOC_T_{lbl}", "PROJECT", R_PRJ, stats.mean(s.soc["CURRENT"]), "t C/ha", "STRATUM", rec,
                                    inputs=tuple(sorted(set(s.seqs["CURRENT"])))))
             else:
-                value = ctx.output(f"SOC_0_{rec[:8]}").value + self._dsoc_a3(ctx, s, s.factors, st.years)             # Eq. 6
-                outs.append(Output(f"SOC_T_{rec[:8]}", "PROJECT", R_PRJ, value, "t C/ha", "STRATUM", rec,
-                                   inputs=tuple(s.factor_seqs), outputs=(f"SOC_0_{rec[:8]}",)))
+                value = ctx.output(f"SOC_0_{lbl}").value + self._dsoc_a3(ctx, s, s.factors, st.years)             # Eq. 6
+                outs.append(Output(f"SOC_T_{lbl}", "PROJECT", R_PRJ, value, "t C/ha", "STRATUM", rec,
+                                   inputs=tuple(s.factor_seqs), outputs=(f"SOC_0_{lbl}",)))
         return outs
 
     def calculate_emissions(self, ctx: CalculationContext) -> list[Output]:
@@ -495,8 +502,9 @@ class _GsSoc402(CalculationModule):
         st = self._state(ctx)
         total, used, areas = D0, [], []
         for rec, s in sorted(st.strata.items()):
-            total += (ctx.output(f"SOC_T_{rec[:8]}").value - ctx.output(f"SOC_0_{rec[:8]}").value) * s.area                    # Eqs. 3/5
-            used += [f"SOC_0_{rec[:8]}", f"SOC_T_{rec[:8]}"]
+            lbl = st.labels[rec]
+            total += (ctx.output(f"SOC_T_{lbl}").value - ctx.output(f"SOC_0_{lbl}").value) * s.area                    # Eqs. 3/5
+            used += [f"SOC_0_{lbl}", f"SOC_T_{lbl}"]
             if s.area_seq is not None:
                 areas.append(s.area_seq)
         return [Output("DSOC_C", "REMOVALS", R_SOC, total, "t C", inputs=tuple(areas), outputs=tuple(used)),
@@ -519,6 +527,13 @@ class _GsSoc402(CalculationModule):
             elif observed is None or p_start <= date.fromisoformat(observed) <= p_end:
                 current[v.farm_id].append(Decimal(v.value))
             seqs.append(v.seq)
+        one_sided = sorted(f for s in st.strata.values() for f in s.farms if bool(base.get(f)) != bool(current.get(f)))
+        no_yield = sorted(st.labels[rec] for rec, s in st.strata.items() if not any(base.get(f) and current.get(f) for f in s.farms))
+        if one_sided or no_yield:
+            raise CalculationBlocked("YIELD_RECORDS_REQUIRED", "Leakage (FM Eq. 19) compares each farm's crop yield in the period with its "
+                                     "baseline yield; without both, a yield reduction would be read as no leakage. Record GS_YIELD for the "
+                                     "baseline years and the period on every farm of each project stratum.",
+                                     {"variable": "YIELD", "strata_without_yields": no_yield, "farms_with_one_phase_only": one_sided})
         displaced = D0                                                       # ha-equivalents of lost production
         for _, s in sorted(st.strata.items()):
             b = [stats.mean(base[f]) for f in s.farms if base.get(f)]

@@ -142,7 +142,7 @@ class CalculationOutput(UUIDPrimaryKey, Base):
     calculation_rule_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("methodology_calculation_rules.id"))
     rule_code: Mapped[str] = mapped_column(Unicode(40))
     equation_reference: Mapped[str | None] = mapped_column(Unicode(120))
-    value: Mapped[str] = mapped_column(Unicode(80))                           # exact decimal string
+    value: Mapped[str] = mapped_column(Unicode(1000))                         # exact decimal string (unrounded; 0024 widened from 80)
     unit: Mapped[str] = mapped_column(Unicode(40))
     level: Mapped[str] = mapped_column(Unicode(20))
     entity_id: Mapped[uuid.UUID | None]                                       # stratum / farm / point when not PROJECT level

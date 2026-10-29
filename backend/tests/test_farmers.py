@@ -246,7 +246,8 @@ def test_farmer_self_service(client: TestClient, db: Session, pm, org) -> None: 
     assert client.get(F, headers=h).json()["total"] == 1
     c = client.post(f"{F}/{f['id']}/contacts", headers=h, json={"contact_type": "ALTERNATE_PHONE", "value": "+91 90000 00000"})
     assert c.status_code == 201
-    assert client.post(f"{F}/{f['id']}/status", headers=h, json={"status": "REGISTERED", "reason": "self"}).status_code == 200
+    # status changes are staff-only (29 Oct fix): the farmer's own login cannot register / activate itself
+    assert client.post(f"{F}/{f['id']}/status", headers=h, json={"status": "REGISTERED", "reason": "self"}).status_code == 403
     # cannot see others, cannot verify, cannot create agreements, cannot suspend
     other = create_farmer(client, pm.headers, org, full_name="Neighbour")
     assert client.get(f"{F}/{other['id']}", headers=h).status_code == 404

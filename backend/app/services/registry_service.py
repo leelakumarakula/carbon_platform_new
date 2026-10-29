@@ -9,7 +9,11 @@ registry responses, reconciliation and the per-period registry view.
 - external calls: SUBMITTING + idempotency key are committed first; a timeout leaves SUBMISSION_UNCONFIRMED (never retried
   automatically); reconciliation decides. The manual adapter never answers: operators record references with evidence
 - a superseded VVB decision invalidates a DRAFT / FROZEN submission; once the registry may know the submission it is only flagged
-  (SOURCE_SUPERSEDED) — nothing external is changed automatically and no history is rewritten (D12)
+  (SOURCE_SUPERSEDED) — nothing external is changed automatically and no history is rewritten (D12); issuances are then refused
+  (credit_issuance: SOURCE_SUPERSEDED, under the submission lock)
+- concurrency: every state change locks the submission row WITH (UPDLOCK, HOLDLOCK, ROWLOCK) and re-checks its status under the lock
+  (two concurrent sends never both reach the registry adapter). The lazy source re-check (`check_source`, `current_decision`) never
+  commits: a write runs it first and commits only that (`_source_first`), then locks; a view commits only its lazy invalidations
 """
 import json
 import uuid
@@ -54,6 +58,7 @@ from app.security.principal import Principal
 from app.services import document_service
 from app.services import registry_access as ra
 from app.services import verification_service as vs
+from app.services.ledger_service import LOCK_HINT
 from app.services.workflows import REGISTRY_ACCOUNT_MACHINE, REGISTRY_REGISTRATION_MACHINE, REGISTRY_SUBMISSION_MACHINE
 
 SNAPSHOT_SCHEMA = "registry-submission-v1"
@@ -312,11 +317,18 @@ def record_registration_rejected(db: Session, ctx: RequestContext, principal: Pr
 
 
 # ---------------------------------------------------------------- eligibility
-def current_decision(db: Session, ctx: RequestContext, period_id: uuid.UUID) -> VerificationDecision | None:
-    """The period's CURRENT VVB decision after the Phase 8B lazy re-check (a recalculation supersedes it first)."""
+def refresh_period(db: Session, ctx: RequestContext, period_id: uuid.UUID) -> bool:
+    """The Phase 8B lazy re-check of every accepted / completed assignment of the period (commit-free; True when something changed)."""
+    changed = False
     for a in db.scalars(select(VerificationAssignment).where(VerificationAssignment.monitoring_period_id == period_id,
                                                              VerificationAssignment.status.in_(("ACCEPTED", "COMPLETED")))).all():
-        vs.refresh(db, ctx, a)
+        changed |= vs.refresh(db, ctx, a)
+    return changed
+
+
+def current_decision(db: Session, ctx: RequestContext, period_id: uuid.UUID) -> VerificationDecision | None:
+    """The period's CURRENT VVB decision after the Phase 8B lazy re-check (a recalculation supersedes it first). Commit-free."""
+    refresh_period(db, ctx, period_id)
     return db.scalars(select(VerificationDecision).where(VerificationDecision.monitoring_period_id == period_id,
                                                          VerificationDecision.status == "CURRENT")).first()
 
@@ -414,17 +426,35 @@ def _transition(db: Session, ctx: RequestContext, s: RegistrySubmission, p: Proj
              reason, {"status": frm})
 
 
-def check_source(db: Session, ctx: RequestContext, s: RegistrySubmission) -> None:
-    """D12: a superseded VVB decision invalidates an unsent submission; a sent one is flagged once, never changed automatically."""
+CLOSED_RSUB = ("REJECTED", "WITHDRAWN", "CANCELLED", "INVALIDATED")
+
+
+def lock_submission(db: Session, submission_id: uuid.UUID) -> RegistrySubmission:
+    """The submission row WITH (UPDLOCK, HOLDLOCK, ROWLOCK), reloaded — status checks of a state change happen after this. Flushes first:
+    sessions do not autoflush, and populate_existing must never overwrite a pending in-memory change."""
+    db.flush()
+    return db.scalars(select(RegistrySubmission).with_hint(RegistrySubmission, LOCK_HINT, "mssql").where(RegistrySubmission.id == submission_id)
+                      .execution_options(populate_existing=True)).one()
+
+
+def check_source(db: Session, ctx: RequestContext, s: RegistrySubmission) -> bool:
+    """D12: a superseded VVB decision invalidates an unsent submission; a sent one is flagged once, never changed automatically.
+    Concurrency-safe and commit-free: the submission is locked and re-checked before it is invalidated / flagged (exactly once); the
+    caller commits. True when anything changed (including the Phase 8B re-check behind it)."""
     d = db.get(VerificationDecision, s.verification_decision_id)
-    if d is None or s.status in ("REJECTED", "WITHDRAWN", "CANCELLED", "INVALIDATED"):
-        return
+    if d is None or s.status in CLOSED_RSUB:
+        return False
+    changed = False
     assignment = db.get(VerificationAssignment, d.assignment_id)
     if assignment is not None:
-        vs.refresh(db, ctx, assignment)
+        changed = vs.refresh(db, ctx, assignment)
+        db.flush()
         db.refresh(d)
     if d.status == "CURRENT":
-        return
+        return changed
+    s = lock_submission(db, s.id)
+    if s.status in CLOSED_RSUB:
+        return changed
     p = db.get(Project, s.project_id)
     account = db.get(RegistryAccount, s.registry_account_id)
     assert p is not None and account is not None
@@ -432,13 +462,23 @@ def check_source(db: Session, ctx: RequestContext, s: RegistrySubmission) -> Non
     if s.status in ("DRAFT", "FROZEN"):
         s.closed_at, s.closed_reason = utcnow(), reason[:2000]
         _transition(db, ctx, s, p, "INVALIDATED", "REGISTRY_SUBMISSION_INVALIDATED", reason)
-        db.commit()
-    elif not db.scalars(select(RegistryEvent).where(RegistryEvent.submission_id == s.id, RegistryEvent.event_type == "SOURCE_SUPERSEDED")).first():
+        return True
+    if not db.scalars(select(RegistryEvent).where(RegistryEvent.submission_id == s.id, RegistryEvent.event_type == "SOURCE_SUPERSEDED")).first():
         ra.event(db, account, "SOURCE_SUPERSEDED", None, submission_id=s.id, outcome=s.status, note=reason[:2000])
         ra.audit(db, ctx, "REGISTRY_SOURCE_SUPERSEDED", "registry_submission", s.id, p.organization_id,
                  {"submission_code": s.submission_code, "status": s.status, "decision_code": d.decision_code,
-                  "note": "Controlled registry action is required for any correction; nothing was changed automatically."}, reason)
+                  "note": "Controlled registry action is required for any correction; issuances on this submission are refused; "
+                          "nothing was changed automatically."}, reason)
+        return True
+    return changed
+
+
+def _source_first(db: Session, ctx: RequestContext, s: RegistrySubmission) -> RegistrySubmission:
+    """Start of a write: the lazy source re-check is committed on its own (nothing of the caller is written yet); then the submission is
+    locked for the caller's status check."""
+    if check_source(db, ctx, s):
         db.commit()
+    return lock_submission(db, s.id)
 
 
 def create_submission(db: Session, ctx: RequestContext, principal: Principal, project_id: uuid.UUID, period_id: uuid.UUID,
@@ -451,6 +491,8 @@ def create_submission(db: Session, ctx: RequestContext, principal: Principal, pr
                 raise Conflict("This Idempotency-Key was used for another request.", error_code="IDEMPOTENCY_KEY_REUSED")
             return prior
     mp = _period(db, p, period_id)
+    if refresh_period(db, ctx, mp.id):
+        db.commit()                                             # the lazy re-check only: nothing of this request is written yet
     first = decision_blockers(db, current_decision(db, ctx, mp.id))    # the most basic prerequisite is reported first (e.g. DEMO)
     if first:
         raise _conflict(first)
@@ -546,7 +588,7 @@ def build_snapshot(db: Session, s: RegistrySubmission, p: Project, mp: Monitorin
 def freeze(db: Session, ctx: RequestContext, principal: Principal, submission_id: uuid.UUID, adapter: RegistryAdapter | None = None
            ) -> RegistrySubmission:
     s, p = ra.submission_for(db, principal, submission_id, P.REGISTRY_MANAGE)
-    check_source(db, ctx, s)
+    s = _source_first(db, ctx, s)
     if s.status != "DRAFT":
         raise Conflict(f"Only a DRAFT submission can be frozen (it is {s.status}).", error_code="SUBMISSION_NOT_DRAFT")
     mp = _period(db, p, s.monitoring_period_id)
@@ -589,6 +631,7 @@ def submit(db: Session, ctx: RequestContext, principal: Principal, submission_id
            ) -> RegistrySubmission:
     """API mode: SUBMITTING + idempotency key are committed BEFORE the external call; never retried automatically."""
     s, p = ra.submission_for(db, principal, submission_id, P.REGISTRY_MANAGE)
+    s = _source_first(db, ctx, s)                               # a concurrent send waits here and then finds SUBMITTING
     if s.status != "FROZEN":
         raise Conflict(f"Only a FROZEN submission can be sent (it is {s.status}).", error_code="SUBMISSION_NOT_FROZEN")
     a = _resubmit_checks(db, ctx, s, p, adapter)
@@ -640,6 +683,7 @@ def record_submitted(db: Session, ctx: RequestContext, principal: Principal, sub
                      document_id: uuid.UUID, note: str | None) -> RegistrySubmission:
     """Manual path: FROZEN → SUBMITTED with the registry's reference and its receipt (never a plain 'submitted' click)."""
     s, p = ra.submission_for(db, principal, submission_id, P.REGISTRY_MANAGE)
+    s = _source_first(db, ctx, s)
     if s.status != "FROZEN":
         raise Conflict(f"Only a FROZEN submission can be recorded as submitted (it is {s.status}).", error_code="SUBMISSION_NOT_FROZEN")
     a = _resubmit_checks(db, ctx, s, p, None)
@@ -660,6 +704,7 @@ def record_submitted(db: Session, ctx: RequestContext, principal: Principal, sub
 def record_query(db: Session, ctx: RequestContext, principal: Principal, submission_id: uuid.UUID, note: str,
                  document_id: uuid.UUID | None) -> RegistryEvent:
     s, p = ra.submission_for(db, principal, submission_id, P.REGISTRY_MANAGE)
+    s = lock_submission(db, s.id)
     if s.status not in ("SUBMITTED", "ACCEPTED", "SUBMISSION_UNCONFIRMED"):
         raise Conflict("Registry queries are recorded on a submission the registry has.", error_code="SUBMISSION_NOT_SUBMITTED")
     if document_id is not None:
@@ -675,13 +720,13 @@ def record_query(db: Session, ctx: RequestContext, principal: Principal, submiss
 def record_response(db: Session, ctx: RequestContext, principal: Principal, submission_id: uuid.UUID, outcome: str, document_id: uuid.UUID,
                     reason: str | None, external_response_ref: str | None) -> RegistrySubmission:
     s, p = ra.submission_for(db, principal, submission_id, P.REGISTRY_MANAGE)
-    if s.status != "SUBMITTED":
-        raise Conflict(f"A registry response is recorded on a SUBMITTED submission (it is {s.status}).", error_code="SUBMISSION_NOT_SUBMITTED")
     if outcome not in ("ACCEPTED", "REJECTED"):
         raise ValidationFailed("Outcome must be ACCEPTED or REJECTED.", error_code="INVALID_OUTCOME")
     if outcome == "REJECTED" and not (reason and reason.strip()):
         raise ValidationFailed("A rejection needs the registry's reason.", error_code="REASON_REQUIRED")
-    check_source(db, ctx, s)
+    s = _source_first(db, ctx, s)                               # flags a superseded source first; the response is still recorded
+    if s.status != "SUBMITTED":
+        raise Conflict(f"A registry response is recorded on a SUBMITTED submission (it is {s.status}).", error_code="SUBMISSION_NOT_SUBMITTED")
     _evidence(db, ra.SUBMISSION_ENTITY, s.id, document_id, {DocumentCategory.REGISTRY_RESPONSE.value})
     a = db.get(RegistryAccount, s.registry_account_id)
     assert a is not None
@@ -698,6 +743,7 @@ def record_response(db: Session, ctx: RequestContext, principal: Principal, subm
 def withdraw(db: Session, ctx: RequestContext, principal: Principal, submission_id: uuid.UUID, reason: str, document_id: uuid.UUID
              ) -> RegistrySubmission:
     s, p = ra.submission_for(db, principal, submission_id, P.REGISTRY_MANAGE)
+    s = lock_submission(db, s.id)
     if s.status != "SUBMITTED":
         raise Conflict(f"Only a SUBMITTED submission can be withdrawn (it is {s.status}).", error_code="SUBMISSION_NOT_SUBMITTED")
     _evidence(db, ra.SUBMISSION_ENTITY, s.id, document_id, {DocumentCategory.REGISTRY_RESPONSE.value})
@@ -712,6 +758,7 @@ def withdraw(db: Session, ctx: RequestContext, principal: Principal, submission_
 
 def cancel(db: Session, ctx: RequestContext, principal: Principal, submission_id: uuid.UUID, reason: str) -> RegistrySubmission:
     s, p = ra.submission_for(db, principal, submission_id, P.REGISTRY_MANAGE)
+    s = lock_submission(db, s.id)
     if s.status not in ("DRAFT", "FROZEN"):
         raise Conflict(f"Only an unsent (DRAFT / FROZEN) submission can be cancelled (it is {s.status}).", error_code="SUBMISSION_ALREADY_SENT")
     s.closed_by, s.closed_at, s.closed_reason = principal.user_id, utcnow(), reason
@@ -724,6 +771,7 @@ def reconcile(db: Session, ctx: RequestContext, principal: Principal, submission
               adapter: RegistryAdapter | None = None) -> RegistrySubmission:
     """Resolve SUBMISSION_UNCONFIRMED, query SUBMITTED status, or compare issuances (API); manual reconciliation needs evidence."""
     s, p = ra.submission_for(db, principal, submission_id, P.REGISTRY_MANAGE)
+    s = lock_submission(db, s.id)                               # one reconciliation at a time; the status below is current
     a = db.get(RegistryAccount, s.registry_account_id)
     assert a is not None
     impl = ra.adapter_for(a, adapter)
@@ -826,8 +874,11 @@ def period_view(db: Session, ctx: RequestContext, principal: Principal, project_
     p = ra.project_for(db, principal, project_id)
     mp = _period(db, p, period_id)
     subs = submissions(db, principal, project_id, period_id)
+    changed = refresh_period(db, ctx, period_id)
     for s in subs:
-        check_source(db, ctx, s)
+        changed |= check_source(db, ctx, s)
+    if changed:
+        db.commit()                                             # only the lazy invalidations / flags: a view writes nothing else
     from app.services import calculation_readiness as cr
     run = cr.current_run(db, period_id)
     d = current_decision(db, ctx, period_id)

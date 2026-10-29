@@ -13,11 +13,13 @@ arithmetic in a fixed context, no float, no randomness, no I/O, no clock, no dat
 """
 import hashlib
 import json
+import logging
 from collections.abc import Iterable
 from dataclasses import dataclass, field
 from decimal import Context, Decimal, DivisionByZero, InvalidOperation, Overflow, localcontext
 from typing import Any, ClassVar
 
+log = logging.getLogger(__name__)
 ENGINE_VERSION = "calc-framework-1.0"
 STEPS = ("BASELINE", "PROJECT", "EMISSIONS", "REMOVALS", "LEAKAGE", "UNCERTAINTY", "ADJUSTMENT", "NET")
 STEP_METHODS = {"BASELINE": "calculate_baseline", "PROJECT": "calculate_project", "EMISSIONS": "calculate_emissions",
@@ -272,7 +274,10 @@ def execute(module: CalculationModule, snapshot: dict[str, Any]) -> ExecutionRes
         except (InvalidOperation, DivisionByZero, Overflow) as e:
             raise CalculationBlocked("CALCULATION_ERROR", f"Invalid arithmetic in the module: {type(e).__name__}.") from None
         except Exception as e:
-            raise CalculationBlocked("CALCULATION_ERROR", f"Unexpected error in the module: {type(e).__name__}: {e}",
+            # the exception text can carry internals (keys, values, paths): it is logged, never shown; the run keeps the type only
+            log.error("Calculation module %s %s raised %s", module.code, module.version, type(e).__name__, exc_info=e)
+            raise CalculationBlocked("CALCULATION_ERROR", f"Unexpected error in the calculation module ({type(e).__name__}). The details "
+                                     "were logged for the platform team; the run is blocked.",
                                      {"reason": "MODULE_EXCEPTION", "exception": type(e).__name__}) from e
         finals = [o for o in ordered if o.is_final]
         if len(finals) != 1 or finals[0].step != "NET":

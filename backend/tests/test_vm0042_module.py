@@ -340,3 +340,93 @@ def test_soil_must_be_sampled_to_30_cm_and_reach_the_reference_mass() -> None:
 def test_three_increments_use_cubic_spline() -> None:
     from app.calculation.library import esm
     assert esm.method_for(2) == esm.LINEAR and esm.method_for(3) == esm.SPLINE
+
+
+# ---------------------------------------------------------------- fixes 29/10
+def test_duplicate_or_unpaired_lab_results_block() -> None:
+    # a second APPROVED organic-carbon result for the same sample is never dropped silently
+    snap = _snapshot()
+    oc = next(r for r in snap["inputs"] if r["variable"] == "OC_T")
+    snap["inputs"].append({**oc, "seq": len(snap["inputs"]) + 1, "value": "99"})
+    e = _blocked(snap)
+    assert e.code == "DUPLICATE_LAB_RESULT" and e.details["variable"] == "OC_T" and e.details["root_sample_ids"] == [oc["context"]["root_sample_id"]]
+    # an organic-carbon result whose soil mass is missing is refused, not ignored
+    snap = _snapshot()
+    mass = next(r for r in snap["inputs"] if r["variable"] == "MASS_T0")
+    snap["inputs"].remove(mass)
+    e = _blocked(snap)
+    assert e.code == "MASS_RESULT_MISSING" and e.details["root_sample_ids"] == [mass["context"]["root_sample_id"]]
+    # two samples of one field collection for the same depth increment: explicit duplicate, not "not contiguous"
+    snap = _snapshot()
+    pair = [r for r in snap["inputs"] if r["variable"] in ("OC_T0", "MASS_T0") and r["context"]["root_sample_id"] == "s1"]
+    for r in pair:
+        snap["inputs"].append({**r, "seq": len(snap["inputs"]) + 1, "context": {**r["context"], "root_sample_id": "s1-bis"}})
+    e = _blocked(snap)
+    assert e.code == "DUPLICATE_LAB_RESULT" and e.details["reason"] == "DUPLICATE_DEPTH_INCREMENT"
+
+
+def test_output_codes_use_the_stratum_code_and_never_collide() -> None:
+    from app.calculation.library.inputs import stratum_labels
+    snap = _snapshot()
+    for r in snap["inputs"]:
+        if r["context"].get("stratum_record_id") == "P1":
+            r["context"]["stratum_code"] = "S1"
+    codes = {r["output_code"] for r in fw.execute(Vm0042V22(), snap).outputs}
+    assert {"REF_MASS_S1", "SOC_PRO_CURR_S1", "SOC_BAS_PREV_S1"} <= codes
+    # no code available: record ids sharing their first 8 characters get longer, distinct prefixes
+    a, b = "12345678-aaaa-0000", "12345678-bbbb-0000"
+    fw_vals = [fw.InputValue(1, "AREA", Decimal(1), "ha", "STRATUM", None, None, None, {"stratum_record_id": a})]
+    labels = stratum_labels(fw_vals, [a, b])
+    assert labels[a] != labels[b] and labels[a].startswith("12345678-a") and labels[b].startswith("12345678-b")
+    # the same code on two records is not used for either
+    vals = [fw.InputValue(i, "AREA", Decimal(1), "ha", "STRATUM", None, None, None, {"stratum_record_id": r, "stratum_code": "S1"})
+            for i, r in enumerate((a, b))]
+    labels = stratum_labels(vals, [a, b])
+    assert "S1" not in labels.values() and len(set(labels.values())) == 2
+
+
+def test_irrigation_is_read_per_phase() -> None:
+    def with_irrigation(*records: tuple[str, str, str]) -> dict:
+        snap = _snapshot()
+        for phase, observed, value in records:
+            snap["inputs"].append({"seq": len(snap["inputs"]) + 1, "variable": "IRRIGATION", "value": value, "value_kind": "TEXT", "unit": "",
+                                   "level": "FARM", "stratum_id": None, "farm_id": "f1", "sampling_point_id": None,
+                                   "context": {"phase": phase, "observed_on": observed}})
+        return snap
+    n2o = 44 / 28 * 265 / 1000
+    dry = lambda n: n * (0.005 + 0.11 * 0.005) * n2o              # noqa: E731
+    leach = lambda n: n * 0.24 * 0.011 * n2o                      # noqa: E731
+    # drip in the look-back, OTHER (flood) in the project: only the project leaches (previously the last record decided both)
+    res = fw.execute(Vm0042V22(), with_irrigation(("BASELINE", "2021-06-01", "DRIP"), ("PROJECT", "2026-09-01", "OTHER")))
+    assert _out(res, "ER_N2O_FERT") == pytest.approx(dry(1100) - dry(800) - leach(800), rel=1e-9)
+    # OTHER in the look-back but DRIP now: the baseline leaches, the project does not
+    res = fw.execute(Vm0042V22(), with_irrigation(("BASELINE", "2021-06-01", "OTHER"), ("PROJECT", "2026-09-01", "DRIP")))
+    assert _out(res, "ER_N2O_FERT") == pytest.approx(dry(1100) + leach(1100) - dry(800), rel=1e-9)
+    # look-back records but none for the period: blocked (the period's practice is unknown)
+    e = _blocked(with_irrigation(("BASELINE", "2021-06-01", "OTHER")))
+    assert e.code == "MISSING_REQUIRED_INPUT" and e.details["variable"] == "IRRIGATION"
+
+
+def test_undated_activity_records_block() -> None:
+    for phase in ("BASELINE", "PROJECT"):
+        snap = _snapshot()
+        rec = next(r for r in snap["inputs"] if r["variable"] == "DIESEL" and r["context"].get("phase") == phase)
+        rec["context"]["observed_on"] = None
+        e = _blocked(snap)
+        assert e.code == "MISSING_OBSERVED_ON" and e.details["variable"] == "DIESEL" and e.details["input_seq"] == rec["seq"]
+
+
+def test_previous_campaign_must_close_the_preceding_period() -> None:
+    snap = _snapshot()
+    snap["previous_period"] = {"number": 1, "start": "2024-06-01", "end": "2025-05-31"}      # a year without an approved dataset between
+    e = _blocked(snap)
+    assert e.code == "PREVIOUS_PERIOD_NOT_ADJACENT" and e.details["gap_days"] == 365
+    snap = _snapshot()
+    del snap["previous_period"]
+    assert _blocked(snap).details["reason"] == "PREVIOUS_PERIOD_UNKNOWN"
+
+
+def test_methodology_decisions_are_stated_as_assumptions() -> None:
+    text = " ".join(Vm0042V22.assumptions)
+    for phrase in ("1/x", "vintage", "I(dCO2_wp)", "covariance", "Eqs. 44/45", "PREVIOUS_PERIOD_NOT_ADJACENT"):
+        assert phrase in text, phrase

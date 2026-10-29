@@ -321,7 +321,7 @@ ORDER_MACHINE = StateMachine.build(
     "order", initial="PLACED",
     transitions={"PLACED": {"PAID", "CANCELLED", "EXPIRED"}, "PAID": {"TRANSFER_PENDING", "ATTENTION_REQUIRED", "REFUND_PENDING"},
                  "TRANSFER_PENDING": {"COMPLETED", "ATTENTION_REQUIRED"},
-                 "ATTENTION_REQUIRED": {"TRANSFER_PENDING", "REFUND_PENDING"},
+                 "ATTENTION_REQUIRED": {"TRANSFER_PENDING", "REFUND_PENDING", "COMPLETED"},     # last item delivered while in attention
                  "REFUND_PENDING": {"REFUNDED", "ATTENTION_REQUIRED"}},    # a rejected refund returns the order to attention (documented)
     terminal={"COMPLETED", "CANCELLED", "EXPIRED", "REFUNDED"},
 )

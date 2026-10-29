@@ -440,7 +440,7 @@ def readiness(db: Session, p: Project) -> list[TransitionReadiness]:
                               done=bool(b and b.review_status == "ACCEPTED" and facts["boundary_ok"])),
                 ChecklistItem(key="carbon_rights_verified", label="All active carbon-rights records are verified",
                               done=facts["all_rights_verified"]),
-                ChecklistItem(key="overlaps_reviewed", label="No unresolved (OPEN) overlap flags on participating farms",
+                ChecklistItem(key="overlaps_reviewed", label="No unresolved (OPEN or CONFIRMED_CONFLICT) overlap flags on participating farms",
                               done=facts["open_overlaps"] == 0),
                 ChecklistItem(key="standard", label="A standard / crediting route is selected", done=p.standard_id is not None),
             ]

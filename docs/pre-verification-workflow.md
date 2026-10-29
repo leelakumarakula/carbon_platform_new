@@ -66,6 +66,17 @@ Automatic invalidation (READY → INVALIDATED, audited): when the run is superse
 verifying, or a blocking finding is opened or reopened. The readiness view also shows the period's Phase 7 calculation blockers (e.g.
 CONFIGURATION_REQUIRED — NO_CALCULATION_MODULE).
 
+Concurrency of the lazy re-check (fix 29/10): `calculation_readiness.refresh` / `invalidate_period` lock the review row
+(UPDLOCK, HOLDLOCK, ROWLOCK) and re-check its status and prerequisites under the lock, so two concurrent readers invalidate it exactly
+once (one WorkflowEvent, one audit row). They never commit: a GET view commits only its own lazy invalidation, and a write operation
+(create readiness, verification submit / decision, registry operations) runs the re-check first, commits that alone, and only then takes
+its own locks — a caller's half-done work is never committed by the re-check.
+
+Result flags (non-blocking, fix 29/10): the `net_result` check is **WARN** when the approved run's final result is ≤ 0
+(`ZERO_OR_NEGATIVE_RESULT`) or a REVERSAL output > 0 is reported (`REVERSAL_REPORTED`, VM0042 / VM0047 / GS402). The same flags are
+written into the package manifest as `result_flags`, so the VVB package states explicitly that the period yields no creditable
+quantity or reports a reversal. Readiness is not blocked (a reversal period still has to be verified and reported).
+
 ## Permissions (B10)
 
 No new permission or role. `calculation.read` (Analyst, QA Officer, MRV Manager, Project Manager) reads everything;

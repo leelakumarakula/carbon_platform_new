@@ -11,6 +11,11 @@ Eligibility (nothing is ever substituted — no zero, average, previous, estimat
   dataset plan's measurement, whose root sample belongs to this period and to a field collection version in the dataset snapshot
   (or to an earlier version that the snapshot's accepted version supersedes: field context then comes from the accepted version)
 - numeric variables refuse text results (INPUT_NOT_NUMERIC); units must match the module's exact text (UNIT_MISMATCH)
+- duplicate inputs block here (DUPLICATE_INPUT), not only in calculation QA: the same source twice, two approved results of one root
+  sample, or two approved laboratory results for the same variable, field collection and depth increment (a module would otherwise
+  keep one of them silently)
+- double counting is re-checked at every evaluation: a farm that also takes part in, or overlaps a farm of,
+  another project over the same dates blocks the calculation even after monitoring started (DOUBLE_COUNTING_CONFLICT)
 """
 import json
 import uuid
@@ -131,6 +136,11 @@ def evaluate(db: Session, p: Project, period: MonitoringPeriod, crediting: Proje
     ev.calc_rules = calc_rules(db, ev.version.id)
     if p.status not in CALC_PROJECT_STATES:
         ev.blockers.append(Blocker("PROJECT_NOT_IN_MRV", f"Calculation needs a project in monitoring (it is {p.status})."))
+    from app.services import project_farm_service  # (circular import at module level)
+    conflicts = project_farm_service.double_counting_conflicts(db, p)
+    if conflicts:   # checked when the MRV plan is approved and a period starts; land can be enrolled elsewhere afterwards
+        ev.blockers.append(Blocker("DOUBLE_COUNTING_CONFLICT", "Participating farms are also credited by another project over the same dates: "
+                                   + project_farm_service.double_counting_summary(conflicts) + ".", None, {"conflicts": conflicts}))
     # ---- module (decision A1 / A2 / A10; C3 / C4)
     selected = ev.version.calculation_module_code
     module = (resolver(ev.methodology.code, ev.version.version_label) if resolver
@@ -140,7 +150,8 @@ def evaluate(db: Session, p: Project, period: MonitoringPeriod, crediting: Proje
                                    "the registered module for it.", "MODULE_SELECTION_MISMATCH", {"selected": selected, "registered": module.code}))
     if module is not None and module.calculation_rules_version == 0:
         if selected == module.code:
-            module = registry_bind(module, ev.version.calculation_rules_version, ev.version.calculation_readiness)
+            module = registry_bind(module, ev.version.calculation_rules_version, ev.version.calculation_readiness,
+                                   ev.version.calculation_readiness_module_version)
         else:
             ev.blockers.append(Blocker("CONFIGURATION_REQUIRED", f"Calculation module {module.code} is available for this methodology version but "
                                        "has not been selected on its Calculation tab and approved.", "MODULE_NOT_SELECTED",
@@ -202,6 +213,7 @@ def evaluate(db: Session, p: Project, period: MonitoringPeriod, crediting: Proje
     # ---- inputs (A5–A8, A11, A22)
     rows, problems = _resolve_inputs(db, ev, module, ds)
     ev.blockers.extend(problems)
+    ev.blockers.extend(duplicate_blockers(rows))
     if len(rows) > settings.CALCULATION_MAX_INPUT_ROWS:
         ev.blockers.append(Blocker("INPUT_TOO_LARGE", f"{len(rows)} input rows exceed the synchronous limit of "
                                    f"{settings.CALCULATION_MAX_INPUT_ROWS} (background execution is not available yet)."))
@@ -213,6 +225,28 @@ def evaluate(db: Session, p: Project, period: MonitoringPeriod, crediting: Proje
     ev.snapshot = _snapshot(ev, module, ds, crediting, rows)
     ev.snapshot_sha256 = fw.sha256(ev.snapshot)
     return ev
+
+
+def duplicate_keys(rows: list[dict[str, Any]]) -> list[str]:
+    """Duplicate authoritative inputs (also the calculation-QA check): the same source twice for a variable; two LAB_RESULT rows of one
+    root sample; two LAB_RESULT rows for the same variable, field collection and depth increment (replicate samples of one core)."""
+    from collections import Counter
+    keys = Counter((r["variable"], r["source_type"], r["source_id"]) for r in rows if r["source_id"])
+    lab = [r for r in rows if r["source_type"] == "LAB_RESULT"]
+    roots = Counter((r["variable"], r["root_sample_id"]) for r in lab if r["root_sample_id"])
+    depth = Counter((r["variable"], r["field_collection_id"], (r.get("context") or {}).get("depth_top_cm"),
+                     (r.get("context") or {}).get("depth_bottom_cm")) for r in lab if r["field_collection_id"])
+    return ([f"{k[0]} {k[1]} {k[2]}" for k, n in keys.items() if n > 1] + [f"{k[0]} root sample {k[1]}" for k, n in roots.items() if n > 1]
+            + [f"{k[0]} field collection {k[1]} depth {k[2]}-{k[3]} cm" for k, n in depth.items() if n > 1])
+
+
+def duplicate_blockers(rows: list[dict[str, Any]]) -> list[Blocker]:
+    dups = duplicate_keys(rows)
+    if not dups:
+        return []
+    return [Blocker("DUPLICATE_INPUT", "More than one authoritative input for the same variable and source (one approved result per "
+                    "root sample, rule and depth increment): correct or withdraw the extra result before calculating.", None,
+                    {"duplicates": dups[:50]})]
 
 
 @dataclass
@@ -280,7 +314,9 @@ def _snapshot(ev: Evaluation, module: fw.CalculationModule, ds: MrvDataset, cred
                     "mrv_plan_id": str(ds.mrv_plan_id)},
         "methodology": {"methodology_id": str(m.id), "code": m.code, "version_id": str(v.id), "version_label": v.version_label,
                         "is_demo_illustrative": v.is_demo_illustrative, "project_methodology_id": str(pm.id),
-                        "calculation_readiness": v.calculation_readiness, "calculation_module_code": v.calculation_module_code,
+                        "calculation_readiness": v.calculation_readiness,
+                        "calculation_readiness_module_version": v.calculation_readiness_module_version,
+                        "calculation_module_code": v.calculation_module_code,
                         "calculation_rules_version": pm.calculation_rules_version, "monitoring_rules_version": pm.monitoring_rules_version,
                         "calculation_rules": [{"id": str(r.id), "rule_code": r.rule_code, "step": r.step, "title": r.title,
                                                "equation_reference": r.equation_reference} for r in ev.calc_rules],

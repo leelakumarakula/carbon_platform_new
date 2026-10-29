@@ -16,7 +16,7 @@ CUR = {"S1": [4.1, 3.6, 4.8, 4.0], "S2": [2.9, 3.3, 2.6]}          # t d.m. abov
 PREV = {"S1": [1.9, 1.6, 2.2, 1.8], "S2": [1.2, 1.5, 1.1]}
 
 
-def _snap(prev: dict | None = PREV, extra: list[tuple] | None = None) -> dict:
+def _snap(prev: dict | None = PREV, extra: list[tuple] | None = None, prev_number: int = 1) -> dict:
     rows: list[dict] = []
 
     def add(var: str, value: object, unit: str, level: str, ctx: dict | None = None, point: str | None = None) -> None:
@@ -35,7 +35,8 @@ def _snap(prev: dict | None = PREV, extra: list[tuple] | None = None) -> dict:
         add(var, value, unit, level, ctx)
     for c in CctsFr05001.constants:
         add(c.code, fw.decimal_text(Decimal(c.value)), c.unit, "PROJECT")
-    return {"reporting_period": {"start": "2027-01-01", "end": "2029-12-31"}, "inputs": rows}
+    return {"reporting_period": {"start": "2027-01-01", "end": "2029-12-31"},
+            "previous_period": {"number": prev_number, "start": "2024-01-01", "end": "2026-12-31"}, "inputs": rows}
 
 
 def _out(res: fw.ExecutionResult, code: str) -> float:
@@ -101,3 +102,17 @@ def test_discount_bands_and_guards() -> None:
     with pytest.raises(fw.CalculationBlocked) as e:
         fw.execute(CctsFr05002(), _snap(prev=None) | {"inputs": [r for r in _snap(prev=None)["inputs"] if r["variable"] != "PLOT_AREA"]})
     assert e.value.code == "MISSING_REQUIRED_INPUT"
+
+
+# ---------------------------------------------------------------- fixes 29/10
+def test_previous_stock_is_required_after_the_first_verification() -> None:
+    # previous approved period #2 without plots: C_T1 would fall back to the pre-project stock and re-credit the whole stock
+    with pytest.raises(fw.CalculationBlocked) as e:
+        fw.execute(CctsFr05002(), _snap(prev=None, prev_number=2))
+    assert e.value.code == "PREVIOUS_STOCK_MISSING" and e.value.details["previous_period_number"] == 2
+    # a stratum measured now but not in the previous campaign: its earlier stock would be zero
+    with pytest.raises(fw.CalculationBlocked) as e:
+        fw.execute(CctsFr05002(), _snap(prev={"S1": PREV["S1"]}, prev_number=2))
+    assert e.value.details == {"reason": "STRATUM_WITHOUT_PREVIOUS_PLOTS", "strata": ["S2"]}
+    # the first verification (previous period #1, the project start) still uses the pre-project stock
+    assert _out(fw.execute(CctsFr05002(), _snap(prev=None)), "C_T1") == 0

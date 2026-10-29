@@ -234,7 +234,8 @@ def test_registry_resolves_the_selected_gs_module() -> None:
     assert codes == ["GS402-ZT-A1", "GS402-IT-A1", "GS402-IT-A3", "GS402-CC-A1", "GS402-CC-A3"]
     assert registry.resolve("GS402", "1.0", "GS402-CC-A3").code == "GS402-CC-A3"   # type: ignore[union-attr]
     assert registry.resolve("GS402", "1.0", "VM0042-V2.2-QA2-QA3").code == "GS402-ZT-A1"   # type: ignore[union-attr]
-    bound = registry.bind(registry.by_code("GS402-IT-A3"), 3, "PRODUCTION_READY")
+    gs = registry.by_code("GS402-IT-A3")
+    bound = registry.bind(gs, 3, "PRODUCTION_READY", gs.version)          # readiness approved for this module code version
     assert bound is not None and bound.calculation_rules_version == 3 and bound.readiness == "PRODUCTION_READY"
     assert bound.declaration() == {**Gs402ImprovedTillageA3().declaration(), "calculation_rules_version": 3, "readiness": "PRODUCTION_READY"}
 
@@ -268,3 +269,45 @@ def test_every_module_declares_settings_the_mrv_plan_accepts() -> None:
         for d in m.monitoring_rule_definitions:
             assert d.get("data_level") in (None, *MEASUREMENT_LEVELS), (m.code, d["rule_code"])
             assert len(d["rule_code"]) <= 40 and len(d.get("frequency") or "") <= 120 and len(d.get("unit") or "") <= 40, (m.code, d["rule_code"])
+
+
+# ---------------------------------------------------------------- fixes 29/10
+def test_leakage_needs_yield_records() -> None:
+    mod = Gs402ZeroTillageA1()
+    for keep in ("BASELINE", "PROJECT", None):                     # yields of one phase only, or none at all
+        s = _Snap()
+        _soil(s)
+        _activities(s)
+        s.rows = [r for r in s.rows if r["variable"] != "YIELD" or (keep is not None and r["context"]["phase"] == keep)]
+        with pytest.raises(fw.CalculationBlocked) as e:
+            fw.execute(mod, s.done(mod))
+        assert e.value.code == "YIELD_RECORDS_REQUIRED" and e.value.details["strata_without_yields"] == ["S1"]
+        assert e.value.details["farms_with_one_phase_only"] == ([] if keep is None else ["f1"])
+
+
+def test_approach3_reports_soc_0_and_soc_t_beyond_20_years() -> None:
+    f = {"SOC_REF": 47.0, "F_LU": 0.83, "F_MG_BL": 1.00, "F_I_BL": 1.00, "F_MG_PR": 1.04, "F_I_PR": 1.00}
+    s = _Snap()
+    for k, v in f.items():
+        s.add(k, str(v), "t C/ha" if k == "SOC_REF" else "factor", "STRATUM", ctx=STRATUM)
+    s.add("T_BL", "20", "yr", "STRATUM", ctx=STRATUM)
+    s.add("T_PR", "25", "yr", "STRATUM", ctx=STRATUM)               # beyond D = 20: the model change has stopped
+    _activities(s)
+    mod = Gs402ImprovedTillageA3()
+    res = fw.execute(mod, s.done(mod))
+    soc_bl = 47.0 * 0.83
+    full = soc_bl + 47.0 * 0.83 * 0.04                               # Eq. 6 at D years
+    assert _out(res, "SOC_0_S1") == pytest.approx(full, rel=1e-12)  # previously reported 19/20 of the change
+    assert _out(res, "SOC_T_S1") == pytest.approx(full, rel=1e-12)
+    assert _out(res, "DSOC_C") == 0
+
+
+def test_stratum_code_names_the_outputs() -> None:
+    s = _Snap()
+    _soil(s)
+    _activities(s)
+    for r in s.rows:
+        if r["context"].get("stratum_record_id") == "S1":
+            r["context"] = {**r["context"], "stratum_record_id": "0f0e0d0c-1111-2222-3333-444455556666", "stratum_code": "ZT-NORTH"}
+    res = fw.execute(Gs402ZeroTillageA1(), s.done(Gs402ZeroTillageA1()))
+    assert {"REF_MASS_ZT-NORTH", "SOC_0_ZT-NORTH", "SOC_T_ZT-NORTH"} <= {r["output_code"] for r in res.outputs}

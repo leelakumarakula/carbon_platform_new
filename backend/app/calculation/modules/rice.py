@@ -120,7 +120,8 @@ class _State:
 
 
 class _Rice(CalculationModule):
-    version = "1.0.0"
+    # 1.1.0: a season record that matches no season (other date, undated, outside the period) blocks instead of being dropped
+    version = "1.1.0"
     calculation_rules_version = 0
     readiness = fw.NOT_PRODUCTION_READY
     sampling_parameters: ClassVar[dict[str, Any]] = {}
@@ -193,6 +194,7 @@ class _Rice(CalculationModule):
         rp = ctx.snapshot["reporting_period"]
         start, end = date.fromisoformat(rp["start"]), date.fromisoformat(rp["end"])
         seasons: dict[tuple[str, str], _Season] = {}
+        unmatched: list[dict[str, Any]] = []
         for var in self._seasonal_vars():
             for v in ctx.values(var):
                 if not v.farm_id:
@@ -200,13 +202,30 @@ class _Rice(CalculationModule):
                 observed = v.context.get("observed_on") or ""
                 if v.context.get("phase") == "BASELINE":
                     st.baseline.setdefault(v.farm_id, defaultdict(list))[var].append(v)
-                elif observed and start <= date.fromisoformat(observed) <= end:
+                elif not observed:
+                    raise CalculationBlocked("MISSING_OBSERVED_ON", f"A project RI_{var} record of farm {v.farm_id} (input #{v.seq}) has no "
+                                             "observed-on date, so it cannot be placed in a season.",
+                                             {"variable": var, "farm_id": v.farm_id, "input_seq": v.seq})
+                elif not start <= date.fromisoformat(observed) <= end:
+                    unmatched.append({"variable": var, "farm_id": v.farm_id, "observed_on": observed, "input_seq": v.seq,
+                                      "reason": "OUTSIDE_REPORTING_PERIOD"})
+                else:
                     s = seasons.setdefault((v.farm_id, observed), _Season(v.farm_id, observed))
                     if var in s.values:
                         raise CalculationBlocked("DUPLICATE_INPUT", f"Farm {v.farm_id} has two {var} records for the season {observed}.",
                                                  {"variable": var})
                     s.values[var] = v
-        st.seasons = [s for _, s in sorted(seasons.items()) if "AREA" in s.values]
+        for (farm, observed), s in sorted(seasons.items()):
+            if "AREA" not in s.values:   # no RI_AREA on that date: the records belong to no season (they were dropped before 1.1.0)
+                unmatched += [{"variable": var, "farm_id": farm, "observed_on": observed, "input_seq": v.seq, "reason": "NO_SEASON_ON_DATE"}
+                              for var, v in sorted(s.values.items())]
+        if unmatched:
+            first = unmatched[0]
+            raise CalculationBlocked("UNMATCHED_SEASON_RECORD", f"RI_{first['variable']} of farm {first['farm_id']} dated {first['observed_on']} "
+                                     "belongs to no rice season of the reporting period (a season is the farm's records with the same "
+                                     "observed-on date as its RI_AREA record). Date it like the season's other records; a record is never "
+                                     "dropped, because its project emissions would then read as zero.", {"records": unmatched[:50]})
+        st.seasons = [s for _, s in sorted(seasons.items())]
         if not st.seasons:
             raise CalculationBlocked("MISSING_REQUIRED_INPUT", "No rice season (RI_AREA) in the reporting period.", {"variable": "AREA"})
         for s in st.seasons:
@@ -384,7 +403,9 @@ class Vm0051V11(_Rice):
         "QA3 only (IPCC 2019 Tables 5.11-5.14 or a country-specific EF); QA2 is mandatory for methanotrophs, biochar, low-emission "
         "cultivars and AWD shallower than 10 cm and is not included.",
         "Eq. 5 / Eq. 8: GWP is applied once (BE_CH4 from Eq. 8 is used as the areal mean); Eq. 8 is summed over the seasons of the period.",
-        "Season = the farm's records with the same observed-on date in the reporting period; baseline = the farm's BASELINE look-back records.",
+        "Season = the farm's records with the same observed-on date in the reporting period; baseline = the farm's BASELINE look-back records. "
+        "A project record that matches no season (no RI_AREA on its date, dated outside the period, or undated) blocks the run "
+        "(UNMATCHED_SEASON_RECORD / MISSING_OBSERVED_ON); it is never dropped.",
         "Baseline water regime: the lowest-emission regime recorded in the look-back (single drainage in any year -> single drainage, p. 14); "
         "baseline straw 5 t/ha with the look-back incorporation timing (LONG = 0.19 when not recorded); baseline cultivation period = "
         "the look-back mean, at most the project season's length.",
@@ -410,7 +431,8 @@ class CctsAg04002(_Rice):
     assumptions = (
         "IPCC default-value approach (paras 26-35); EFc measured on reference fields (RI_EFC) or the IPCC Table 5.11 region value.",
         "Season = the farm's records with the same observed-on date; baseline = continuation of current practice from the farm's "
-        "BASELINE records (same conservative rules as VM0051 where AG04.002 is silent).",
+        "BASELINE records (same conservative rules as VM0051 where AG04.002 is silent). A project record that matches no season "
+        "blocks the run (UNMATCHED_SEASON_RECORD / MISSING_OBSERVED_ON); it is never dropped.",
         "Pre-season factor and straw CFOA from the recorded pre-season status and incorporation timing (equivalent to the regional "
         "double / single cropping defaults 1.0 / 0.89 and 1.0 / 0.19).",
         "PE_n corrected: N x (0.005 - 0.003) x 44/28 x GWP, positive (the printed sign and the missing 44/28 are errors).",

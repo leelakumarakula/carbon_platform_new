@@ -86,6 +86,8 @@ def project_for(db: Session, principal: Principal, project_id: uuid.UUID, *codes
     if p is None:
         raise not_found("Project")
     if any(principal.can_in_org(c, p.organization_id) for c in codes):
+        if mrv_access.is_write(codes):
+            mrv_access.require_open(p)       # a CLOSED project's laboratory records stay readable; no new work
         return p
     if principal.can_in_org(P.PROJECTS_READ, p.organization_id) or principal.can_in_org(P.LAB_READ, p.organization_id):
         raise PermissionDenied(details={"required_permission": " or ".join(codes)})
@@ -154,7 +156,7 @@ def laboratories(db: Session, principal: Principal, project_id: uuid.UUID) -> li
 def laboratory_rules(db: Session, principal: Principal, project_id: uuid.UUID) -> list[MethodologyMonitoringRule]:
     """The locked version's monitoring rules declared LABORATORY (the only rules an engagement may cover)."""
     p = project_for(db, principal, project_id, P.LAB_ENGAGE, P.LAB_READ)
-    _, v = mrv_access.locked_methodology(db, p)
+    _, v = mrv_access.locked_methodology(db, p, read_only=True)
     return list(db.scalars(select(MethodologyMonitoringRule).where(MethodologyMonitoringRule.methodology_version_id == v.id,
                                                                    MethodologyMonitoringRule.measurement_source == "LABORATORY")
                            .order_by(MethodologyMonitoringRule.rule_code)).all())

@@ -82,6 +82,8 @@ def seed_demo() -> None:
     from app.core.database import get_session_factory
     from app.seed.accounts import DEMO_DOMAIN
     from app.seed.accounts import seed_demo as demo
+    if get_settings().is_production:   # demo accounts share one known password: never in a production database
+        sys.exit("Refusing seed-demo: APP_ENV=production. Demo organizations and accounts are for development and test only.")
     pw = get_settings().DEMO_USER_PASSWORD
     if not pw:
         sys.exit("Set DEMO_USER_PASSWORD (environment or backend/.env).")

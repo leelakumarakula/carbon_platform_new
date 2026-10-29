@@ -82,6 +82,13 @@ submitted).
 example after a recalculation or termination). Both are checked lazily whenever an assignment or its period view is read. A submitted
 package is never mutated. Its readiness, run, report and manifest hash are fixed by a trigger.
 
+Concurrency (fix 29/10): every state change locks its row WITH (UPDLOCK, HOLDLOCK, ROWLOCK) and re-checks the status under the lock —
+accept / decline / withdraw / terminate the assignment; submit locks the assignment (then the previous submission); a decision locks the
+assignment, then the submission, then the period's CURRENT decision it supersedes. Two concurrent submits or decisions therefore never
+both pass. The lazy re-check (`verification_service.refresh`) locks the submission, re-checks it and invalidates it (and supersedes its
+decision) at most once; it never commits — GET endpoints commit only that lazy invalidation, writes run it first and commit it alone
+before taking their own locks.
+
 ## VVB package view (allow-list, C9–C11)
 
 `GET /vvb/submissions/{id}/package` returns:
@@ -143,7 +150,18 @@ Refused when:
 - a corrective action is REQUESTED or RESPONDED;
 - the decider raised a finding on the submission;
 - the report is missing or not a PDF;
-- the quantity is not a non-negative decimal or has no unit.
+- the quantity is not a non-negative decimal or has no unit;
+- the VERIFIED quantity exceeds the approved run's final result in a comparable unit (`VERIFIED_QUANTITY_EXCEEDS_CALCULATED`, fix 29/10).
+
+Comparable units: the run's final unit is free text of the form `<credit> (t CO2e)` (VM0042 `VCU (t CO2e)`, GS `GS VER (t CO2e)`, …),
+whole tonnes. A stated unit equal to the whole label, the credit name (`VCU`, `VCUs`) or the tonnes in brackets (`tCO2e`, `t CO2e`,
+`t CO₂e`; case, spaces, `_ - .` ignored) is compared with the run's `net_result`. Any other unit (kg, credits of another name, TEST) is
+never converted and **not compared**; the audit row of the decision records `calculation_comparison` (comparable, calculated, stated)
+either way.
+
+Notifications (in-app, fix 29/10): a proposed assignment notifies the VVB organization's `verification.vvb_review` holders
+(`VERIFICATION_ASSIGNMENT_PROPOSED`); a recorded decision notifies the project organization's `verification.manage` /
+`verification.respond` holders (`VERIFICATION_DECISION_RECORDED`).
 
 The decision stores the report and manifest hashes. It completes the assignment and moves the aggregate project status (C2). One
 CURRENT decision per period exists (filtered unique index). A decision is immutable, except CURRENT → SUPERSEDED with a time and

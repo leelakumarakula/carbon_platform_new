@@ -8,7 +8,9 @@ QA_REVIEW → REJECTED. A run is never edited after its lifecycle points; a corr
   after a successful freeze, and CALCULATION_READY → CALCULATED only when its first run is approved (A17)
 - execution is synchronous and reads only the frozen snapshot (A5, A18); currency of the frozen sources is re-checked first
   (INPUTS_OUT_OF_DATE) and the module must be the same module and version that was frozen
-- QA / approval mirror MRV (A15, C7): reviewer and approver are never the run's creator, freezer, executor or submitter
+- QA / approval mirror MRV (A15, C7): reviewer and approver are never the run's creator, freezer, executor or submitter, and the
+  approver is never the person who completed (or started) the run's QA review: four eyes on the review itself
+- a CLOSED project's runs, inputs, outputs and QA stay readable; every calculation write on it is refused (PROJECT_CLOSED)
 - no request carries a calculated value: every value comes from the registered module (A1)
 """
 import json
@@ -48,12 +50,14 @@ from app.schemas.calculation import RunIn
 from app.security.permissions import P
 from app.security.principal import Principal
 from app.services import calculation_inputs as ci
+from app.services import mrv_access
 from app.services import project_service as psvc
 from app.services.workflows import CALCULATION_RUN_MACHINE
 
 ENTITY = "calculation_run"
 VISIBLE = (P.CALCULATION_READ, P.CALCULATION_MANAGE, P.CALCULATION_REVIEW, P.CALCULATION_APPROVE)
 RECALCULABLE = ("APPROVED", "SUPERSEDED", "REJECTED", "BLOCKED", "CANCELLED")
+OUTPUT_VALUE_MAX = 1000     # calculation_outputs.value (Unicode(1000) since migration 0024)
 
 
 # ---------------------------------------------------------------- access
@@ -72,6 +76,8 @@ def project_for(db: Session, principal: Principal, project_id: uuid.UUID, *codes
         raise _project_nf()
     needed = codes or (P.CALCULATION_READ,)
     if any(principal.can_in_org(c, p.organization_id) for c in needed):
+        if mrv_access.is_write(codes):
+            mrv_access.require_open(p, "calculation records")
         return p
     if any(principal.can_in_org(c, p.organization_id) for c in VISIBLE):
         raise PermissionDenied(details={"required_permission": " or ".join(needed)})
@@ -89,13 +95,16 @@ def get_run(db: Session, principal: Principal, run_id: uuid.UUID, *codes: str) -
 
 
 def projects(db: Session, principal: Principal) -> list[tuple[Project, list[MonitoringPeriod]]]:
-    """Projects in monitoring or later that the caller may read calculations of (organization-scoped; needs only calculation.read)."""
-    stmt = select(Project).where(Project.status.in_(ci.CALC_PROJECT_STATES))
+    """Projects in monitoring or later that the caller may read calculations of (organization-scoped; needs only calculation.read),
+    and CLOSED projects that monitored (their calculation history stays readable)."""
+    stmt = select(Project).where(Project.status.in_((*ci.CALC_PROJECT_STATES, "CLOSED")))
     scope = principal.scope_for(P.CALCULATION_READ)
     if scope is not None:
         stmt = stmt.where(Project.organization_id.in_(scope))
     out = []
     for p in db.scalars(stmt.order_by(Project.project_code)).all():
+        if p.status == "CLOSED" and not project_repo.has_monitored(db, p.id):
+            continue
         periods = list(db.scalars(select(MonitoringPeriod).where(MonitoringPeriod.project_id == p.id).order_by(MonitoringPeriod.period_number)).all())
         out.append((p, periods))
     return out
@@ -276,14 +285,16 @@ def current_problems(db: Session, run: CalculationRun, snapshot: dict[str, Any])
 
 
 def readiness_revoked(db: Session, snapshot: dict[str, Any]) -> bool:
-    """The inputs were frozen while the methodology version was PRODUCTION_READY, and that readiness has been revoked since: the frozen
-    readiness must not keep a run (its execution, QA or internal verification readiness) going in production."""
+    """The inputs were frozen while the methodology version was PRODUCTION_READY, and that readiness has been revoked since (or
+    re-decided for another module code version): the frozen readiness must not keep a run (its execution, QA or internal verification
+    readiness) going in production."""
     meth = snapshot.get("methodology") or {}
     if meth.get("calculation_readiness") != fw.PRODUCTION_READY:
         return False
     from app.models import MethodologyVersion
     v = db.get(MethodologyVersion, uuid.UUID(meth["version_id"])) if meth.get("version_id") else None
-    return v is None or v.calculation_readiness != fw.PRODUCTION_READY
+    return (v is None or v.calculation_readiness != fw.PRODUCTION_READY
+            or v.calculation_readiness_module_version != meth.get("calculation_readiness_module_version"))
 
 
 def revoked_blocker(module_code: str | None) -> ci.Blocker:
@@ -302,8 +313,9 @@ def execute(db: Session, ctx: RequestContext, principal: Principal, run_id: uuid
     if stale:
         raise _block(db, ctx, p, run, [ci.Blocker("INPUTS_OUT_OF_DATE", "Frozen inputs are out of date; create a new run.", None,
                                                   {"problems": stale})])
-    module = registry_bind(_resolve(resolver, snapshot),
-                           int(snapshot["methodology"]["calculation_rules_version"]), snapshot["methodology"].get("calculation_readiness"))
+    module = registry_bind(_resolve(resolver, snapshot), int(snapshot["methodology"]["calculation_rules_version"]),
+                           snapshot["methodology"].get("calculation_readiness"),
+                           snapshot["methodology"].get("calculation_readiness_module_version"))
     if module is None:
         raise _block(db, ctx, p, run, [ci.Blocker("CONFIGURATION_REQUIRED", "No calculation module is registered for this methodology version.",
                                                   "NO_CALCULATION_MODULE")])
@@ -319,6 +331,10 @@ def execute(db: Session, ctx: RequestContext, principal: Principal, run_id: uuid
     except fw.CalculationBlocked as e:
         raise _block(db, ctx, p, run, [ci.Blocker(e.code, e.message, e.details.get("reason"), e.details)]) from None
     rule_ids = {r["rule_code"]: (r["id"], r["equation_reference"]) for r in snapshot["methodology"]["calculation_rules"]}
+    too_long = [o["output_code"] for o in result.outputs if len(o["value"]) > OUTPUT_VALUE_MAX]
+    if too_long:   # exact (unrounded) text never fits: block cleanly rather than fail the database write after computing
+        raise _block(db, ctx, p, run, [ci.Blocker("OUTPUT_VALUE_TOO_LONG", f"Exact output values longer than {OUTPUT_VALUE_MAX} characters "
+                                                  "cannot be stored.", None, {"outputs": too_long[:20]})])
     for o in result.outputs:
         rid, eq = rule_ids[o["rule_code"]]
         db.add(CalculationOutput(run_id=run.id, seq=o["seq"], step=o["step"], output_code=o["output_code"], calculation_rule_id=uuid.UUID(rid),
@@ -375,6 +391,11 @@ def sod_reasons(run: CalculationRun, user_id: uuid.UUID) -> list[str]:
         if getattr(run, attr) == user_id:
             out.append(f"you {what} this run")
     return out
+
+
+def qa_reviewer_ids(db: Session, run: CalculationRun) -> set[uuid.UUID]:
+    """Everyone who started or completed a QA review of the run (none of them may approve it)."""
+    return {u for r in qa_reviews(db, run.id) for u in (r.started_by, r.completed_by) if u is not None}
 
 
 def _require_sod(run: CalculationRun, principal: Principal) -> None:
@@ -447,6 +468,9 @@ def approve(db: Session, ctx: RequestContext, principal: Principal, run_id: uuid
     last = next((r for r in reversed(qa_reviews(db, run.id)) if r.completed_at is not None), None)
     if last is None or last.result != "PASS":
         raise Conflict("Approval needs a completed calculation QA with result PASS.", error_code="QA_NOT_PASSED")
+    if principal.user_id in qa_reviewer_ids(db, run):
+        raise PermissionDenied("You reviewed this run's QA, so someone else must approve it.", error_code="SEPARATION_OF_DUTIES",
+                               details={"reasons": ["you reviewed this run's QA"]})
     snapshot = json.loads(run.input_snapshot or "{}")
     if fw.sha256(snapshot) != run.input_sha256:
         raise Conflict("The frozen input snapshot does not match its SHA-256.", error_code="INPUT_SNAPSHOT_MISMATCH")

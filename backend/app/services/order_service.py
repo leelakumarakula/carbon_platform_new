@@ -9,6 +9,11 @@ transfer, the buyer's ownership, the item and the order change in one transactio
 custodian organization, never the requester) is the same `check_completion` / `check_close`.
 
 Ownership is never stored here (D24): items only reference the 9B batch / serial range / reservation / transfer.
+
+Completion: the order is COMPLETED in the transaction that delivers its last item, from TRANSFER_PENDING or ATTENTION_REQUIRED (an
+order that needed attention for one item still completes once every item is DELIVERED). `retry_transfer` only resolves an order with
+an item to (re-)request — FAILED or RESERVED — and refuses otherwise (NOTHING_TO_RETRY); an attention order whose items are all already
+delivered is completed instead. Buyer and seller are notified in-app when the order is paid, an item delivered and the order completed.
 """
 import hashlib
 import uuid
@@ -44,6 +49,7 @@ from app.security.scoping import org_predicate
 from app.services import document_service, finance_service
 from app.services import ledger_service as ls
 from app.services import marketplace_service as ms
+from app.services.notification_service import notify, org_holders
 from app.services.workflows import ORDER_ITEM_MACHINE, ORDER_MACHINE
 
 ORDER_ENTITY = "order"
@@ -131,6 +137,21 @@ def _order(db: Session, ctx: RequestContext, o: Order, to: str, reason: str | No
 
 def parties(o: Order) -> list[uuid.UUID | None]:
     return [o.buyer_organization_id, o.seller_organization_id]
+
+
+def notify_parties(db: Session, o: Order, event_type: str, title: str, body: str | None = None) -> None:
+    """In-app notification to the order people of both sides (in the caller's transaction)."""
+    people = [o.placed_by, *org_holders(db, o.buyer_organization_id, *BUYER_SIDE), *org_holders(db, o.seller_organization_id, *SELLER_SIDE)]
+    notify(db, people, event_type, title, body, ORDER_ENTITY, o.id, "/orders")
+
+
+def _complete(db: Session, ctx: RequestContext, x: Order, reason: str | None = None) -> None:
+    """Every item DELIVERED → COMPLETED, from TRANSFER_PENDING or ATTENTION_REQUIRED."""
+    frm = _order(db, ctx, x, "COMPLETED", reason)
+    x.completed_at, x.attention_reason = utcnow(), None
+    ls.audit(db, ctx, "ORDER_COMPLETED", ORDER_ENTITY, x.id, parties(x), {"order_code": x.order_code, "status": "COMPLETED"}, reason,
+             {"status": frm})
+    notify_parties(db, x, "ORDER_COMPLETED", f"Order completed: {x.order_code}", "Every item was delivered.")
 
 
 # ---------------------------------------------------------------- T1 placement
@@ -301,11 +322,10 @@ def complete_transfer(db: Session, ctx: RequestContext, principal: Principal, tr
         ls.complete_transfer_in_tx(db, ctx, tr, batch=b, confirmer_id=principal.user_id, data=data, key=key)
         _item(db, ctx, item, "DELIVERED")
         finance_service.recognize_in_tx(db, ctx, order=x, item=item, actor_id=principal.user_id)   # Phase 11 D8 / D9 (same transaction)
-        if all(i.status == "DELIVERED" for i in items_of(db, x.id)) and x.status == "TRANSFER_PENDING":
-            frm = _order(db, ctx, x, "COMPLETED")
-            x.completed_at = utcnow()
-            ls.audit(db, ctx, "ORDER_COMPLETED", ORDER_ENTITY, x.id, parties(x), {"order_code": x.order_code, "status": "COMPLETED"}, None,
-                     {"status": frm})
+        notify_parties(db, x, "ORDER_ITEM_DELIVERED", f"Credits delivered: {item.item_code} ({x.order_code})",
+                       f"{item.quantity} credits delivered by transfer {tr.transfer_code}.")
+        if all(i.status == "DELIVERED" for i in items_of(db, x.id)):     # from TRANSFER_PENDING or ATTENTION_REQUIRED (never stuck)
+            _complete(db, ctx, x)
         return x
     return ls.run(db, ctx, op)
 
@@ -361,9 +381,16 @@ def retry_transfer(db: Session, ctx: RequestContext, principal: Principal, order
         if x.status != "ATTENTION_REQUIRED":
             raise Conflict(f"Only an order that needs attention can be resolved this way (this one is {x.status}).",
                            error_code="ORDER_NOT_IN_ATTENTION")
-        for item in items_of(db, x.id):
-            if item.status not in ("FAILED", "RESERVED"):
-                continue
+        items = items_of(db, x.id)
+        if items and all(i.status == "DELIVERED" for i in items):     # nothing to deliver: the order is simply done
+            x.action_key = key
+            _complete(db, ctx, x, reason)
+            return x
+        retry = [i for i in items if i.status in ("FAILED", "RESERVED")]
+        if not retry:                                               # never TRANSFER_PENDING with nothing pending
+            raise Conflict(f"Order {x.order_code} has no failed or reserved item to deliver again; resolve it another way (e.g. refund).",
+                           error_code="NOTHING_TO_RETRY", details={"items": {i.item_code: i.status for i in items}})
+        for item in retry:
             request_delivery(db, ctx, x, item, principal.user_id, reuse_active=True)
         frm = _order(db, ctx, x, "TRANSFER_PENDING", reason)
         x.attention_reason, x.action_key = None, key

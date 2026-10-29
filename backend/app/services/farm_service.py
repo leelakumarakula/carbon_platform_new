@@ -7,9 +7,11 @@ Rules:
 - overlaps with any other current boundary (any organization, same environment) are flagged OPEN for
   review — never auto-rejected. Details of farms the caller cannot see are withheld.
 - verification needs: GIS review, no OPEN/CONFIRMED_CONFLICT overlap, a verified ownership/tenure record,
-  farmer KYC-verified; the person who submitted the farm cannot verify it
+  farmer KYC-verified; the person who submitted the farm cannot verify it. Overlaps are detected again at submit AND at verify
+  (farms drawn while this one was under review)
 - a farm taking part in a project beyond its editable stage (not DRAFT / DATA_COLLECTION, not CLOSED) cannot be
-  re-opened or inactivated: the project relies on its verified boundary (double-counting guard)
+  re-opened or inactivated: the project relies on its verified boundary (double-counting guard). The same holds for a farm that
+  is a baseline control site (CONTROL stratum) of a non-CLOSED project: the comparison relies on its boundary and practices
 """
 import json
 import uuid
@@ -483,6 +485,9 @@ def verify(db: Session, ctx: RequestContext, principal: Principal, farm_id: uuid
     farm = _reviewer(db, principal, farm_id)
     if farm.submitted_by == principal.user_id:
         raise PermissionDenied("You submitted this farm, so someone else must verify it.", error_code="SEPARATION_OF_DUTIES")
+    b = repo.current_boundary(db, farm.id)
+    if b is not None and detect_overlaps(db, ctx, farm, b):
+        db.commit()   # keep the new flags (and their audit) for the reviewer: the readiness check below refuses the verification
     _transition(db, ctx, farm, "VERIFIED", "FARM_VERIFIED", notes)
     farm.verified_at, farm.verified_by, farm.review_notes = utcnow(), principal.user_id, notes
     notify(db, [farm.submitted_by, _owner(db, farm)], "FARM_VERIFIED", f"Farm verified: {farm.farm_code} {farm.name}", notes,
@@ -503,11 +508,15 @@ def reject(db: Session, ctx: RequestContext, principal: Principal, farm_id: uuid
 
 def locking_projects(db: Session, farm: Farm) -> list[Project]:
     """Projects in which the farm actively participates and which are past their editable stage (not DRAFT / DATA_COLLECTION,
-    where the farm can still be corrected or removed) and not CLOSED. They rely on the farm's verified boundary."""
+    where the farm can still be corrected or removed) and not CLOSED, plus the non-CLOSED projects in which it is a baseline control
+    site (a DRAFT or APPROVED CONTROL stratum). They rely on the farm's verified boundary."""
+    from app.services.project_farm_service import control_site_projects
     from app.services.project_service import EDITABLE
-    return list(db.scalars(select(Project).join(ProjectFarm, ProjectFarm.project_id == Project.id).where(
-        ProjectFarm.farm_id == farm.id, ProjectFarm.status == "ACTIVE", Project.status.not_in((*EDITABLE, "CLOSED")))
-        .order_by(Project.project_code)).all())
+    found = {p.id: p for p in db.scalars(select(Project).join(ProjectFarm, ProjectFarm.project_id == Project.id).where(
+        ProjectFarm.farm_id == farm.id, ProjectFarm.status == "ACTIVE", Project.status.not_in((*EDITABLE, "CLOSED")))).all()}
+    for p in control_site_projects(db, farm.id):
+        found.setdefault(p.id, p)
+    return sorted(found.values(), key=lambda p: p.project_code)
 
 
 def _require_not_in_locked_project(db: Session, farm: Farm, what: str) -> None:

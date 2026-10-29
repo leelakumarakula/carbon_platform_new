@@ -100,6 +100,9 @@ class MethodologyVersion(UUIDPrimaryKey, Base):
     monitoring_rules_version: Mapped[int] = mapped_column(Integer, default=1)
     calculation_rules_version: Mapped[int] = mapped_column(Integer, default=1)
     calculation_readiness: Mapped[str] = mapped_column(Unicode(25), default="NOT_PRODUCTION_READY")
+    # the module code version (e.g. "1.2.0") the PRODUCTION_READY decision was made for: readiness holds only while the bound module
+    # has exactly this version (registry.bind); NULL = none recorded (approvals before migration 0024 count as not ready)
+    calculation_readiness_module_version: Mapped[str | None] = mapped_column(Unicode(20))
     calculation_module_code: Mapped[str | None] = mapped_column(Unicode(80))   # module chosen on the Calculation tab
     is_demo_illustrative: Mapped[bool] = mapped_column(Boolean, default=False, server_default=text("0"))
     notes: Mapped[str | None] = mapped_column(Unicode(2000))

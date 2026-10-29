@@ -41,7 +41,7 @@ DRAFT ─▶ DATA_COLLECTION ─▶ ELIGIBILITY_REVIEW ─▶ STANDARD_SELECTED 
 |---|---|---|---|
 | DRAFT → DATA_COLLECTION | `start-data-collection` | projects.manage | a Project Manager on the team |
 | DATA_COLLECTION → ELIGIBILITY_REVIEW | `submit` | projects.manage | see the submit checklist below |
-| ELIGIBILITY_REVIEW → STANDARD_SELECTED | `approve-eligibility` | projects.review, **not the submitter** | GIS accepted the current boundary; all active carbon-rights records verified; no OPEN farm overlap flags; a standard selected |
+| ELIGIBILITY_REVIEW → STANDARD_SELECTED | `approve-eligibility` | projects.review, **not the submitter** | GIS accepted the current boundary; all active carbon-rights records verified; no OPEN or CONFIRMED_CONFLICT farm overlap flags; a standard selected |
 | ELIGIBILITY_REVIEW → DATA_COLLECTION | `return` | projects.review | a reason |
 | STANDARD_SELECTED → ACTIVITY_SELECTED | `confirm-activity` | projects.manage | the activity is offered under the selected standard |
 | STANDARD_SELECTED / ACTIVITY_SELECTED → DATA_COLLECTION | `reopen` | projects.manage | a reason; eligibility must be reviewed again |
@@ -84,6 +84,10 @@ in any state except CLOSED. Anything else is refused with `PROJECT_NOT_EDITABLE`
     the boundary. A farm-overlap flag cleared for verification still counts here, because both projects would credit the land.
   - A farm that is a control site of any non-closed project cannot join a project (`FARM_IS_CONTROL_SITE`), and a project
     farm of another non-closed project cannot become a control site.
+  - Double counting is checked again by every calculation readiness evaluation and input freeze
+    (`DOUBLE_COUNTING_CONFLICT` blocker): land enrolled elsewhere after monitoring started blocks the calculation.
+  - A farm that is a control site of a non-closed project cannot be re-opened or inactivated (`FARM_IN_ACTIVE_PROJECT`), like a
+    farm enrolled in a project past data collection.
   - A CLOSED project that monitored its land (a monitoring period reached ACTIVE or later) still counts in these checks for its
     participation dates, because those years may have been credited. Closing such a project ends its open-ended participations on
     the closing day, so another project can enrol the farm from the next day. A project closed before monitoring frees its land.

@@ -22,9 +22,10 @@ In compose, SQL Server, Redis and MinIO publish their ports on 127.0.0.1 only; t
    SQL Server needs a TLS certificate the application host trusts: production refuses `SQL_SERVER_TRUST_SERVER_CERTIFICATE=true`
    (with `DATABASE_URL`, add `TrustServerCertificate=no`; a URL without it trusts the certificate) and connects with `Encrypt=yes`.
    `DB_ECHO` must be false (refused at start-up); the application engine never writes SQL parameters to logs (D44).
-4. Run `bootstrap-admin` once; the admin must change the password at first sign-in. Never run `seed-demo` in production.
+4. Run `bootstrap-admin` once; the admin must change the password at first sign-in. Never run `seed-demo` in production (it refuses when `APP_ENV=production`).
 5. Run uvicorn behind a reverse proxy with `--no-proxy-headers` and list the proxy addresses in `TRUSTED_PROXIES`, so client
    IPs (rate limiting, audit) are correct and `X-Forwarded-For` from anyone else is ignored (Phase 12B D21; docs/runtime-hardening.md).
+   The same rule applies to `X-Request-ID`: the proxy may set it for log correlation; from any other peer the API generates its own.
 6. `RATE_LIMIT_BACKEND=redis` (required in production; docs/runtime-hardening.md).
 7. Set `DATA_ENCRYPTION_KEY` from the secret store and back it up separately. Without it, encrypted bank
    numbers cannot be read. Set `STORAGE_BACKEND=s3` (MinIO, docs/storage-and-scanning.md) and a real `MALWARE_SCANNER`

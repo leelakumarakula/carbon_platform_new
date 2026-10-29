@@ -17,6 +17,7 @@ from app.schemas.farmers import (
     KycOut,
 )
 from app.schemas.farms import BoundaryOut, EvidenceOut, FarmOut, FarmSummary, OverlapOut, OwnershipOut
+from app.security.permissions import P
 from app.security.principal import Principal
 from app.services import consent_service, document_service, farm_history_service, farm_service, farmer_service
 from app.services.workflows import FARM_MACHINE, FARMER_MACHINE
@@ -47,8 +48,10 @@ def farmer_out(db: Session, principal: Principal, f: Farmer) -> FarmerOut:
     active = {d.consent_type: d.id for d in consent_service.list_definitions(db)}
     base = farmer_summaries(db, [f])[0]
     cap = farmer_service.capabilities(principal, f)
+    # status changes are staff-only (farmer_service.change_status needs farmers.manage in the organization): self-service sees none
+    staff = principal.can_in_org(P.FARMERS_MANAGE, f.organization_id)
     transitions = sorted(t for t in FARMER_MACHINE.allowed_from(f.status) if t not in ("KYC_PENDING", "KYC_VERIFIED")
-                         and not (t == "REGISTERED" and f.status == "KYC_PENDING"))
+                         and not (t == "REGISTERED" and f.status == "KYC_PENDING")) if staff else []
     return FarmerOut(
         **base.model_dump(), group_organization_id=f.group_organization_id, user_id=f.user_id, gender=f.gender,
         date_of_birth=f.date_of_birth, preferred_language=f.preferred_language, participation_type=f.participation_type,
@@ -97,7 +100,6 @@ def farm_summaries(db: Session, farms: list[Farm]) -> list[FarmSummary]:
 
 
 def farm_out(db: Session, principal: Principal, f: Farm) -> FarmOut:
-    from app.security.permissions import P
     from app.services import access
     base = farm_summaries(db, [f])[0]
     owner = farm_repo.owner_user(db, f.farmer_id)

@@ -2,14 +2,20 @@
 
 - PDF 1.4, A4 pages, the standard Helvetica font (WinAnsiEncoding) only; no images, no embedded fonts
 - no /Info dictionary, no /CreationDate, no /ID, no random values: the same lines always give the same bytes
-- characters outside Windows-1252 are mapped to fixed ASCII stand-ins (e.g. → becomes ->), so output never depends on locale
+- characters outside Windows-1252 are mapped to fixed ASCII stand-ins (e.g. → becomes ->, Δ becomes Delta, CO₂ becomes CO2), so
+  output never depends on locale; common unit and math signs (², °, µ, ×, ±) are spelled out too, so the text reads the same in any
+  viewer and copy-paste
 """
-WRITER_VERSION = "text-pdf-1.0"
+WRITER_VERSION = "text-pdf-1.1"    # 1.1: Greek letters, sub/superscripts and math / unit symbols mapped to readable text, not "?"
 PAGE_W, PAGE_H = 595, 842          # A4 in points
 MARGIN, FONT_SIZE, LEADING = 50, 9, 12
 WRAP = 104                         # characters per line (Helvetica 9 pt within the margins)
 LINES_PER_PAGE = (PAGE_H - 2 * MARGIN - LEADING) // LEADING
-_MAP = {"→": "->", "←": "<-", "≠": "!=", "≤": "<=", "≥": ">=", "✓": "v", "×": "x", "−": "-", "\t": "    "}
+_MAP = {"→": "->", "←": "<-", "↔": "<->", "≠": "!=", "≤": "<=", "≥": ">=", "≈": "~", "✓": "v", "×": "x", "−": "-", "\t": "    ",
+        "Δ": "Delta ", "δ": "delta ", "Σ": "Sum ", "σ": "sigma", "µ": "u", "μ": "u", "α": "alpha", "β": "beta", "π": "pi",
+        "√": "sqrt", "∞": "inf", "±": "+/-", "°": " deg", "²": "^2", "³": "^3", "¹": "^1",
+        **{chr(0x2080 + i): str(i) for i in range(10)},                       # subscripts ₀-₉ (CO₂, CH₄, N₂O)
+        **{chr(0x2070 + i): f"^{i}" for i in (0, 4, 5, 6, 7, 8, 9)}}         # superscripts ⁰ ⁴-⁹
 
 
 def _encode(text: str) -> bytes:

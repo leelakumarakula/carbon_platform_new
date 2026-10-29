@@ -9,9 +9,18 @@ same hash, laboratory results still APPROVED at the same version, methodology lo
 report exists, its hashes verify and it is not stale · no open blocking finding in the period · a production-ready module in production
 (whose methodology version's readiness has not been revoked since the inputs were frozen).
 A READY review whose prerequisites no longer hold is INVALIDATED automatically.
+
+Lazy invalidation is concurrency-safe: `refresh` / `invalidate_period` lock the review row (UPDLOCK, HOLDLOCK, ROWLOCK) and re-check its
+status and prerequisites under the lock, so concurrent readers transition it exactly once (one WorkflowEvent, one audit row). They never
+commit: the top-level operation that called them does (a read view commits only its lazy invalidation; a write commits it with its own
+work or, when it refreshed first, before taking its own locks).
+
+Result flags (non-blocking): a final result <= 0 or a reported REVERSAL is a WARN check (`net_result`) and is stated in the package
+manifest (`result_flags`), so the VVB package says explicitly that the period yields no creditable quantity / reports a reversal.
 """
 import json
 import uuid
+from decimal import Decimal, InvalidOperation
 from typing import Any
 
 from sqlalchemy import select
@@ -33,6 +42,7 @@ from app.services import calculation_findings as cf
 from app.services import calculation_report as crep
 from app.services import calculation_service as cs
 from app.services.calculation_inputs import Blocker
+from app.services.ledger_service import LOCK_HINT
 from app.services.workflows import CALCULATION_READINESS_MACHINE
 
 ENTITY = "calculation_readiness"
@@ -118,7 +128,33 @@ def evaluate(db: Session, period_id: uuid.UUID, run: CalculationRun | None) -> t
         prod.append(f"the production readiness of module {run.module_code} was revoked after the inputs were frozen")
         blockers.append(cs.revoked_blocker(run.module_code))
     checks.append(_check("module_readiness", "Production-ready module in production", prod))
+    flags = result_flags(run, records)
+    checks.append({"key": "net_result", "label": "Final result is a positive creditable quantity (no reversal reported)",
+                   "result": "WARN" if flags else "PASS", "details": [f["message"] for f in flags]})
     return blockers, checks, rep
+
+
+def _dec(v: Any) -> Decimal | None:
+    try:
+        return Decimal(str(v)) if v is not None else None
+    except InvalidOperation:
+        return None
+
+
+def result_flags(run: CalculationRun, records: list[dict[str, Any]] | None = None) -> list[dict[str, Any]]:
+    """Non-blocking flags of an approved run: ZERO_OR_NEGATIVE_RESULT (final NET <= 0) and REVERSAL_REPORTED (a REVERSAL output > 0).
+    A 0-credit or reversal period may still go to verification, but its package says so explicitly (never silently a normal period)."""
+    out: list[dict[str, Any]] = []
+    net = _dec(run.net_result)
+    if net is not None and net <= 0:
+        out.append({"code": "ZERO_OR_NEGATIVE_RESULT", "value": run.net_result, "unit": run.net_unit,
+                    "message": f"The final result is {run.net_result} {run.net_unit or ''}".rstrip() + ": no creditable quantity for this period."})
+    for r in records or []:
+        if r.get("output_code") == "REVERSAL" and (v := _dec(r.get("value"))) is not None and v > 0:
+            out.append({"code": "REVERSAL_REPORTED", "value": r.get("value"), "unit": r.get("unit"),
+                        "message": f"The calculation reports a REVERSAL of {r.get('value')} {r.get('unit') or ''}".rstrip()
+                                   + " (a net loss against the baseline)."})
+    return out
 
 
 def build_manifest(db: Session, run: CalculationRun, rep: CalculationReport) -> dict[str, Any]:
@@ -148,6 +184,7 @@ def build_manifest(db: Session, run: CalculationRun, rep: CalculationReport) -> 
         "findings": [cf.summary(f) for f in cf.findings_of_period(db, run.monitoring_period_id)],
         "qa_reviews": [{"id": str(r.id), "result": r.result, "completed_at": r.completed_at.isoformat() + "Z"}
                        for r in cs.qa_reviews(db, run.id) if r.completed_at is not None],
+        "result_flags": result_flags(run, cs.stored_output_records(db, run.id)),     # non-blocking, stated explicitly to the VVB
     }
 
 
@@ -164,28 +201,57 @@ def _transition(db: Session, ctx: RequestContext, r: CalculationReadinessReview,
             **extra}, reason, organization_id=org)
 
 
-def invalidate_period(db: Session, ctx: RequestContext, period_id: uuid.UUID, reason: str) -> None:
-    """B12: a READY review of the period becomes INVALIDATED (caller commits)."""
-    for r in db.scalars(select(CalculationReadinessReview).where(CalculationReadinessReview.monitoring_period_id == period_id,
-                                                                 CalculationReadinessReview.status == "READY")).all():
-        p = db.get(Project, r.project_id)
-        r.invalidated_at, r.invalidation_reason = utcnow(), reason[:2000]
-        _transition(db, ctx, r, "INVALIDATED", "CALCULATION_READINESS_INVALIDATED", reason, p.organization_id if p else None)
+def lock_review(db: Session, review_id: uuid.UUID) -> CalculationReadinessReview | None:
+    """The review row WITH (UPDLOCK, HOLDLOCK, ROWLOCK), reloaded. Flushes first: sessions do not autoflush, and populate_existing must
+    never overwrite a pending in-memory change."""
+    db.flush()
+    return db.scalars(select(CalculationReadinessReview).with_hint(CalculationReadinessReview, LOCK_HINT, "mssql")
+                      .where(CalculationReadinessReview.id == review_id).execution_options(populate_existing=True)).first()
 
 
-def refresh(db: Session, ctx: RequestContext, period_id: uuid.UUID) -> None:
-    """Re-check a READY review on read / before use; invalidate it when a prerequisite no longer holds."""
-    ready = db.scalars(select(CalculationReadinessReview).where(CalculationReadinessReview.monitoring_period_id == period_id,
-                                                                CalculationReadinessReview.status == "READY")).first()
-    if ready is None:
-        return
-    run = db.get(CalculationRun, ready.run_id)
-    blockers, _, rep = evaluate(db, period_id, run)
+def _invalidate(db: Session, ctx: RequestContext, r: CalculationReadinessReview, reason: str) -> None:
+    p = db.get(Project, r.project_id)
+    r.invalidated_at, r.invalidation_reason = utcnow(), reason[:2000]
+    _transition(db, ctx, r, "INVALIDATED", "CALCULATION_READINESS_INVALIDATED", reason, p.organization_id if p else None)
+
+
+def invalidate_period(db: Session, ctx: RequestContext, period_id: uuid.UUID, reason: str) -> int:
+    """B12: every READY review of the period becomes INVALIDATED — each row locked and re-checked first, so a concurrent caller never
+    transitions it twice. Returns how many were invalidated (caller commits)."""
+    n = 0
+    for rid in db.scalars(select(CalculationReadinessReview.id).where(CalculationReadinessReview.monitoring_period_id == period_id,
+                                                                      CalculationReadinessReview.status == "READY")).all():
+        r = lock_review(db, rid)
+        if r is None or r.status != "READY":                    # a concurrent caller already moved it
+            continue
+        _invalidate(db, ctx, r, reason)
+        n += 1
+    return n
+
+
+def _stale(db: Session, period_id: uuid.UUID, ready: CalculationReadinessReview) -> list[Blocker]:
+    blockers, _, rep = evaluate(db, period_id, db.get(CalculationRun, ready.run_id))
     if not blockers and rep is not None and rep.id != ready.report_id:
         blockers.append(Blocker("REPORT_STALE", "The run's current report is not the one this readiness was approved with."))
-    if blockers:
-        invalidate_period(db, ctx, period_id, "; ".join(f"{b.code}: {b.message}" for b in blockers))
-        db.commit()
+    return blockers
+
+
+def refresh(db: Session, ctx: RequestContext, period_id: uuid.UUID) -> bool:
+    """Re-check a READY review on read / before use; invalidate it when a prerequisite no longer holds. Concurrency-safe and commit-free:
+    the row is locked, then its status and prerequisites are re-checked under the lock, so the transition happens at most once; the
+    caller commits. True when this call invalidated the review."""
+    ready = db.scalars(select(CalculationReadinessReview).where(CalculationReadinessReview.monitoring_period_id == period_id,
+                                                                CalculationReadinessReview.status == "READY")).first()
+    if ready is None or not _stale(db, period_id, ready):
+        return False
+    r = lock_review(db, ready.id)
+    if r is None or r.status != "READY":                        # a concurrent reader invalidated it first
+        return False
+    blockers = _stale(db, period_id, r)                         # re-checked under the lock
+    if not blockers:
+        return False
+    _invalidate(db, ctx, r, "; ".join(f"{b.code}: {b.message}" for b in blockers))
+    return True
 
 
 def view(db: Session, ctx: RequestContext, principal: Principal, project_id: uuid.UUID, period_id: uuid.UUID) -> dict[str, Any]:
@@ -193,7 +259,8 @@ def view(db: Session, ctx: RequestContext, principal: Principal, project_id: uui
     mp = db.get(MonitoringPeriod, period_id)
     if mp is None or mp.project_id != p.id:
         raise NotFound("Monitoring period not found.", error_code="PERIOD_NOT_FOUND")
-    refresh(db, ctx, period_id)
+    if refresh(db, ctx, period_id):
+        db.commit()                                             # only the lazy invalidation: a view writes nothing else
     run = current_run(db, period_id)
     blockers, checks, rep = evaluate(db, period_id, run)
     from app.services import calculation_inputs as ci
@@ -208,7 +275,8 @@ def create(db: Session, ctx: RequestContext, principal: Principal, project_id: u
     mp = db.get(MonitoringPeriod, period_id)
     if mp is None or mp.project_id != p.id:
         raise NotFound("Monitoring period not found.", error_code="PERIOD_NOT_FOUND")
-    refresh(db, ctx, period_id)
+    if refresh(db, ctx, period_id):
+        db.commit()                                             # the lazy invalidation only: nothing of this request is written yet
     run = current_run(db, period_id)
     if run is None:
         raise Conflict("Readiness needs the period's current APPROVED calculation run.", error_code="NO_APPROVED_CALCULATION")

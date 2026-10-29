@@ -95,12 +95,14 @@ def get_organization_by_code(db: Session, code: str) -> Organization | None:
     return db.scalars(select(Organization).where(Organization.code == code.upper())).first()
 
 
-def list_organizations(db: Session, params: PageParams, *, scope: frozenset[uuid.UUID] | None, search: str | None,
+def list_organizations(db: Session, params: PageParams, *, visible: ColumnElement[bool] | None, search: str | None,
                        org_type: str | None, status: str | None, environment: str | None
                        ) -> tuple[list[Organization], int]:
+    """`visible`: the caller's scope as a SQL predicate on Organization.id (security.scoping.org_predicate: a subquery for a
+    platform caller, never an IN list of every organization, which would break SQL Server's 2100-parameter limit)."""
     stmt: Select[tuple[Organization]] = select(Organization)
-    if scope is not None:
-        stmt = stmt.where(Organization.id.in_(list(scope)))
+    if visible is not None:
+        stmt = stmt.where(visible)
     if search:
         like = f"%{search.strip()}%"
         stmt = stmt.where(or_(Organization.code.ilike(like), Organization.name.ilike(like)))

@@ -999,14 +999,23 @@ def decide_reversal(db: Session, ctx: RequestContext, principal: Principal, reve
 
 # ---------------------------------------------------------------- 9A correction / cancellation guard (X4, D14)
 def ledger_guard(db: Session, batch_ids: list[uuid.UUID]) -> None:
-    """LEDGER_ACTIVITY_EXISTS unless every opened batch is untouched (only its OPEN_INVENTORY entry; positions AVAILABLE, original owner)."""
-    for bid in batch_ids:
+    """LEDGER_ACTIVITY_EXISTS unless every opened batch is untouched (only its OPEN_INVENTORY entry; positions AVAILABLE, original owner).
+
+    Lock first, then check (D5): the batch's openings and its OPEN positions are taken WITH (UPDLOCK, HOLDLOCK, ROWLOCK) in the same
+    deterministic order every ledger movement uses, before anything is read. A reservation / transfer / retirement / opening confirmation
+    in flight finishes first and is then seen by the check; one that starts later waits until the caller's transaction (which closes the
+    positions with ISSUANCE_ADJUSTMENT) commits — never consuming positions this guard already declared untouched. Caller commits."""
+    for bid in sorted(batch_ids, key=str):
+        db.flush()
+        db.scalars(select(CreditOpening).with_hint(CreditOpening, LOCK_HINT, "mssql").where(CreditOpening.batch_id == bid)
+                   .order_by(CreditOpening.id).execution_options(populate_existing=True)).all()
+        lock_positions(db, bid)
         opening = db.scalars(select(CreditOpening).where(CreditOpening.batch_id == bid, CreditOpening.status == "CONFIRMED")).first()
         if opening is None:
             continue
         other = db.scalar(select(func.count()).select_from(CreditLedgerEntry).where(CreditLedgerEntry.batch_id == bid,
                                                                                      CreditLedgerEntry.entry_type != "OPEN_INVENTORY"))
-        positions = db.scalars(select(CreditPosition).where(CreditPosition.batch_id == bid)).all()
+        positions = db.scalars(select(CreditPosition).where(CreditPosition.batch_id == bid).execution_options(populate_existing=True)).all()
         untouched = other == 0 and all(p.status == "OPEN" and p.state == "AVAILABLE" and p.owner_organization_id == opening.owner_organization_id
                                        and p.created_by_entry_id == opening.entry_id for p in positions)
         if not untouched:

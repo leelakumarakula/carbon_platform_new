@@ -11,6 +11,12 @@ them from registry evidence and a second person confirms.
 - D10: RECORDED → CONFIRMED by a registry.confirm holder who is not the recorder; VOIDED / CORRECTED / CANCELLED keep history; a
   correction is a new issuance with `corrects_issuance_id`
 - D13: the first CONFIRMED issuance moves the project aggregate VERIFIED → ISSUED (period records stay authoritative)
+- D12: recording and confirming a new issuance are refused (SOURCE_SUPERSEDED) unless the submission's VVB decision is still the
+  period's CURRENT VERIFIED decision (a correction of a confirmed issuance stays possible, never above the original quantity) —
+  checked under the submission lock, with the decision row locked too (a later decision cannot supersede it between the check and
+  the commit). A superseded source is a registry matter: correct / cancel through the registry with evidence
+- concurrency: record, confirm, void, cancel and correct all lock the submission row first (UPDLOCK, HOLDLOCK, ROWLOCK) and re-check
+  the issuance under it; a cancellation is recorded by someone other than the issuance's recorder and confirmer (SEPARATION_OF_DUTIES)
 - nothing here is inventory, ownership, reservation, transfer or retirement
 """
 import json
@@ -45,6 +51,7 @@ from app.services import project_service as psvc
 from app.services import registry_access as ra
 from app.services import registry_service as rs
 from app.services.ledger_service import LOCK_HINT
+from app.services.notification_service import notify, org_holders
 from app.services.workflows import CREDIT_BATCH_MACHINE, CREDIT_ISSUANCE_MACHINE
 
 ISSUED_LABEL = "Registry-issued credits"
@@ -143,6 +150,47 @@ def _validate_batches(db: Session, adapter: RegistryAdapter, registry_org_id: uu
     return parsed_all
 
 
+# ---------------------------------------------------------------- source (D12)
+def lock_decision(db: Session, decision_id: uuid.UUID) -> VerificationDecision | None:
+    db.flush()
+    return db.scalars(select(VerificationDecision).with_hint(VerificationDecision, LOCK_HINT, "mssql")
+                      .where(VerificationDecision.id == decision_id).execution_options(populate_existing=True)).first()
+
+
+def require_current_source(db: Session, s: RegistrySubmission, decision_id: uuid.UUID) -> VerificationDecision:
+    """Under the submission lock: the decision behind the issuance must still be the period's CURRENT VERIFIED decision with its
+    verified package intact (the decision row is locked as well, so it cannot be superseded before this transaction commits)."""
+    d = lock_decision(db, decision_id)
+    problems = ["the VVB decision is missing"] if d is None else []
+    if d is not None:
+        if d.status != "CURRENT":
+            problems.append(f"VVB decision {d.decision_code} is {d.status}: {d.superseded_reason or 'superseded'}")
+        problems += [b["message"] for b in rs.decision_blockers(db, d)]
+        if d.id != s.verification_decision_id:
+            problems.append("the issuance is not linked to this submission's VVB decision")
+    if problems:
+        raise Conflict("The VVB decision behind this registry submission is no longer the period's current VERIFIED decision; nothing is "
+                       "issued against it (correct or cancel through the registry with evidence).", error_code="SOURCE_SUPERSEDED",
+                       details={"problems": problems})
+    assert d is not None
+    return d
+
+
+def _source_for(db: Session, s: RegistrySubmission, decision_id: uuid.UUID, corrects: CreditIssuance | None, quantity: Decimal
+                ) -> VerificationDecision:
+    """A new issuance needs the CURRENT VERIFIED source. A correction of an already CONFIRMED issuance records the registry's corrected
+    facts (a controlled registry action, D12) and stays possible on a superseded source — but never above the quantity it corrects."""
+    if corrects is None:
+        return require_current_source(db, s, decision_id)
+    d = lock_decision(db, decision_id)
+    assert d is not None
+    if d.status != "CURRENT" and quantity > corrects.quantity:
+        raise Conflict("The VVB decision behind this submission is superseded: a correction may only reduce the issued quantity "
+                       f"({corrects.quantity}).", error_code="SOURCE_SUPERSEDED",
+                       details={"original_quantity": str(corrects.quantity), "requested": str(quantity)})
+    return d
+
+
 # ---------------------------------------------------------------- recording
 def _batch_transition(db: Session, ctx: RequestContext, b: CreditBatch, p: Project, to: str, reason: str | None) -> None:
     frm = b.status
@@ -198,21 +246,31 @@ def record(db: Session, ctx: RequestContext, principal: Principal, submission_id
            corrects: CreditIssuance | None = None, correction_reason: str | None = None, adapter: RegistryAdapter | None = None
            ) -> CreditIssuance:
     s, p = ra.submission_for(db, principal, submission_id, P.REGISTRY_MANAGE)
-    if corrects is not None:                                       # Phase 9B (X4): no correction over ledger activity
-        from app.services import ledger_service
-        ledger_service.ledger_guard(db, [b.id for b in batches_of(db, corrects.id)])
     if request_key:
         prior = db.scalars(select(CreditIssuance).where(CreditIssuance.client_request_key == request_key)).first()
         if prior is not None:
             if prior.registry_submission_id != s.id:
                 raise Conflict("This Idempotency-Key was used for another request.", error_code="IDEMPOTENCY_KEY_REUSED")
             return prior
+    if rs.check_source(db, ctx, s):
+        db.commit()                                                # the lazy source re-check only: nothing of this issuance is written yet
+    s = lock_submission(db, s.id)                                  # serializes record / confirm / cancel / correct of this submission
     if s.status != "ACCEPTED":
         raise Conflict(f"Issuances are recorded only on an ACCEPTED registry submission (it is {s.status}).", error_code="SUBMISSION_NOT_ACCEPTED")
-    rs.check_source(db, ctx, s)
+    if corrects is not None:
+        db.refresh(corrects)
+        if corrects.status != "CONFIRMED":
+            raise Conflict(f"Only a CONFIRMED issuance can be corrected (it is {corrects.status}).", error_code="ISSUANCE_NOT_CONFIRMED")
+        if db.scalars(select(CreditIssuance).where(CreditIssuance.corrects_issuance_id == corrects.id,
+                                                   CreditIssuance.status == "RECORDED")).first():
+            raise Conflict("A correction of this issuance is already awaiting confirmation.", error_code="CORRECTION_PENDING")
+        from app.services import ledger_service
+
+        # Phase 9B (X4): no correction over ledger activity (the batch's positions are locked first, then checked)
+        ledger_service.ledger_guard(db, [b.id for b in batches_of(db, corrects.id)])
+    d = _source_for(db, s, s.verification_decision_id, corrects, Decimal(data.quantity))
     account = db.get(RegistryAccount, s.registry_account_id)
-    d = db.get(VerificationDecision, s.verification_decision_id)
-    assert account is not None and d is not None
+    assert account is not None
     impl = ra.adapter_for(account, adapter)
     quantity = Decimal(data.quantity)
     exclude = (corrects.id if corrects else None,)
@@ -283,6 +341,7 @@ def lock_submission_stmt(submission_id: uuid.UUID) -> Select[tuple[RegistrySubmi
 
 
 def lock_submission(db: Session, submission_id: uuid.UUID) -> RegistrySubmission:
+    db.flush()                                                      # populate_existing must never overwrite a pending change
     return db.scalars(lock_submission_stmt(submission_id)).one()
 
 
@@ -293,15 +352,18 @@ def confirm(db: Session, ctx: RequestContext, principal: Principal, issuance_id:
     if principal.user_id == i.recorded_by:
         raise PermissionDenied("The issuance must be confirmed by someone other than the person who recorded it.",
                                error_code="SEPARATION_OF_DUTIES", details={"reasons": ["you recorded this issuance"]})
-    lock_submission(db, s.id)                                       # serialize confirmations (D5: issued ≤ verified across tranches)
+    if rs.check_source(db, ctx, s):
+        db.commit()                                                 # the lazy source re-check only: nothing of this confirmation is written yet
+    s = lock_submission(db, s.id)                                   # serialize confirmations (D5: issued ≤ verified across tranches)
     db.refresh(i)
     if i.status != "RECORDED":                                      # a concurrent confirmer / voider won
         raise Conflict(f"Only a RECORDED issuance can be confirmed (it is {i.status}).", error_code="ISSUANCE_NOT_RECORDED")
     if s.status != "ACCEPTED":
         raise Conflict(f"The registry submission is {s.status}.", error_code="SUBMISSION_NOT_ACCEPTED")
+    d = _source_for(db, s, i.verification_decision_id,              # D12: never confirmed against a superseded VVB decision
+                    db.get(CreditIssuance, i.corrects_issuance_id) if i.corrects_issuance_id else None, i.quantity)
     account = db.get(RegistryAccount, i.registry_account_id)
-    d = db.get(VerificationDecision, i.verification_decision_id)
-    assert account is not None and d is not None
+    assert account is not None
     quantity_check(db, account, d, i.unit, i.quantity, (i.id, i.corrects_issuance_id))
     original = db.get(CreditIssuance, i.corrects_issuance_id) if i.corrects_issuance_id else None
     try:
@@ -332,12 +394,16 @@ def confirm(db: Session, ctx: RequestContext, principal: Principal, issuance_id:
     if p.status == "VERIFIED":
         psvc.transition_to(db, ctx, p, "ISSUED", "PROJECT_STATUS_CHANGED", "FIRST_ISSUANCE_CONFIRMED",
                            "First registry issuance confirmed (aggregate status; periods are authoritative)")
+    notify(db, [i.recorded_by, *org_holders(db, p.organization_id, P.REGISTRY_MANAGE, P.CREDITS_MANAGE)], "CREDIT_ISSUANCE_CONFIRMED",
+           f"Issuance confirmed: {i.issuance_code} — {i.quantity} {i.unit} ({p.project_code})", note, "credit_issuance", i.id, "/registry")
     db.commit()
     return i
 
 
 def void(db: Session, ctx: RequestContext, principal: Principal, issuance_id: uuid.UUID, reason: str) -> CreditIssuance:
-    i, _, p = ra.issuance_for(db, principal, issuance_id, P.REGISTRY_MANAGE)
+    i, s, p = ra.issuance_for(db, principal, issuance_id, P.REGISTRY_MANAGE)
+    lock_submission(db, s.id)                                       # a concurrent confirmation waits / is seen
+    db.refresh(i)
     if i.status != "RECORDED":
         raise Conflict(f"Only a RECORDED (unconfirmed) issuance can be voided (it is {i.status}).", error_code="ISSUANCE_NOT_RECORDED")
     i.voided_by, i.voided_at, i.void_reason = principal.user_id, utcnow(), reason
@@ -351,8 +417,15 @@ def void(db: Session, ctx: RequestContext, principal: Principal, issuance_id: uu
 def cancel(db: Session, ctx: RequestContext, principal: Principal, issuance_id: uuid.UUID, reason: str, document_id: uuid.UUID) -> CreditIssuance:
     """The registry cancelled a confirmed issuance (registry evidence required). Serials stay allocated; history is kept."""
     i, s, p = ra.issuance_for(db, principal, issuance_id, P.REGISTRY_MANAGE)
+    lock_submission(db, s.id)                                       # serializes with confirm / correct of the same submission
+    db.refresh(i)
     if i.status != "CONFIRMED":
         raise Conflict(f"Only a CONFIRMED issuance can be cancelled (it is {i.status}).", error_code="ISSUANCE_NOT_CONFIRMED")
+    reasons = [r for who, r in ((i.recorded_by, "you recorded this issuance"), (i.confirmed_by, "you confirmed this issuance"))
+               if who == principal.user_id]
+    if reasons:                                                     # closes credits for everyone: never the same people who issued them
+        raise PermissionDenied("The registry's cancellation must be recorded by someone other than the issuance's recorder and confirmer.",
+                               error_code="SEPARATION_OF_DUTIES", details={"reasons": reasons})
     rs._evidence(db, ra.SUBMISSION_ENTITY, s.id, document_id, {DocumentCategory.ISSUANCE_STATEMENT.value, DocumentCategory.REGISTRY_RESPONSE.value})
     from app.services import ledger_service  # Phase 9B (X4): guard + explicit ISSUANCE_ADJUSTMENT if untouched
     ledger_service.issuance_adjustment(db, ctx, principal, i, [b.id for b in batches_of(db, i.id)], f"Issuance {i.issuance_code} cancelled: {reason}")

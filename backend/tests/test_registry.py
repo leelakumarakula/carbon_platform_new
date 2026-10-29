@@ -378,8 +378,9 @@ def test_issuance_dual_confirmation_tranches_invariants_correction_and_cancellat
     assert {b["status"] for b in o2["batches"]} == {"SUPERSEDED"}
     # 23. cancellation (registry evidence); serials stay allocated
     assert reg.post(f"{R}/issuances/{i1['id']}/cancel", {"reason": "TEST"}).status_code == 422
-    cx = reg.post(f"{R}/issuances/{i1['id']}/cancel", {"reason": "TEST: registry cancelled",
-                                                       "document_id": reg.doc(f"{R}/submissions/{sid}/documents", "REGISTRY_RESPONSE")}).json()
+    cancel = {"reason": "TEST: registry cancelled", "document_id": reg.doc(f"{R}/submissions/{sid}/documents", "REGISTRY_RESPONSE")}
+    assert codes(reg.post(f"{R}/issuances/{i1['id']}/cancel", cancel)) == "SEPARATION_OF_DUTIES"     # never the recorder (nor the confirmer)
+    cx = reg.post(f"{R}/issuances/{i1['id']}/cancel", cancel, who=staff(db, client, reg.org, "REGISTRY_MANAGER")).json()
     assert cx["status"] == "CANCELLED" and {b["status"] for b in cx["batches"]} == {"CANCELLED"}
     assert codes(reg.issue(sid, 100, "TEST-ISS-6", batches=dup)) == "DUPLICATE_SERIAL"
     assert ci.confirmed_total(db, uuid.UUID(reg.decision["id"])) == 350

@@ -312,10 +312,11 @@ def test_settlement_payout_execution_and_reconciliation_lifecycle(client: TestCl
     f.cost("999.00", approve=False)                                                                   # pending costs are never deducted
     draft = f.run(share, alloc, calculate=False)
     assert draft["status"] == "DRAFT" and draft["gross_revenue"] is None
-    calc = f.post(f"/settlements/{draft['id']}/calculate", {}, f.fin2, key="calc-1")
+    calc = f.post(f"/settlements/{draft['id']}/calculate", {"include_project_costs": True}, f.fin2, key="calc-1")   # project-level cost: opt-in
     assert calc.status_code == 200, calc.text
     r = calc.json()
-    assert f.post(f"/settlements/{draft['id']}/calculate", {}, f.fin2, key="calc-1").json()["input_sha256"] == r["input_sha256"]
+    again = f.post(f"/settlements/{draft['id']}/calculate", {"include_project_costs": True}, f.fin2, key="calc-1")
+    assert again.json()["input_sha256"] == r["input_sha256"]
     assert (Decimal(r["gross_revenue"]), Decimal(r["deducted_costs"]), Decimal(r["distributable"])) == (Decimal("1250"), Decimal("100"),
                                                                                                         Decimal("1150"))
     # 1150 × 40% = 460; 460 × 33.333333% = 153.3333318 → 153.33; 460 × 66.666667% = 306.6666682 → 306.67 (HALF_UP, 2 decimals for INR)
@@ -376,7 +377,9 @@ def test_settlement_payout_execution_and_reconciliation_lifecycle(client: TestCl
     assert f.post(f"/payouts/{po['id']}/reconcile", {**stmt, "statement_reference": "NEFT 1"}, f.fin).json()["result"] == "EXCEPTION"
     assert f.post(f"/payouts/{po['id']}/reconcile", {**stmt, "statement_amount": "406.00", "note": "TEST typo"}, f.fin).json()["result"] == \
         "EXCEPTION"                                                                                    # money never matched by a note
-    m = f.post(f"/payouts/{po['id']}/reconcile", {**stmt, "statement_reference": "NEFT 1", "note": "TEST: bank shortened the reference"}, f.fin)
+    resolution = {**stmt, "statement_reference": "NEFT 1", "note": "TEST: bank shortened the reference"}
+    assert codes(f.post(f"/payouts/{po['id']}/reconcile", resolution, f.fin)) == "SEPARATION_OF_DUTIES"   # who raised it never clears it
+    m = f.post(f"/payouts/{po['id']}/reconcile", resolution, f.fin2)                                 # a different reconciler resolves it
     assert m.json()["result"] == "MATCHED", m.text
     final = f.get(f"/payouts/{po['id']}").json()
     assert final["status"] == "RECONCILED" and len(final["reconciliations"]) == 4

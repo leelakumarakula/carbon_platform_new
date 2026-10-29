@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 from app.audit.service import AuditAction, record, security_event
 from app.core.config import get_settings
 from app.core.context import RequestContext
-from app.core.errors import AuthenticationFailed, RateLimited, ValidationFailed
+from app.core.errors import AuthenticationFailed, Conflict, RateLimited, ValidationFailed
 from app.core.rate_limit import limiter
 from app.models import LoginAudit, RefreshToken, User, UserSession, UserStatus
 from app.models.base import utcnow
@@ -49,9 +49,9 @@ def _login_audit(db: Session, ctx: RequestContext, email: str, user: User | None
                       request_id=ctx.request_id))
 
 
-def _count_failed_password(db: Session, ctx: RequestContext, user: User, now: datetime, reason: str) -> None:
+def _count_failed_password(db: Session, ctx: RequestContext, user: User, now: datetime, reason: str) -> bool:
     """Count a wrong password with one atomic UPDATE (parallel attempts never overwrite each other's count; the row lock is held
-    until commit, so the value read back is this attempt's) and lock the account when the threshold is reached."""
+    until commit, so the value read back is this attempt's) and lock the account when the threshold is reached (returns True then)."""
     s = get_settings()
     no_sync = {"synchronize_session": False}
     db.execute(update(User).where(User.id == user.id).values(failed_login_count=User.failed_login_count + 1), execution_options=no_sync)
@@ -60,7 +60,10 @@ def _count_failed_password(db: Session, ctx: RequestContext, user: User, now: da
         db.execute(update(User).where(User.id == user.id)
                    .values(locked_until=now + timedelta(minutes=s.LOCKOUT_MINUTES), failed_login_count=0), execution_options=no_sync)
         security_event(db, ctx, "ACCOUNT_LOCKED", "WARNING", user.id, {"reason": reason, "locked_minutes": s.LOCKOUT_MINUTES})
+        db.expire(user, ["failed_login_count", "locked_until"])
+        return True
     db.expire(user, ["failed_login_count", "locked_until"])
+    return False
 
 
 def login(db: Session, ctx: RequestContext, email: str, password: str) -> IssuedTokens:
@@ -69,9 +72,12 @@ def login(db: Session, ctx: RequestContext, email: str, password: str) -> Issued
     ip = ctx.ip_address or "unknown"
     if not limiter.hit(f"login:{ip}", s.LOGIN_RATE_LIMIT_PER_MINUTE, 60) or \
             not limiter.hit(f"login:{ip}:{email}", s.LOGIN_RATE_LIMIT_PER_MINUTE, 60):
-        security_event(db, ctx, "LOGIN_RATE_LIMITED", "WARNING", details={"email": email})
-        _login_audit(db, ctx, email, None, False, "RATE_LIMITED")
-        db.commit()
+        # Audit the flood, not every request of it: one security event + login-audit row per client IP per window, so a flood of
+        # refused sign-ins never becomes one database write and commit per request (the refusal itself is unchanged).
+        if limiter.hit(f"login-rate-audit:{ip}", 1, 60):
+            security_event(db, ctx, "LOGIN_RATE_LIMITED", "WARNING", details={"email": email, "audit_window_seconds": 60})
+            _login_audit(db, ctx, email, None, False, "RATE_LIMITED")
+            db.commit()
         raise RateLimited("Too many sign-in attempts. Please wait a minute and try again.")
 
     user = repo.get_user_by_email(db, email)
@@ -135,7 +141,8 @@ def refresh(db: Session, ctx: RequestContext, raw_token: str | None) -> IssuedTo
     if rt.expires_at <= now or not session.is_active(now):
         raise AuthenticationFailed("Your session has expired. Please sign in again.", error_code="REFRESH_EXPIRED")
     user = db.get(User, rt.user_id)
-    if user is None or user.status != UserStatus.ACTIVE.value or user.is_locked(now):
+    # The sign-in lockout is not checked: it blocks new sign-ins only and must not end a live session (see api.deps.get_principal).
+    if user is None or user.status != UserStatus.ACTIVE.value:
         raise AuthenticationFailed("This account is not active.", error_code="ACCOUNT_INACTIVE")
     rt.used_at = now
     session.last_seen_at = now
@@ -185,10 +192,17 @@ def logout_by_refresh(db: Session, ctx: RequestContext, raw_token: str | None) -
 
 def change_password(db: Session, ctx: RequestContext, user: User, session_id: uuid.UUID | None,
                     current: str, new: str) -> None:
+    # A stolen session must not allow unlimited guesses of the current password: same counter and lockout as sign-in. While the
+    # account is locked no guess is checked at all, and the session that reached the threshold is ended (other sessions live on).
+    if user.is_locked():
+        raise Conflict("The account is temporarily locked after too many wrong passwords. Try again later.",
+                       error_code="ACCOUNT_LOCKED")
     if not verify_password(current, user.password_hash):
         security_event(db, ctx, "PASSWORD_CHANGE_FAILED", "INFO", user.id)
-        # A stolen session must not allow unlimited guesses of the current password: same counter and lockout as sign-in.
-        _count_failed_password(db, ctx, user, utcnow(), "too many wrong current passwords on password change")
+        locked = _count_failed_password(db, ctx, user, utcnow(), "too many wrong current passwords on password change")
+        session = db.get(UserSession, session_id) if locked and session_id is not None else None
+        if session is not None:
+            _revoke_session(db, session, "PASSWORD_GUESSING", utcnow())
         db.commit()
         raise ValidationFailed("The current password is incorrect.", error_code="CURRENT_PASSWORD_INCORRECT")
     validate_password_policy(new)

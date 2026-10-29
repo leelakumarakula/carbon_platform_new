@@ -107,20 +107,27 @@ def _scan(data: bytes, filename: str | None) -> tuple[ScanResult, int]:
     return res, int(elapsed * 1000)
 
 
+def _record_refusal(db: Session, ctx: RequestContext, event: str, severity: str, details: dict) -> None:
+    """Persist the security event of a refused upload ON ITS OWN. The refusal raises, so whatever the caller added or flushed before
+    the upload (e.g. a new record the document was meant for) must not become permanent: it is rolled back first (the request would
+    roll it back anyway), then only the event is committed."""
+    db.rollback()
+    security_event(db, ctx, event, severity, details=details)
+    db.commit()
+
+
 def _accept(db: Session, ctx: RequestContext, environment: str, entity_type: str, entity_id: uuid.UUID, data: bytes,
             filename: str | None) -> tuple[ScanResult, int]:
     """The synchronous acceptance scan (D12), before anything of the upload is written."""
     res, ms = _scan(data, filename)
     metrics.inc("av_scans_total", {"trigger": "UPLOAD", "result": res.status})
     if res.status == "INFECTED":
-        security_event(db, ctx, "MALWARE_UPLOAD_BLOCKED", "CRITICAL",
-                       details={"entity_type": entity_type, "entity_id": str(entity_id), "detail": res.detail, "threat": res.threat,
-                                "provider": res.provider})
-        db.commit()
+        _record_refusal(db, ctx, "MALWARE_UPLOAD_BLOCKED", "CRITICAL",
+                        {"entity_type": entity_type, "entity_id": str(entity_id), "detail": res.detail, "threat": res.threat,
+                         "provider": res.provider})
         raise ValidationFailed("The file was rejected by the malware scanner.", error_code="MALWARE_DETECTED")
     if res.status == "ERROR" and get_settings().is_production and environment == "LIVE":
-        security_event(db, ctx, "ANTIVIRUS_UNAVAILABLE", "WARNING", details={"entity_type": entity_type, "provider": res.provider})
-        db.commit()
+        _record_refusal(db, ctx, "ANTIVIRUS_UNAVAILABLE", "WARNING", {"entity_type": entity_type, "provider": res.provider})
         raise ServiceUnavailable("Files cannot be accepted while the antivirus scanner is unavailable. Please try again later.",
                                  error_code="SCANNER_UNAVAILABLE")
     return res, ms

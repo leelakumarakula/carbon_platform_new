@@ -10,11 +10,18 @@ Verification only — no validation, registry, issuance or credits. The platform
   that submission; an optional "VVB-stated verified quantity" stays separate from the calculated quantity and is never a credit
 - project status (aggregate only, C2): CALCULATED → VERIFICATION with the first ACCEPTED assignment (once a calculation is approved);
   VERIFICATION → VERIFIED with the first VERIFIED period. Period records stay authoritative
+- concurrency: every state change locks its row WITH (UPDLOCK, HOLDLOCK, ROWLOCK) and re-checks the status under the lock (assignment
+  before submission). The lazy read-time re-check (`refresh`) locks the submission and transitions it at most once; it never commits —
+  the top-level operation does (views commit only their lazy invalidation; writes refresh first, commit that, then lock)
+- a VERIFIED quantity stated in the unit of the calculated result (the run's final NET, e.g. "VCU (t CO2e)" ≙ tCO2e) may not exceed
+  that result (VERIFIED_QUANTITY_EXCEEDS_CALCULATED); in any other unit nothing is converted and no comparison is made (recorded in the
+  audit as not comparable)
 """
 import hashlib
 import json
+import re
 import uuid
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 from typing import Any
 
 from sqlalchemy import select
@@ -46,10 +53,30 @@ from app.services import calculation_report as crep
 from app.services import document_service
 from app.services import project_service as psvc
 from app.services import verification_access as va
+from app.services.ledger_service import LOCK_HINT
+from app.services.notification_service import notify, org_holders
 from app.services.workflows import VERIFICATION_ASSIGNMENT_MACHINE, VERIFICATION_SUBMISSION_MACHINE
 
 SUBMISSION_ENTITY = "verification_submission"
 document_service.register_resolver(SUBMISSION_ENTITY, va.document_resolver)
+
+
+def lock(db: Session, model: Any, entity_id: uuid.UUID) -> Any:
+    """The row WITH (UPDLOCK, HOLDLOCK, ROWLOCK), reloaded (status re-checks happen after this). Flushes first: sessions do not
+    autoflush, and populate_existing must never overwrite a pending in-memory change."""
+    db.flush()
+    return db.scalars(select(model).with_hint(model, LOCK_HINT, "mssql").where(model.id == entity_id)
+                      .execution_options(populate_existing=True)).first()
+
+
+def _locked_assignment(db: Session, a: VerificationAssignment, *states: str, verb: str) -> VerificationAssignment:
+    x = lock(db, VerificationAssignment, a.id)
+    if x is None or x.status not in states:
+        status = x.status if x is not None else "missing"
+        code = "ASSIGNMENT_NOT_PROPOSED" if states == ("PROPOSED",) else "ASSIGNMENT_NOT_ACCEPTED"
+        raise Conflict(f"Only a{'n' if states[0][0] in 'AEIOU' else ''} {' / '.join(states)} assignment can be {verb} (it is {status}).",
+                       error_code=code)
+    return x  # type: ignore[no-any-return]
 
 
 def _period(db: Session, p: Project, period_id: uuid.UUID) -> MonitoringPeriod:
@@ -119,14 +146,16 @@ def propose(db: Session, ctx: RequestContext, principal: Principal, project_id: 
     va.workflow(db, ctx, "verification_assignment", a.id, None, "PROPOSED", notes)
     va.audit(db, ctx, principal, "VERIFICATION_ASSIGNMENT_PROPOSED", "verification_assignment", a.id, a, p,
              {"status": "PROPOSED", "previous_assignment_id": previous_id}, notes)
+    notify(db, org_holders(db, vvb_org_id, P.VERIFICATION_VVB_REVIEW), "VERIFICATION_ASSIGNMENT_PROPOSED",
+           f"Verification assignment proposed: {a.assignment_code} ({p.project_code})", notes, "verification_assignment", a.id,
+           f"/vvb/assignments/{a.id}")
     db.commit()
     return a
 
 
 def withdraw(db: Session, ctx: RequestContext, principal: Principal, assignment_id: uuid.UUID, reason: str) -> VerificationAssignment:
     a, p = va.project_assignment(db, principal, assignment_id, P.VERIFICATION_MANAGE)
-    if a.status != "PROPOSED":
-        raise Conflict(f"Only a PROPOSED assignment can be withdrawn (it is {a.status}).", error_code="ASSIGNMENT_NOT_PROPOSED")
+    a = _locked_assignment(db, a, "PROPOSED", verb="withdrawn")
     a.closed_by, a.closed_at, a.closed_side, a.closed_reason = principal.user_id, utcnow(), "PROJECT", reason
     _transition(db, ctx, principal, a, p, "WITHDRAWN", "VERIFICATION_ASSIGNMENT_WITHDRAWN", reason, "PROJECT")
     db.commit()
@@ -138,12 +167,12 @@ def terminate(db: Session, ctx: RequestContext, principal: Principal, assignment
         a, p = va.project_assignment(db, principal, assignment_id, P.VERIFICATION_MANAGE)
     else:
         a, p, _ = va.vvb_assignment(db, principal, assignment_id, P.VERIFICATION_VVB_REVIEW)
-    if a.status != "ACCEPTED":
-        raise Conflict(f"Only an ACCEPTED assignment can be terminated (it is {a.status}).", error_code="ASSIGNMENT_NOT_ACCEPTED")
+    a = _locked_assignment(db, a, "ACCEPTED", verb="terminated")
     a.closed_by, a.closed_at, a.closed_side, a.closed_reason = principal.user_id, utcnow(), side, reason
     _transition(db, ctx, principal, a, p, "TERMINATED", "VERIFICATION_ASSIGNMENT_TERMINATED", reason, side)
-    current = current_submission(db, a.id)
-    if current is not None:
+    found = current_submission(db, a.id)
+    current: VerificationSubmission | None = lock(db, VerificationSubmission, found.id) if found is not None else None
+    if current is not None and current.status == "SUBMITTED":
         _close_submission(db, ctx, principal, current, a, p, "INVALIDATED", f"Assignment terminated: {reason}")
     db.commit()
     return a
@@ -151,8 +180,7 @@ def terminate(db: Session, ctx: RequestContext, principal: Principal, assignment
 
 def accept(db: Session, ctx: RequestContext, principal: Principal, assignment_id: uuid.UUID, coi: str) -> VerificationAssignment:
     a, p, _ = va.vvb_assignment(db, principal, assignment_id, P.VERIFICATION_VVB_REVIEW)
-    if a.status != "PROPOSED":
-        raise Conflict(f"Only a PROPOSED assignment can be accepted (it is {a.status}).", error_code="ASSIGNMENT_NOT_PROPOSED")
+    a = _locked_assignment(db, a, "PROPOSED", verb="accepted")
     now = utcnow()
     a.accepted_by, a.accepted_at = principal.user_id, now
     a.coi_declaration, a.coi_declared_by, a.coi_declared_at = coi, principal.user_id, now
@@ -165,8 +193,7 @@ def accept(db: Session, ctx: RequestContext, principal: Principal, assignment_id
 
 def decline(db: Session, ctx: RequestContext, principal: Principal, assignment_id: uuid.UUID, reason: str) -> VerificationAssignment:
     a, p, _ = va.vvb_assignment(db, principal, assignment_id, P.VERIFICATION_VVB_REVIEW)
-    if a.status != "PROPOSED":
-        raise Conflict(f"Only a PROPOSED assignment can be declined (it is {a.status}).", error_code="ASSIGNMENT_NOT_PROPOSED")
+    a = _locked_assignment(db, a, "PROPOSED", verb="declined")
     a.closed_by, a.closed_at, a.closed_side, a.closed_reason = principal.user_id, utcnow(), "VVB", reason
     _transition(db, ctx, principal, a, p, "DECLINED", "VERIFICATION_ASSIGNMENT_DECLINED", reason, "VVB")
     db.commit()
@@ -217,17 +244,31 @@ def _close_submission(db: Session, ctx: RequestContext, principal: Principal | N
                  {"status": "SUPERSEDED", "decision_code": d.decision_code, "outcome": d.outcome}, reason, "PROJECT", {"status": "CURRENT"})
 
 
-def refresh(db: Session, ctx: RequestContext, assignment: VerificationAssignment) -> None:
-    """Invalidate the assignment's SUBMITTED package when it is no longer the valid READY package (read-time re-check, B12 / C6)."""
+def refresh(db: Session, ctx: RequestContext, assignment: VerificationAssignment) -> bool:
+    """Invalidate the assignment's SUBMITTED package when it is no longer the valid READY package (read-time re-check, B12 / C6).
+    Concurrency-safe and commit-free: the submission row is locked and its status and package re-checked under the lock, so concurrent
+    readers close it (and supersede its decision) exactly once; the caller commits. True when anything was invalidated."""
     s = current_submission(db, assignment.id)
     if s is None:
-        return
-    cr.refresh(db, ctx, s.monitoring_period_id)
-    problems = package_problems(db, s)
-    if problems:
-        p = db.get(Project, assignment.project_id)
-        assert p is not None
-        _close_submission(db, ctx, None, s, assignment, p, "INVALIDATED", "Package no longer valid: " + "; ".join(problems))
+        return False
+    changed = cr.refresh(db, ctx, s.monitoring_period_id)
+    if not package_problems(db, s):
+        return changed
+    s = lock(db, VerificationSubmission, s.id)
+    if s is None or s.status != "SUBMITTED":                    # a concurrent reader closed it first
+        return changed
+    problems = package_problems(db, s)                          # re-checked under the lock
+    if not problems:
+        return changed
+    p = db.get(Project, assignment.project_id)
+    assert p is not None
+    _close_submission(db, ctx, None, s, assignment, p, "INVALIDATED", "Package no longer valid: " + "; ".join(problems))
+    return True
+
+
+def refresh_first(db: Session, ctx: RequestContext, a: VerificationAssignment) -> None:
+    """Start of a write: persist the lazy re-check on its own (nothing of the caller is written yet), before the caller takes locks."""
+    if refresh(db, ctx, a) | cr.refresh(db, ctx, a.monitoring_period_id):
         db.commit()
 
 
@@ -235,8 +276,10 @@ def submit(db: Session, ctx: RequestContext, principal: Principal, assignment_id
     a, p = va.project_assignment(db, principal, assignment_id, P.VERIFICATION_MANAGE)
     if a.status != "ACCEPTED":
         raise Conflict(f"Submission needs an ACCEPTED assignment (it is {a.status}).", error_code="ASSIGNMENT_NOT_ACCEPTED")
-    refresh(db, ctx, a)
-    cr.refresh(db, ctx, a.monitoring_period_id)
+    refresh_first(db, ctx, a)
+    a = lock(db, VerificationAssignment, a.id)                  # serializes submissions of the assignment (and its decision)
+    if a.status != "ACCEPTED":
+        raise Conflict(f"Submission needs an ACCEPTED assignment (it is {a.status}).", error_code="ASSIGNMENT_NOT_ACCEPTED")
     ready = db.scalars(select(CalculationReadinessReview).where(CalculationReadinessReview.monitoring_period_id == a.monitoring_period_id,
                                                                 CalculationReadinessReview.status == "READY")).first()
     if ready is None or ready.project_id != a.project_id:
@@ -257,6 +300,8 @@ def submit(db: Session, ctx: RequestContext, principal: Principal, assignment_id
                                calculation_run_id=run.id, calculation_report_id=ready.report_id, manifest_sha256=ready.manifest_sha256,
                                status="SUBMITTED", submitted_by=principal.user_id, environment=a.environment)
     if cur is not None:   # closed first so the "one SUBMITTED per assignment" filtered index holds at every flush
+        cur = lock(db, VerificationSubmission, cur.id)
+        assert cur is not None
         _close_submission(db, ctx, principal, cur, a, p, "SUPERSEDED", "A newer READY package was submitted")
         db.flush()
     db.add(s)
@@ -278,8 +323,12 @@ def decide(db: Session, ctx: RequestContext, principal: Principal, submission_id
     s, a, p, org = va.vvb_submission(db, principal, submission_id, P.VERIFICATION_DECIDE)
     if a.status != "ACCEPTED":
         raise Conflict(f"A decision needs an ACCEPTED assignment (it is {a.status}).", error_code="ASSIGNMENT_NOT_ACCEPTED")
-    refresh(db, ctx, a)
-    db.refresh(s)
+    if refresh(db, ctx, a):
+        db.commit()                                             # the lazy invalidation only: nothing of this decision is written yet
+    a = lock(db, VerificationAssignment, a.id)                  # assignment → submission: one decision, never two concurrent ones
+    s = lock(db, VerificationSubmission, s.id)
+    if a.status != "ACCEPTED":
+        raise Conflict(f"A decision needs an ACCEPTED assignment (it is {a.status}).", error_code="ASSIGNMENT_NOT_ACCEPTED")
     if s.status != "SUBMITTED":
         raise Conflict(f"Decisions are recorded on the current submission (this one is {s.status}).", error_code="SUBMISSION_NOT_CURRENT")
     if outcome not in ("VERIFIED", "NOT_VERIFIED"):
@@ -306,6 +355,13 @@ def decide(db: Session, ctx: RequestContext, principal: Principal, submission_id
         # a verification that verified nothing (registry eligibility would only refuse it later, at submission)
         raise ValidationFailed("A VERIFIED decision needs the VVB-stated verified quantity (a positive number) and its unit.",
                                error_code="VERIFIED_QUANTITY_REQUIRED")
+    comparison = None
+    if outcome == "VERIFIED" and quantity is not None and unit:
+        comparison = compare_with_calculation(db.get(CalculationRun, s.calculation_run_id), quantity, unit)
+        if comparison["comparable"] and quantity > Decimal(comparison["calculated"]):
+            raise Conflict(f"The VVB-stated verified quantity {quantity} {unit.strip()} exceeds the approved calculation's final result "
+                           f"{comparison['calculated']} {comparison['calculated_unit']}.", error_code="VERIFIED_QUANTITY_EXCEEDS_CALCULATED",
+                           details=comparison)
     if not data:
         raise ValidationFailed("The VVB verification report (PDF) is required.", error_code="REPORT_REQUIRED")
     doc = document_service.create_document(db, ctx, entity_type=SUBMISSION_ENTITY, entity_id=s.id, organization_id=org.id, environment=s.environment,
@@ -319,7 +375,8 @@ def decide(db: Session, ctx: RequestContext, principal: Principal, submission_id
                              decided_by=principal.user_id, status="CURRENT", environment=s.environment)
     old = db.scalars(select(VerificationDecision).where(VerificationDecision.monitoring_period_id == s.monitoring_period_id,
                                                         VerificationDecision.status == "CURRENT")).first()
-    if old is not None:
+    old = lock(db, VerificationDecision, old.id) if old is not None else None
+    if old is not None and old.status == "CURRENT":
         old.status, old.superseded_at, old.superseded_reason = "SUPERSEDED", utcnow(), f"Superseded by a later decision on {s.submission_code}"
         db.flush()
     db.add(d)
@@ -327,12 +384,46 @@ def decide(db: Session, ctx: RequestContext, principal: Principal, submission_id
     va.audit(db, ctx, principal, "VERIFICATION_DECISION_RECORDED", "verification_decision", d.id, a, p,
              {"decision_code": d.decision_code, "outcome": outcome, "submission_id": s.id, "verified_quantity": str(quantity) if quantity else None,
               "verified_quantity_unit": d.verified_quantity_unit, "report_document_id": doc.id, "report_sha256": d.report_sha256,
-              "manifest_sha256": d.manifest_sha256, "label": "VVB-stated verified quantity — not issued, not a credit"}, rationale, "VVB")
+              "manifest_sha256": d.manifest_sha256, "label": "VVB-stated verified quantity — not issued, not a credit",
+              "calculation_comparison": comparison}, rationale, "VVB")
     a.completed_at = utcnow()
     _transition(db, ctx, principal, a, p, "COMPLETED", "VERIFICATION_ASSIGNMENT_COMPLETED", None, "VVB", decision_code=d.decision_code)
     _sync_project(db, ctx, p, verified=outcome == "VERIFIED")
+    stated = f" — VVB-stated verified quantity {format(quantity.normalize(), 'f')} {d.verified_quantity_unit}" if quantity is not None else ""
+    notify(db, org_holders(db, p.organization_id, P.VERIFICATION_MANAGE, P.VERIFICATION_RESPOND), "VERIFICATION_DECISION_RECORDED",
+           f"VVB decision {outcome}: {p.project_code} ({d.decision_code})", f"{rationale[:1500]}{stated}", "verification_decision", d.id,
+           f"/projects/{p.id}")
     db.commit()
     return d
+
+
+_UNIT_NOISE = re.compile(r"[\s_\-.]")
+
+
+def _unit_key(u: str) -> str:
+    return _UNIT_NOISE.sub("", u.replace("\u2082", "2").lower())
+
+
+def compare_with_calculation(run: CalculationRun | None, quantity: Decimal, unit: str) -> dict[str, Any]:
+    """Is the VVB-stated quantity comparable with the run's final result, and what was calculated? Units are free text: the run's final
+    unit is "<credit> (t CO2e)" (e.g. "VCU (t CO2e)", whole tonnes), so a stated unit matching the whole label, the credit name or the
+    tonnes in brackets (case, spaces, "₂" ignored: tCO2e, t CO2e, VCU) is comparable. Anything else (e.g. kg, a TEST unit) is never
+    converted and not compared."""
+    out: dict[str, Any] = {"comparable": False, "calculated": None, "calculated_unit": None, "stated": format(quantity.normalize(), "f"),
+                           "stated_unit": unit.strip()}
+    if run is None or run.net_result is None or not run.net_unit:
+        return out
+    try:
+        calculated = Decimal(run.net_result)
+    except InvalidOperation:
+        return out
+    m = re.match(r"^\s*(.*?)\s*\((.*)\)\s*$", run.net_unit)
+    keys = {_unit_key(run.net_unit)} | ({_unit_key(m.group(1)), _unit_key(m.group(2)), _unit_key(m.group(1)) + "s"} if m else set())
+    keys.discard("")
+    out.update(calculated=run.net_result, calculated_unit=run.net_unit, comparable=_unit_key(unit) in keys)
+    if out["comparable"]:
+        out["calculated"] = format(calculated.normalize(), "f")
+    return out
 
 
 def decisions(db: Session, assignment_id: uuid.UUID) -> list[VerificationDecision]:
@@ -358,10 +449,12 @@ def period_view(db: Session, ctx: RequestContext, principal: Principal, project_
     p = va.project_for(db, principal, project_id)
     mp = _period(db, p, period_id)
     rows = assignments(db, principal, project_id, period_id)
+    changed = False
     for a in rows:
         if a.status in ("ACCEPTED", "COMPLETED"):   # a recalculation also supersedes a recorded decision (it is no longer current)
-            refresh(db, ctx, a)
-    cr.refresh(db, ctx, period_id)
+            changed |= refresh(db, ctx, a)
+    if changed | cr.refresh(db, ctx, period_id):
+        db.commit()                                 # only the lazy invalidations: a view writes nothing else
     ready = db.scalars(select(CalculationReadinessReview).where(CalculationReadinessReview.monitoring_period_id == period_id,
                                                                 CalculationReadinessReview.status == "READY")).first()
     run = cr.current_run(db, period_id)

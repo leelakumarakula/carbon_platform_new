@@ -45,7 +45,9 @@ CALCULATION_READY / CALCULATED (later periods and data corrections, which lead t
 
 Blockers, in order: METHODOLOGY_NOT_LOCKED · PROJECT_NOT_IN_MRV · CONFIGURATION_REQUIRED (NO_CALCULATION_MODULE, STEP_NOT_CONFIGURED,
 STEP_NOT_INCLUDED) · NOT_PRODUCTION_READY · CALCULATION_RULE_NOT_CONFIGURED · DATASET_NOT_APPROVED · SNAPSHOT_MISMATCH ·
-OUTSIDE_CREDITING_PERIOD · MISSING_APPROVED_LAB_RESULT · MISSING_REQUIRED_INPUT · INPUT_NOT_NUMERIC · UNIT_MISMATCH · INPUT_TOO_LARGE.
+OUTSIDE_CREDITING_PERIOD · MISSING_APPROVED_LAB_RESULT · MISSING_REQUIRED_INPUT · INPUT_NOT_NUMERIC · UNIT_MISMATCH · INPUT_TOO_LARGE ·
+DUPLICATE_INPUT (the same source twice, two results for one root sample, or two lab results for one variable, field collection and
+depth increment — fix 29/10; QA uses the same keys) · DOUBLE_COUNTING_CONFLICT (re-checked at every freeze, not only at MRV planning).
 A freeze that fails readiness turns the run BLOCKED (final) with every blocker recorded; the error code is the first blocker's.
 
 Eligibility — nothing is ever substituted (no zero, average, previous, estimated or interpolated value):
@@ -84,8 +86,15 @@ outputs match it) · steps complete (one final NET) · lineage complete · proje
 FAIL in production) · environment · separation of duties. PASS is refused while a check fails; approval needs the latest QA PASS and
 re-verifies both hashes and input currency.
 
-Separation of duties: the reviewer and the approver are never the run's creator, freezer, executor or submitter
-(`SEPARATION_OF_DUTIES`). The same QA officer may review and approve (as in MRV).
+Separation of duties: the reviewer and the approver are never the run's creator, freezer, executor or submitter, and the approver
+is never anyone who started or completed a QA review of the run (`SEPARATION_OF_DUTIES`, fix 29/10; the same rule applies to MRV
+datasets).
+
+Production readiness is approved for one module code version (`methodology_versions.calculation_readiness_module_version`,
+migration 0024): a new module version (e.g. VM0042 1.3.0 → 1.4.0) is NOT_PRODUCTION_READY until it is approved again, and runs frozen
+under the old approval count as readiness-revoked. Output values up to 1000 characters are stored; longer ones block with
+OUTPUT_VALUE_TOO_LONG. A CLOSED project keeps its runs, reports and readiness readable; every write is refused (`PROJECT_CLOSED`).
+An unexpected module exception blocks the run with a generic CALCULATION_ERROR message; the exception text is logged, not shown.
 
 ## Recalculation (A14)
 

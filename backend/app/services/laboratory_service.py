@@ -39,7 +39,7 @@ from app.models.base import utcnow
 from app.schemas.lab import CustodyEventIn, LabQaCheck, QaDecisionIn, ReceiptIn, ResultIn, ResultUpdate, RetestIn
 from app.security.permissions import P
 from app.security.principal import Principal
-from app.services import document_service, mrv_service
+from app.services import document_service, mrv_access, mrv_service
 from app.services import lab_service as ls
 from app.services.workflows import LAB_RESULT_MACHINE, LAB_SHIPMENT_MACHINE, LAB_TEST_MACHINE
 
@@ -75,6 +75,14 @@ def visible_sample_ids(db: Session, principal: Principal) -> set[uuid.UUID] | No
     return roots
 
 
+def _writable(db: Session, project_id: uuid.UUID, code: str) -> None:
+    """Laboratory work (any code but the read code) stops when the project is CLOSED; its records stay readable."""
+    if code != P.LAB_LAB_READ:
+        p = db.get(Project, project_id)
+        if p is not None:
+            mrv_access.require_open(p)
+
+
 def lab_sample(db: Session, principal: Principal, sample_id: uuid.UUID, code: str = P.LAB_LAB_READ) -> LabSample:
     s = db.get(LabSample, sample_id)
     if s is None or not _in_lab(principal, s.laboratory_org_id, P.LAB_LAB_READ):
@@ -84,6 +92,7 @@ def lab_sample(db: Session, principal: Principal, sample_id: uuid.UUID, code: st
         raise ls.not_found("Sample")
     if not _in_lab(principal, s.laboratory_org_id, code):
         raise PermissionDenied(details={"required_permission": code})
+    _writable(db, s.project_id, code)
     return s
 
 
@@ -94,6 +103,7 @@ def lab_test(db: Session, principal: Principal, test_id: uuid.UUID, code: str = 
     lab_sample(db, principal, t.sample_id)
     if not _in_lab(principal, t.laboratory_org_id, code):
         raise PermissionDenied(details={"required_permission": code})
+    _writable(db, t.project_id, code)
     return t
 
 
@@ -104,6 +114,7 @@ def lab_result(db: Session, principal: Principal, result_id: uuid.UUID, code: st
     lab_test(db, principal, r.test_id)
     if not _in_lab(principal, r.laboratory_org_id, code):
         raise PermissionDenied(details={"required_permission": code})
+    _writable(db, r.project_id, code)
     return r
 
 
@@ -113,6 +124,7 @@ def lab_shipment(db: Session, principal: Principal, shipment_id: uuid.UUID, code
         raise ls.not_found("Shipment")
     if not _in_lab(principal, sh.laboratory_org_id, code):
         raise PermissionDenied(details={"required_permission": code})
+    _writable(db, sh.project_id, code)
     return sh
 
 
@@ -271,8 +283,9 @@ def update_result(db: Session, ctx: RequestContext, principal: Principal, result
 def attach_report(db: Session, ctx: RequestContext, principal: Principal, result_id: uuid.UUID, filename: str | None, data: bytes,
                   title: str | None) -> LabResult:
     r = lab_result(db, principal, result_id, P.LAB_TEST)
-    if r.status not in ("DRAFT", "SUBMITTED"):
-        raise Conflict("A report is attached before QA starts.", error_code="RESULT_NOT_EDITABLE")
+    if r.status != "DRAFT":   # once SUBMITTED the result (and the report QA reviews) is frozen: withdraw it to change the report
+        raise Conflict("The report is attached while the result is a DRAFT (before it is submitted for QA).",
+                       error_code="RESULT_NOT_EDITABLE", details={"status": r.status})
     doc = document_service.create_document(db, ctx, entity_type="lab_result", entity_id=r.id, organization_id=r.laboratory_org_id,
                                            environment=r.environment, category="LAB_REPORT", title=title or "Laboratory report",
                                            filename=filename, data=data)

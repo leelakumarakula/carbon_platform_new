@@ -207,8 +207,9 @@ def readiness(db: Session, f: Farmer) -> list[TransitionReadiness]:
 
 def change_status(db: Session, ctx: RequestContext, principal: Principal, farmer_id: uuid.UUID, target: str, reason: str) -> Farmer:
     f = get_farmer(db, principal, farmer_id, P.FARMERS_MANAGE)
-    if target == "SUSPENDED" or (target == "ACTIVE" and f.status == "SUSPENDED"):
-        principal.require_in_org(P.FARMERS_MANAGE, f.organization_id)  # farmers cannot suspend/reinstate themselves
+    # staff only: a farmer's own login (self-service) never moves its own status (registration, activation, suspension); the status
+    # gates enrolment, payouts and KYC, so it is decided by the organization's staff
+    principal.require_in_org(P.FARMERS_MANAGE, f.organization_id)
     FARMER_MACHINE.assert_transition(f.status, target)
     if target in ("KYC_PENDING", "KYC_VERIFIED") or f.status == "KYC_PENDING":
         # KYC moves only through POST /kyc and the independent POST /kyc/decision (separation of duties)

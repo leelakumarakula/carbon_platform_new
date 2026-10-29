@@ -21,6 +21,15 @@ Stratification, sampling design, sampling points and field collection are descri
 | The project has a LOCKED `project_methodologies` row and `methodology_status = CONFIRMED`. | `METHODOLOGY_NOT_LOCKED` |
 | The locked version is APPROVED or SUPERSEDED. A version that was superseded after locking stays valid for the project. | `METHODOLOGY_VERSION_INVALID` |
 | The project is in METHODOLOGY_CONFIRMED, MRV_PLANNED or MONITORING — or, since Phase 7, CALCULATION_READY / CALCULATED (later periods and data corrections continue). | `PROJECT_NOT_IN_MRV` |
+| The project is not CLOSED. | `PROJECT_CLOSED` |
+
+**CLOSED projects (fix 29 Oct 2026).** A CLOSED project keeps its MRV, sampling, laboratory and calculation history
+**readable**: plans, periods, strata, designs, points, collections, records, evidence, datasets, QA, samples, lab results,
+calculation runs, inputs, outputs and QA all answer as before (the calculation project list keeps a CLOSED project that
+monitored), and the requirements view shows the locked version even if it was retired since. **Every write is refused**
+with `PROJECT_CLOSED`: `mrv_access.project()`, `lab_service.project_for()` and `calculation_service.project_for()` refuse a
+request whose permissions are all write permissions (no `*.read` code), the collector shortcut of points and collections
+does the same, and the laboratory-side accessors refuse any lab code but `lab.lab_read`.
 
 The methodology cannot be unlocked once the project is MRV_PLANNED or later (Phase 4 unlock requires
 METHODOLOGY_CONFIRMED).
@@ -86,7 +95,9 @@ The DEMO methodologies configure no SAMPLING rule, so DEMO plans show CONFIGURAT
 Corrections:
 - `SUBMITTED → DATA_COLLECTION`;
 - `REJECTED → DATA_COLLECTION`;
-- `APPROVED → DATA_COLLECTION`, when a correction dataset version is opened.
+- `APPROVED → DATA_COLLECTION`, when a correction dataset version is opened — only until a calculation of the period is
+  APPROVED. After that the approved figures may be verified and issued, so `POST /datasets` on the period is refused with
+  `PERIOD_LOCKED` (details: `reason = CALCULATION_APPROVED`, the run codes). A later correction needs a new monitoring period.
 
 Rules:
 - **Creating** a period requires an APPROVED plan (`MRV_PLAN_NOT_APPROVED`).
@@ -181,7 +192,8 @@ Dataset rules:
 - **QA start (`mrv.review`):** dataset and period move to QA_REVIEW.
 - **QA complete:** the result is PASS, FAIL or REQUIRES_CORRECTION. The reviewer must not be the submitter.
   PASS is refused while any automated check FAILs (`QA_CHECKS_FAILED`).
-- **Approve (`mrv.approve`, not the submitter):**
+- **Approve (`mrv.approve`, not the submitter, and not the QA reviewer — whoever started or completed a QA review of the
+  dataset; `SEPARATION_OF_DUTIES`):**
   - requires the latest QA result PASS;
   - refuses when a field record in the snapshot is no longer ACCEPTED (`SNAPSHOT_OUT_OF_DATE`) and re-runs the automated QA
     checks (`QA_CHECKS_FAILED` on any FAIL);
@@ -350,4 +362,6 @@ versions and field records keep their rules (migration 0007 backfilled pre-exist
 - **V3** — QA approval of the dataset (`mrv.approve`) is held by the QA officer only. The MRV manager reviews but does
   not approve.
 - **V4** — A correction after approval re-opens the period. The approved dataset stays APPROVED until a new version is
-  approved, which supersedes it.
+  approved, which supersedes it. Since 29 Oct 2026 this stops once a calculation of the period is approved (`PERIOD_LOCKED`).
+- **V5** — The dataset approver must be a different person from the QA reviewer (four eyes on QA). With the default roles
+  that means a second QA officer (or another `mrv.approve` holder) signs off what the first one reviewed.

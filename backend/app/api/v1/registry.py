@@ -136,7 +136,8 @@ def create_submission(project_id: uuid.UUID, body: SubmissionIn, principal: Mana
 @router.get("/submissions/{submission_id}", response_model=SubmissionDetail)
 def get_submission(submission_id: uuid.UUID, principal: Reader, db: DB, ctx: Ctx) -> SubmissionDetail:
     s, _ = ra.submission_for(db, principal, submission_id)
-    rs.check_source(db, ctx, s)
+    if rs.check_source(db, ctx, s):
+        db.commit()                                             # the lazy invalidation / flag only (D12)
     return rm.submission_detail(db, principal, s)
 
 

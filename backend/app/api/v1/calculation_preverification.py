@@ -146,14 +146,16 @@ def create_readiness(project_id: uuid.UUID, body: ReadinessCreateIn, principal: 
 @router.get("/readiness/{review_id}", response_model=ReadinessOut)
 def get_readiness(review_id: uuid.UUID, principal: Reader, db: DB, ctx: Ctx) -> ReadinessOut:
     r, _ = cr.get_review(db, principal, review_id)
-    cr.refresh(db, ctx, r.monitoring_period_id)
+    if cr.refresh(db, ctx, r.monitoring_period_id):
+        db.commit()                                             # the lazy invalidation only (read-time re-check, B12)
     return pvm.readiness_out(db, principal, cr.get_review(db, principal, review_id)[0])
 
 
 @router.get("/readiness/{review_id}/package", response_model=ManifestOut, summary="The frozen package manifest (references and hashes)")
 def readiness_package(review_id: uuid.UUID, principal: Reader, db: DB, ctx: Ctx) -> ManifestOut:
     r, _ = cr.get_review(db, principal, review_id)
-    cr.refresh(db, ctx, r.monitoring_period_id)
+    if cr.refresh(db, ctx, r.monitoring_period_id):
+        db.commit()                                             # the lazy invalidation only (read-time re-check, B12)
     return pvm.manifest_out(cr.get_review(db, principal, review_id)[0])
 
 

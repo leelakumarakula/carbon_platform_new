@@ -21,6 +21,7 @@ from typing import Any, ClassVar
 from app.calculation import framework as fw
 from app.calculation.framework import CalculationBlocked, CalculationContext, CalculationModule, Constant, InputValue, Output, Step, Variable
 from app.calculation.library import ar_cdm
+from app.calculation.library.inputs import is_first_comparison
 
 D0, D1 = Decimal(0), Decimal(1)
 T = "t CO2e"
@@ -73,7 +74,9 @@ ASSUMPTIONS = (
     "Below-ground biomass per plot: R = e^(-1.085 + 0.9256 ln b) / b with b = the plot's above-ground biomass per ha (Appendix 1).",
     "Stock change = difference of two independent estimates (Eqs. 1-2): the current campaign minus the previous approved campaign, or "
     "minus the pre-project stock (AR_BSL_STOCK, 0 when not recorded) at the first verification; the previous estimate is used "
-    "undiscounted (Eq. 1 note 2).",
+    "undiscounted (Eq. 1 note 2). The pre-project stock replaces the previous campaign only when the previous approved period is the "
+    "project's first monitoring period (#1); otherwise a previous period without sample plots, or a stratum with plots now but none "
+    "in the previous campaign, blocks the run (PREVIOUS_STOCK_MISSING) so a stock already credited is never credited again.",
     "Appendix 2 discount is applied to the stock change (a project estimate: decreased by discount x U x |dC|).",
     "Shrubs (optional): crown cover per stratum x BDR_SF 0.10 x b_FOREST; < 5 % crown cover = 0.",
     "Dead wood and litter (optional pools) are excluded (conservative); FR05.002 SOC (BM-T-AR-0006) is not included.",
@@ -85,7 +88,8 @@ ASSUMPTIONS = (
 
 
 class _CctsAr(CalculationModule):
-    version = "1.0.0"
+    # 1.1.0: the previous campaign's stock is required after the first verification (no silent zero / pre-project fallback)
+    version = "1.1.0"
     version_label = "1.0"
     calculation_rules_version = 0
     readiness = fw.NOT_PRODUCTION_READY
@@ -157,6 +161,9 @@ class _CctsAr(CalculationModule):
         vals = ctx.values(var)
         return sum((Decimal(v.value) for v in vals), D0), tuple(v.seq for v in vals)
 
+    def _plot_strata(self, ctx: CalculationContext, agb_var: str) -> set[str]:
+        return {self._rec(p) for p in ctx.values(agb_var)}
+
     def _campaign(self, ctx: CalculationContext, agb_var: str, plot_area_var: str, area_var: str,
                   cc_var: str) -> tuple[ar_cdm.StockEstimate, Decimal, tuple[int, ...]] | None:
         plots = ctx.values(agb_var)
@@ -197,6 +204,18 @@ class _CctsAr(CalculationModule):
     def validate_inputs(self, ctx: CalculationContext) -> None:
         if self._campaign(ctx, "PLOT_AGB", "PLOT_AREA", "AREA", "SHRUB_CC") is None:
             raise CalculationBlocked("MISSING_REQUIRED_INPUT", "No sample plot biomass (AR_PLOT_AGB) in the period.", {"variable": "PLOT_AGB"})
+        prev_strata, cur_strata = self._plot_strata(ctx, "PLOT_AGB_T0"), self._plot_strata(ctx, "PLOT_AGB")
+        prev = ctx.snapshot.get("previous_period") or {}
+        if not prev_strata and not is_first_comparison(ctx.snapshot):
+            raise CalculationBlocked("PREVIOUS_STOCK_MISSING", f"The previous approved period (#{prev.get('number')}) has no sample plots. Its "
+                                     "stock would be replaced by the pre-project stock and the whole cumulative stock credited again "
+                                     "(Eq. 1); only the first verification (previous period #1) starts from the pre-project stock.",
+                                     {"reason": "NO_PREVIOUS_PLOTS", "previous_period_number": prev.get("number")})
+        if prev_strata and cur_strata - prev_strata:
+            new = sorted(cur_strata - prev_strata)
+            raise CalculationBlocked("PREVIOUS_STOCK_MISSING", f"Stratum {', '.join(new[:5])} has sample plots in this period but none in the "
+                                     "previous campaign: its earlier stock would be read as zero (Eq. 1).",
+                                     {"reason": "STRATUM_WITHOUT_PREVIOUS_PLOTS", "strata": new})
 
     # ------------------------------------------------------------------ steps
     def calculate_baseline(self, ctx: CalculationContext) -> list[Output]:

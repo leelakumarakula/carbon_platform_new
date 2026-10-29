@@ -206,6 +206,11 @@ class SettlementIn(_Strict):
     allocation_version_id: uuid.UUID
 
 
+class SettlementCalculateIn(_Strict):
+    """Project-level costs (no monitoring period) are deducted only by a run that opts in, and then only once."""
+    include_project_costs: bool = False
+
+
 class EntitlementOut(BaseModel):
     id: uuid.UUID
     allocation_line_id: uuid.UUID

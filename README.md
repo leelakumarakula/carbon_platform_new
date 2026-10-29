@@ -8,7 +8,10 @@ Every step is auditable.
 The platform orchestrates external parties (laboratories, VVB/ACVA bodies, registries, banks) through
 adapters. It is not itself a laboratory, verifier, registry or certification body.
 
-> **Status:** Phases 1 (Foundation), 2 (Farmer & Farm), 3 (Project) and 4 (Standard / Activity / Methodology) are complete. See [docs/implementation-status.md](docs/implementation-status.md).
+> **Status:** Phases 1–11, 12A and 12B (I–III) are complete in code: farmer and farm onboarding through MRV, laboratory, calculation
+> (13 methodology modules registered, all NOT_PRODUCTION_READY), VVB verification, registry issuance, the credit ledger, the marketplace,
+> revenue and payouts, background jobs and production hardening. The production environment itself is not provisioned yet. See
+> [docs/implementation-status.md](docs/implementation-status.md).
 
 ## Repositories
 
@@ -39,7 +42,7 @@ Details: [docs/architecture.md](docs/architecture.md).
 
 ## Prerequisites
 
-- Python 3.10+ and Node 22+ (verified with Python 3.10.0 and Node 24.12)
+- Python 3.12 (the development venv and the Docker image `python:3.12-slim`) and Node 22+ (verified with Node 24.12)
 - SQL Server 2019+ (verified on 2022 Developer) and **ODBC Driver 17 or 18 for SQL Server**
 - Optional: Docker (for `docker-compose.yml`)
 
@@ -95,7 +98,7 @@ npx ng serve                                           # http://localhost:4200, 
 | `python manage.py migrate` | `alembic upgrade head` |
 | `alembic revision --autogenerate -m "..."` | New migration (review it before committing) |
 | `alembic check` | Fail if models and migrations have drifted |
-| `python manage.py seed-reference` | Sync permissions, the 19 system roles and the platform organization (idempotent) |
+| `python manage.py seed-reference` | Sync the 96 permissions, the 21 system roles and the platform organization (idempotent) |
 
 Schema changes go through Alembic only (agent rules 4–5).
 
@@ -136,9 +139,11 @@ accepts, `collector@` registers and seals a sample, `supervisor@` ships it, `lab
 DEMO placeholder result with a DEMO PDF, and `labqa@` approves it after laboratory QA (open **Laboratory** as a lab user, or the
 **Samples & laboratory** tab of the MRV workspace). It is not a real analysis; there are no calculations or credits.
 
-Phase 7 adds the calculation framework but **no calculation module** (no real methodology is configured and no illustrative DEMO
-equations were approved). Sign in as `analyst@` and open **Calculations**: the Niphad project shows the real blocker,
-CONFIGURATION_REQUIRED — NO_CALCULATION_MODULE, and a run is BLOCKED on freeze. Calculated tCO2e is never a credit.
+Phase 7 adds the calculation framework. 13 methodology modules are registered since (VM0042 coffee, GS402 ×5, VM0047, VM0044, CCTS
+A/R and rice, VM0051, GS403), all NOT_PRODUCTION_READY, so production refuses them until a two-person readiness approval. Sign in as
+`analyst@` and open **Calculations**: the seeded DEMO Niphad project uses a DEMO methodology without a module and shows the blocker
+CONFIGURATION_REQUIRED — NO_CALCULATION_MODULE. Calculated tCO2e is never a credit. The whole chain from a coffee estate to a payout
+runs in `tests/test_e2e_vm0042_coffee.py`.
 
 Phase 8A adds internal pre-verification (findings, the calculation report of an approved run, and internal verification readiness —
 "Internal readiness — not verification"). On DEMO data only the honest blocked path is visible: findings can be raised on the blocked
@@ -177,6 +182,10 @@ Phase 11 adds revenue, farmer entitlements and payouts:
 - On DEMO data the **Finance** pages show "DEMO — no registry-issued credits; no revenue, cost, entitlement or payout exists in DEMO", and
   every DEMO financial write is refused.
 
+Phase 12B hardens the platform for production: MinIO object storage and the antivirus boundary (12B-I), the Redis rate limiter,
+trusted proxies, health / metrics endpoints and key rotation (12B-II), and backup / restore drills, retention and runbooks (12B-III).
+See [docs/runtime-hardening.md](docs/runtime-hardening.md) and [docs/operations-runbook.md](docs/operations-runbook.md).
+
 Phase 12A adds background jobs:
 - Celery workers, with Redis as the broker only. SQL Server keeps every job and attempt.
 - Scheduled, proactive expiry of reservations, orders and listings. Lazy expiry still guarantees correctness without workers.
@@ -208,7 +217,8 @@ The smoke test reads `DEMO_USER_PASSWORD` from this repository's `backend/.env` 
 
 ## Roles
 
-The 19 roles in spec §4 (plus Platform GIS Specialist, decision D5) are defined in `backend/app/security/permissions.py`. See
+The 21 system roles (the 19 of spec §4, plus Platform GIS Specialist, decision D5, and Marketplace Compliance Officer, Phase 10) are
+defined in `backend/app/security/permissions.py`. See
 [docs/roles-permissions.md](docs/roles-permissions.md). Phase 2 added the farmer and farm permissions to the
 field, project, GIS, QA, MRV and finance roles, and `farmers.self` to Farmer. Phase 3 added `projects.*` and `standards.manage`; Phase 4 added `methodologies.*`; Phase 5 added `mrv.*` and `sampling.*`; Phase 6 added `lab.*`; Phase 7 added `calculation.*`; Phase 8B added `verification.*`; Phase 9A added `registry.*` and `credits.read`; Phase 9B added `credits.manage`, `credits.confirm`, `credits.holder_read` and `credits.holder_retire`; Phase 10 added `marketplace.read`, `listings.*`, `orders.*`, `payments.*`, `refunds.*`, `buyers.kyc_submit` and `buyers.kyc_verify` (new Marketplace Compliance Officer role); Phase 11 added `revenue.*`, `settlement.*`, `payouts.*`, `sharing.*` and `costs.*` (no new role); Phase 12A added `jobs.read` and `jobs.manage` (Platform Admin; no new role). Each later phase adds its module's permissions.
 
@@ -228,7 +238,8 @@ lineage in [docs/data-lineage.md](docs/data-lineage.md).
 
 ## External integrations
 
-Phase 2 adds the `ObjectStorage` (local) and `MalwareScanner` (signature) adapters; S3 and a real antivirus engine are pending. Adapter interfaces for satellite, lab, VVB, registry, payment, notification and identity providers
+Phase 2 adds the `ObjectStorage` (local) and `MalwareScanner` (signature) adapters; Phase 12B-I adds the S3 / MinIO storage adapter
+and the antivirus boundary (no antivirus vendor is selected yet, so production refuses to start without one). Adapter interfaces for satellite, lab, VVB, registry, payment, notification and identity providers
 are added in their phases, configured by `*_PROVIDER` variables. A mock confirmation is never treated as real.
 
 ## Production deployment
