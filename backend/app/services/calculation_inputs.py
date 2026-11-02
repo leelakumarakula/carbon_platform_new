@@ -304,14 +304,16 @@ def _resolve_inputs(db: Session, ev: Evaluation, module: fw.CalculationModule, d
     periods: dict[str, _PeriodData] = {"CURRENT": _period_data(db, "CURRENT", ev.period, ds)}
     rows: list[dict[str, Any]] = []
     problems: list[Blocker] = []
-    if any(var.period == "PREVIOUS" for var in module.variables):
+    prev_vars = [var for var in module.variables if var.period == "PREVIOUS"]
+    if prev_vars:
         prev = previous_period(db, ev.project, ev.period)
-        if prev is None:
-            problems.append(Blocker("PREVIOUS_PERIOD_REQUIRED", "This methodology compares two measurement campaigns: an earlier monitoring "
-                                    "period with an APPROVED dataset (e.g. the baseline sampling at t0) is required.", "NO_PREVIOUS_APPROVED_PERIOD"))
-        else:
+        if prev is not None:
             ev.previous_period, ev.previous_dataset = prev
             periods["PREVIOUS"] = _period_data(db, "PREVIOUS", *prev)
+        elif any(var.required for var in prev_vars):
+            problems.append(Blocker("PREVIOUS_PERIOD_REQUIRED", "This methodology compares two measurement campaigns: an earlier monitoring "
+                                    "period with an APPROVED dataset (e.g. the baseline sampling at t0) is required.", "NO_PREVIOUS_APPROVED_PERIOD"))
+        # otherwise the first verification: the module uses its pre-project values (e.g. VM0047, CCTS A/R)
     for var in module.variables:
         found: list[dict[str, Any]] = []
         pd = periods.get(var.period)
